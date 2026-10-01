@@ -231,8 +231,10 @@ input:focus-visible {
 }
 
 .language-picker select {
+  box-sizing: border-box;
   font-size: 12px;
   height: 28px;
+  line-height: normal;
   padding: 2px 8px;
   border: 1px solid #dce5dd;
   border-radius: 6px;

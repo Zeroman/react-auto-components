@@ -102,9 +102,38 @@ export function useDemoText() {
   );
 }
 
-export function LanguagePicker() {
+export function LanguagePicker({
+  variant = "inline",
+}: {
+  variant?: "inline" | "block";
+} = {}) {
   const { preference, setPreference, locale } = useDemoLanguage();
   const tr = useDemoText();
+  if (variant === "block") {
+    return (
+      <label>
+        {tr("界面语言")}
+        <select
+          aria-label={tr("界面语言")}
+          data-testid="language-picker"
+          value={preference}
+          onChange={(event) => {
+            if (isPreference(event.target.value))
+              setPreference(event.target.value);
+          }}
+        >
+          <option value="auto">
+            {tr("自动（浏览器）")} · {languages[locale]}
+          </option>
+          {Object.entries(languages).map(([id, name]) => (
+            <option key={id} value={id}>
+              {name}
+            </option>
+          ))}
+        </select>
+      </label>
+    );
+  }
   return (
     <label className="language-picker">
       <span aria-hidden="true">◎</span>

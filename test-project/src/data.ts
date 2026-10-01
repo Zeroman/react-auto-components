@@ -1,6 +1,10 @@
 import { useMemo } from "react";
 import { useDemoText } from "./i18n";
-import type { AutoColumn, Field, DataSource } from "@zeroman/react-auto-components";
+import type {
+  AutoColumn,
+  Field,
+  DataSource,
+} from "@zeroman/react-auto-components";
 import { matchesQuery } from "@zeroman/react-auto-components";
 export interface Project {
   id: string;

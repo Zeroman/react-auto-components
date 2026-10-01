@@ -45,7 +45,7 @@ export function GlobalSettings({
     });
   return (
     <div className="global-settings">
-      <LanguagePicker />
+      <LanguagePicker variant="block" />
       <p className="auto-muted">
         {tr("设置立即应用于所有组件，关闭面板后继续当前示例。")}
       </p>

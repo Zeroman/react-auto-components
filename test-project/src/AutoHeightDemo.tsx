@@ -1,6 +1,9 @@
 import { useDemoText } from "./i18n";
 import { useMemo, useRef, useState } from "react";
-import { AutoTable, type AutoTableHandle } from "@zeroman/react-auto-components";
+import {
+  AutoTable,
+  type AutoTableHandle,
+} from "@zeroman/react-auto-components";
 import { useDemoData, makeProjects, type Project } from "./data";
 export function AutoHeightDemo() {
   const tr = useDemoText();
