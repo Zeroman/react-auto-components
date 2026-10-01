@@ -109,24 +109,29 @@ input:focus-visible {
 
 /* Sidebar menu itself is the library's AutoMenu component. */
 .studio .auto-menu {
-  gap: 0;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .studio .auto-menu-label {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: #94a298;
   margin: 18px 8px 10px;
+  font-weight: 500;
 }
 
 .sidebar-footer {
   flex-shrink: 0;
   border-top: 0;
-  padding: 4px 8px 2px;
+  padding: 0 4px;
   font-size: 11px;
   color: #6c7c72;
 }
 
 .sidebar-footer small {
   display: block;
-  margin-top: 6px;
+  margin-top: 5px;
   color: #9ba69e;
 }
 
@@ -897,6 +902,58 @@ h3 {
 .studio-dark .version-pill {
   border-color: #3c5143;
   color: #9ab0a1;
+}
+
+.studio-dark .auto-menu-label {
+  color: #7d9685;
+}
+
+.studio-dark .studio .auto-menu [data-auto-menu-item] {
+  color: #9eb5a5;
+}
+
+.studio-dark .studio .auto-menu [data-auto-menu-item]:hover:not(:disabled) {
+  background: #243c2e;
+  color: #dce5de;
+}
+
+.studio-dark .studio .auto-menu [data-auto-menu-item].active,
+.studio-dark .studio .auto-menu [data-auto-menu-item][aria-current="page"] {
+  background: #294333;
+  color: #6ed19d;
+}
+
+.studio-dark .studio .auto-menu [data-auto-menu-item].active .auto-menu-icon,
+.studio-dark
+  .studio
+  .auto-menu
+  [data-auto-menu-item][aria-current="page"]
+  .auto-menu-icon {
+  color: #6ed19d;
+}
+
+.studio-dark
+  .studio
+  .auto-menu
+  [data-auto-menu-item].active
+  .auto-menu-text
+  small,
+.studio-dark
+  .studio
+  .auto-menu
+  [data-auto-menu-item][aria-current="page"]
+  .auto-menu-text
+  small {
+  color: #6ed19d;
+  opacity: 0.85;
+}
+
+.studio-dark .sidebar-footer {
+  color: #8da294;
+}
+
+.studio-dark .sidebar-footer small {
+  color: #6d8073;
 }
 
 /* ==========================================================================

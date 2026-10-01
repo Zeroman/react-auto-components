@@ -894,12 +894,13 @@
 }
 
 .auto-menu-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--auto-secondary);
-  margin: 6px 10px 2px;
+  opacity: 0.85;
+  margin: 14px 10px 6px;
   user-select: none;
 }
 
@@ -909,7 +910,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
@@ -929,16 +930,16 @@
 .auto-menu [data-auto-menu-item] {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-align: left;
   width: 100%;
   min-width: 0;
-  min-height: 36px;
+  min-height: 40px;
   border: 0;
   background: transparent;
   color: var(--auto-secondary);
-  padding: 7px 10px;
-  border-radius: var(--auto-radius);
+  padding: 9px 12px;
+  border-radius: var(--auto-radius, 8px);
   font-size: var(--auto-control-font, 14px);
   line-height: 1.3;
   cursor: pointer;
@@ -1012,9 +1013,9 @@
 
 /* Icons, text and badges */
 .auto-menu-icon {
-  font-size: 1.25em;
-  width: 1.5em;
-  height: 1.5em;
+  font-size: 19px;
+  width: 22px;
+  height: 22px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -1026,16 +1027,20 @@
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  font-size: 13px;
+  font-weight: 600;
   overflow-wrap: break-word;
   word-break: break-word;
   line-height: 1.3;
 }
 
 .auto-menu-text small {
-  font-size: 0.8em;
+  display: block;
+  font-size: 11px;
   font-weight: 400;
-  color: var(--auto-secondary);
-  margin-top: 1px;
+  color: inherit;
+  opacity: 0.72;
+  margin-top: 2px;
   line-height: 1.25;
   overflow-wrap: break-word;
   word-break: break-word;
@@ -1078,13 +1083,13 @@
 
 /* Nested lists: guide tree line and indent */
 .auto-menu:not(.auto-menu-flyout) .auto-menu-list .auto-menu-list {
-  margin: 2px 0 3px;
+  margin: 3px 0 4px;
   padding-left: 12px;
   border-left: 1px solid var(--auto-border);
-  margin-left: 17px;
+  margin-left: 18px;
   flex: 0 0 auto;
   overflow: visible;
-  gap: 2px;
+  gap: 3px;
 }
 
 .auto-menu:not(.auto-menu-flyout)
@@ -1092,8 +1097,18 @@
   .auto-menu-list
   [data-auto-menu-item] {
   font-size: calc(var(--auto-control-font, 14px) * 0.93);
-  min-height: 32px;
-  padding: 5px 8px;
+  min-height: 34px;
+  padding: 6px 10px;
+  gap: 10px;
+}
+
+.auto-menu:not(.auto-menu-flyout)
+  .auto-menu-list
+  .auto-menu-list
+  [data-auto-menu-item]
+  .auto-menu-text {
+  font-size: 12px;
+  font-weight: 500;
 }
 
 /* Footer & Collapse control: pinned at bottom, dedicated button styling */
@@ -1101,13 +1116,13 @@
   margin-top: auto;
   flex-shrink: 0;
   border-top: 1px solid var(--auto-border);
-  padding: 8px 8px 4px;
+  padding: 14px 10px 4px;
 }
 
 .auto-menu-footer > .sidebar-footer {
   border-top: none;
   margin-top: 0;
-  padding-top: 2px;
+  padding: 0;
 }
 
 .auto-menu-collapse-btn {
@@ -1206,10 +1221,24 @@
 
 /* Sizes: buttons always >= 32px tall */
 .auto-menu[data-size="small"] [data-auto-menu-item] {
-  padding: 5px 8px;
-  font-size: 13px;
-  min-height: 32px;
-  gap: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  min-height: 34px;
+  gap: 10px;
+}
+
+.auto-menu[data-size="small"] .auto-menu-icon {
+  font-size: 16px;
+  width: 18px;
+  height: 18px;
+}
+
+.auto-menu[data-size="small"] .auto-menu-text {
+  font-size: 12px;
+}
+
+.auto-menu[data-size="small"] .auto-menu-text small {
+  font-size: 10.5px;
 }
 
 .auto-menu[data-size="small"] .auto-menu-list .auto-menu-list {
@@ -1218,10 +1247,20 @@
 }
 
 .auto-menu[data-size="large"] [data-auto-menu-item] {
-  padding: 10px 14px;
+  padding: 11px 16px;
   font-size: 15px;
-  min-height: 44px;
-  gap: 12px;
+  min-height: 48px;
+  gap: 14px;
+}
+
+.auto-menu[data-size="large"] .auto-menu-icon {
+  font-size: 21px;
+  width: 24px;
+  height: 24px;
+}
+
+.auto-menu[data-size="large"] .auto-menu-text {
+  font-size: 14.5px;
 }
 
 .auto-menu[data-size="large"] .auto-menu-text small {
@@ -1246,14 +1285,14 @@
 }
 
 .auto-menu[data-density="compact"] .auto-menu-list {
-  gap: 1px;
+  gap: 2px;
 }
 
 .auto-menu[data-density="compact"] [data-auto-menu-item] {
-  padding-top: 4px;
-  padding-bottom: 4px;
-  min-height: 32px;
-  gap: 8px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  min-height: 34px;
+  gap: 10px;
 }
 
 .auto-menu[data-density="compact"][data-collapsed="true"]
