@@ -15,9 +15,8 @@
 | Деревья, подробности, итоги, объединённые ячейки | `getChildren/renderExpanded`, `summary/merge` столбца | Примеры деревьев и раскрытия; `tests/table-advanced.test.tsx` |
 | Добавление, редактирование, удаление | `formFields` и `onAdd/onEdit/onDelete` | Браузерные тесты CRUD |
 | Императивные диалоги | `AutoDialogProvider` + `useAutoDialog().open()` | Страница диалогов; `tests/dialog.test.tsx` |
-| Сервис всплывающих панелей | `AutoPopoverProvider` + `useAutoPopover()` | Страница всплывающих панелей; `tests/popover.test.tsx` |
-| Виртуальная прокрутка | `AutoScroll` и методы ref | Страница прокрутки; браузерный тест с 10 000 строк |
 | Вкладки и вложенные вкладки | Элементы `AutoTabs`, value/onChange, keepMounted | Страница вкладок; `tests/tabs.test.tsx` |
+| Списки сообщений чата и интерфейс диалога | `AutoChat`, `messages`, `onSend`, `renderMessage` | Страницы чата в `test-project/src/examples/Chat*.tsx`; `tests/chat.test.tsx` |
 
 ## Типы полей
 

@@ -4,8 +4,9 @@
 
 ## Non publié
 
+- Ajout d'AutoChat avec rendu des messages contrôlé par l'appelant, suivi de flux, ancrage d'historique, composeur optionnel et démo en dix langues ; aucune nouvelle dépendance d'exécution.
 - La démo en ligne affiche désormais le code source réel de chaque exemple dans un dialogue « Voir le code », avec onglets de fichiers, copie en un clic et liens GitHub.
-- Composants React 19 pilotés par des schémas : AutoForm, AutoSearchPanel, AutoTable, AutoDialog, AutoPopover, AutoScroll et AutoTabs.
+- Composants React 19 pilotés par des schémas : AutoForm, AutoSearchPanel, AutoTable, AutoDialog, AutoTabs et AutoMenu.
 - Taille et densité globales, dispositions des libellés de formulaire, paramètres de tableau persistants et exportation XLSX facultative.
 - Projet consommateur utilisant une véritable archive tarball, tests unitaires, vérifications de types et tests d’interaction Chromium.
 - Licence MIT, guide de contribution, intégration continue GitHub, modèles d’issues et instructions de création de compte npm et de publication.

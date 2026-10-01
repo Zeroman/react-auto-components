@@ -8,7 +8,9 @@
     "LICENSE",
     "docs/migration.md",
     "docs/i18n/*/README.md",
-    "docs/i18n/*/migration.md"
+    "docs/i18n/*/migration.md",
+    "docs/auto-chat.md",
+    "docs/i18n/*/auto-chat.md"
   ],
   "exports": {
     ".": {
@@ -81,7 +83,7 @@
   "optionalDependencies": {
     "exceljs": "^4.4.0"
   },
-  "description": "Schema-driven React 19 components for forms, tables, search, dialogs, popovers, virtual scrolling and tabs.",
+  "description": "Schema-driven React 19 components for forms, tables, search, dialogs, menus, tabs and chat.",
   "license": "MIT",
   "author": "Zeroman",
   "repository": {
@@ -99,7 +101,8 @@
     "form",
     "table",
     "schema-driven",
-    "virtualization"
+    "virtualization",
+    "chat"
   ],
   "publishConfig": {
     "access": "public",

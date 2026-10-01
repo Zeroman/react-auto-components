@@ -212,6 +212,11 @@ input:focus-visible {
   border-radius: 4px;
 }
 
+.nav-icon {
+  display: block;
+  overflow: visible;
+}
+
 .topbar button:hover {
   background: #edf3ee;
 }
@@ -346,12 +351,10 @@ main[data-page="table"] .demo-viewport {
   overflow: hidden;
 }
 
-/* Form, search, dialog, popover, scroll pages: internal overflow handling */
+/* Form, search, dialog pages: internal overflow handling */
 main[data-page="form"] .demo-viewport,
 main[data-page="search"] .demo-viewport,
-main[data-page="dialog"] .demo-viewport,
-main[data-page="popover"] .demo-viewport,
-main[data-page="scroll"] .demo-viewport {
+main[data-page="dialog"] .demo-viewport {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -764,48 +767,6 @@ h3 {
   color: #ab914e;
 }
 
-.popover-playground {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: clamp(24px, 6vh, 48px) 16px;
-}
-
-.virtual-project {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--auto-border, #dfe6e0);
-}
-
-.virtual-project > div {
-  flex: 1;
-  min-width: 0;
-}
-
-.virtual-project strong {
-  font-size: 13px;
-  font-weight: 500;
-  overflow-wrap: break-word;
-}
-
-.virtual-project p {
-  font-size: 11px;
-  color: #8e9d93;
-  margin: 2px 0 0;
-}
-
-.row-number {
-  font:
-    11px ui-monospace,
-    monospace;
-  color: #9aaba0;
-  width: 38px;
-  flex-shrink: 0;
-}
-
 .tab-demo-content {
   padding: 16px 0;
 }
@@ -845,6 +806,7 @@ h3 {
 .studio-dark {
   --auto-bg: #20362b;
   --auto-text: #e1ebe3;
+  --auto-secondary: #9eb5a5;
   --auto-muted: #294333;
   --auto-border: #3c5143;
   --auto-accent: #6ed19d;
@@ -1115,12 +1077,7 @@ h3 {
   .card {
     padding: 12px;
   }
-  .virtual-project {
-    gap: 8px;
-  }
-  .virtual-project > span:last-child {
-    display: none;
-  }
+
   /* Search panel on mobile: buttons wrap cleanly without clipping the 3rd button */
   .auto-search {
     padding: 8px 10px;
@@ -1210,19 +1167,6 @@ h3 {
   .table-demo .auto-tab-list button {
     padding: 5px 8px;
   }
-}
-
-/* The virtual list observes this remaining-space container. */
-main[data-page="scroll"] .demo-viewport > .card {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-.scroll-demo-viewport {
-  flex: 1;
-  min-height: 160px;
-  min-width: 0;
 }
 
 .height-demo > .auto-table[data-height="auto"] {
@@ -1403,5 +1347,51 @@ main[data-page="scroll"] .demo-viewport > .card {
     max-height: 52vh;
     font-size: 11px;
     padding: 12px;
+  }
+}
+
+.chat-demo {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+.chat-demo > .auto-chat {
+  flex: 1;
+  width: 100%;
+}
+.chat-demo-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.chat-demo-heading p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--auto-secondary);
+}
+.chat-demo-heading button {
+  flex-shrink: 0;
+}
+.chat-demo-failure {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+@media (max-width: 700px) {
+  .chat-demo-heading {
+    align-items: flex-start;
+  }
+  .chat-demo-heading p {
+    display: none;
+  }
+  .chat-demo-heading strong {
+    font-size: 13px;
+  }
+  .chat-demo-heading button {
+    padding: 5px 7px;
+    font-size: 11px;
   }
 }

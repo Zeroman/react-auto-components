@@ -2,7 +2,7 @@
 
 [English](../../../README.md) | **简体中文** | [繁體中文](../zh-TW/README.md) | [日本語](../ja/README.md) | [한국어](../ko/README.md) | [Español](../es/README.md) | [Français](../fr/README.md) | [Deutsch](../de/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Русский](../ru/README.md)
 
-一个独立的、以 schema 驱动的 React 19 组件库。基于 TypeScript、TanStack Table 9 / Form / Virtual、Radix 和 Floating UI 构建，不依赖 Ant Design、Element Plus 或 MUI。库构建使用 React Compiler。
+一个独立的、以 schema 驱动的 React 19 组件库，覆盖表单、表格与对话。基于 TypeScript、TanStack Table 9 / Form / Virtual、Radix 和 Floating UI 构建，不依赖 Ant Design、Element Plus 或 MUI。库构建使用 React Compiler。
 
 [![Auto Studio 演示截图](../../assets/demo.png)](https://zeroman.github.io/react-auto-components/)
 
@@ -34,7 +34,7 @@ pnpm prepare:test-project
 pnpm --dir test-project dev
 ```
 
-打开 http://127.0.0.1:4173 。测试项目提供八个组件页面、本地/服务端/万行/树形表格、CRUD、提交失败重试、草稿、浮层、嵌套标签及动态行高场景。
+打开 http://127.0.0.1:4173 。测试项目提供七个组件页面、本地/服务端/万行/树形表格、CRUD、提交失败重试、草稿、嵌套标签及动态行高场景。
 
 演示会自动检测浏览器语言，并以英语作为回退。可以从页眉或全局设置中选择语言；所选语言在重新加载后仍会保留。选择“自动”可重新跟随浏览器语言。支持十种语言。页面填满整个视口，表格和较长的面板在其自身区域内滚动。
 
@@ -102,9 +102,9 @@ t 回调接收一个消息键和一个回退文本。在翻译内置消息时，
 | AutoSearchPanel | 基本/更多条件、手动/即时查询、重置、排序标签、统一查询 AST 与 RSQL 序列化 |
 | AutoTable | 本地/远程数据、多列排序、列筛选、分页、稳定选择、虚拟化、树形/详情展开、汇总、合并单元格、CRUD、右键菜单、复制 |
 | AutoDialog | 声明式/命令式、隔离的 Provider、草稿、关闭拦截、焦点管理、拖动、全屏、异步提交 |
-| AutoPopover | 点击/悬浮、自动定位、碰撞避让、Escape/外部关闭、命令式浮层 |
-| AutoScroll | 固定/动态行高虚拟化、滚动定位、读取/恢复滚动位置 |
-| AutoTabs | 横向/纵向/菜单、嵌套、权限、禁用、保留面板状态、刷新 |
+| AutoTabs | 横向/纵向、嵌套、权限、禁用、保留面板状态、刷新 |
+| AutoMenu | 侧边导航，支持图标、描述、徽标、嵌套分组、权限与可折叠图标栏 |
+| AutoChat | 调用方自定义消息渲染、可选虚拟化、流式跟随、锚定历史加载、发送/停止输入框与自定义操作 |
 
 表格布局、排序、筛选、导出各自支持命名方案及版本。默认 localStorage 持久化，也可注入远程适配器。JSON/CSV 内置；XLSX 使用可选的独立适配器：
 
@@ -209,3 +209,9 @@ pnpm test:e2e
 表格密度另外支持 `normal`（标准）。表格设置面板的默认项为“跟随全局”；选择紧凑、标准或宽松会覆盖全局密度并随布局方案保存，组件 `density` 参数优先级最高。嵌套组件的局部尺寸独立生效。
 
 表单支持 `resetLabel`、`extraActions` 和 `onReset`；搜索面板支持 `searchLabel`、`resetLabel` 和 `extraActions`；弹窗支持 `cancelLabel` 与 `extraActions`。`AutoTabs` 的条目可配置 `badge`；`AutoTable.empty` 可自定义无数据内容。
+
+### AutoChat
+
+AutoChat 提供轻量的对话布局，支持流式跟随、历史消息加载和消息输入框。传入 React 内容或 renderMessage 即可渲染消息，无需额外的运行时依赖。
+
+[AutoChat API](auto-chat.md)

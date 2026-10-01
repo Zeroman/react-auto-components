@@ -4,8 +4,9 @@
 
 ## Noch nicht veröffentlicht
 
+- AutoChat hinzugefügt: vom Aufrufer kontrolliertes Nachrichten-Rendering, Streaming-Follow, Verlaufs-Anker, optionaler Composer und Demo in zehn Sprachen; keine neuen Laufzeitabhängigkeiten.
 - Die Online-Demo zeigt jetzt den echten Quellcode jedes Beispiels in einem Dialog „Code anzeigen“ – mit Datei-Tabs, Ein-Klick-Kopieren und GitHub-Links.
-- Schemagesteuerte React-19-Komponenten: AutoForm, AutoSearchPanel, AutoTable, AutoDialog, AutoPopover, AutoScroll und AutoTabs.
+- Schemagesteuerte React-19-Komponenten: AutoForm, AutoSearchPanel, AutoTable, AutoDialog, AutoTabs und AutoMenu.
 - Globale Größe und Dichte, Layouts für Formularbeschriftungen, gespeicherte Tabelleneinstellungen und optionaler XLSX-Export.
 - Ein Verbraucherprojekt mit echtem Tarball, Unit-Tests, Typprüfungen und Chromium-Interaktionstests.
 - MIT-Lizenz, Beitragsleitfaden, GitHub-CI, Issue-Vorlagen sowie Anleitungen zur npm-Kontoeinrichtung und Veröffentlichung.

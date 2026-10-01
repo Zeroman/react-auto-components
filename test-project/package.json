@@ -9,18 +9,20 @@
     "test": "playwright test"
   },
   "dependencies": {
-    "@zeroman/react-auto-components": "file:../artifacts/zeroman-react-auto-components-0.1.0-c52e50ab00a9.tgz",
+    "@zeroman/react-auto-components": "file:../artifacts/zeroman-react-auto-components-0.1.0-dc01bd8e06d1.tgz",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.6.3",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "@types/node": "^26.6.3",
-    "typescript": "^7.0.2",
-    "vite": "^8.3.1",
     "@vitejs/plugin-react": "^6.1.1",
-    "@playwright/test": "^1.63.0"
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1"
   },
   "packageManager": "pnpm@12.5.1"
 }

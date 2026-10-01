@@ -15,9 +15,8 @@ React のジェネリクス、コールバック、プロバイダを通じて�
 | ツリー、詳細、集計、セル結合 | `getChildren/renderExpanded`、列の `summary/merge` | ツリーと展開の例；`tests/table-advanced.test.tsx` |
 | 追加、編集、削除 | `formFields` と `onAdd/onEdit/onDelete` | ブラウザーの CRUD テスト |
 | 命令的ダイアログ | `AutoDialogProvider` + `useAutoDialog().open()` | ダイアログページ；`tests/dialog.test.tsx` |
-| ポップオーバーサービス | `AutoPopoverProvider` + `useAutoPopover()` | ポップオーバーページ；`tests/popover.test.tsx` |
-| 仮想スクロール | `AutoScroll` と ref メソッド | スクロールページ；10,000 行のブラウザーテスト |
 | タブと入れ子のタブ | `AutoTabs` の items、value/onChange、keepMounted | タブページ；`tests/tabs.test.tsx` |
+| チャットメッセージリストと会話 UI | `AutoChat`、`messages`、`onSend`、`renderMessage` | `test-project/src/examples/Chat*.tsx` のチャットページ; `tests/chat.test.tsx` |
 
 ## フィールド型
 

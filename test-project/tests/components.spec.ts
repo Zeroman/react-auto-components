@@ -59,6 +59,33 @@ test("table CRUD search and persisted settings through public package", async ({
     page.getByRole("columnheader").filter({ hasText: "预算" }),
   ).toHaveCount(0);
 });
+test("column filter selection, keyboard dismissal and reset survive internal popover migration", async ({
+  page,
+}) => {
+  const trigger = page.getByRole("button", { name: "筛选 状态", exact: true });
+  await trigger.focus();
+  await page.keyboard.press("Enter");
+  const filter = page.getByRole("dialog");
+  await expect(
+    filter.getByRole("textbox", { name: "搜索筛选选项" }),
+  ).toBeFocused();
+  await filter.getByRole("checkbox", { name: /In Progress/ }).check();
+  await page.keyboard.press("Escape");
+  await expect(filter).toBeHidden();
+  await expect(trigger).toBeFocused();
+  await expect(trigger).toHaveClass(/auto-filter-active/);
+  await expect(page.getByText("16 条记录", { exact: true })).toBeVisible();
+  await trigger.click();
+  await expect(
+    filter.getByRole("checkbox", { name: /In Progress/ }),
+  ).toBeChecked();
+  await filter.getByRole("button", { name: "清除本列筛选" }).click();
+  await page.getByRole("heading", { name: "智能表格" }).click();
+  await expect(filter).toBeHidden();
+  await expect(trigger).not.toHaveClass(/auto-filter-active/);
+  await expect(page.getByText("48 条记录", { exact: true })).toBeVisible();
+});
+
 test("form failures retain values and successful submission produces typed output", async ({
   page,
 }) => {
@@ -95,40 +122,34 @@ test("dialog draft and focus restoration", async ({ page }) => {
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toBeHidden();
 });
-test("popover dismiss and nested tabs preserve state", async ({ page }) => {
-  await page.getByRole("button", { name: /AutoPopover/ }).click();
-  await page.getByRole("button", { name: "right", exact: true }).click();
-  await expect(page.getByText("right 浮层")).toBeVisible();
-  await page.keyboard.press("Escape");
-  await expect(page.getByText("right 浮层")).toBeHidden();
-  await page.getByRole("button", { name: /AutoTabs/ }).click();
-  await page.getByLabel("标签草稿").fill("保留内容");
-  await page.getByRole("tab", { name: "配置", exact: true }).click();
-  await page.getByRole("tab", { name: "权限", exact: true }).click();
-  await expect(page.getByText("权限配置内容")).toBeVisible();
-  await page.getByRole("tab", { name: "概览", exact: true }).click();
-  await expect(page.getByLabel("标签草稿")).toHaveValue("保留内容");
-});
-test("ten thousand virtual rows use bounded DOM and jump to target", async ({
-  page,
-}) => {
-  await page.getByRole("button", { name: /AutoScroll/ }).click();
-  await expect(page.getByTestId("virtual-row").first()).toBeVisible();
-  expect(await page.getByTestId("virtual-row").count()).toBeLessThan(40);
-  await page.getByRole("button", { name: "跳到第 9000 行" }).click();
-  await expect(
-    page
-      .getByTestId("virtual-row")
-      .filter({ has: page.getByText("9000", { exact: true }) }),
-  ).toBeVisible();
-  await page.getByLabel("动态行高").check();
-  await page.getByRole("button", { name: "跳到第 9000 行" }).click();
-  await expect(
-    page
-      .getByTestId("virtual-row")
-      .filter({ has: page.getByText("9000", { exact: true }) }),
-  ).toBeVisible();
-});
+for (const mode of ["horizontal", "vertical"] as const) {
+  test(`${mode} nested tabs preserve state and keep panel navigation separate`, async ({
+    page,
+  }) => {
+    await page.getByRole("button", { name: /AutoTabs/ }).click();
+    const modes = page.getByRole("combobox", { name: "标签模式", exact: true });
+    await expect(modes.locator("option")).toHaveCount(2);
+    await modes.selectOption(mode);
+    const root = page.locator(".card > .auto-tabs");
+    const tabList = root.getByRole("tablist").first();
+    await expect(tabList).toHaveAttribute("aria-orientation", mode);
+    await page.getByLabel("标签草稿").fill("保留内容");
+    await page.getByRole("tab", { name: "概览", exact: true }).focus();
+    await page.keyboard.press(mode === "vertical" ? "ArrowDown" : "ArrowRight");
+    await expect(
+      page.getByRole("tab", { name: "配置", exact: true }),
+    ).toHaveAttribute("aria-selected", "true");
+    const panel = root.getByRole("tabpanel", { name: "配置", exact: true });
+    await expect(panel.getByRole("tablist")).toHaveAttribute(
+      "aria-orientation",
+      "horizontal",
+    );
+    await panel.getByRole("tab", { name: "权限", exact: true }).click();
+    await expect(panel.getByText("权限配置内容")).toBeVisible();
+    await page.getByRole("tab", { name: "概览", exact: true }).click();
+    await expect(page.getByLabel("标签草稿")).toHaveValue("保留内容");
+  });
+}
 test("server mode and large table have no runtime errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));

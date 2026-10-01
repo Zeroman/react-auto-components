@@ -11,6 +11,7 @@ export interface AutoTab extends Access {
   hidden?: boolean | (() => boolean);
   disabled?: boolean;
   content?: ReactNode;
+  /** A nested tab group rendered inside this tab's content panel. */
   children?: readonly AutoTab[];
   loading?: boolean;
   onRefresh?: () => void;
@@ -21,7 +22,8 @@ export interface AutoTabsProps {
   value?: readonly string[];
   defaultValue?: readonly string[];
   onChange?: (path: readonly string[], item: AutoTab) => void;
-  mode?: "horizontal" | "vertical" | "menu";
+  /** Tab orientation. Use AutoMenu for hierarchical navigation. */
+  mode?: "horizontal" | "vertical";
   keepMounted?: boolean;
   extra?: ReactNode;
   size?: ComponentSize;

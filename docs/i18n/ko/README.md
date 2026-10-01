@@ -2,7 +2,7 @@
 
 [English](../../../README.md) | [简体中文](../zh-CN/README.md) | [繁體中文](../zh-TW/README.md) | [日本語](../ja/README.md) | **한국어** | [Español](../es/README.md) | [Français](../fr/README.md) | [Deutsch](../de/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Русский](../ru/README.md)
 
-React 19를 위한 독립형 스키마 기반 컴포넌트 라이브러리입니다. TypeScript, TanStack Table 9 / Form / Virtual, Radix, Floating UI로 구축되었으며 Ant Design, Element Plus, MUI는 사용하지 않습니다. 라이브러리 빌드에는 React Compiler를 사용합니다.
+React 19를 위한 독립형 스키마 기반 컴포넌트 라이브러리로, 폼·표·채팅을 다룹니다. TypeScript, TanStack Table 9 / Form / Virtual, Radix, Floating UI로 구축되었으며 Ant Design, Element Plus, MUI는 사용하지 않습니다. 라이브러리 빌드에는 React Compiler를 사용합니다.
 
 [![Auto Studio 데모 미리보기](../../assets/demo.png)](https://zeroman.github.io/react-auto-components/)
 
@@ -32,7 +32,7 @@ pnpm prepare:test-project
 pnpm --dir test-project dev
 ```
 
-http://127.0.0.1:4173 을 엽니다. 테스트 프로젝트에는 7개 컴포넌트 모두의 페이지, 로컬/서버 측/10,000행/트리 테이블, CRUD, 제출 실패 후 재시도, 초안, 팝오버, 중첩 탭, 동적 행 높이 예제가 포함됩니다.
+http://127.0.0.1:4173 을 엽니다. 테스트 프로젝트에는 7개 컴포넌트 모두의 페이지, 로컬/서버 측/10,000행/트리 테이블, CRUD, 제출 실패 후 재시도, 초안, 중첩 탭, 동적 행 높이 예제가 포함됩니다.
 
 데모는 브라우저 언어를 자동으로 감지하며, 기본값으로 영어를 사용합니다. 헤더 또는 전역 설정(Global settings)에서 언어를 선택할 수 있으며, 선택한 언어는 새로고침 후에도 유지됩니다. Auto를 선택하면 다시 브라우저 언어를 따릅니다. 10개 언어가 지원됩니다. 페이지는 뷰포트를 채우며, 표와 긴 패널은 각자의 영역 내부에서 스크롤됩니다.
 
@@ -88,9 +88,9 @@ t 콜백은 메시지 키와 폴백을 받습니다. 번역된 내장 메시지�
 | AutoSearchPanel | 기본/고급 조건, 수동/즉시 검색, 초기화, 정렬 태그, 공유 쿼리 AST, RSQL 직렬화 |
 | AutoTable | 로컬/원격 데이터, 다중 열 정렬, 열 필터, 페이지 나누기, 안정적인 선택 상태, 가상화, 트리/상세 펼치기, 집계, 셀 병합, CRUD, 컨텍스트 메뉴, 복사 |
 | AutoDialog | 선언형/명령형 API, 격리된 프로바이더, 초안, 닫기 가드, 포커스 관리, 드래그, 전체 화면, 비동기 제출 |
-| AutoPopover | 클릭/호버 트리거, 자동 위치 지정, 충돌 방지, Escape/외부 클릭으로 닫기, 명령형 팝오버 |
-| AutoScroll | 고정/동적 행 높이 가상화, 항목으로 스크롤, 스크롤 위치 읽기/복원 |
-| AutoTabs | 가로/세로/메뉴 레이아웃, 중첩, 권한, 탭 비활성화, 패널 상태 유지, 새로 고침 |
+| AutoTabs | 가로/세로 레이아웃, 중첩, 권한, 탭 비활성화, 패널 상태 유지, 새로 고침 |
+| AutoMenu | 아이콘, 설명, 배지, 중첩 그룹, 권한, 접히는 아이콘 레일을 갖춘 사이드바 내비게이션 |
+| AutoChat | 호출부 정의 메시지 렌더링, 선택적 가상화, 스트리밍 따르기, 앵커 기반 이력 로딩, 전송/정지 입력창, 사용자 지정 액션 |
 
 테이블 레이아웃, 정렬, 필터링, 내보내기는 각각 이름이 있는 프리셋과 독립적인 버전을 지원합니다. 영속화는 기본적으로 localStorage를 사용하며 원격 어댑터를 주입할 수 있습니다. JSON/CSV 내보내기는 기본 제공됩니다. XLSX는 별도의 선택적 어댑터를 사용합니다.
 
@@ -195,3 +195,9 @@ pnpm test:e2e
 테이블 밀도는 `normal`도 지원합니다. 테이블 설정 패널은 기본적으로 전역 설정을 따릅니다. 조밀함, 보통, 여유로운 간격을 선택하면 전역 밀도를 재정의하고 레이아웃 프리셋과 함께 저장합니다. 컴포넌트의 `density` prop이 가장 높은 우선순위를 갖습니다. 중첩 컴포넌트의 로컬 크기는 각각 독립적으로 적용됩니다.
 
 폼은 `resetLabel`, `extraActions`, `onReset`을 지원하고, 검색 패널은 `searchLabel`, `resetLabel`, `extraActions`를 지원하며, 대화 상자는 `cancelLabel`, `extraActions`를 지원합니다. `AutoTabs` 항목에는 `badge`를 정의할 수 있고, `AutoTable.empty`로 빈 상태 콘텐츠를 사용자 정의할 수 있습니다.
+
+### AutoChat
+
+AutoChat은 스트리밍 따라가기, 기록 불러오기, 작성기를 갖춘 가벼운 대화 레이아웃을 제공합니다. 메시지 렌더링을 위해 React 콘텐츠나 renderMessage를 전달하면 되며, 추가 런타임 의존성이 필요하지 않습니다.
+
+[AutoChat API](auto-chat.md)

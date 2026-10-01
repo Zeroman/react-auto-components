@@ -4,8 +4,9 @@
 
 ## 未リリース
 
+- AutoChat を追加。メッセージ描画は呼び出し側が管理し、ストリーム追従・履歴アンカー読み込み・オプションのコンポーザー・10 言語デモに対応。新しいランタイム依存はありません。
 - オンラインデモに「コードを表示」ダイアログを追加。各サンプルの実際のソースをファイル切り替え・ワンクリックコピー・GitHub リンクで確認できます。
-- スキーマ駆動の React 19 コンポーネント：AutoForm、AutoSearchPanel、AutoTable、AutoDialog、AutoPopover、AutoScroll、AutoTabs。
+- スキーマ駆動の React 19 コンポーネント：AutoForm、AutoSearchPanel、AutoTable、AutoDialog、AutoTabs、AutoMenu。
 - グローバルなサイズと密度、フォームラベルのレイアウト、テーブル設定の永続化、オプションの XLSX エクスポート。
 - 実際の tarball を使用する利用側プロジェクト、ユニットテスト、型チェック、Chromium の操作テスト。
 - MIT ライセンス、コントリビューションガイド、GitHub CI、Issue テンプレート、npm アカウントの設定と公開手順。

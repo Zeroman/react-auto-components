@@ -4,8 +4,10 @@
 
 ## Unreleased
 
+- Add AutoChat with caller-owned message rendering, streaming follow, history anchoring, an optional composer, and a ten-language demo; no new runtime dependencies.
+
 - The online demo now shows each example's real source code in a View code dialog with file tabs, one-click copy, and GitHub links.
-- Schema-driven React 19 components: AutoForm, AutoSearchPanel, AutoTable, AutoDialog, AutoPopover, AutoScroll, and AutoTabs.
+- Schema-driven React 19 components: AutoForm, AutoSearchPanel, AutoTable, AutoDialog, AutoTabs, and AutoMenu.
 - Global size and density, form-label layouts, persisted table settings, and optional XLSX export.
 - A real tarball consumer project, unit tests, type checks, and Chromium interaction tests.
 - MIT license, contribution guide, GitHub CI, issue templates, and npm account setup and publishing instructions.

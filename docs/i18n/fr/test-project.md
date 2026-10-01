@@ -15,10 +15,16 @@ Depuis la racine du dépôt, exécutez `pnpm install --frozen-lockfile` et `pnpm
 - `pnpm --dir test-project test` : exécute les tests d’interaction Chromium (démarre automatiquement un serveur séparé sur le port 4174).
 - Après avoir modifié la bibliothèque, relancez `pnpm prepare:test-project` pour mettre à jour la dépendance vers l’archive tarball dont le nom contient une empreinte du contenu.
 
-Les tests dans le navigateur de `tests/components.spec.ts` couvrent les opérations CRUD, la validation des champs et les nouvelles tentatives après un échec d’envoi, la persistance des paramètres, les brouillons et le focus, les fenêtres contextuelles, les onglets imbriqués, le défilement sur 10 000 lignes, la pagination côté serveur, les mesures des zones dépliées, les largeurs de colonne, les téléchargements et les dispositions mobiles. Les captures d’écran sont enregistrées dans `test-results/`.
+Les tests dans le navigateur de `tests/components.spec.ts` couvrent les opérations CRUD, la validation des champs et les nouvelles tentatives après un échec d’envoi, la persistance des paramètres, les brouillons et le focus, les onglets imbriqués, le défilement sur 10 000 lignes, la pagination côté serveur, les mesures des zones dépliées, les largeurs de colonne, les téléchargements et les dispositions mobiles. Les captures d’écran sont enregistrées dans `test-results/`.
 
 La démonstration de hauteur restante se trouve dans l’onglet **AutoTable → Hauteur restante**. L’ancienne URL `http://127.0.0.1:4173/?demo=auto-height` ouvre la même page et sélectionne cet onglet. L’exemple permet de basculer entre Flex/Grid, d’ajouter ou de supprimer du contenu au-dessus du tableau, d’afficher ou de masquer le tableau, et de modifier la pagination et le nombre de lignes. `tests/auto-height.spec.ts` mesure les limites dans le navigateur et la hauteur de la zone de défilement pour vérifier la disposition dans l’espace restant, le redimensionnement dynamique, la reprise de la virtualisation et la compatibilité avec une hauteur fixe.
 
 Les tests dans le navigateur démarrent un nouveau serveur Vite sur le port 4174 au lieu de réutiliser la démonstration de développement sur le port 4173. Le script de recréation du paquet informe les serveurs de démonstration existants afin qu’ils résolvent le paquet nouvellement installé, ce qui évite les composants obsolètes.
 
 Les paramètres globaux sont séparés du contenu des exemples et implémentés dans `src/GlobalSettings.tsx`. Ouvrez le panneau depuis la barre latérale ou le contrôle en haut à droite. L’exemple courant reste monté pendant les modifications de disposition, de densité, de largeur des libellés ou de thème.
+
+## Rendu de chat et grands historiques
+
+AutoChat inclut un sélecteur de formats pour Markdown/GFM, code, JSON, tableaux, une image locale et une carte React interactive. Les dépendances Markdown ne sont installées que dans ce projet de démonstration. Le mode **Grand historique** met à l'épreuve 1 000/10 000/50 000 messages à hauteur variable avec le nombre réel de lignes montées, des contrôles d'ajout/flux et la navigation dans l'historique.
+
+La couverture navigateur se trouve dans `tests/chat.spec.ts`, `tests/chat-renderers.spec.ts` et `tests/chat-lab.spec.ts`.

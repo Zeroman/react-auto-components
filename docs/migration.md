@@ -15,9 +15,8 @@ Configure components through React generics, callbacks, and providers. The follo
 | Trees, details, summaries, merged cells | `getChildren/renderExpanded`, column `summary/merge` | Tree and expansion examples; `tests/table-advanced.test.tsx` |
 | Add, edit, delete | `formFields` and `onAdd/onEdit/onDelete` | Browser CRUD tests |
 | Imperative dialogs | `AutoDialogProvider` + `useAutoDialog().open()` | Dialog page; `tests/dialog.test.tsx` |
-| Popover service | `AutoPopoverProvider` + `useAutoPopover()` | Popover page; `tests/popover.test.tsx` |
-| Virtual scrolling | `AutoScroll` and ref methods | Scroll page; browser test with 10,000 rows |
 | Tabs and nested tabs | `AutoTabs` items, value/onChange, keepMounted | Tabs page; `tests/tabs.test.tsx` |
+| Chat message lists and conversation UI | `AutoChat`, `messages`, `onSend`, `renderMessage` | Chat pages in `test-project/src/examples/Chat*.tsx`; `tests/chat.test.tsx` |
 
 ## Field types
 

@@ -1,0 +1,27 @@
+/* Internal menu and filter surfaces; not a public component. */
+.auto-popover {
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 14px;
+  width: max-content;
+  background: var(--auto-bg);
+  color: var(--auto-text);
+  border: 1px solid var(--auto-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px #0000001f;
+  max-width: min(
+    420px,
+    calc(100vw - 16px),
+    var(--auto-popover-available-width, 420px)
+  );
+  max-height: var(--auto-popover-available-height, calc(100vh - 24px));
+}
+.auto-popover-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  overflow-wrap: anywhere;
+}

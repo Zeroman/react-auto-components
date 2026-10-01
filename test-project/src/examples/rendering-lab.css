@@ -1,0 +1,643 @@
+/* AutoChat Rendering & Hooks Lab Styles
+ * Scoped styles for multi-tab rendering, stress scenarios, hooks recorder,
+ * and layout test benches.
+ * Inherits host --auto-* design tokens without redefining them.
+ */
+
+/* ==========================================================================
+   1. Modes Selector (6 Tabs) & Lab Containers
+   ========================================================================== */
+
+/* 6-button mode switch: responsive wrapping across desktop and mobile without clipped labels */
+.chat-demo-modes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 0.375rem;
+  background: var(--auto-muted);
+  border: 1px solid var(--auto-border);
+  align-self: flex-start;
+  flex-shrink: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.chat-demo-modes button {
+  text-align: center;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+/* Lab containers: fill remaining height in .chat-demo-formats */
+.chat-demo.chat-demo-formats > .chat-rendering-lab,
+.chat-demo.chat-demo-formats > .chat-hooks-lab,
+.chat-rendering-lab,
+.chat-hooks-lab {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  width: 100%;
+  gap: 0.5rem;
+  box-sizing: border-box;
+}
+
+.chat-rendering-lab > .auto-chat,
+.chat-hooks-lab > .auto-chat {
+  flex: 1 1 0%;
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+}
+
+/* ==========================================================================
+   2. Lab Header, Toolbar & Hint
+   ========================================================================== */
+
+.chat-lab-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.auto-chat .auto-chat-header:has(.chat-lab-header),
+.auto-chat .auto-chat-header:has(.chat-lab-toolbar),
+.auto-chat .auto-chat-header {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Flat children in toolbar: labels, selects, checkboxes, buttons */
+.chat-lab-toolbar {
+  flex: 1 1 100%;
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem 0.5rem;
+  padding: 0.375rem 0.5rem;
+  background: var(--auto-muted);
+  border: 1px solid var(--auto-border);
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+}
+
+.chat-lab-toolbar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  color: var(--auto-secondary);
+  user-select: none;
+  cursor: pointer;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.chat-lab-toolbar select {
+  background: var(--auto-bg);
+  color: var(--auto-text);
+  border: 1px solid var(--auto-border);
+  border-radius: 0.25rem;
+  padding: 0.2rem 0.4rem;
+  font-size: inherit;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.chat-lab-toolbar select:focus-visible {
+  border-color: var(--auto-accent);
+}
+
+.chat-lab-toolbar input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--auto-accent);
+  margin: 0;
+}
+
+.chat-lab-toolbar button {
+  background: var(--auto-bg);
+  color: var(--auto-text);
+  border: 1px solid var(--auto-border);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.chat-lab-toolbar button:hover:not(:disabled) {
+  background: var(--auto-accent-soft);
+  color: var(--auto-accent);
+  border-color: var(--auto-accent);
+}
+
+.chat-lab-toolbar button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.chat-lab-toolbar button:focus-visible {
+  outline: 2px solid var(--auto-accent);
+  outline-offset: 1px;
+}
+
+/* Compact hint: minimal vertical overhead */
+.chat-lab-hint {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--auto-secondary);
+  margin: 0;
+  padding: 0.15rem 0.25rem 0;
+  width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ==========================================================================
+   3. Hooks Lab Event Recorder (details.chat-lab-events)
+   ========================================================================= */
+
+.chat-lab-events {
+  flex-shrink: 0;
+  border: 1px solid var(--auto-border);
+  border-radius: 0.375rem;
+  background: var(--auto-muted);
+  padding: 0.375rem 0.5rem;
+  font-size: 0.75rem;
+  box-sizing: border-box;
+  width: 100%;
+  position: relative;
+}
+
+.chat-lab-events summary {
+  font-weight: 600;
+  color: var(--auto-text);
+  cursor: pointer;
+  user-select: none;
+  padding-right: 4.5rem; /* Room for clear button */
+  line-height: 1.5;
+}
+
+.chat-lab-events summary:focus-visible {
+  outline: 2px solid var(--auto-accent);
+  outline-offset: 1px;
+}
+
+/* Clear button placed next to summary */
+.chat-lab-events > button {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.5rem;
+  background: var(--auto-bg);
+  color: var(--auto-secondary);
+  border: 1px solid var(--auto-border);
+  border-radius: 0.25rem;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  z-index: 2;
+}
+
+.chat-lab-events > button:hover {
+  color: var(--auto-accent);
+  border-color: var(--auto-accent);
+  background: var(--auto-accent-soft);
+}
+
+/* Bounded internally scrolling ol event list (110px desktop, 70px mobile) */
+.chat-lab-events ol {
+  margin: 0.35rem 0 0;
+  padding: 0.25rem 0.5rem;
+  list-style: none;
+  max-height: 110px;
+  overflow-y: auto;
+  background: var(--auto-bg);
+  border: 1px solid var(--auto-border);
+  border-radius: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  box-sizing: border-box;
+}
+
+.chat-lab-events li {
+  font-family: monospace;
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  color: var(--auto-secondary);
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.chat-lab-events li code {
+  color: var(--auto-accent);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   4. Stress Scenario Elements Inside Messages
+   ========================================================================== */
+
+/* Stack for vertical mixed content */
+.chat-lab-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.chat-lab-stack > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Long unbroken raw token wrapping */
+.chat-lab-long-token {
+  display: block;
+  font-family: monospace;
+  font-size: 0.8125em;
+  line-height: 1.45;
+  padding: 0.375rem 0.625rem;
+  background: var(--auto-muted);
+  border: 1px solid var(--auto-border);
+  border-radius: 0.375rem;
+  color: var(--auto-text);
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  white-space: normal;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Wide 12-column table inside .chat-render-table horizontal scroller */
+.chat-render-table .chat-lab-table,
+.chat-lab-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.chat-lab-table th,
+.chat-lab-table td {
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--auto-border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.chat-lab-table th {
+  background: var(--auto-muted);
+  font-weight: 600;
+  color: var(--auto-text);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.chat-lab-table tbody tr:hover {
+  background: color-mix(in srgb, var(--auto-text) 3%, transparent);
+}
+
+/* Dynamic height disclosure details & expansion */
+.chat-lab-disclosure {
+  border: 1px solid var(--auto-border);
+  border-radius: 0.375rem;
+  background: var(--auto-muted);
+  overflow: hidden;
+  margin: 0.375rem 0;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.chat-lab-disclosure summary {
+  padding: 0.4rem 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--auto-secondary);
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.chat-lab-disclosure summary:hover {
+  color: var(--auto-text);
+  background: color-mix(in srgb, var(--auto-text) 4%, transparent);
+}
+
+.chat-lab-disclosure summary:focus-visible {
+  outline: 2px solid var(--auto-accent);
+  outline-offset: -2px;
+}
+
+.chat-lab-disclosure[open] summary {
+  border-bottom: 1px solid var(--auto-border);
+  color: var(--auto-text);
+}
+
+.chat-lab-expansion {
+  padding: 0.625rem;
+  max-height: 400px;
+  overflow-y: auto;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--auto-text);
+  background: var(--auto-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+/* Image frame with toggle button */
+.chat-lab-image {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.375rem 0;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.chat-lab-image figure,
+.chat-lab-image-frame {
+  margin: 0;
+  border: 1px solid var(--auto-border);
+  border-radius: 0.375rem;
+  overflow: hidden;
+  background: var(--auto-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+}
+
+.chat-lab-image img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 280px;
+  object-fit: contain;
+  display: block;
+}
+
+.chat-lab-image figcaption {
+  width: 100%;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  color: var(--auto-secondary);
+  text-align: center;
+  border-top: 1px solid var(--auto-border);
+  background: var(--auto-bg);
+}
+
+.chat-lab-image button,
+.chat-lab-image-toggle {
+  align-self: flex-start;
+  background: var(--auto-bg);
+  color: var(--auto-text);
+  border: 1px solid var(--auto-border);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.chat-lab-image button:hover,
+.chat-lab-image-toggle:hover {
+  background: var(--auto-accent-soft);
+  color: var(--auto-accent);
+  border-color: var(--auto-accent);
+}
+
+/* Unicode & RTL dir="auto" / dir="rtl" paragraphs */
+.chat-lab-unicode {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.375rem 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--auto-border);
+  border-radius: 0.375rem;
+  background: var(--auto-muted);
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.chat-lab-unicode p,
+.chat-lab-unicode [dir="auto"],
+.chat-lab-unicode [dir="rtl"] {
+  margin: 0.25rem 0;
+  line-height: 1.6;
+  font-size: 0.875rem;
+  color: var(--auto-text);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.chat-lab-unicode [dir="rtl"] {
+  text-align: right;
+  direction: rtl;
+}
+
+.chat-lab-unicode code {
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
+  padding: 0.1rem 0.3rem;
+  background: color-mix(in srgb, var(--auto-text) 6%, transparent);
+  border-radius: 0.25rem;
+  font-size: 0.8125em;
+  font-family: monospace;
+}
+
+/* Nested Markdown adjustments */
+.chat-rendering-lab .chat-render-markdown blockquote blockquote {
+  margin-left: 0.5rem;
+  border-left-width: 2px;
+}
+
+.chat-rendering-lab .chat-render-markdown ul ul,
+.chat-rendering-lab .chat-render-markdown ol ol,
+.chat-rendering-lab .chat-render-markdown ul ol,
+.chat-rendering-lab .chat-render-markdown ol ul {
+  margin: 0.15rem 0;
+  padding-left: 1rem;
+}
+
+/* ==========================================================================
+   5. Mobile Responsiveness (375px)
+   ========================================================================== */
+
+@media (max-width: 600px) {
+  /* 6 mode buttons in 3 columns (2 rows of 3), text wraps naturally without ellipsis */
+  .chat-demo-modes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    align-self: stretch;
+    gap: 0.25rem;
+    padding: 0.25rem;
+  }
+
+  .chat-demo-modes button {
+    padding: 0.3rem 0.25rem;
+    font-size: 0.75rem;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    word-break: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.125rem;
+  }
+}
+
+@media (max-width: 360px) {
+  /* Ultra-compact: 2 columns (3 rows of 2) */
+  .chat-demo-modes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  /* Compact 2-column grid layout for lab toolbar controls */
+  .auto-chat .auto-chat-header .chat-lab-toolbar,
+  .chat-rendering-lab .auto-chat-header .chat-lab-toolbar,
+  .chat-hooks-lab .auto-chat-header .chat-lab-toolbar,
+  .chat-lab-toolbar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem 0.375rem;
+    padding: 0.25rem 0.375rem;
+  }
+
+  .chat-lab-toolbar label {
+    font-size: 0.71875rem;
+    white-space: normal;
+    line-height: 1.2;
+    min-width: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+
+  .chat-lab-toolbar label input[type="checkbox"] {
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+  }
+
+  /* Full-width scenario selects & layout pickers */
+  .chat-lab-toolbar label:has(select) {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.375rem;
+    width: 100%;
+  }
+
+  .chat-lab-toolbar select {
+    flex: 1 1 auto;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.35rem;
+    min-width: 0;
+  }
+
+  /* Compact button styling on mobile: 2-column grid */
+  .chat-lab-toolbar button {
+    width: 100%;
+    min-width: 0;
+    text-align: center;
+    justify-content: center;
+    padding: 0.25rem 0.25rem;
+    font-size: 0.71875rem;
+    font-weight: 500;
+    white-space: normal;
+    line-height: 1.15;
+    min-height: 1.875rem;
+    box-sizing: border-box;
+  }
+
+  /* Trailing single button spans both columns for clean balance */
+  .chat-lab-toolbar button:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  /* Hint styling on mobile: compact, subtle */
+  .chat-lab-hint {
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    padding: 0.1rem 0.15rem 0;
+    opacity: 0.85;
+  }
+
+  /* Events recorder on mobile: bounded 70px list */
+  .chat-lab-events {
+    padding: 0.25rem 0.4rem;
+  }
+
+  .chat-lab-events > button {
+    top: 0.25rem;
+    right: 0.35rem;
+    padding: 0.1rem 0.35rem;
+    font-size: 0.625rem;
+  }
+
+  .chat-lab-events ol {
+    max-height: 70px;
+    padding: 0.2rem 0.35rem;
+    gap: 0.15rem;
+  }
+
+  .chat-lab-events li {
+    font-size: 0.625rem;
+  }
+}

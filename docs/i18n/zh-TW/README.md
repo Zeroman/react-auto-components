@@ -2,7 +2,7 @@
 
 [English](../../../README.md) | [简体中文](../zh-CN/README.md) | **繁體中文** | [日本語](../ja/README.md) | [한국어](../ko/README.md) | [Español](../es/README.md) | [Français](../fr/README.md) | [Deutsch](../de/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Русский](../ru/README.md)
 
-獨立、以 schema 驅動的 React 19 元件庫。以 TypeScript、TanStack Table 9 / Form / Virtual、Radix 與 Floating UI 建構,不使用 Ant Design、Element Plus 或 MUI。函式庫建置採用 React Compiler。
+獨立、以 schema 驅動的 React 19 元件庫，涵蓋表單、表格與對話。以 TypeScript、TanStack Table 9 / Form / Virtual、Radix 與 Floating UI 建構,不使用 Ant Design、Element Plus 或 MUI。函式庫建置採用 React Compiler。
 
 [![Auto Studio 示範截圖](../../assets/demo.png)](https://zeroman.github.io/react-auto-components/)
 
@@ -34,7 +34,7 @@ pnpm prepare:test-project
 pnpm --dir test-project dev
 ```
 
-開啟 http://127.0.0.1:4173。測試專案包含全部八個元件的頁面，以及本機／伺服器端／10,000 筆資料／樹狀表格、CRUD、提交失敗重試、草稿、彈出視窗、巢狀分頁和動態列高範例。
+開啟 http://127.0.0.1:4173。測試專案包含全部七個元件的頁面，以及本機／伺服器端／10,000 筆資料／樹狀表格、CRUD、提交失敗重試、草稿、巢狀分頁和動態列高範例。
 
 示範會自動偵測瀏覽器語言,並以英文作為後備。可從頁首或全域設定中選擇語言;所選語言會在重新載入後保留。選擇 Auto 即可再次跟隨瀏覽器語言。支援十種語言。頁面會填滿整個視區,表格與較長的面板會在其自身區域內捲動。
 
@@ -102,9 +102,9 @@ t 回呼會接收訊息鍵值與後備文字。翻譯內建訊息時請保留 {0
 | AutoSearchPanel | 基本／進階條件、手動／即時搜尋、重設、排序標籤、共用查詢 AST 和 RSQL 序列化 |
 | AutoTable | 本機／遠端資料、多欄排序、欄位篩選、分頁、穩定的選取狀態、虛擬化、樹狀／詳細資料展開、彙總、合併儲存格、CRUD、快顯功能表和複製 |
 | AutoDialog | 宣告式／命令式 API、隔離的 Provider、草稿、關閉防護、焦點管理、拖曳、全螢幕和非同步提交 |
-| AutoPopover | 點擊／游標停留觸發、自動定位、碰撞避讓、Escape／點擊外部關閉，以及命令式彈出視窗 |
-| AutoScroll | 固定／動態列高虛擬化、捲動至項目，以及讀取／還原捲動位置 |
-| AutoTabs | 水平／垂直／選單版面、巢狀結構、權限、停用分頁、保留面板狀態和重新整理 |
+| AutoTabs | 水平／垂直版面、巢狀結構、權限、停用分頁、保留面板狀態和重新整理 |
+| AutoMenu | 側邊導覽，支援圖示、描述、徽章、巢狀分組、權限與可折疊圖示欄 |
+| AutoChat | 呼叫端自訂訊息渲染、可選虛擬化、串流跟隨、錨定歷史載入、傳送／停止輸入框與自訂操作 |
 
 表格版面、排序、篩選和匯出各自支援具名預設組態與獨立版本。持久化預設使用 localStorage，也可注入遠端介接器。內建 JSON/CSV 匯出。XLSX 使用獨立的選用介接器：
 
@@ -209,3 +209,9 @@ pnpm test:e2e
 表格密度也支援 `normal`。表格設定面板預設跟隨全域設定。選擇緊密、一般或寬鬆間距會覆寫全域密度，並與版面預設組態一同儲存；元件的 `density` prop 具有最高優先權。巢狀元件的區域尺寸會各自獨立套用。
 
 表單支援 `resetLabel`、`extraActions` 和 `onReset`；搜尋面板支援 `searchLabel`、`resetLabel` 和 `extraActions`；對話方塊支援 `cancelLabel` 和 `extraActions`。`AutoTabs` 項目可定義 `badge`，`AutoTable.empty` 可自訂空白狀態內容。
+
+### AutoChat
+
+AutoChat 提供輕量的對話版面，具備串流跟隨、歷史載入與輸入區。供應 React 內容或 renderMessage 來渲染訊息，無需額外的執行時相依套件。
+
+[AutoChat API](auto-chat.md)

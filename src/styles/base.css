@@ -247,33 +247,17 @@
 .auto-tab-content[hidden] {
   display: none;
 }
-.auto-tabs-vertical,
-.auto-tabs-menu {
+.auto-tabs-vertical {
   display: grid;
   grid-template-columns: 170px minmax(0, 1fr);
   gap: 20px;
 }
-.auto-tabs-vertical > .auto-tabs-heading,
-.auto-tabs-menu > .auto-tabs-heading {
+.auto-tabs-vertical > .auto-tabs-heading {
   border: 0;
 }
-.auto-tabs-vertical > .auto-tabs-heading .auto-tab-list,
-.auto-tabs-menu > .auto-tabs-heading .auto-tab-list {
+.auto-tabs-vertical > .auto-tabs-heading .auto-tab-list {
   flex-direction: column;
   width: 100%;
-}
-.auto-popover {
-  z-index: 1100;
-  border: 1px solid var(--auto-border);
-  padding: 14px;
-  background: var(--auto-bg);
-  border-radius: 8px;
-  box-shadow: 0 10px 35px #142c2020;
-  max-width: min(420px, calc(100vw - 24px));
-}
-.auto-scroll {
-  border: 1px solid var(--auto-border);
-  border-radius: 8px;
 }
 .auto-table {
   border: 1px solid var(--auto-border);
@@ -1338,7 +1322,7 @@
 }
 
 /* ==========================================================================
-   AutoMenu Flyout (Portal in AutoPopover)
+   AutoMenu Flyout (Internal Portal)
    Bounded width/height, no 100% height trap, own scroll, correct menu tokens
    ========================================================================== */
 

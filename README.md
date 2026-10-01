@@ -2,7 +2,7 @@
 
 **English** | [简体中文](docs/i18n/zh-CN/README.md) | [繁體中文](docs/i18n/zh-TW/README.md) | [日本語](docs/i18n/ja/README.md) | [한국어](docs/i18n/ko/README.md) | [Español](docs/i18n/es/README.md) | [Français](docs/i18n/fr/README.md) | [Deutsch](docs/i18n/de/README.md) | [Português (Brasil)](docs/i18n/pt-BR/README.md) | [Русский](docs/i18n/ru/README.md)
 
-A standalone, schema-driven component library for React 19. Built with TypeScript, TanStack Table 9 / Form / Virtual, Radix, and Floating UI, without Ant Design, Element Plus, or MUI. Library builds use React Compiler.
+A standalone, schema-driven component library for React 19, covering forms, tables, and chat. Built with TypeScript, TanStack Table 9 / Form / Virtual, Radix, and Floating UI, without Ant Design, Element Plus, or MUI. Library builds use React Compiler.
 
 [![Auto Studio Demo Preview](docs/assets/demo.png)](https://zeroman.github.io/react-auto-components/)
 
@@ -12,7 +12,7 @@ A standalone, schema-driven component library for React 19. Built with TypeScrip
 
 ## Project status
 
-The current version is 0.1.0 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Built-in interface text defaults to Chinese and can be translated through AutoConfigProvider.config.t.
+The current version is 0.1.0 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Existing components default to Chinese; AutoChat defaults to English. Built-in text can be translated through AutoConfigProvider.config.t.
 
 The first npm release is being prepared. `@zeroman/react-auto-components` is the current development package name; the final scope will be selected after the npm account is registered. Until the first release, use the source and local packaging workflow below. Do not assume the package is already available on npm.
 
@@ -34,7 +34,7 @@ pnpm prepare:test-project
 pnpm --dir test-project dev
 ```
 
-Open http://127.0.0.1:4173. The test project includes pages for all eight components, local/server-side/10,000-row/tree tables, CRUD, failed-submission retries, drafts, popovers, nested tabs, and dynamic row heights.
+Open http://127.0.0.1:4173. The test project includes pages for all seven components, local/server-side/10,000-row/tree tables, CRUD, failed-submission retries, drafts, nested tabs, and dynamic row heights.
 
 The demo automatically detects the browser language, with English as the fallback. Choose a language from the header or Global settings; the selection is remembered across reloads. Select Auto to follow the browser again. Ten languages are supported. Pages fill the viewport, with tables and long panels scrolling inside their own areas.
 
@@ -129,10 +129,9 @@ The t callback receives a message key and a fallback. Preserve numbered placehol
 | AutoSearchPanel | Basic/advanced conditions, manual/instant search, reset, sort tags, a shared query AST, and RSQL serialization                                                                                                   |
 | AutoTable       | Local/remote data, multi-column sorting, column filters, pagination, stable selection, virtualization, tree/detail expansion, summaries, merged cells, CRUD, context menus, and copy                             |
 | AutoDialog      | Declarative/imperative APIs, isolated providers, drafts, close guards, focus management, dragging, fullscreen, and async submission                                                                              |
-| AutoPopover     | Click/hover triggers, automatic positioning, collision avoidance, Escape/outside dismissal, and imperative popovers                                                                                              |
-| AutoScroll      | Fixed/dynamic row-height virtualization, scrolling to items, and reading/restoring scroll position                                                                                                               |
-| AutoTabs        | Horizontal/vertical/menu layouts, nesting, permissions, disabled tabs, preserved panel state, and refresh                                                                                                        |
+| AutoTabs        | Horizontal/vertical layouts, nesting, permissions, disabled tabs, preserved panel state, and refresh                                                                                                        |
 | AutoMenu        | Sidebar navigation with icons, descriptions, badges, nested groups, permissions, and a collapsible icon rail                                                                                                     |
+| AutoChat | Caller-owned message rendering, optional virtualization, streaming follow, anchored history loading, send/stop composer, and custom actions |
 
 Table layout, sorting, filtering, and export each support named presets and independent versions. Persistence defaults to localStorage; remote adapters can be injected. JSON/CSV export is built in. XLSX uses an optional, separate adapter:
 
@@ -253,3 +252,9 @@ In the demo, open **Global settings** from the sidebar or the top-right gear to 
 Table density also supports `normal`. The table settings panel defaults to following global settings. Selecting compact, normal, or comfortable spacing overrides the global density and is saved with the layout preset; the component's `density` prop has the highest priority. Local sizes on nested components apply independently.
 
 Forms support `resetLabel`, `extraActions`, and `onReset`; search panels support `searchLabel`, `resetLabel`, and `extraActions`; dialogs support `cancelLabel` and `extraActions`. `AutoTabs` items can define a `badge`, and `AutoTable.empty` customizes empty-state content.
+
+### AutoChat
+
+AutoChat provides a lightweight conversation layout with streaming follow, history loading and a composer. Supply React content or renderMessage for message rendering; no extra runtime dependencies are required.
+
+[AutoChat API](docs/auto-chat.md)

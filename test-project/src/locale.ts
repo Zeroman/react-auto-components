@@ -1,4 +1,7 @@
 import messages from "./messages";
+import chatLabMessages from "./chatLabMessages";
+import chatMessages from "./chatMessages";
+import chatRendererMessages from "./chatRendererMessages";
 
 export const languages = {
   en: "English",
@@ -49,6 +52,13 @@ export function translateMessage(
   key: string,
   fallback = key,
 ): string {
+  const labText = chatLabMessages[locale]?.[key] ?? chatLabMessages.en?.[key];
+  if (labText) return labText;
+  const rendererText =
+    chatRendererMessages[locale]?.[key] ?? chatRendererMessages.en?.[key];
+  if (rendererText) return rendererText;
+  const chatText = chatMessages[locale]?.[key] ?? chatMessages.en?.[key];
+  if (chatText) return chatText;
   const source = Object.hasOwn(messages["zh-CN"] ?? {}, key)
     ? key
     : englishKeys.get(key);

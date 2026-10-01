@@ -16,3 +16,19 @@ void good;
 void bad;
 void missing;
 void owners;
+
+import type { AutoChatMessage, AutoChatProps } from "../src";
+interface ToolMessage extends AutoChatMessage {
+  result: number;
+}
+const chat: AutoChatProps<ToolMessage> = {
+  messages: [{ id: "tool-1", role: "tool", result: 42 }],
+  renderMessage: (message) => message.result,
+};
+// @ts-expect-error message IDs are required for stable streaming and history anchoring
+const invalidChatMessage: AutoChatMessage = { role: "user", content: "hello" };
+// @ts-expect-error transport-specific roles must be normalized by the host
+const invalidChatRole: AutoChatMessage = { id: "x", role: "function" };
+void chat;
+void invalidChatMessage;
+void invalidChatRole;

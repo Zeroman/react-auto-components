@@ -4,9 +4,7 @@ import { useDemoText } from "../i18n";
 
 export function TabsDemo() {
   const tr = useDemoText();
-  const [mode, setMode] = useState<"horizontal" | "vertical" | "menu">(
-    "horizontal",
-  );
+  const [mode, setMode] = useState<"horizontal" | "vertical">("horizontal");
   const [localSize, setLocalSize] = useState<
     "inherit" | "small" | "medium" | "large"
   >("inherit");
@@ -36,7 +34,6 @@ export function TabsDemo() {
           >
             <option value="horizontal">{tr("横向标签")}</option>
             <option value="vertical">{tr("纵向标签")}</option>
-            <option value="menu">{tr("菜单模式")}</option>
           </select>
           <select
             aria-label={tr("局部标签尺寸")}

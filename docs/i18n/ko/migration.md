@@ -15,9 +15,8 @@ React 제네릭, 콜백, 프로바이더를 통해 컴포넌트를 구성합니�
 | 트리, 상세, 집계, 셀 병합 | `getChildren/renderExpanded`, 열 `summary/merge` | 트리 및 펼치기 예제; `tests/table-advanced.test.tsx` |
 | 추가, 편집, 삭제 | `formFields` 및 `onAdd/onEdit/onDelete` | 브라우저 CRUD 테스트 |
 | 명령형 대화 상자 | `AutoDialogProvider` + `useAutoDialog().open()` | 대화 상자 페이지; `tests/dialog.test.tsx` |
-| 팝오버 서비스 | `AutoPopoverProvider` + `useAutoPopover()` | 팝오버 페이지; `tests/popover.test.tsx` |
-| 가상 스크롤 | `AutoScroll` 및 ref 메서드 | 스크롤 페이지; 10,000행 브라우저 테스트 |
 | 탭 및 중첩 탭 | `AutoTabs` items, value/onChange, keepMounted | 탭 페이지; `tests/tabs.test.tsx` |
+| 채팅 메시지 목록과 대화 UI | `AutoChat`, `messages`, `onSend`, `renderMessage` | `test-project/src/examples/Chat*.tsx` 채팅 페이지; `tests/chat.test.tsx` |
 
 ## 필드 유형
 

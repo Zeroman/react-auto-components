@@ -15,9 +15,8 @@
 | 樹狀結構、詳細資料、彙總、合併儲存格 | `getChildren/renderExpanded`、資料行的 `summary/merge` | 樹狀與展開範例；`tests/table-advanced.test.tsx` |
 | 新增、編輯、刪除 | `formFields` 與 `onAdd/onEdit/onDelete` | 瀏覽器 CRUD 測試 |
 | 命令式對話方塊 | `AutoDialogProvider` + `useAutoDialog().open()` | 對話方塊頁面；`tests/dialog.test.tsx` |
-| 彈出視窗服務 | `AutoPopoverProvider` + `useAutoPopover()` | 彈出視窗頁面；`tests/popover.test.tsx` |
-| 虛擬捲動 | `AutoScroll` 與 ref 方法 | 捲動頁面；10,000 筆資料的瀏覽器測試 |
 | 分頁與巢狀分頁 | `AutoTabs` 的 items、value/onChange、keepMounted | 分頁頁面；`tests/tabs.test.tsx` |
+| 聊天訊息清單與對話介面 | `AutoChat`、`messages`、`onSend`、`renderMessage` | `test-project/src/examples/Chat*.tsx` 聊天頁面；`tests/chat.test.tsx` |
 
 ## 欄位型別
 

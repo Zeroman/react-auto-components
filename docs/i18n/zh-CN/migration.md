@@ -15,9 +15,8 @@
 | 树、详情、汇总、合并 | `getChildren/renderExpanded`、列 `summary/merge` | 树形与展开场景；`tests/table-advanced.test.tsx` |
 | 新增、修改、删除 | `formFields` 与 `onAdd/onEdit/onDelete` | 浏览器 CRUD 用例 |
 | 命令式弹窗 | `AutoDialogProvider` + `useAutoDialog().open()` | 弹窗页；`tests/dialog.test.tsx` |
-| 浮层服务 | `AutoPopoverProvider` + `useAutoPopover()` | 浮层页；`tests/popover.test.tsx` |
-| 虚拟滚动 | `AutoScroll` 与 ref 方法 | 滚动页；浏览器万行测试 |
 | 标签及嵌套标签 | `AutoTabs` items、value/onChange、keepMounted | 标签页；`tests/tabs.test.tsx` |
+| 聊天消息列表与会话界面 | `AutoChat`、`messages`、`onSend`、`renderMessage` | `test-project/src/examples/Chat*.tsx` 聊天页面；`tests/chat.test.tsx` |
 
 ## 字段类型
 

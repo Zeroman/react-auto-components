@@ -15,9 +15,8 @@ Konfigurieren Sie Komponenten über React-Generics, Callbacks und Provider. Die 
 | Bäume, Details, Zusammenfassungen, verbundene Zellen | `getChildren/renderExpanded`, Spalten-`summary/merge` | Baum- und Aufklappbeispiele; `tests/table-advanced.test.tsx` |
 | Hinzufügen, Bearbeiten, Löschen | `formFields` und `onAdd/onEdit/onDelete` | CRUD-Browsertests |
 | Imperative Dialoge | `AutoDialogProvider` + `useAutoDialog().open()` | Dialogseite; `tests/dialog.test.tsx` |
-| Popover-Dienst | `AutoPopoverProvider` + `useAutoPopover()` | Popover-Seite; `tests/popover.test.tsx` |
-| Virtuelles Scrollen | `AutoScroll` und Ref-Methoden | Scrollseite; Browsertest mit 10.000 Zeilen |
 | Tabs und verschachtelte Tabs | `AutoTabs`-Einträge, value/onChange, keepMounted | Tab-Seite; `tests/tabs.test.tsx` |
+| Chat-Nachrichtenlisten und Konversations-UI | `AutoChat`, `messages`, `onSend`, `renderMessage` | Chat-Seiten in `test-project/src/examples/Chat*.tsx`; `tests/chat.test.tsx` |
 
 ## Feldtypen
 

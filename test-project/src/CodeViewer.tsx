@@ -6,13 +6,18 @@ import { useDemoText } from "./i18n";
 const rawSources = import.meta.glob<string>(
   [
     "./examples/TableDemo.tsx",
+    "./examples/ChatDemo.tsx",
+    "./examples/ChatRenderers.tsx",
+    "./examples/ChatTaskCard.tsx",
+    "./examples/ChatPerformanceDemo.tsx",
+    "./examples/ChatRenderingDemo.tsx",
+    "./examples/ChatHooksDemo.tsx",
+    "./examples/ChatStateDemo.tsx",
     "./examples/AdvancedTableDemo.tsx",
     "./examples/AutoHeightDemo.tsx",
     "./examples/FormDemo.tsx",
     "./examples/SearchDemo.tsx",
     "./examples/DialogDemo.tsx",
-    "./examples/PopoverDemo.tsx",
-    "./examples/ScrollDemo.tsx",
     "./examples/TabsDemo.tsx",
   ],
   { query: "?raw", import: "default", eager: true },
@@ -22,12 +27,19 @@ const sourceUrl =
   "https://github.com/Zeroman/react-auto-components/blob/main/test-project/src/examples";
 
 const exampleFiles: Record<string, readonly string[]> = {
+  chat: [
+    "ChatDemo.tsx",
+    "ChatRenderers.tsx",
+    "ChatTaskCard.tsx",
+    "ChatPerformanceDemo.tsx",
+    "ChatRenderingDemo.tsx",
+    "ChatHooksDemo.tsx",
+    "ChatStateDemo.tsx",
+  ],
   table: ["TableDemo.tsx", "AdvancedTableDemo.tsx", "AutoHeightDemo.tsx"],
   form: ["FormDemo.tsx"],
   search: ["SearchDemo.tsx"],
   dialog: ["DialogDemo.tsx"],
-  popover: ["PopoverDemo.tsx"],
-  scroll: ["ScrollDemo.tsx"],
   tabs: ["TabsDemo.tsx"],
 };
 

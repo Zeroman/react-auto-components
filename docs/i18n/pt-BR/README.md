@@ -2,7 +2,7 @@
 
 [English](../../../README.md) | [简体中文](../zh-CN/README.md) | [繁體中文](../zh-TW/README.md) | [日本語](../ja/README.md) | [한국어](../ko/README.md) | [Español](../es/README.md) | [Français](../fr/README.md) | [Deutsch](../de/README.md) | **Português (Brasil)** | [Русский](../ru/README.md)
 
-Uma biblioteca de componentes independente e orientada a esquemas para React 19. Construída com TypeScript, TanStack Table 9 / Form / Virtual, Radix e Floating UI, sem Ant Design, Element Plus ou MUI. Os builds da biblioteca usam React Compiler.
+Uma biblioteca de componentes independente e orientada a esquemas para React 19, com formulários, tabelas e chat. Construída com TypeScript, TanStack Table 9 / Form / Virtual, Radix e Floating UI, sem Ant Design, Element Plus ou MUI. Os builds da biblioteca usam React Compiler.
 
 [![Auto Studio Demonstração](../../assets/demo.png)](https://zeroman.github.io/react-auto-components/)
 
@@ -32,7 +32,7 @@ pnpm prepare:test-project
 pnpm --dir test-project dev
 ```
 
-Abra http://127.0.0.1:4173. O projeto de testes inclui páginas para todos os sete componentes, tabelas locais/no servidor/com 10.000 linhas/em árvore, CRUD, novas tentativas de envios com falha, rascunhos, popovers, abas aninhadas e alturas de linha dinâmicas.
+Abra http://127.0.0.1:4173. O projeto de testes inclui páginas para todos os sete componentes, tabelas locais/no servidor/com 10.000 linhas/em árvore, CRUD, novas tentativas de envios com falha, rascunhos, abas aninhadas e alturas de linha dinâmicas.
 
 A demonstração detecta automaticamente o idioma do navegador, com o inglês como fallback. Escolha um idioma no cabeçalho ou nas Configurações globais; a seleção é lembrada entre recarregamentos da página. Selecione Auto para seguir novamente o navegador. Dez idiomas são suportados. As páginas preenchem a viewport, com tabelas e painéis longos rolando dentro de suas próprias áreas.
 
@@ -88,9 +88,9 @@ O callback t recebe uma chave de mensagem e um fallback. Preserve os placeholder
 | AutoSearchPanel | Condições básicas/avançadas, busca manual/instantânea, redefinição, etiquetas de ordenação, AST de consulta compartilhada e serialização RSQL |
 | AutoTable | Dados locais/remotos, ordenação por várias colunas, filtros de coluna, paginação, seleção estável, virtualização, expansão de árvores/detalhes, resumos, células mescladas, CRUD, menus de contexto e cópia |
 | AutoDialog | APIs declarativas/imperativas, provedores isolados, rascunhos, proteção de fechamento, gerenciamento de foco, arraste, tela cheia e envio assíncrono |
-| AutoPopover | Acionamento por clique/ao passar o ponteiro, posicionamento automático, prevenção de colisões, fechamento com Escape ou clique fora e popovers imperativos |
-| AutoScroll | Virtualização com altura de linha fixa/dinâmica, rolagem até itens e leitura/restauração da posição de rolagem |
-| AutoTabs | Layouts horizontal/vertical/de menu, aninhamento, permissões, abas desabilitadas, preservação do estado dos painéis e atualização |
+| AutoTabs | Layouts horizontal/vertical, aninhamento, permissões, abas desabilitadas, preservação do estado dos painéis e atualização |
+| AutoMenu | Navegação lateral com ícones, descrições, badges, grupos aninhados, permissões e uma barra de ícones recolhível |
+| AutoChat | Renderização de mensagens controlada pelo chamador, virtualização opcional, acompanhamento de streaming, carregamento de histórico ancorado, compositor com envio/parada e ações personalizadas |
 
 Layout da tabela, ordenação, filtragem e exportação oferecem, cada um, predefinições nomeadas e versões independentes. A persistência usa localStorage por padrão; adaptadores remotos podem ser injetados. A exportação JSON/CSV é integrada. XLSX usa um adaptador opcional separado:
 
@@ -195,3 +195,9 @@ Na demonstração, abra **Configurações globais** pela barra lateral ou pela e
 A densidade da tabela também aceita `normal`. Por padrão, o painel de configurações da tabela segue as configurações globais. Selecionar espaçamento compacto, normal ou confortável substitui a densidade global e é salvo com a predefinição de layout; a propriedade `density` do componente tem a maior prioridade. Tamanhos locais de componentes aninhados se aplicam de forma independente.
 
 Formulários oferecem suporte a `resetLabel`, `extraActions` e `onReset`; painéis de busca oferecem suporte a `searchLabel`, `resetLabel` e `extraActions`; diálogos oferecem suporte a `cancelLabel` e `extraActions`. Os itens de `AutoTabs` podem definir um `badge`, e `AutoTable.empty` personaliza o conteúdo do estado vazio.
+
+### AutoChat
+
+O AutoChat fornece um layout de conversa leve com acompanhamento de streaming, carregamento de histórico e um compositor. Forneça conteúdo React ou renderMessage para a renderização das mensagens; nenhuma dependência extra em tempo de execução é necessária.
+
+[AutoChat API](auto-chat.md)

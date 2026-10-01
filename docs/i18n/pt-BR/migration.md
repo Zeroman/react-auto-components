@@ -15,9 +15,8 @@ Configure componentes por meio de generics do React, callbacks e providers. A ta
 | Árvores, detalhes, resumos, células mescladas | `getChildren/renderExpanded`, `summary/merge` da coluna | Exemplos de árvores e expansão; `tests/table-advanced.test.tsx` |
 | Adicionar, editar, excluir | `formFields` e `onAdd/onEdit/onDelete` | Testes de CRUD no navegador |
 | Diálogos imperativos | `AutoDialogProvider` + `useAutoDialog().open()` | Página de diálogos; `tests/dialog.test.tsx` |
-| Serviço de popovers | `AutoPopoverProvider` + `useAutoPopover()` | Página de popovers; `tests/popover.test.tsx` |
-| Rolagem virtual | `AutoScroll` e métodos da referência | Página de rolagem; teste de navegador com 10.000 linhas |
 | Abas e abas aninhadas | Itens de `AutoTabs`, value/onChange, keepMounted | Página de abas; `tests/tabs.test.tsx` |
+| Listas de mensagens de chat e UI de conversa | `AutoChat`, `messages`, `onSend`, `renderMessage` | Páginas de chat em `test-project/src/examples/Chat*.tsx`; `tests/chat.test.tsx` |
 
 ## Tipos de campo
 

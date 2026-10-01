@@ -8,6 +8,5 @@ export * from "./components/AutoSearchPanel";
 export * from "./components/AutoDialog";
 export * from "./components/AutoTabs";
 export * from "./components/AutoMenu";
-export * from "./components/AutoPopover";
-export * from "./components/AutoScroll";
 export * from "./components/AutoTable";
+export * from "./components/AutoChat";

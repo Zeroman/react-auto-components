@@ -4,12 +4,11 @@ test.use({ locale: "en-US" });
 const picker = (page: Page) =>
   page.locator(".topbar").getByTestId("language-picker");
 const pages = [
+  "AutoChat",
   "AutoTable",
   "AutoForm",
   "AutoSearchPanel",
   "AutoDialog",
-  "AutoPopover",
-  "AutoScroll",
   "AutoTabs",
 ];
 
@@ -138,7 +137,7 @@ test("all pages remain reachable on a narrow screen with long translations", asy
   await page.screenshot({ path: "test-results/i18n-mobile-de.png" });
 });
 
-test("table and virtual list grow with available height", async ({ page }) => {
+test("table grows with available height", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   const table = page.locator(".auto-table-scroll");
@@ -147,35 +146,4 @@ test("table and virtual list grow with available height", async ({ page }) => {
   await expect
     .poll(() => table.evaluate((el) => el.clientHeight))
     .toBe(before + 200);
-  await openDemo(page, "AutoScroll");
-  const list = page.locator(".auto-scroll");
-  const tall = await list.evaluate((el) => el.clientHeight);
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await expect
-    .poll(() => list.evaluate((el) => el.clientHeight))
-    .toBe(tall - 200);
-  const visibleRows = () =>
-    list.evaluate((el) => {
-      const viewport = el.getBoundingClientRect();
-      return [...el.querySelectorAll<HTMLElement>("[data-index]")]
-        .filter((row) => {
-          const rect = row.getBoundingClientRect();
-          return rect.bottom > viewport.top && rect.top < viewport.bottom;
-        })
-        .map((row) => Number(row.dataset.index) + 1);
-    });
-  for (const dynamic of [false, true]) {
-    if (dynamic)
-      await page.getByRole("checkbox", { name: "Dynamic row height" }).check();
-    await expect
-      .poll(async () => {
-        const rows = await visibleRows();
-        return page
-          .getByTestId("scroll-visible-range")
-          .locator("strong")
-          .allTextContents()
-          .then((range) => range.join(",") === `${rows[0]},${rows.at(-1)}`);
-      })
-      .toBe(true);
-  }
 });

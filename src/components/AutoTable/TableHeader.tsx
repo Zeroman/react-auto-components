@@ -1,6 +1,6 @@
 import { useAutoText } from "../../core/i18n";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { AutoPopover } from "../AutoPopover";
+import { Popover } from "../../internal/Popover";
 import type { AutoColumn, TableSort } from "./types";
 import type { QueryNode } from "../../core/query";
 export function updateColumnFilter(
@@ -221,7 +221,7 @@ export function TableHeader<T extends object>({
                   </button>
                 )}
                 {c.filterable && (
-                  <AutoPopover
+                  <Popover
                     content={
                       <ColumnFilter
                         column={c}
@@ -237,7 +237,7 @@ export function TableHeader<T extends object>({
                     >
                       ⌄
                     </button>
-                  </AutoPopover>
+                  </Popover>
                 )}
                 <span
                   className="auto-resize"

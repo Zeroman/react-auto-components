@@ -15,9 +15,8 @@ Configurez les composants via les génériques React, les callbacks et les provi
 | Arbres, détails, synthèses, cellules fusionnées | `getChildren/renderExpanded`, `summary/merge` de la colonne | Exemples d’arbres et de dépliage ; `tests/table-advanced.test.tsx` |
 | Ajout, modification, suppression | `formFields` et `onAdd/onEdit/onDelete` | Tests CRUD dans le navigateur |
 | Boîtes de dialogue impératives | `AutoDialogProvider` + `useAutoDialog().open()` | Page des boîtes de dialogue ; `tests/dialog.test.tsx` |
-| Service de fenêtres contextuelles | `AutoPopoverProvider` + `useAutoPopover()` | Page des fenêtres contextuelles ; `tests/popover.test.tsx` |
-| Défilement virtuel | `AutoScroll` et méthodes de la référence | Page de défilement ; test dans le navigateur avec 10 000 lignes |
 | Onglets et onglets imbriqués | Éléments d’`AutoTabs`, value/onChange, keepMounted | Page des onglets ; `tests/tabs.test.tsx` |
+| Listes de messages de chat et interface de conversation | `AutoChat`, `messages`, `onSend`, `renderMessage` | Pages de chat dans `test-project/src/examples/Chat*.tsx` ; `tests/chat.test.tsx` |
 
 ## Types de champ
 

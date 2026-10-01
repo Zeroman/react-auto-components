@@ -1,7 +1,11 @@
-import { test, expect, vi } from "vitest";
+import { test, expect, expectTypeOf, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { AutoTabs } from "../src/components/AutoTabs";
+import { AutoTabs, type AutoTabsProps } from "../src/components/AutoTabs";
+
+expectTypeOf<AutoTabsProps["mode"]>().toEqualTypeOf<
+  "horizontal" | "vertical" | undefined
+>();
 test("nested tabs, hidden entries and retained state", async () => {
   const change = vi.fn(),
     u = userEvent.setup();

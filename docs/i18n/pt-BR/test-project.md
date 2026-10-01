@@ -15,10 +15,16 @@ Na raiz do repositório, execute `pnpm install --frozen-lockfile` e `pnpm prepar
 - `pnpm --dir test-project test`: executa os testes de interação do Chromium (inicia automaticamente um servidor separado na porta 4174).
 - Após alterar a biblioteca, execute `pnpm prepare:test-project` novamente para atualizar a dependência do arquivo tarball com hash do conteúdo no nome.
 
-Os testes de navegador em `tests/components.spec.ts` cobrem CRUD, validação de campos e novas tentativas de envios com falha, persistência de configurações, rascunhos e foco, popovers, abas aninhadas, rolagem de 10.000 linhas, paginação no servidor, medições de expansão, larguras de colunas, downloads e layouts para dispositivos móveis. As capturas de tela são salvas em `test-results/`.
+Os testes de navegador em `tests/components.spec.ts` cobrem CRUD, validação de campos e novas tentativas de envios com falha, persistência de configurações, rascunhos e foco, abas aninhadas, rolagem de 10.000 linhas, paginação no servidor, medições de expansão, larguras de colunas, downloads e layouts para dispositivos móveis. As capturas de tela são salvas em `test-results/`.
 
 A demonstração de altura restante fica na aba **AutoTable → Altura restante**. A URL legada `http://127.0.0.1:4173/?demo=auto-height` abre a mesma página e seleciona essa aba. O exemplo permite alternar entre Flex/Grid, adicionar/remover conteúdo acima da tabela, mostrar/ocultar a tabela e alterar a paginação e o número de linhas. `tests/auto-height.spec.ts` mede os limites no navegador e a altura da área de rolagem para verificar o layout do espaço restante, o redimensionamento dinâmico, a recuperação da virtualização e a compatibilidade com altura fixa.
 
 Os testes de navegador iniciam um novo servidor Vite na porta 4174 em vez de reutilizar a demonstração de desenvolvimento na porta 4173. O script de reempacotamento notifica os servidores de demonstração existentes para que resolvam o pacote recém-instalado, evitando componentes desatualizados.
 
 As configurações globais são separadas do conteúdo dos exemplos e implementadas em `src/GlobalSettings.tsx`. Abra o painel pela barra lateral ou pelo controle no canto superior direito. O exemplo atual permanece montado enquanto você altera layout, densidade, largura dos rótulos ou tema.
+
+## Renderização de chat e históricos grandes
+
+O AutoChat inclui um seletor de formatos para Markdown/GFM, código, JSON, tabelas, uma imagem local e um cartão React interativo. As dependências de Markdown são instaladas apenas neste projeto de demonstração. O modo **Histórico grande** exercita 1.000/10.000/50.000 mensagens com altura variável, com contagens reais de linhas montadas, controles de anexação/streaming e navegação no histórico.
+
+A cobertura de navegador está em `tests/chat.spec.ts`, `tests/chat-renderers.spec.ts` e `tests/chat-lab.spec.ts`.

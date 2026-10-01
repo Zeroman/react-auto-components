@@ -9,7 +9,7 @@ import {
 } from "react";
 import type { Access, ComponentDensity, ComponentSize } from "../../core/types";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
-import { AutoPopover } from "../AutoPopover";
+import { Popover } from "../../internal/Popover";
 
 export interface AutoMenuItem extends Access {
   /** Stable and unique across the entire menu. */
@@ -210,7 +210,7 @@ function MenuItem({
   return (
     <li className="auto-menu-item">
       {hasChildren && collapsed ? (
-        <AutoPopover
+        <Popover
           placement="right-start"
           open={flyoutOpen && !item.disabled}
           onOpenChange={setFlyoutOpen}
@@ -244,7 +244,7 @@ function MenuItem({
           }
         >
           {button}
-        </AutoPopover>
+        </Popover>
       ) : (
         button
       )}
