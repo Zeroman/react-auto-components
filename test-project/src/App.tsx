@@ -7,7 +7,7 @@ import {
   AutoDialogProvider,
   AutoDialog,
   AutoMenu,
-} from "@zeroman/react-auto-components";
+} from "@zeroman.yang/react-auto-components";
 import { TableDemo } from "./examples/TableDemo";
 import { FormDemo } from "./examples/FormDemo";
 import { SearchDemo } from "./examples/SearchDemo";

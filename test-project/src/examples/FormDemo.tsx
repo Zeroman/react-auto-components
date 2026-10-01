@@ -4,7 +4,7 @@ import {
   useAutoConfig,
   type AutoFormHandle,
   type Field,
-} from "@zeroman/react-auto-components";
+} from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../i18n";
 import { useDemoData, type Project, type GalleryRecord } from "../data";
 

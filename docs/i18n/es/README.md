@@ -12,9 +12,9 @@ Una biblioteca de componentes independiente y basada en esquemas para React 19, 
 
 ## Estado del proyecto
 
-La versión actual es 0.1.0 y las API aún pueden cambiar. Se requiere React 19. El paquete proporciona declaraciones ESM y de TypeScript. El texto integrado de la interfaz tiene el chino como idioma predeterminado y puede traducirse mediante AutoConfigProvider.config.t.
+La versión actual es 0.1.1 y las API aún pueden cambiar. Se requiere React 19. El paquete proporciona declaraciones ESM y de TypeScript. El texto integrado de la interfaz tiene el chino como idioma predeterminado y puede traducirse mediante AutoConfigProvider.config.t.
 
-Se está preparando la primera publicación en npm. `@zeroman/react-auto-components` es el nombre actual del paquete de desarrollo; el ámbito definitivo se elegirá después de registrar la cuenta de npm. Hasta la primera publicación, utilice el código fuente y el flujo de empaquetado local que se indican a continuación. No dé por hecho que el paquete ya está disponible en npm.
+Instálalo con `pnpm add @zeroman.yang/react-auto-components` (npm y yarn funcionan igual). Las peer dependencies son React 19 y react-dom 19. Importa la hoja de estilos una vez: `import "@zeroman.yang/react-auto-components/style.css"`.
 
 - [Demo en vivo (GitHub Pages)](https://zeroman.github.io/react-auto-components/)
 - [Contribuir](https://github.com/Zeroman/react-auto-components/blob/main/docs/i18n/es/CONTRIBUTING.md)
@@ -47,8 +47,8 @@ import { useState } from 'react';
 import {
   AutoConfigProvider, AutoDialogProvider, AutoTable,
   type AutoColumn, type Field,
-} from '@zeroman/react-auto-components';
-import '@zeroman/react-auto-components/style.css';
+} from '@zeroman.yang/react-auto-components';
+import '@zeroman.yang/react-auto-components/style.css';
 
 type Person = { id: number; name: string; enabled: boolean };
 const columns: AutoColumn<Person>[] = [
@@ -95,7 +95,7 @@ La función de devolución de llamada t recibe una clave de mensaje y un texto a
 El diseño de la tabla, la ordenación, el filtrado y la exportación admiten cada uno ajustes preestablecidos con nombre y versiones independientes. La persistencia utiliza localStorage de forma predeterminada; se pueden inyectar adaptadores remotos. La exportación JSON/CSV está integrada. XLSX utiliza un adaptador opcional e independiente:
 
 ```tsx
-import { exportXlsx } from '@zeroman/react-auto-components/xlsx';
+import { exportXlsx } from '@zeroman.yang/react-auto-components/xlsx';
 // <AutoTable ... exportXlsx={exportXlsx} />
 ```
 

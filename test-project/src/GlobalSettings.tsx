@@ -4,7 +4,7 @@ import type {
   ComponentDensity,
   ComponentSize,
   TableDensity,
-} from "@zeroman/react-auto-components";
+} from "@zeroman.yang/react-auto-components";
 export interface StudioSettings {
   size: ComponentSize;
   density: ComponentDensity;

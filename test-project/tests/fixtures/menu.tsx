@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { AutoConfigProvider, AutoMenu } from "@zeroman/react-auto-components";
+import { AutoConfigProvider, AutoMenu } from "@zeroman.yang/react-auto-components";
 
 function MenuFixture() {
   const [value, setValue] = useState("overview");

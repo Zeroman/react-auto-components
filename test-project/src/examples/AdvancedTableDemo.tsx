@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { AutoTable } from "@zeroman/react-auto-components";
+import { AutoTable } from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../i18n";
 import { makeProjects, type Project } from "../data";
 

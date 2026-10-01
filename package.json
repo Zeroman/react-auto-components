@@ -1,6 +1,6 @@
 {
-  "name": "@zeroman/react-auto-components",
-  "version": "0.1.0",
+  "name": "@zeroman.yang/react-auto-components",
+  "version": "0.1.1",
   "type": "module",
   "files": [
     "dist",

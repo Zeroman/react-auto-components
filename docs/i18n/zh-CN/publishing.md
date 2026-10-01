@@ -4,7 +4,7 @@
 
 ## 账号与包名
 
-GitHub 仓库为 `Zeroman/react-auto-components`。npm 账号需要单独注册。计划使用的包名为 `@zeroman/react-auto-components`；发布前请先确认 `@zeroman` scope 的所有权。该包尚未发布到 npm。
+GitHub 仓库为 `Zeroman/react-auto-components`。npm 账号是 `zeroman.yang`。`@zeroman` scope 属于另一个 npm 用户，因此包名为 `@zeroman.yang/react-auto-components`。
 
 1. 打开 [npm 注册页](https://www.npmjs.com/signup)，填写用户名、邮箱、密码，并自行阅读和接受服务条款。
 2. 验证注册邮件。npm 文档说明发布前必须验证邮箱，发布账号的邮箱会出现在包元数据中；请选择适合公开维护用途的邮箱。

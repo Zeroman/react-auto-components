@@ -4,7 +4,7 @@
 
 ## アカウントとパッケージ名
 
-GitHub リポジトリは `Zeroman/react-auto-components` です。npm アカウントは別途登録が必要です。予定しているパッケージ名は `@zeroman/react-auto-components` であり、公開前に `@zeroman` スコープの所有権を確認してください。このパッケージはまだ npm に公開されていません。
+GitHub リポジトリは `Zeroman/react-auto-components` です。npm アカウントは `zeroman.yang` です。`@zeroman` スコープは別の npm ユーザーが所有しているため、パッケージ名は `@zeroman.yang/react-auto-components` です。
 
 1. [npm 登録ページ](https://www.npmjs.com/signup)を開き、ユーザー名、メールアドレス、パスワードを入力し、利用規約を自分で確認して同意します。
 2. 登録メールを確認します。npm では公開前にメールアドレスの認証が必要です。公開者のメールアドレスはパッケージメタデータに表示されるため、公開プロジェクトの保守に適したアドレスを選択してください。

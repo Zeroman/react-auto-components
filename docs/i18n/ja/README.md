@@ -12,9 +12,9 @@ React 19 向けのスタンドアローンなスキーマ駆動コンポーネ�
 
 ## プロジェクトの状況
 
-現在のバージョンは 0.1.0 であり、API はまだ変更される可能性があります。React 19 が必要です。このパッケージは ESM および TypeScript 型宣言を提供します。組み込みのインターフェーステキストは既定で中国語であり、AutoConfigProvider.config.t を通じて翻訳できます。
+現在のバージョンは 0.1.1 であり、API はまだ変更される可能性があります。React 19 が必要です。このパッケージは ESM および TypeScript 型宣言を提供します。組み込みのインターフェーステキストは既定で中国語であり、AutoConfigProvider.config.t を通じて翻訳できます。
 
-初回の npm リリースを準備中です。`@zeroman/react-auto-components` は現在の開発用パッケージ名で、最終的なスコープは npm アカウントの登録後に決定します。初回リリースまでは、以下のソースコードとローカルパッケージングの手順を利用してください。npm で公開済みであるとは想定しないでください。
+`pnpm add @zeroman.yang/react-auto-components` でインストールします（npm と yarn でも同様です）。peer dependency は React 19 と react-dom 19 です。エントリでスタイルシートを一度読み込んでください: `import "@zeroman.yang/react-auto-components/style.css"`。
 
 - [オンラインデモ (GitHub Pages)](https://zeroman.github.io/react-auto-components/)
 - [コントリビューション](https://github.com/Zeroman/react-auto-components/blob/main/docs/i18n/ja/CONTRIBUTING.md)
@@ -47,8 +47,8 @@ import { useState } from 'react';
 import {
   AutoConfigProvider, AutoDialogProvider, AutoTable,
   type AutoColumn, type Field,
-} from '@zeroman/react-auto-components';
-import '@zeroman/react-auto-components/style.css';
+} from '@zeroman.yang/react-auto-components';
+import '@zeroman.yang/react-auto-components/style.css';
 
 type Person = { id: number; name: string; enabled: boolean };
 const columns: AutoColumn<Person>[] = [
@@ -95,7 +95,7 @@ t コールバックはメッセージキーとフォールバックを受け取
 テーブルのレイアウト、ソート、フィルター、エクスポートは、それぞれ名前付きプリセットと独立したバージョンをサポートします。永続化にはデフォルトで localStorage を使用し、リモートアダプターも注入できます。JSON/CSV エクスポートは組み込みです。XLSX は任意の独立したアダプターを使用します。
 
 ```tsx
-import { exportXlsx } from '@zeroman/react-auto-components/xlsx';
+import { exportXlsx } from '@zeroman.yang/react-auto-components/xlsx';
 // <AutoTable ... exportXlsx={exportXlsx} />
 ```
 

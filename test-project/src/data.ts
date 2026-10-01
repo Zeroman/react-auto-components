@@ -4,8 +4,8 @@ import type {
   AutoColumn,
   Field,
   DataSource,
-} from "@zeroman/react-auto-components";
-import { matchesQuery } from "@zeroman/react-auto-components";
+} from "@zeroman.yang/react-auto-components";
+import { matchesQuery } from "@zeroman.yang/react-auto-components";
 export interface Project {
   id: string;
   name: string;

@@ -8,8 +8,8 @@ Um layout de conversa com compositor opcional, acompanhamento de streaming e car
 
 ```tsx
 import { useState } from "react";
-import { AutoChat, type AutoChatMessage } from "@zeroman/react-auto-components";
-import "@zeroman/react-auto-components/style.css";
+import { AutoChat, type AutoChatMessage } from "@zeroman.yang/react-auto-components";
+import "@zeroman.yang/react-auto-components/style.css";
 
 export function Conversation() {
   const [messages, setMessages] = useState<AutoChatMessage[]>([]);

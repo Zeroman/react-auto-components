@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { AutoTable, AutoTabs } from "@zeroman/react-auto-components";
-import { exportXlsx } from "@zeroman/react-auto-components/xlsx";
+import { AutoTable, AutoTabs } from "@zeroman.yang/react-auto-components";
+import { exportXlsx } from "@zeroman.yang/react-auto-components/xlsx";
 import { useDemoText } from "../i18n";
 import { useDemoData, makeProjects, createSource, type Project } from "../data";
 import { AutoHeightDemo } from "./AutoHeightDemo";

@@ -4,6 +4,10 @@
 
 ## Non publié
 
+## 0.1.1 - 2026-10-01
+
+- Publication sous le nom `@zeroman.yang/react-auto-components`. Le scope npm `@zeroman` appartient à un autre compte.
+
 - Ajout d'AutoChat avec rendu des messages contrôlé par l'appelant, suivi de flux, ancrage d'historique, composeur optionnel et démo en dix langues ; aucune nouvelle dépendance d'exécution.
 - La démo en ligne affiche désormais le code source réel de chaque exemple dans un dialogue « Voir le code », avec onglets de fichiers, copie en un clic et liens GitHub.
 - Composants React 19 pilotés par des schémas : AutoForm, AutoSearchPanel, AutoTable, AutoDialog, AutoTabs et AutoMenu.
@@ -11,5 +15,3 @@
 - Projet consommateur utilisant une véritable archive tarball, tests unitaires, vérifications de types et tests d’interaction Chromium.
 - Licence MIT, guide de contribution, intégration continue GitHub, modèles d’issues et instructions de création de compte npm et de publication.
 - Documentation en anglais par défaut, avec des traductions complètes et des liens de changement de langue.
-
-La première version npm n’a pas encore été publiée. Le nom définitif du paquet dépend du scope du compte nouvellement créé par le responsable du projet.

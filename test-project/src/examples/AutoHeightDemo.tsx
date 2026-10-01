@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from "react";
 import {
   AutoTable,
   type AutoTableHandle,
-} from "@zeroman/react-auto-components";
+} from "@zeroman.yang/react-auto-components";
 import { useDemoData, makeProjects, type Project } from "../data";
 export function AutoHeightDemo() {
   const tr = useDemoText();

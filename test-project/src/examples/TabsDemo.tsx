@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AutoTabs } from "@zeroman/react-auto-components";
+import { AutoTabs } from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../i18n";
 
 export function TabsDemo() {

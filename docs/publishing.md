@@ -4,7 +4,7 @@
 
 ## Accounts and package name
 
-The GitHub repository is `Zeroman/react-auto-components`. npm accounts require a separate registration. The intended package name is `@zeroman/react-auto-components`; confirm ownership of the `@zeroman` scope before publishing. The package has not been published to npm yet.
+The GitHub repository is `Zeroman/react-auto-components`. The npm account is `zeroman.yang`. The `@zeroman` scope belongs to another npm user, so the package name is `@zeroman.yang/react-auto-components`.
 
 1. Open the [npm signup page](https://www.npmjs.com/signup), enter a username, email, and password, and personally review and accept the terms.
 2. Verify the registration email. npm requires a verified email before publishing; publisher email addresses appear in package metadata, so choose an address suitable for public maintenance.

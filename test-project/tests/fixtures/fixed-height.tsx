@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { AutoTable } from "@zeroman/react-auto-components";
+import { AutoTable } from "@zeroman.yang/react-auto-components";
 
 export function mount() {
   const node = document.createElement("div");

@@ -1,6 +1,6 @@
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import type { AutoChatMessage } from "@zeroman/react-auto-components";
+import type { AutoChatMessage } from "@zeroman.yang/react-auto-components";
 import { ChatTaskCard } from "./ChatTaskCard";
 import workflowImage from "../assets/chat-workflow.svg";
 

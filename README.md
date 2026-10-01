@@ -12,9 +12,9 @@ A standalone, schema-driven component library for React 19, covering forms, tabl
 
 ## Project status
 
-The current version is 0.1.0 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Existing components default to Chinese; AutoChat defaults to English. Built-in text can be translated through AutoConfigProvider.config.t.
+The current version is 0.1.1 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Existing components default to Chinese; AutoChat defaults to English. Built-in text can be translated through AutoConfigProvider.config.t.
 
-The first npm release is being prepared. `@zeroman/react-auto-components` is the current development package name; the final scope will be selected after the npm account is registered. Until the first release, use the source and local packaging workflow below. Do not assume the package is already available on npm.
+Install with `pnpm add @zeroman.yang/react-auto-components` (npm and yarn work the same way). React 19 and react-dom 19 are peer dependencies. Import the stylesheet once: `import "@zeroman.yang/react-auto-components/style.css"`.
 
 - [Live Demo (GitHub Pages)](https://zeroman.github.io/react-auto-components/)
 - [Contributing](https://github.com/Zeroman/react-auto-components/blob/main/.github/CONTRIBUTING.md)
@@ -64,8 +64,8 @@ import {
   AutoTable,
   type AutoColumn,
   type Field,
-} from "@zeroman/react-auto-components";
-import "@zeroman/react-auto-components/style.css";
+} from "@zeroman.yang/react-auto-components";
+import "@zeroman.yang/react-auto-components/style.css";
 
 type Person = { id: number; name: string; enabled: boolean };
 const columns: AutoColumn<Person>[] = [
@@ -136,7 +136,7 @@ The t callback receives a message key and a fallback. Preserve numbered placehol
 Table layout, sorting, filtering, and export each support named presets and independent versions. Persistence defaults to localStorage; remote adapters can be injected. JSON/CSV export is built in. XLSX uses an optional, separate adapter:
 
 ```tsx
-import { exportXlsx } from "@zeroman/react-auto-components/xlsx";
+import { exportXlsx } from "@zeroman.yang/react-auto-components/xlsx";
 // <AutoTable ... exportXlsx={exportXlsx} />
 ```
 

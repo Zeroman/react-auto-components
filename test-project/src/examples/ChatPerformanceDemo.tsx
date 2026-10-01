@@ -3,7 +3,7 @@ import {
   AutoChat,
   type AutoChatHandle,
   type AutoChatMessage,
-} from "@zeroman/react-auto-components";
+} from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../i18n";
 import { MarkdownMessage } from "./ChatRenderers";
 

@@ -4,7 +4,7 @@
 
 ## Cuentas y nombre del paquete
 
-El repositorio de GitHub es `Zeroman/react-auto-components`. Las cuentas de npm requieren un registro separado. El nombre previsto del paquete es `@zeroman/react-auto-components`; confirma la propiedad del scope `@zeroman` antes de publicar. El paquete aún no se ha publicado en npm.
+El repositorio de GitHub es `Zeroman/react-auto-components`. La cuenta de npm es `zeroman.yang`. El scope `@zeroman` pertenece a otro usuario de npm, así que el nombre del paquete es `@zeroman.yang/react-auto-components`.
 
 1. Abra la [página de registro de npm](https://www.npmjs.com/signup), introduzca un nombre de usuario, un correo electrónico y una contraseña, y revise y acepte personalmente los términos.
 2. Verifique el correo electrónico de registro. npm exige un correo verificado antes de publicar; las direcciones de correo de los publicadores aparecen en los metadatos del paquete, así que elija una dirección adecuada para el mantenimiento público.

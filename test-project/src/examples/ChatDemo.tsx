@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { AutoChat } from "@zeroman/react-auto-components";
+import { AutoChat } from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../i18n";
 
 import {

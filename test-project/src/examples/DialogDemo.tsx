@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAutoDialog } from "@zeroman/react-auto-components";
+import { useAutoDialog } from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../i18n";
 import { useDemoData, type Project } from "../data";
 import { Metric } from "../Metric";

@@ -4,7 +4,7 @@
 
 ## 계정 및 패키지 이름
 
-GitHub 저장소는 `Zeroman/react-auto-components`입니다. npm 계정은 별도로 등록해야 합니다. 예정된 패키지 이름은 `@zeroman/react-auto-components`이며, 게시하기 전에 `@zeroman` 스코프의 소유권을 확인하세요. 이 패키지는 아직 npm에 게시되지 않았습니다.
+GitHub 저장소는 `Zeroman/react-auto-components`입니다. npm 계정은 `zeroman.yang`입니다. `@zeroman` 스코프는 다른 npm 사용자가 소유하므로 패키지 이름은 `@zeroman.yang/react-auto-components`입니다.
 
 1. [npm 가입 페이지](https://www.npmjs.com/signup)를 열고 사용자 이름, 이메일, 비밀번호를 입력한 뒤 직접 약관을 검토하고 동의합니다.
 2. 등록 이메일을 인증합니다. npm은 게시 전에 인증된 이메일을 요구합니다. 게시자의 이메일 주소는 패키지 메타데이터에 표시되므로 공개 유지 관리에 적합한 주소를 선택하세요.

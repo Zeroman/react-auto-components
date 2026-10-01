@@ -4,7 +4,7 @@
 
 ## Comptes et nom du paquet
 
-Le dépôt GitHub est `Zeroman/react-auto-components`. Les comptes npm nécessitent une inscription séparée. Le nom de package prévu est `@zeroman/react-auto-components` ; vérifiez la propriété du scope `@zeroman` avant de publier. Le package n'a pas encore été publié sur npm.
+Le dépôt GitHub est `Zeroman/react-auto-components`. Le compte npm est `zeroman.yang`. Le scope `@zeroman` appartient à un autre utilisateur npm, donc le nom du paquet est `@zeroman.yang/react-auto-components`.
 
 1. Ouvrez la [page d’inscription npm](https://www.npmjs.com/signup), saisissez un nom d’utilisateur, une adresse e-mail et un mot de passe, puis examinez et acceptez personnellement les conditions.
 2. Vérifiez l’adresse e-mail d’inscription. npm exige une adresse vérifiée avant toute publication ; les adresses e-mail des personnes qui publient figurent dans les métadonnées du paquet, choisissez donc une adresse adaptée à la maintenance publique.

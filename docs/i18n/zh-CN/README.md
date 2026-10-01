@@ -12,9 +12,9 @@
 
 ## 项目状态
 
-当前版本为 0.1.0，API 仍可能发生变化。需要 React 19。该包提供 ESM 和 TypeScript 类型声明。内置界面文本默认为中文，可通过 AutoConfigProvider.config.t 进行翻译。
+当前版本为 0.1.1，API 仍可能发生变化。需要 React 19。该包提供 ESM 和 TypeScript 类型声明。内置界面文本默认为中文，可通过 AutoConfigProvider.config.t 进行翻译。
 
-npm 首次发布准备中，`@zeroman/react-auto-components` 是当前开发包名，最终 scope 将在 npm 账号注册后确定。首次发布前请使用下面的源码与本地打包流程，不要假设该包已在 npm 上架。
+使用 `pnpm add @zeroman.yang/react-auto-components` 安装（npm、yarn 同样可用）。peer dependency 为 React 19 与 react-dom 19。在入口引入一次样式：`import "@zeroman.yang/react-auto-components/style.css"`。
 
 - [在线演示 (GitHub Pages)](https://zeroman.github.io/react-auto-components/)
 - [贡献指南](https://github.com/Zeroman/react-auto-components/blob/main/docs/i18n/zh-CN/CONTRIBUTING.md)
@@ -61,8 +61,8 @@ import { useState } from 'react';
 import {
   AutoConfigProvider, AutoDialogProvider, AutoTable,
   type AutoColumn, type Field,
-} from '@zeroman/react-auto-components';
-import '@zeroman/react-auto-components/style.css';
+} from '@zeroman.yang/react-auto-components';
+import '@zeroman.yang/react-auto-components/style.css';
 
 type Person = { id: number; name: string; enabled: boolean };
 const columns: AutoColumn<Person>[] = [
@@ -109,7 +109,7 @@ t 回调接收一个消息键和一个回退文本。在翻译内置消息时，
 表格布局、排序、筛选、导出各自支持命名方案及版本。默认 localStorage 持久化，也可注入远程适配器。JSON/CSV 内置；XLSX 使用可选的独立适配器：
 
 ```tsx
-import { exportXlsx } from '@zeroman/react-auto-components/xlsx';
+import { exportXlsx } from '@zeroman.yang/react-auto-components/xlsx';
 // <AutoTable ... exportXlsx={exportXlsx} />
 ```
 

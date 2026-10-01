@@ -12,9 +12,9 @@
 
 ## Состояние проекта
 
-Текущая версия — 0.1.0, и API могут ещё измениться. Требуется React 19. Пакет предоставляет ESM и декларации TypeScript. Встроенный текст интерфейса по умолчанию на китайском языке и может быть переведён через AutoConfigProvider.config.t.
+Текущая версия — 0.1.1, и API могут ещё измениться. Требуется React 19. Пакет предоставляет ESM и декларации TypeScript. Встроенный текст интерфейса по умолчанию на китайском языке и может быть переведён через AutoConfigProvider.config.t.
 
-Идёт подготовка первого выпуска в npm. `@zeroman/react-auto-components` — текущее имя пакета для разработки; окончательная область имён будет выбрана после регистрации учётной записи npm. До первого выпуска используйте исходный код и описанный ниже процесс локальной упаковки. Не считайте, что пакет уже доступен в npm.
+Установите пакет командой `pnpm add @zeroman.yang/react-auto-components` (npm и yarn подходят так же). Peer dependencies: React 19 и react-dom 19. Один раз импортируйте таблицу стилей: `import "@zeroman.yang/react-auto-components/style.css"`.
 
 - [Онлайн-демо (GitHub Pages)](https://zeroman.github.io/react-auto-components/)
 - [Участие в разработке](https://github.com/Zeroman/react-auto-components/blob/main/docs/i18n/ru/CONTRIBUTING.md)
@@ -47,8 +47,8 @@ import { useState } from 'react';
 import {
   AutoConfigProvider, AutoDialogProvider, AutoTable,
   type AutoColumn, type Field,
-} from '@zeroman/react-auto-components';
-import '@zeroman/react-auto-components/style.css';
+} from '@zeroman.yang/react-auto-components';
+import '@zeroman.yang/react-auto-components/style.css';
 
 type Person = { id: number; name: string; enabled: boolean };
 const columns: AutoColumn<Person>[] = [
@@ -95,7 +95,7 @@ export function App() {
 Компоновка таблицы, сортировка, фильтрация и экспорт поддерживают собственные именованные наборы настроек и независимые версии. По умолчанию настройки сохраняются в localStorage; можно подключить удалённые адаптеры. Экспорт JSON/CSV встроен. XLSX использует отдельный необязательный адаптер:
 
 ```tsx
-import { exportXlsx } from '@zeroman/react-auto-components/xlsx';
+import { exportXlsx } from '@zeroman.yang/react-auto-components/xlsx';
 // <AutoTable ... exportXlsx={exportXlsx} />
 ```
 

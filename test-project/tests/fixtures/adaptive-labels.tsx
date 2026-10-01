@@ -5,7 +5,7 @@ import {
   AutoForm,
   AutoSearchPanel,
   type Field,
-} from "@zeroman/react-auto-components";
+} from "@zeroman.yang/react-auto-components";
 const longFields: Field<{ name: string }>[] = [
   { name: "name", label: "项目所属组织机构完整名称及其审批负责人联系方式" },
 ];

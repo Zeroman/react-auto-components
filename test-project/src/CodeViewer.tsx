@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AutoDialog } from "@zeroman/react-auto-components";
+import { AutoDialog } from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "./i18n";
 
 // Only these reviewed examples may be embedded in the public demo.

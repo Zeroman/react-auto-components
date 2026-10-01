@@ -4,7 +4,7 @@
 
 ## 帳號與套件名稱
 
-GitHub 儲存庫為 `Zeroman/react-auto-components`。npm 帳號需另行註冊。預定的套件名稱為 `@zeroman/react-auto-components`;發布前請先確認 `@zeroman` scope 的所有權。該套件尚未發布至 npm。
+GitHub 儲存庫為 `Zeroman/react-auto-components`。npm 帳號是 `zeroman.yang`。`@zeroman` scope 屬於另一個 npm 使用者，因此套件名稱為 `@zeroman.yang/react-auto-components`。
 
 1. 開啟 [npm 註冊頁面](https://www.npmjs.com/signup)，輸入使用者名稱、電子郵件和密碼，並親自審閱及同意條款。
 2. 驗證註冊電子郵件。npm 要求在發佈前完成電子郵件驗證；發佈者的電子郵件地址會顯示於套件中繼資料，因此請選擇適合公開維護使用的地址。

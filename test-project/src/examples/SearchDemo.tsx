@@ -4,7 +4,7 @@ import {
   matchesQuery,
   serializeRsql,
   type QueryNode,
-} from "@zeroman/react-auto-components";
+} from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../i18n";
 import { useDemoData, makeProjects, type Project } from "../data";
 

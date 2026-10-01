@@ -3,7 +3,7 @@ import {
   AutoChat,
   type AutoChatHandle,
   type AutoChatMessage,
-} from "@zeroman/react-auto-components";
+} from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../i18n";
 
 /** Demo-only event recorder: bounded memory and no transport or persistence. */
