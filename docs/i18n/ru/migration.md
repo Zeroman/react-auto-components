@@ -6,7 +6,7 @@
 
 | Исходный сценарий | API React | Исполняемый пример / тест |
 | --- | --- | --- |
-| Поля формы и v-model | `fields: Field<T>[]`, `value/onChange` или `defaultValue` | Страница формы в `test-project/src/App.tsx`; `tests/form*.test.tsx` |
+| Поля формы и v-model | `fields: Field<T>[]`, `value/onChange` или `defaultValue` | Страница формы в `test-project/src/examples/FormDemo.tsx`; `tests/form*.test.tsx` |
 | Слоты и добавляемое содержимое | `render` поля, `render/header` столбца, ReactNode | Страницы формы/таблицы |
 | Операции экземпляра формы | `ref.validate/reset/getValues/setValue/focus` | `tests/form.test.tsx` |
 | Поиск, связанные условия, RSQL | `buildQuery`, `matchesQuery`, `serializeRsql` | Страница поиска; `tests/query.test.ts` |

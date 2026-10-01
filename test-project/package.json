@@ -9,7 +9,7 @@
     "test": "playwright test"
   },
   "dependencies": {
-    "@zeroman/react-auto-components": "file:../artifacts/zeroman-react-auto-components-0.1.0-c608fdafee07.tgz",
+    "@zeroman/react-auto-components": "file:../artifacts/zeroman-react-auto-components-0.1.0-55ccf7c24e99.tgz",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },

@@ -36,6 +36,8 @@ Abra http://127.0.0.1:4173. O projeto de testes inclui páginas para todos os se
 
 A demonstração detecta automaticamente o idioma do navegador, com o inglês como fallback. Escolha um idioma no cabeçalho ou nas Configurações globais; a seleção é lembrada entre recarregamentos da página. Selecione Auto para seguir novamente o navegador. Dez idiomas são suportados. As páginas preenchem a viewport, com tabelas e painéis longos rolando dentro de suas próprias áreas.
 
+Cada página de exemplo inclui um botão **Ver código** que abre seu arquivo-fonte real em um diálogo, com abas de arquivos, cópia em um clique e link para o GitHub.
+
 `test-project` tem seus próprios arquivos package.json e de lock. Ele instala a saída real de `pnpm pack`, sem aliases para o código-fonte. Execute `pnpm prepare:test-project` novamente após alterar a biblioteca; o script usa nomes de arquivo com hash do conteúdo para evitar caches de arquivos tarball desatualizados.
 
 ## Uso

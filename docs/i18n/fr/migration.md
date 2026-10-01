@@ -6,7 +6,7 @@ Configurez les composants via les génériques React, les callbacks et les provi
 
 | Cas d’utilisation d’origine | API React | Exemple exécutable / test |
 | --- | --- | --- |
-| Champs de formulaire et v-model | `fields: Field<T>[]`, `value/onChange` ou `defaultValue` | Page des formulaires dans `test-project/src/App.tsx` ; `tests/form*.test.tsx` |
+| Champs de formulaire et v-model | `fields: Field<T>[]`, `value/onChange` ou `defaultValue` | Page des formulaires dans `test-project/src/examples/FormDemo.tsx` ; `tests/form*.test.tsx` |
 | Slots et contenu ajouté | `render` du champ, `render/header` de la colonne, ReactNode | Pages des formulaires/tableaux |
 | Opérations sur l’instance du formulaire | `ref.validate/reset/getValues/setValue/focus` | `tests/form.test.tsx` |
 | Recherche, conditions liées, RSQL | `buildQuery`, `matchesQuery`, `serializeRsql` | Page de recherche ; `tests/query.test.ts` |

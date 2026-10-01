@@ -6,6 +6,8 @@
 
 演示会自动检测浏览器语言，并以英语作为回退。可以从页眉或全局设置中选择语言；所选语言在重新加载后仍会保留。选择“自动”可重新跟随浏览器语言。支持十种语言。页面填满整个视口，表格和较长的面板在其自身区域内滚动。
 
+每个示例页面都提供**查看代码**按钮，会在弹窗中打开该示例的真实源码文件，支持文件切换、一键复制和跳转 GitHub。
+
 从仓库根目录执行 `pnpm install --frozen-lockfile && pnpm prepare:test-project`，再运行 `pnpm --dir test-project dev`。
 
 - `pnpm --dir test-project build`：公共类型与生产构建验证。

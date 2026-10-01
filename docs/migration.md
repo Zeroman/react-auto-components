@@ -6,7 +6,7 @@ Configure components through React generics, callbacks, and providers. The follo
 
 | Original use case | React API | Runnable example / test |
 | --- | --- | --- |
-| Form fields and v-model | `fields: Field<T>[]`, `value/onChange`, or `defaultValue` | Form page in `test-project/src/App.tsx`; `tests/form*.test.tsx` |
+| Form fields and v-model | `fields: Field<T>[]`, `value/onChange`, or `defaultValue` | Form page in `test-project/src/examples/FormDemo.tsx`; `tests/form*.test.tsx` |
 | Slots and appended content | Field `render`, column `render/header`, ReactNode | Form/table pages |
 | Form instance operations | `ref.validate/reset/getValues/setValue/focus` | `tests/form.test.tsx` |
 | Search, related conditions, RSQL | `buildQuery`, `matchesQuery`, `serializeRsql` | Search page; `tests/query.test.ts` |

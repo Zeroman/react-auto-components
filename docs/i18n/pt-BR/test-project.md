@@ -6,6 +6,8 @@ Este projeto instala a biblioteca de componentes a partir de um arquivo tarball 
 
 A demonstração detecta automaticamente o idioma do navegador, com o inglês como fallback. Escolha um idioma no cabeçalho ou nas Configurações globais; a seleção é lembrada entre recarregamentos da página. Selecione Auto para seguir novamente o navegador. Dez idiomas são suportados. As páginas preenchem a viewport, com tabelas e painéis longos rolando dentro de suas próprias áreas.
 
+Cada página de exemplo inclui um botão **Ver código** que abre seu arquivo-fonte real em um diálogo, com abas de arquivos, cópia em um clique e link para o GitHub.
+
 Na raiz do repositório, execute `pnpm install --frozen-lockfile` e `pnpm prepare:test-project`, depois `pnpm --dir test-project dev`.
 
 - `pnpm --dir test-project build`: verifica os tipos públicos e cria uma compilação de produção.

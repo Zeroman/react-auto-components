@@ -26,7 +26,14 @@ const paths = [
 const problems = [];
 for (const path of paths) {
   if (!/\.(?:md|[cm]?[jt]sx?|json|ya?ml|html|css)$/.test(path)) continue;
-  const text = readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
+  let text;
+  try {
+    text = readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
+  } catch (error) {
+    // Git still lists tracked files deleted in the working tree until staging.
+    if (error.code === "ENOENT") continue;
+    throw error;
+  }
   if (
     [...text.matchAll(packageReference)].some(
       ([reference]) => reference !== name,

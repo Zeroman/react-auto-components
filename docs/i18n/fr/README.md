@@ -36,6 +36,8 @@ Ouvrez http://127.0.0.1:4173. Le projet de test comprend des pages pour les sept
 
 La démo détecte automatiquement la langue du navigateur, avec l'anglais comme solution de repli. Choisissez une langue dans l'en-tête ou dans les paramètres globaux ; votre sélection est conservée après rechargement. Sélectionnez Auto pour suivre à nouveau la langue du navigateur. Dix langues sont prises en charge. Les pages remplissent la fenêtre (viewport), les tableaux et les longs panneaux défilant à l'intérieur de leurs propres zones.
 
+Chaque page d'exemple inclut un bouton **Voir le code** qui ouvre son véritable fichier source dans une boîte de dialogue, avec onglets de fichiers, copie en un clic et lien GitHub.
+
 `test-project` possède ses propres fichiers package.json et de verrouillage. Il installe la sortie réelle de `pnpm pack`, sans alias vers les sources. Exécutez de nouveau `pnpm prepare:test-project` après avoir modifié la bibliothèque ; le script utilise des noms de fichiers contenant une empreinte du contenu pour éviter les caches d’archives tarball obsolètes.
 
 ## Utilisation

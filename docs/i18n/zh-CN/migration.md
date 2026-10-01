@@ -6,7 +6,7 @@
 
 | 原场景 | React 接口 | 可运行示例/测试 |
 | --- | --- | --- |
-| 表单字段与 v-model | `fields: Field<T>[]`、`value/onChange` 或 `defaultValue` | `test-project/src/App.tsx` 表单页；`tests/form*.test.tsx` |
+| 表单字段与 v-model | `fields: Field<T>[]`、`value/onChange` 或 `defaultValue` | `test-project/src/examples/FormDemo.tsx` 表单页；`tests/form*.test.tsx` |
 | 插槽、追加内容 | 字段 `render`、列 `render/header`、ReactNode | 表单/表格页 |
 | 表单实例操作 | `ref.validate/reset/getValues/setValue/focus` | `tests/form.test.tsx` |
 | 搜索、关联条件、RSQL | `buildQuery`、`matchesQuery`、`serializeRsql` | 搜索页；`tests/query.test.ts` |

@@ -4,6 +4,7 @@
 
 ## 未リリース
 
+- オンラインデモに「コードを表示」ダイアログを追加。各サンプルの実際のソースをファイル切り替え・ワンクリックコピー・GitHub リンクで確認できます。
 - スキーマ駆動の React 19 コンポーネント：AutoForm、AutoSearchPanel、AutoTable、AutoDialog、AutoPopover、AutoScroll、AutoTabs。
 - グローバルなサイズと密度、フォームラベルのレイアウト、テーブル設定の永続化、オプションの XLSX エクスポート。
 - 実際の tarball を使用する利用側プロジェクト、ユニットテスト、型チェック、Chromium の操作テスト。

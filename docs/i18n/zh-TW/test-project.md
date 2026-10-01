@@ -6,6 +6,8 @@
 
 示範會自動偵測瀏覽器語言,並以英文作為後備。可從頁首或全域設定中選擇語言;所選語言會在重新載入後保留。選擇 Auto 即可再次跟隨瀏覽器語言。支援十種語言。頁面會填滿整個視區,表格與較長的面板會在其自身區域內捲動。
 
+每個範例頁面都提供**檢視原始碼**按鈕，會在彈窗中開啟該範例的真實原始碼檔案，支援檔案切換、一鍵複製與前往 GitHub。
+
 從儲存庫根目錄執行 `pnpm install --frozen-lockfile` 和 `pnpm prepare:test-project`，再執行 `pnpm --dir test-project dev`。
 
 - `pnpm --dir test-project build`：檢查公開型別並建立正式環境建置。

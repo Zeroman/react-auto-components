@@ -4,6 +4,7 @@
 
 ## 미출시
 
+- 온라인 데모에 "코드 보기" 대화상자를 추가했습니다. 각 예제의 실제 소스를 파일 전환·원클릭 복사·GitHub 링크로 확인할 수 있습니다.
 - 스키마 기반 React 19 컴포넌트: AutoForm, AutoSearchPanel, AutoTable, AutoDialog, AutoPopover, AutoScroll, AutoTabs.
 - 전역 크기 및 밀도, 폼 레이블 레이아웃, 테이블 설정 영속화, 선택적 XLSX 내보내기.
 - 실제 tarball을 사용하는 프로젝트, 단위 테스트, 타입 검사, Chromium 상호작용 테스트.

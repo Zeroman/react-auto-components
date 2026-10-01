@@ -4,6 +4,7 @@
 
 ## Noch nicht veröffentlicht
 
+- Die Online-Demo zeigt jetzt den echten Quellcode jedes Beispiels in einem Dialog „Code anzeigen“ – mit Datei-Tabs, Ein-Klick-Kopieren und GitHub-Links.
 - Schemagesteuerte React-19-Komponenten: AutoForm, AutoSearchPanel, AutoTable, AutoDialog, AutoPopover, AutoScroll und AutoTabs.
 - Globale Größe und Dichte, Layouts für Formularbeschriftungen, gespeicherte Tabelleneinstellungen und optionaler XLSX-Export.
 - Ein Verbraucherprojekt mit echtem Tarball, Unit-Tests, Typprüfungen und Chromium-Interaktionstests.

@@ -370,7 +370,8 @@ main[data-page="tabs"] .card {
   overflow: hidden;
 }
 
-main[data-page="tabs"] .auto-tabs:not(.auto-tabs-vertical):not(.auto-tabs-menu) {
+main[data-page="tabs"]
+  .auto-tabs:not(.auto-tabs-vertical):not(.auto-tabs-menu) {
   flex: 1 1 0%;
   min-height: 0;
   display: flex;
@@ -1228,3 +1229,179 @@ main[data-page="scroll"] .demo-viewport > .card {
   min-height: min-content;
 }
 
+/* ==========================================================================
+   Example Source Viewer (dialog + in-dialog file tabs)
+   ========================================================================== */
+
+.page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.code-button {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid #d5e0d7;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #3d4f43;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.code-button span {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 11px;
+  letter-spacing: -0.5px;
+}
+
+.code-button:hover {
+  border-color: var(--auto-accent);
+  color: #1f7a4d;
+}
+
+.code-viewer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.code-viewer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.code-file-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.code-file-tabs button {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #67796d;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 12px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.code-file-tabs button.active {
+  background: #e8f4ec;
+  border-color: #bcd9c6;
+  color: #1f7a4d;
+  font-weight: 600;
+}
+
+.code-viewer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.code-viewer-actions button,
+.code-viewer-actions a {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid #d5e0d7;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #3d4f43;
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.code-viewer-actions button:hover,
+.code-viewer-actions a:hover {
+  border-color: var(--auto-accent);
+  color: #1f7a4d;
+}
+
+.code-viewer-pre {
+  margin: 0;
+  max-height: min(58vh, 620px);
+  overflow: auto;
+  border: 1px solid #274234;
+  border-radius: 10px;
+  background: #152b21;
+  color: #cfe4d6;
+  padding: 14px 16px;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  tab-size: 2;
+  direction: ltr;
+}
+
+.code-viewer-pre code {
+  white-space: pre;
+}
+
+.studio-dark .code-button,
+.studio-dark .code-viewer-actions button,
+.studio-dark .code-viewer-actions a {
+  background: #20362b;
+  border-color: #3c5143;
+  color: #cfe0d5;
+}
+
+.studio-dark .code-button:hover,
+.studio-dark .code-viewer-actions button:hover,
+.studio-dark .code-viewer-actions a:hover {
+  border-color: var(--auto-accent);
+  color: #9fe0bd;
+}
+
+.studio-dark .code-file-tabs button {
+  color: #9ab0a1;
+}
+
+.studio-dark .code-file-tabs button.active {
+  background: #294333;
+  border-color: #3c5143;
+  color: #9fe0bd;
+}
+
+@media (max-width: 700px) {
+  .page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .code-viewer-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .code-viewer-pre {
+    max-height: 52vh;
+    font-size: 11px;
+    padding: 12px;
+  }
+}

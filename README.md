@@ -38,6 +38,8 @@ Open http://127.0.0.1:4173. The test project includes pages for all eight compon
 
 The demo automatically detects the browser language, with English as the fallback. Choose a language from the header or Global settings; the selection is remembered across reloads. Select Auto to follow the browser again. Ten languages are supported. Pages fill the viewport, with tables and long panels scrolling inside their own areas.
 
+Every example page includes a **View code** button that opens its real source file in a dialog, with file tabs, one-click copy, and a GitHub link.
+
 `test-project` has its own package.json and lockfile. It installs the actual output of `pnpm pack`, with no source aliases. Run `pnpm prepare:test-project` again after changing the library; the script uses content-hashed filenames to avoid stale tarball caches.
 
 ### Automated demo workflow

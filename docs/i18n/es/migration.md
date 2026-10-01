@@ -6,7 +6,7 @@ Configura los componentes mediante generics, callbacks y providers de React. La 
 
 | Caso de uso original | API de React | Ejemplo ejecutable / prueba |
 | --- | --- | --- |
-| Campos de formulario y v-model | `fields: Field<T>[]`, `value/onChange` o `defaultValue` | Página de formularios en `test-project/src/App.tsx`; `tests/form*.test.tsx` |
+| Campos de formulario y v-model | `fields: Field<T>[]`, `value/onChange` o `defaultValue` | Página de formularios en `test-project/src/examples/FormDemo.tsx`; `tests/form*.test.tsx` |
 | Slots y contenido añadido | `render` del campo, `render/header` de la columna, ReactNode | Páginas de formularios/tablas |
 | Operaciones de instancia del formulario | `ref.validate/reset/getValues/setValue/focus` | `tests/form.test.tsx` |
 | Búsqueda, condiciones relacionadas, RSQL | `buildQuery`, `matchesQuery`, `serializeRsql` | Página de búsqueda; `tests/query.test.ts` |

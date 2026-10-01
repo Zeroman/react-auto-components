@@ -36,6 +36,8 @@ pnpm --dir test-project dev
 
 Die Demo erkennt die Browsersprache automatisch, mit Englisch als Rückfallebene. Wählen Sie eine Sprache über den Kopfbereich oder die globalen Einstellungen; die Auswahl bleibt über Neuladen hinweg erhalten. Wählen Sie „Auto“, um erneut der Browsersprache zu folgen. Zehn Sprachen werden unterstützt. Die Seiten füllen den Viewport aus; Tabellen und lange Panels scrollen innerhalb ihrer eigenen Bereiche.
 
+Jede Beispielseite enthält eine Schaltfläche **Code anzeigen**, die die echte Quelldatei in einem Dialog öffnet – mit Datei-Tabs, Ein-Klick-Kopieren und GitHub-Link.
+
 `test-project` hat eine eigene package.json und Lockdatei. Es installiert die tatsächliche Ausgabe von `pnpm pack`, ohne Quellcode-Aliase. Führen Sie nach Änderungen an der Bibliothek erneut `pnpm prepare:test-project` aus; das Skript verwendet Dateinamen mit Inhalts-Hash, um veraltete Tarball-Caches zu vermeiden.
 
 ## Verwendung

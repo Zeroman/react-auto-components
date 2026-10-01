@@ -6,7 +6,7 @@ React のジェネリクス、コールバック、プロバイダを通じて�
 
 | 元のユースケース | React API | 実行可能な例／テスト |
 | --- | --- | --- |
-| フォームフィールドと v-model | `fields: Field<T>[]`、`value/onChange`、または `defaultValue` | `test-project/src/App.tsx` のフォームページ；`tests/form*.test.tsx` |
+| フォームフィールドと v-model | `fields: Field<T>[]`、`value/onChange`、または `defaultValue` | `test-project/src/examples/FormDemo.tsx` のフォームページ；`tests/form*.test.tsx` |
 | スロットと追加コンテンツ | フィールドの `render`、列の `render/header`、ReactNode | フォーム／テーブルページ |
 | フォームインスタンスの操作 | `ref.validate/reset/getValues/setValue/focus` | `tests/form.test.tsx` |
 | 検索、関連条件、RSQL | `buildQuery`、`matchesQuery`、`serializeRsql` | 検索ページ；`tests/query.test.ts` |

@@ -6,7 +6,7 @@ React 제네릭, 콜백, 프로바이더를 통해 컴포넌트를 구성합니�
 
 | 기존 사용 사례 | React API | 실행 가능한 예제 / 테스트 |
 | --- | --- | --- |
-| 폼 필드 및 v-model | `fields: Field<T>[]`, `value/onChange` 또는 `defaultValue` | `test-project/src/App.tsx`의 폼 페이지; `tests/form*.test.tsx` |
+| 폼 필드 및 v-model | `fields: Field<T>[]`, `value/onChange` 또는 `defaultValue` | `test-project/src/examples/FormDemo.tsx`의 폼 페이지; `tests/form*.test.tsx` |
 | 슬롯 및 추가 콘텐츠 | 필드 `render`, 열 `render/header`, ReactNode | 폼/테이블 페이지 |
 | 폼 인스턴스 작업 | `ref.validate/reset/getValues/setValue/focus` | `tests/form.test.tsx` |
 | 검색, 연관 조건, RSQL | `buildQuery`, `matchesQuery`, `serializeRsql` | 검색 페이지; `tests/query.test.ts` |

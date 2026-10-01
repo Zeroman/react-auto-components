@@ -6,6 +6,8 @@ Ce projet installe la bibliothèque de composants depuis une archive tarball loc
 
 La démo détecte automatiquement la langue du navigateur, avec l'anglais comme solution de repli. Choisissez une langue dans l'en-tête ou dans les paramètres globaux ; votre sélection est conservée après rechargement. Sélectionnez Auto pour suivre à nouveau la langue du navigateur. Dix langues sont prises en charge. Les pages remplissent la fenêtre (viewport), les tableaux et les longs panneaux défilant à l'intérieur de leurs propres zones.
 
+Chaque page d'exemple inclut un bouton **Voir le code** qui ouvre son véritable fichier source dans une boîte de dialogue, avec onglets de fichiers, copie en un clic et lien GitHub.
+
 Depuis la racine du dépôt, exécutez `pnpm install --frozen-lockfile` et `pnpm prepare:test-project`, puis `pnpm --dir test-project dev`.
 
 - `pnpm --dir test-project build` : vérifie les types publics et crée un build de production.

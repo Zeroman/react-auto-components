@@ -4,6 +4,7 @@
 
 ## 尚未發佈
 
+- 線上示範新增「檢視原始碼」彈窗，可查看每個範例的真實原始碼，支援檔案切換、一鍵複製與 GitHub 轉跳。
 - 結構描述驅動的 React 19 元件：AutoForm、AutoSearchPanel、AutoTable、AutoDialog、AutoPopover、AutoScroll 和 AutoTabs。
 - 全域尺寸與密度、表單標籤版面、持久化表格設定，以及選用的 XLSX 匯出。
 - 使用真正 tarball 的使用端專案、單元測試、型別檢查與 Chromium 互動測試。

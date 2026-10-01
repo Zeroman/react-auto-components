@@ -4,6 +4,7 @@
 
 ## Unreleased
 
+- The online demo now shows each example's real source code in a View code dialog with file tabs, one-click copy, and GitHub links.
 - Schema-driven React 19 components: AutoForm, AutoSearchPanel, AutoTable, AutoDialog, AutoPopover, AutoScroll, and AutoTabs.
 - Global size and density, form-label layouts, persisted table settings, and optional XLSX export.
 - A real tarball consumer project, unit tests, type checks, and Chromium interaction tests.

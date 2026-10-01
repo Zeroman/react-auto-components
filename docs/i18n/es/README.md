@@ -36,6 +36,8 @@ Abra http://127.0.0.1:4173. El proyecto de pruebas incluye páginas para los sie
 
 La demo detecta automáticamente el idioma del navegador, con el inglés como alternativa predeterminada. Elija un idioma desde el encabezado o en la configuración global; la selección se recuerda entre recargas. Seleccione Auto para volver a seguir el idioma del navegador. Se admiten diez idiomas. Las páginas llenan el viewport, con tablas y paneles largos que se desplazan dentro de sus propias áreas.
 
+Cada página de ejemplo incluye un botón **Ver código** que abre su archivo fuente real en un diálogo, con pestañas de archivo, copia en un clic y un enlace a GitHub.
+
 `test-project` tiene sus propios archivos package.json y de bloqueo. Instala el resultado real de `pnpm pack`, sin alias al código fuente. Ejecute de nuevo `pnpm prepare:test-project` después de modificar la biblioteca; el script utiliza nombres de archivo con un hash del contenido para evitar cachés de archivos tarball obsoletos.
 
 ## Uso

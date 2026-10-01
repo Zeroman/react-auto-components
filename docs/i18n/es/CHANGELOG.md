@@ -4,6 +4,7 @@
 
 ## Sin publicar
 
+- La demo en línea ahora muestra el código fuente real de cada ejemplo en un diálogo «Ver código», con pestañas de archivo, copia en un clic y enlaces a GitHub.
 - Componentes de React 19 basados en esquemas: AutoForm, AutoSearchPanel, AutoTable, AutoDialog, AutoPopover, AutoScroll y AutoTabs.
 - Tamaño y densidad globales, diseños de etiquetas de formularios, ajustes de tabla persistentes y exportación XLSX opcional.
 - Un proyecto consumidor que utiliza un archivo tarball real, pruebas unitarias, comprobaciones de tipos y pruebas de interacción de Chromium.

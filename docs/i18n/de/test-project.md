@@ -6,6 +6,8 @@ Dieses Projekt installiert die Komponentenbibliothek aus einem lokalen Tarball u
 
 Die Demo erkennt die Browsersprache automatisch, mit Englisch als Rückfallebene. Wählen Sie eine Sprache über den Kopfbereich oder die globalen Einstellungen; die Auswahl bleibt über Neuladen hinweg erhalten. Wählen Sie „Auto“, um erneut der Browsersprache zu folgen. Zehn Sprachen werden unterstützt. Die Seiten füllen den Viewport aus; Tabellen und lange Panels scrollen innerhalb ihrer eigenen Bereiche.
 
+Jede Beispielseite enthält eine Schaltfläche **Code anzeigen**, die die echte Quelldatei in einem Dialog öffnet – mit Datei-Tabs, Ein-Klick-Kopieren und GitHub-Link.
+
 Führen Sie im Stammverzeichnis des Repositorys `pnpm install --frozen-lockfile` und `pnpm prepare:test-project` aus, anschließend `pnpm --dir test-project dev`.
 
 - `pnpm --dir test-project build`: öffentliche Typen prüfen und einen Produktions-Build erstellen.

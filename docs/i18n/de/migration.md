@@ -6,7 +6,7 @@ Konfigurieren Sie Komponenten über React-Generics, Callbacks und Provider. Die 
 
 | Ursprünglicher Anwendungsfall | React-API | Ausführbares Beispiel / Test |
 | --- | --- | --- |
-| Formularfelder und v-model | `fields: Field<T>[]`, `value/onChange` oder `defaultValue` | Formularseite in `test-project/src/App.tsx`; `tests/form*.test.tsx` |
+| Formularfelder und v-model | `fields: Field<T>[]`, `value/onChange` oder `defaultValue` | Formularseite in `test-project/src/examples/FormDemo.tsx`; `tests/form*.test.tsx` |
 | Slots und angehängte Inhalte | Feld-`render`, Spalten-`render/header`, ReactNode | Formular-/Tabellenseiten |
 | Operationen der Formularinstanz | `ref.validate/reset/getValues/setValue/focus` | `tests/form.test.tsx` |
 | Suche, verknüpfte Bedingungen, RSQL | `buildQuery`, `matchesQuery`, `serializeRsql` | Suchseite; `tests/query.test.ts` |
