@@ -46,10 +46,10 @@ npm publish --access public --registry=https://registry.npmjs.org/
 
 Schließen Sie alle von npm angeforderten Verifizierungen ab. Führen Sie nach der Veröffentlichung `npm view <package-name> version` mit dem endgültigen Namen aus und installieren und überprüfen Sie das Paket anschließend in einem neuen Verbraucherprojekt. Entfernen Sie nach erfolgreicher erster Veröffentlichung den Hinweis zur Vorbereitung der Erstveröffentlichung aus jeder README-Übersetzung und ergänzen Sie Installationsanweisungen.
 
-Aktualisieren Sie vor jeder Veröffentlichung die Version und jede CHANGELOG-Übersetzung. Versuchen Sie nicht, eine veröffentlichte Version zu überschreiben. Die aktuelle CI des Repositorys überprüft nur Änderungen; sie veröffentlicht nicht automatisch auf npm.
+Aktualisieren Sie vor jeder Veröffentlichung die Version und jede CHANGELOG-Übersetzung. Versuchen Sie nicht, eine veröffentlichte Version zu überschreiben. Schieben Sie einen `v*`-Tag, der zur Version in `package.json` passt, zum Beispiel `v0.2.0` bei Version `0.2.0`. Dadurch läuft `.github/workflows/publish.yml` und veröffentlicht auf npm.
 
-## Künftige automatisierte Veröffentlichungen
+## Automatisierte Veröffentlichungen
 
-Konfigurieren Sie nach der ersten Veröffentlichung [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/), um das Paket an das GitHub-Repository und eine bestimmte Workflow-Datei zu binden. Verwenden Sie einen von GitHub gehosteten Runner und OIDC `id-token: write`, ohne langlebiges npm-Token. Die dokumentierten Anforderungen sind Node >=22.14.0 und npm CLI >=11.5.1. Implementieren und überprüfen Sie vor der Aktivierung den Veröffentlichungsworkflow und stellen Sie sicher, dass Tag, package.json-Version und getesteter Commit übereinstimmen.
+[npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) bindet `@zeroman.yang/react-auto-components` an das GitHub-Repository `Zeroman/react-auto-components` und die Workflow-Datei `publish.yml`. Der Workflow nutzt einen von GitHub gehosteten Runner und OIDC `id-token: write`, ohne langlebiges npm-Token. Erfordert werden Node >=22.14.0 und npm CLI >=11.5.1. Tag, `package.json`-Version und getesteter Commit müssen übereinstimmen.
 
 GitHub Actions CI installiert anhand der Lockdatei, prüft Typen, führt Unit-Tests aus, baut das Verbraucherprojekt mit echtem Tarball und führt Chromium-Tests aus. Branch-Schutz kann CI vor dem Zusammenführen voraussetzen; konfigurieren Sie ihn entsprechend dem Betreuungsbedarf, wenn externe Beiträge hinzukommen.

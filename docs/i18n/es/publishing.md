@@ -46,10 +46,10 @@ npm publish --access public --registry=https://registry.npmjs.org/
 
 Complete cualquier verificación solicitada por npm. Después de publicar, ejecute `npm view <package-name> version` con el nombre definitivo y, a continuación, instale y verifique el paquete en un proyecto consumidor nuevo. Elimine el aviso de preparación de la primera publicación de todas las traducciones del README y añada instrucciones de instalación una vez que la primera publicación se haya completado correctamente.
 
-Actualice la versión y todas las traducciones del CHANGELOG antes de cada publicación. No intente sobrescribir una versión publicada. La integración continua actual del repositorio solo verifica los cambios; no publica automáticamente en npm.
+Actualice la versión y todas las traducciones del CHANGELOG antes de cada publicación. No intente sobrescribir una versión publicada. Envíe una etiqueta `v*` que coincida con `package.json`; por ejemplo, `v0.2.0` cuando la versión sea `0.2.0`. Eso ejecuta `.github/workflows/publish.yml` y publica en npm.
 
-## Futuras publicaciones automatizadas
+## Publicaciones automatizadas
 
-Después de la primera publicación, configure [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) para vincular el paquete al repositorio de GitHub y a un archivo de flujo de trabajo específico. Utilice un ejecutor alojado en GitHub y OIDC `id-token: write`, sin un token de npm de larga duración. Los requisitos documentados son Node >=22.14.0 y npm CLI >=11.5.1. Antes de activarlo, implemente y verifique el flujo de publicación y asegúrese de que la etiqueta, la versión de package.json y el commit probado coincidan.
+[npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) vincula `@zeroman.yang/react-auto-components` al repositorio de GitHub `Zeroman/react-auto-components` y al archivo de flujo `publish.yml`. El flujo usa un ejecutor alojado en GitHub y OIDC `id-token: write`, sin un token de npm de larga duración. Requiere Node >=22.14.0 y npm CLI >=11.5.1. La etiqueta, la versión de `package.json` y el commit probado deben coincidir.
 
 La integración continua de GitHub Actions instala desde el archivo de bloqueo, comprueba los tipos, ejecuta las pruebas unitarias, compila el consumidor del archivo tarball real y ejecuta las pruebas de Chromium. La protección de ramas puede exigir la integración continua antes de fusionar; configúrela a medida que evolucionen las necesidades de mantenimiento con las contribuciones externas.

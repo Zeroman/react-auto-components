@@ -46,10 +46,10 @@ npm publish --access public --registry=https://registry.npmjs.org/
 
 Complete any verification requested by npm. After publishing, run `npm view <package-name> version` using the final name, then install and verify it in a fresh consumer project. Remove the first-release preparation notice from every README translation and add installation instructions after the first release succeeds.
 
-Update version and every CHANGELOG translation before each release. Do not try to overwrite a published version. The repository's current CI only verifies changes; it does not automatically publish to npm.
+Update version and every CHANGELOG translation before each release. Do not try to overwrite a published version. Push a `v*` tag whose name matches `package.json`, for example `v0.2.0` when the version is `0.2.0`. That runs `.github/workflows/publish.yml` and publishes to npm.
 
-## Future automated releases
+## Automated releases
 
-After the first release, configure [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) to bind the package to the GitHub repository and a specific workflow file. Use a GitHub-hosted runner and OIDC `id-token: write`, without a long-lived npm token. The documented requirements are Node >=22.14.0 and npm CLI >=11.5.1. Before enabling it, implement and verify the publishing workflow and ensure the tag, package.json version, and tested commit match.
+[npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) binds `@zeroman.yang/react-auto-components` to GitHub repository `Zeroman/react-auto-components` and workflow file `publish.yml`. The workflow uses a GitHub-hosted runner and OIDC `id-token: write`, without a long-lived npm token. It requires Node >=22.14.0 and npm CLI >=11.5.1. The tag, `package.json` version, and tested commit must match.
 
 GitHub Actions CI installs from the lockfile, checks types, runs unit tests, builds the real tarball consumer, and runs Chromium tests. Branch protection can require CI before merging; configure it as maintenance needs evolve with external contributions.

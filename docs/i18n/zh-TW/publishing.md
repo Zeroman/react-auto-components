@@ -46,10 +46,10 @@ npm publish --access public --registry=https://registry.npmjs.org/
 
 完成 npm 要求的任何驗證。發佈後，請使用最終名稱執行 `npm view <package-name> version`，再於全新的使用端專案中安裝並驗證。首次發佈成功後，請移除所有 README 譯文中的首次發佈準備提示，並加入安裝說明。
 
-每次發佈前，請更新版本與所有 CHANGELOG 譯文。請勿嘗試覆寫已發佈版本。儲存庫目前的 CI 只驗證變更，不會自動發佈至 npm。
+每次發佈前，請更新版本與所有 CHANGELOG 譯文。請勿嘗試覆寫已發佈版本。推送與 `package.json` 版本一致的 `v*` 標籤，例如版本 `0.2.0` 時推送 `v0.2.0`。這會執行 `.github/workflows/publish.yml` 並發佈到 npm。
 
-## 未來的自動化發佈
+## 自動發佈
 
-首次發佈後，設定 [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)，將套件綁定至 GitHub 儲存庫和特定工作流程檔案。使用 GitHub 託管執行器與 OIDC `id-token: write`，不使用長效 npm 權杖。文件列出的需求為 Node >=22.14.0 和 npm CLI >=11.5.1。啟用前，請實作並驗證發佈工作流程，確保標籤、package.json 版本和已測試的提交一致。
+[npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) 將 `@zeroman.yang/react-auto-components` 綁定至 GitHub 儲存庫 `Zeroman/react-auto-components` 與工作流程檔案 `publish.yml`。該工作流程使用 GitHub 託管執行器與 OIDC `id-token: write`，不使用長效 npm 權杖。需求為 Node >=22.14.0 與 npm CLI >=11.5.1。標籤、`package.json` 版本和已測試的提交必須一致。
 
 GitHub Actions CI 會依鎖定檔安裝、檢查型別、執行單元測試、建置使用真正 tarball 的使用端專案，並執行 Chromium 測試。分支保護可要求合併前通過 CI；請隨外部貢獻帶來的維護需求調整設定。

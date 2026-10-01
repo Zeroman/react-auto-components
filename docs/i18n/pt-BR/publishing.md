@@ -46,10 +46,10 @@ npm publish --access public --registry=https://registry.npmjs.org/
 
 Conclua qualquer verificação solicitada pelo npm. Após a publicação, execute `npm view <package-name> version` com o nome definitivo e, em seguida, instale e verifique o pacote em um novo projeto consumidor. Remova o aviso de preparação da primeira publicação de todas as traduções do README e adicione instruções de instalação após a primeira publicação bem-sucedida.
 
-Atualize a versão e todas as traduções do CHANGELOG antes de cada publicação. Não tente sobrescrever uma versão publicada. A integração contínua atual do repositório apenas verifica as alterações; ela não publica automaticamente no npm.
+Atualize a versão e todas as traduções do CHANGELOG antes de cada publicação. Não tente sobrescrever uma versão publicada. Envie uma tag `v*` igual à versão em `package.json`, por exemplo `v0.2.0` quando a versão for `0.2.0`. Isso executa `.github/workflows/publish.yml` e publica no npm.
 
-## Futuras publicações automatizadas
+## Publicações automatizadas
 
-Após a primeira publicação, configure [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) para vincular o pacote ao repositório do GitHub e a um arquivo de workflow específico. Use um runner hospedado pelo GitHub e OIDC `id-token: write`, sem um token npm de longa duração. Os requisitos documentados são Node >=22.14.0 e npm CLI >=11.5.1. Antes de ativar, implemente e verifique o workflow de publicação e confirme que a tag, a versão de package.json e o commit testado correspondem.
+[npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) vincula `@zeroman.yang/react-auto-components` ao repositório do GitHub `Zeroman/react-auto-components` e ao arquivo de workflow `publish.yml`. O workflow usa um runner hospedado pelo GitHub e OIDC `id-token: write`, sem um token npm de longa duração. Ele exige Node >=22.14.0 e npm CLI >=11.5.1. A tag, a versão de `package.json` e o commit testado devem corresponder.
 
 A integração contínua do GitHub Actions instala a partir do arquivo de lock, verifica os tipos, executa testes unitários, compila o consumidor do arquivo tarball real e executa testes Chromium. A proteção de branches pode exigir a integração contínua antes do merge; configure-a conforme as necessidades de manutenção evoluírem com contribuições externas.

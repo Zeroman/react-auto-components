@@ -46,10 +46,10 @@ npm publish --access public --registry=https://registry.npmjs.org/
 
 发布时在 npm 提示中完成验证。发布后使用最终包名运行 `npm view <包名> version`，并在全新消费项目安装验证。首次发布成功后，移除各语言 README 的“首次发布准备中”提示并添加安装命令。
 
-每次发布前更新 version 和各语言 CHANGELOG；不要尝试覆盖已发布版本。当前仓库 CI 只运行验证，不会自动发布 npm。
+每次发布前更新 version 和各语言 CHANGELOG；不要尝试覆盖已发布版本。推送与 `package.json` 版本一致的 `v*` tag，例如版本 `0.2.0` 时推送 `v0.2.0`。这会运行 `.github/workflows/publish.yml` 并发布到 npm。
 
-## 后续自动发布
+## 自动发布
 
-可在首次发布后配置 [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)，将 npm 包绑定到 GitHub 仓库与明确的 workflow 文件；使用 GitHub 托管 runner、OIDC `id-token: write`，无需长期 npm token。官方当前要求 Node >=22.14.0、npm CLI >=11.5.1。启用前应先编写和验证发布工作流，并确保 tag、package.json 版本及被测提交一致。
+[npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) 将 `@zeroman.yang/react-auto-components` 绑定到 GitHub 仓库 `Zeroman/react-auto-components` 与 workflow 文件 `publish.yml`。该 workflow 使用 GitHub 托管 runner 和 OIDC `id-token: write`，无需长期 npm token。要求 Node >=22.14.0、npm CLI >=11.5.1。tag、`package.json` 版本和被测提交必须一致。
 
 GitHub Actions CI 执行锁文件安装、类型检查、单元测试、真实 tarball 消费构建和 Chromium 测试。分支保护可将 CI 设为合并要求；有外部贡献后再按维护需要配置。

@@ -46,10 +46,10 @@ npm publish --access public --registry=https://registry.npmjs.org/
 
 npm が要求する認証を完了します。公開後は最終的な名前を使って `npm view <package-name> version` を実行し、新しい利用側プロジェクトにインストールして検証します。初回リリースが成功した後、各言語の README から初回リリース準備中の案内を削除し、インストール手順を追加してください。
 
-各リリースの前に、バージョンとすべての CHANGELOG 翻訳を更新してください。公開済みバージョンを上書きしようとしないでください。現在のリポジトリ CI は変更の検証のみを行い、npm への自動公開は行いません。
+各リリースの前に、バージョンとすべての CHANGELOG 翻訳を更新してください。公開済みバージョンを上書きしようとしないでください。`package.json` のバージョンと一致する `v*` タグを push します。バージョンが `0.2.0` なら `v0.2.0` です。これにより `.github/workflows/publish.yml` が実行され、npm に公開されます。
 
-## 今後の自動リリース
+## 自動リリース
 
-初回リリース後に [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) を設定し、パッケージを GitHub リポジトリと特定のワークフローファイルに結び付けます。GitHub ホストランナーと OIDC の `id-token: write` を使用し、有効期間の長い npm トークンは使用しません。文書化されている要件は Node >=22.14.0 と npm CLI >=11.5.1 です。有効にする前に公開ワークフローを実装・検証し、タグ、package.json のバージョン、テスト済みコミットが一致していることを確認してください。
+[npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) は `@zeroman.yang/react-auto-components` を GitHub リポジトリ `Zeroman/react-auto-components` とワークフローファイル `publish.yml` に結び付けます。このワークフローは GitHub ホストランナーと OIDC `id-token: write` を使い、有効期間の長い npm トークンは使いません。Node >=22.14.0 と npm CLI >=11.5.1 が必要です。タグ、`package.json` のバージョン、テスト済みコミットは一致していなければなりません。
 
 GitHub Actions CI はロックファイルからインストールし、型チェック、ユニットテスト、実際の tarball を利用するプロジェクトのビルド、Chromium テストを実行します。ブランチ保護によりマージ前の CI 成功を必須にできます。外部からのコントリビューションに伴う保守上の必要性に応じて設定してください。

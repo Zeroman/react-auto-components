@@ -46,10 +46,10 @@ npm publish --access public --registry=https://registry.npmjs.org/
 
 npm이 요청하는 인증을 완료합니다. 게시 후 최종 이름으로 `npm view <package-name> version`을 실행한 다음, 새로운 사용 프로젝트에 설치하여 검증합니다. 첫 릴리스가 성공하면 모든 README 번역에서 첫 릴리스 준비 안내를 제거하고 설치 안내를 추가하세요.
 
-릴리스할 때마다 버전과 모든 CHANGELOG 번역을 업데이트하세요. 게시된 버전을 덮어쓰려고 하지 마세요. 저장소의 현재 CI는 변경 사항만 검증하며 npm에 자동으로 게시하지 않습니다.
+릴리스할 때마다 버전과 모든 CHANGELOG 번역을 업데이트하세요. 게시된 버전을 덮어쓰려고 하지 마세요. `package.json` 버전과 같은 `v*` 태그를 푸시하세요. 버전이 `0.2.0`이면 `v0.2.0`입니다. 그러면 `.github/workflows/publish.yml`이 실행되어 npm에 게시합니다.
 
-## 향후 자동 릴리스
+## 자동 릴리스
 
-첫 릴리스 후 [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)을 설정하여 패키지를 GitHub 저장소 및 특정 워크플로 파일에 연결합니다. 장기 npm 토큰 없이 GitHub 호스팅 러너와 OIDC `id-token: write`를 사용하세요. 문서에 명시된 요구 사항은 Node >=22.14.0 및 npm CLI >=11.5.1입니다. 활성화하기 전에 게시 워크플로를 구현하고 검증하며, 태그, package.json 버전, 테스트한 커밋이 일치하는지 확인하세요.
+[npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)은 `@zeroman.yang/react-auto-components`를 GitHub 저장소 `Zeroman/react-auto-components`와 워크플로 파일 `publish.yml`에 연결합니다. 이 워크플로는 장기 npm 토큰 없이 GitHub 호스팅 러너와 OIDC `id-token: write`를 사용합니다. Node >=22.14.0 및 npm CLI >=11.5.1이 필요합니다. 태그, `package.json` 버전, 테스트한 커밋이 일치해야 합니다.
 
 GitHub Actions CI는 잠금 파일로 설치하고, 타입 검사, 단위 테스트, 실제 tarball 사용 프로젝트 빌드, Chromium 테스트를 수행합니다. 브랜치 보호에서 병합 전 CI 통과를 요구할 수 있습니다. 외부 기여에 따라 유지 관리 요구가 달라지면 이를 설정하세요.

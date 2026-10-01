@@ -46,10 +46,10 @@ npm publish --access public --registry=https://registry.npmjs.org/
 
 Effectuez toute vérification demandée par npm. Après la publication, exécutez `npm view <package-name> version` avec le nom définitif, puis installez et vérifiez le paquet dans un nouveau projet consommateur. Supprimez l’avis de préparation de la première publication dans toutes les traductions du README et ajoutez les instructions d’installation une fois la première publication réussie.
 
-Mettez à jour la version et toutes les traductions du CHANGELOG avant chaque publication. N’essayez pas d’écraser une version déjà publiée. L’intégration continue actuelle du dépôt vérifie uniquement les modifications ; elle ne publie pas automatiquement sur npm.
+Mettez à jour la version et toutes les traductions du CHANGELOG avant chaque publication. N’essayez pas d’écraser une version déjà publiée. Poussez un tag `v*` identique à la version de `package.json`, par exemple `v0.2.0` pour la version `0.2.0`. Cela exécute `.github/workflows/publish.yml` et publie sur npm.
 
-## Futures publications automatisées
+## Publications automatisées
 
-Après la première publication, configurez [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) pour lier le paquet au dépôt GitHub et à un fichier de workflow précis. Utilisez un exécuteur hébergé par GitHub et OIDC `id-token: write`, sans jeton npm de longue durée. Les prérequis documentés sont Node >=22.14.0 et npm CLI >=11.5.1. Avant de l’activer, implémentez et vérifiez le workflow de publication et assurez-vous que le tag, la version de package.json et le commit testé correspondent.
+[npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) lie `@zeroman.yang/react-auto-components` au dépôt GitHub `Zeroman/react-auto-components` et au fichier de workflow `publish.yml`. Le workflow utilise un exécuteur hébergé par GitHub et OIDC `id-token: write`, sans jeton npm de longue durée. Il requiert Node >=22.14.0 et npm CLI >=11.5.1. Le tag, la version de `package.json` et le commit testé doivent correspondre.
 
 L’intégration continue de GitHub Actions installe les dépendances depuis le fichier de verrouillage, vérifie les types, exécute les tests unitaires, construit le consommateur de la véritable archive tarball et exécute les tests Chromium. La protection des branches peut exiger la réussite de l’intégration continue avant la fusion ; configurez-la à mesure que les besoins de maintenance évoluent avec les contributions externes.
