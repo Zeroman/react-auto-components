@@ -1,0 +1,108 @@
+{
+  "name": "@zeroman/react-auto-components",
+  "version": "0.1.0",
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "docs/migration.md",
+    "docs/i18n/*/README.md",
+    "docs/i18n/*/migration.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./style.css": "./dist/style.css",
+    "./xlsx": {
+      "types": "./dist/adapters/xlsx.d.ts",
+      "import": "./dist/xlsx.js"
+    }
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "dev": "vite --config vite.demo.config.ts",
+    "build": "vite build && tsc -p tsconfig.build.json && node scripts/finalize-build.mjs",
+    "build:demo": "vite build --config vite.demo.config.ts",
+    "demo:build": "pnpm build && pnpm prepare:test-project && pnpm build:demo",
+    "demo:screenshot": "node scripts/update-demo-screenshot.mjs",
+    "demo:update": "node scripts/update-demo.mjs",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "check:public": "node scripts/check-public-source.mjs",
+    "test:e2e": "pnpm --dir test-project test",
+    "prepare:test-project": "node scripts/prepare-test-project.mjs",
+    "format": "prettier --write src tests test-project/src test-project/tests *.ts",
+    "prepack": "pnpm build",
+    "prepublishOnly": "pnpm typecheck && pnpm test"
+  },
+  "peerDependencies": {
+    "react": ">=19.0.0 <20",
+    "react-dom": ">=19.0.0 <20"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "packageManager": "pnpm@12.5.1",
+  "dependencies": {
+    "@floating-ui/react": "^0.27.20",
+    "@radix-ui/react-context-menu": "^2.3.7",
+    "@radix-ui/react-dialog": "^1.1.23",
+    "@radix-ui/react-tabs": "^1.1.21",
+    "@tanstack/react-form": "^1.33.5",
+    "@tanstack/react-table": "^9.2.4",
+    "@tanstack/react-virtual": "^3.14.13"
+  },
+  "devDependencies": {
+    "@babel/core": "^8.0.6",
+    "@playwright/test": "^1.63.0",
+    "@rolldown/plugin-babel": "^0.2.4",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/babel__core": "^7.20.5",
+    "@types/node": "^26.6.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "jsdom": "^30.1.1",
+    "prettier": "^3.9.9",
+    "react": ">=19.0.0 <20",
+    "react-dom": ">=19.0.0 <20",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  },
+  "optionalDependencies": {
+    "exceljs": "^4.4.0"
+  },
+  "description": "Schema-driven React 19 components for forms, tables, search, dialogs, popovers, virtual scrolling and tabs.",
+  "license": "MIT",
+  "author": "Zeroman",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zeroman/react-auto-components.git"
+  },
+  "homepage": "https://github.com/Zeroman/react-auto-components#readme",
+  "bugs": {
+    "url": "https://github.com/Zeroman/react-auto-components/issues"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "components",
+    "form",
+    "table",
+    "schema-driven",
+    "virtualization"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

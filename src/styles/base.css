@@ -1,0 +1,1356 @@
+:root {
+  --auto-accent: #176b54;
+  --auto-accent-soft: #e8f4ee;
+  --auto-bg: #fff;
+  --auto-muted: #f4f6f5;
+  --auto-text: #202e29;
+  --auto-secondary: #65746d;
+  --auto-border: #dce4df;
+  --auto-danger: #bd3545;
+  --auto-radius: 8px;
+  --auto-font: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+.auto-root,
+.auto-overlay,
+.auto-popover {
+  font-family: var(--auto-font);
+  color: var(--auto-text);
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.auto-root *,
+.auto-overlay *,
+.auto-popover * {
+  box-sizing: border-box;
+}
+.auto-root button,
+.auto-overlay button,
+.auto-popover button {
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid var(--auto-border);
+  border-radius: 6px;
+  background: var(--auto-bg);
+  color: inherit;
+  padding: 7px 12px;
+}
+.auto-root button:hover,
+.auto-overlay button:hover {
+  background: var(--auto-muted);
+}
+.auto-root button:disabled,
+.auto-overlay button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.auto-root .auto-primary,
+.auto-overlay .auto-primary {
+  background: var(--auto-accent);
+  color: white;
+  border-color: var(--auto-accent);
+}
+.auto-root input,
+.auto-root select,
+.auto-root textarea,
+.auto-overlay input,
+.auto-overlay select {
+  font: inherit;
+  border: 1px solid var(--auto-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: var(--auto-bg);
+  color: inherit;
+  max-width: 100%;
+}
+.auto-root :focus-visible,
+.auto-overlay :focus-visible,
+.auto-popover :focus-visible {
+  outline: 2px solid var(--auto-accent);
+  outline-offset: 2px;
+}
+.auto-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.auto-error {
+  color: var(--auto-danger);
+  font-size: 13px;
+}
+.auto-muted {
+  color: var(--auto-secondary);
+}
+.auto-empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--auto-secondary);
+}
+.auto-badge {
+  display: inline-flex;
+  padding: 3px 8px;
+  background: var(--auto-accent-soft);
+  color: var(--auto-accent);
+  border-radius: 20px;
+  font-size: 12px;
+}
+.auto-form-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--auto-columns, 2), minmax(0, 1fr));
+  gap: var(--auto-field-gap, 18px);
+}
+.auto-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+.auto-field > label {
+  font-weight: 550;
+  font-size: 13px;
+}
+.auto-field > label span {
+  color: var(--auto-danger);
+}
+.auto-field input:not([type="checkbox"]):not([type="radio"]),
+.auto-field select,
+.auto-field textarea {
+  width: 100%;
+}
+.auto-form-actions {
+  margin-top: 22px;
+}
+.auto-select-menu {
+  border: 1px solid var(--auto-border);
+  padding: 8px;
+  background: var(--auto-bg);
+  border-radius: 8px;
+}
+.auto-select-menu input {
+  margin-bottom: 8px;
+}
+@media (max-width: 600px) {
+  .auto-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .auto-field {
+    grid-column: 1 / -1 !important;
+  }
+}
+.auto-search {
+  padding: 18px;
+  border-bottom: 1px solid var(--auto-border);
+}
+.auto-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: #13271e66;
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+}
+.auto-overlay {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  max-width: calc(100vw - 32px);
+  max-height: 90vh;
+  background: var(--auto-bg);
+  border: 1px solid var(--auto-border);
+  border-radius: 12px;
+  box-shadow: 0 24px 80px #0b261e40;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+}
+.auto-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--auto-border);
+  touch-action: none;
+}
+.auto-dialog-header h2 {
+  font-size: 18px;
+  margin: 0;
+}
+.auto-dialog-body {
+  padding: 24px;
+  overflow: auto;
+}
+.auto-dialog-footer {
+  padding: 16px 22px;
+  border-top: 1px solid var(--auto-border);
+  justify-content: flex-end;
+}
+.auto-dialog-full {
+  inset: 16px;
+  max-width: none;
+  max-height: none;
+  transform: none;
+}
+.auto-tabs-heading {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--auto-border);
+  gap: 12px;
+}
+.auto-tab-list {
+  display: flex;
+  gap: 4px;
+  overflow: auto;
+}
+.auto-tab-list button {
+  border: 0;
+  border-radius: 0;
+  padding: 12px 18px;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+.auto-tab-list button[data-state="active"] {
+  color: var(--auto-accent);
+  border-bottom-color: var(--auto-accent);
+  background: var(--auto-accent-soft);
+}
+.auto-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 10px;
+  background: var(--auto-accent-soft);
+  color: var(--auto-accent);
+  margin-left: 6px;
+  line-height: 16px;
+}
+.auto-tab-content {
+  padding: 20px 0;
+  min-width: 0;
+}
+.auto-tab-content[hidden] {
+  display: none;
+}
+.auto-tabs-vertical,
+.auto-tabs-menu {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: 20px;
+}
+.auto-tabs-vertical > .auto-tabs-heading,
+.auto-tabs-menu > .auto-tabs-heading {
+  border: 0;
+}
+.auto-tabs-vertical > .auto-tabs-heading .auto-tab-list,
+.auto-tabs-menu > .auto-tabs-heading .auto-tab-list {
+  flex-direction: column;
+  width: 100%;
+}
+.auto-popover {
+  z-index: 1100;
+  border: 1px solid var(--auto-border);
+  padding: 14px;
+  background: var(--auto-bg);
+  border-radius: 8px;
+  box-shadow: 0 10px 35px #142c2020;
+  max-width: min(420px, calc(100vw - 24px));
+}
+.auto-scroll {
+  border: 1px solid var(--auto-border);
+  border-radius: 8px;
+}
+.auto-table {
+  border: 1px solid var(--auto-border);
+  border-radius: 10px;
+  background: var(--auto-bg);
+  overflow: hidden;
+}
+.auto-toolbar {
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.auto-toolbar strong {
+  font-size: 16px;
+}
+.auto-table table {
+  border-spacing: 0;
+  border-collapse: separate;
+}
+.auto-table th,
+.auto-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--auto-border);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.auto-table th {
+  font-weight: 550;
+  background: var(--auto-muted) !important;
+  position: sticky !important;
+  top: 0;
+  z-index: 4 !important;
+  font-size: 12px;
+  height: 42px;
+}
+.auto-table th:first-child {
+  left: 0;
+}
+.auto-table tbody tr:hover td {
+  background: var(--auto-accent-soft) !important;
+}
+.auto-table tbody tr.auto-current td {
+  background: var(--auto-accent-soft);
+}
+.auto-table tfoot td {
+  font-weight: 600;
+  position: sticky;
+  bottom: 0;
+  background: var(--auto-muted) !important;
+}
+.auto-column-heading {
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: 2px;
+}
+.auto-column-heading button {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: 12px;
+  text-align: left;
+}
+.auto-column-heading button:disabled {
+  opacity: 1;
+  color: inherit;
+  cursor: default;
+}
+.auto-column-heading button.auto-filter-active {
+  color: var(--auto-accent);
+  background: var(--auto-accent-soft);
+  border-radius: 4px;
+  font-weight: 700;
+  padding: 1px 4px;
+}
+.auto-resize {
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  bottom: -10px;
+  width: 6px;
+  cursor: col-resize;
+  border-right: 2px solid transparent;
+  touch-action: none;
+}
+.auto-resize:hover {
+  border-color: var(--auto-accent);
+}
+.auto-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 22px;
+}
+.auto-expand {
+  padding: 0 5px !important;
+}
+.auto-pagination {
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--auto-border);
+  font-size: 12px;
+}
+.auto-sort-tags {
+  padding: 0 18px 12px;
+}
+.auto-sort-tags button {
+  font-size: 12px;
+  background: var(--auto-accent-soft);
+  border: 0;
+}
+.auto-json {
+  padding: 18px;
+  max-height: 500px;
+  overflow: auto;
+}
+.auto-json pre {
+  font-size: 12px;
+}
+.auto-notice {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 18px;
+  background: var(--auto-accent-soft);
+}
+.auto-filter-options {
+  display: flex;
+  flex-direction: column;
+  max-height: 300px;
+  overflow: auto;
+  min-width: 150px;
+}
+.auto-filter-options button {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.auto-settings {
+  min-width: 0;
+}
+.auto-preset {
+  margin: 18px 0;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--auto-border);
+}
+.auto-setting-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--auto-border);
+}
+.auto-setting-row > label {
+  flex: 1;
+}
+.auto-setting-row > input[type="number"] {
+  width: 80px;
+}
+.auto-settings textarea {
+  font-family: monospace;
+}
+.auto-context-menu [role="menuitem"] {
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.auto-context-menu [data-highlighted] {
+  background: var(--auto-accent-soft);
+}
+.auto-context-menu [data-disabled] {
+  opacity: 0.4;
+}
+.auto-skeleton {
+  animation: auto-pulse 1s infinite;
+  color: var(--auto-secondary);
+}
+@keyframes auto-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* The parent owns the available height; the data region consumes its remainder. */
+.auto-table[data-height="auto"] {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+}
+.auto-table[data-height="auto"] > * {
+  flex-shrink: 0;
+}
+.auto-table[data-height="auto"] > .auto-table-scroll,
+.auto-table[data-height="auto"] > .auto-json {
+  flex: 1 1 0%;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+}
+
+/* Keep labels and messages associated while allowing dense horizontal forms. */
+.auto-field-control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.auto-field-control > input[type="checkbox"],
+.auto-field-control > input[type="radio"] {
+  align-self: flex-start;
+}
+.auto-form[data-label-position="left"]
+  > .auto-form-grid
+  > .auto-field[data-field] {
+  display: grid;
+  grid-template-columns: var(--auto-label-width, 96px) minmax(0, 1fr);
+  column-gap: 8px;
+  align-items: start;
+}
+.auto-form[data-label-position="left"] > .auto-form-grid > .auto-field > label {
+  padding-top: 8px;
+  line-height: 20px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.auto-form[data-label-position="left"][data-label-width="auto"]
+  > .auto-form-grid
+  > .auto-field[data-field] {
+  grid-template-columns:
+    minmax(0, min(var(--auto-label-width, 96px), 45%))
+    minmax(0, 1fr);
+}
+.auto-form[data-density="compact"] {
+  --auto-field-gap: 10px 16px;
+}
+.auto-form[data-density="compact"] > .auto-form-grid > .auto-field {
+  gap: 4px 8px;
+}
+.auto-form[data-density="compact"][data-label-position="left"]
+  > .auto-form-grid
+  > .auto-field
+  > label {
+  padding-top: 6px;
+}
+.auto-form[data-density="compact"]
+  .auto-field
+  input:not([type="checkbox"]):not([type="radio"]),
+.auto-form[data-density="compact"] .auto-field select,
+.auto-form[data-density="compact"] .auto-field textarea {
+  min-height: var(--auto-compact-control-height, 32px);
+  padding: var(--auto-compact-control-padding, 5px 8px);
+  font-size: var(--auto-compact-control-font, 13px);
+  line-height: 20px;
+}
+.auto-form[data-density="compact"] > .auto-form-actions {
+  margin-top: 12px;
+}
+.auto-search[data-density="compact"] {
+  padding: 12px 16px;
+}
+.auto-search[data-density="compact"] > .auto-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px 16px;
+}
+.auto-search[data-density="compact"] > .auto-form > .auto-form-grid {
+  flex: 1 1 540px;
+  min-width: 0;
+}
+.auto-search[data-density="compact"] > .auto-form > .auto-form-actions {
+  flex: 0 0 auto;
+  margin-top: 0;
+}
+.auto-search[data-density="compact"]
+  > .auto-form
+  > .auto-form-actions
+  > button {
+  min-height: 32px;
+  padding: 5px 10px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.auto-form[data-label-align="left"] > .auto-form-grid > .auto-field > label {
+  text-align: left;
+}
+.auto-form[data-label-align="right"] > .auto-form-grid > .auto-field > label {
+  text-align: right;
+}
+
+/* Search labels fit their own text, wrapping before they crowd the control. */
+.auto-search[data-label-width="auto"]
+  > .auto-form[data-label-position="left"]
+  > .auto-form-grid
+  > .auto-field[data-field] {
+  grid-template-columns: fit-content(45%) minmax(0, 1fr);
+}
+
+/* ==========================================================================
+   Global Size (Small, Medium, Large) & Density Styles
+   ========================================================================== */
+
+/* Each component resets size tokens so nested overrides stop inheritance. */
+.auto-root[data-size],
+.auto-overlay[data-size] {
+  --auto-control-font: 14px;
+  --auto-control-height: 0px;
+  --auto-control-radius: 6px;
+  --auto-button-padding: 7px 12px;
+  --auto-input-padding: 8px 10px;
+  --auto-compact-control-height: 32px;
+  --auto-compact-control-padding: 5px 8px;
+  --auto-compact-control-font: 13px;
+}
+.auto-root[data-size="small"],
+.auto-overlay[data-size="small"] {
+  --auto-control-font: 12px;
+  --auto-control-height: 26px;
+  --auto-control-radius: 4px;
+  --auto-button-padding: 4px 8px;
+  --auto-input-padding: 4px 8px;
+  --auto-compact-control-height: 26px;
+  --auto-compact-control-padding: 4px 8px;
+  --auto-compact-control-font: 12px;
+}
+.auto-root[data-size="large"],
+.auto-overlay[data-size="large"] {
+  --auto-control-font: 15px;
+  --auto-control-height: 42px;
+  --auto-control-radius: 8px;
+  --auto-button-padding: 10px 18px;
+  --auto-input-padding: 10px 14px;
+  --auto-compact-control-height: 42px;
+  --auto-compact-control-padding: 10px 14px;
+  --auto-compact-control-font: 15px;
+}
+.auto-root[data-size]
+  button:where(
+    :not(.auto-tab-list button, .auto-menu button, .auto-column-heading button)
+  ),
+.auto-overlay[data-size]
+  button:where(
+    :not(.auto-tab-list button, .auto-menu button, .auto-column-heading button)
+  ) {
+  padding: var(--auto-button-padding);
+  font-size: var(--auto-control-font);
+  min-height: var(--auto-control-height);
+  border-radius: var(--auto-control-radius);
+}
+.auto-root[data-size] input:not([type="checkbox"]):not([type="radio"]),
+.auto-root[data-size] select,
+.auto-root[data-size] textarea,
+.auto-overlay[data-size] input:not([type="checkbox"]):not([type="radio"]),
+.auto-overlay[data-size] select {
+  padding: var(--auto-input-padding);
+  font-size: var(--auto-control-font);
+  min-height: var(--auto-control-height);
+  border-radius: var(--auto-control-radius);
+}
+
+/* Small Size */
+[data-size="small"] {
+  font-size: 12px;
+}
+.auto-form[data-size="small"] > .auto-form-grid > .auto-field > label {
+  font-size: 12px;
+}
+.auto-tabs[data-size="small"] > .auto-tabs-heading > .auto-tab-list button {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+.auto-tabs[data-size="small"]
+  > .auto-tabs-heading
+  > .auto-tab-list
+  .auto-tab-badge {
+  font-size: 10px;
+  padding: 0 4px;
+  line-height: 14px;
+}
+.auto-tabs[data-size="small"] > .auto-tab-content {
+  padding: 12px 0;
+}
+.auto-table[data-size="small"] {
+  font-size: 12px;
+}
+.auto-table[data-size="small"]
+  > .auto-table-scroll
+  > table
+  > :is(thead, tbody, tfoot)
+  > tr
+  > th {
+  height: 32px;
+  font-size: 11px;
+}
+.auto-table[data-size="small"]
+  > .auto-table-scroll
+  > table
+  > :is(thead, tbody, tfoot)
+  > tr
+  > th,
+.auto-table[data-size="small"]
+  > .auto-table-scroll
+  > table
+  > :is(thead, tbody, tfoot)
+  > tr
+  > td {
+  padding: 4px 8px;
+}
+.auto-table[data-size="small"] > .auto-toolbar {
+  padding: 8px 12px;
+  gap: 8px;
+}
+.auto-table[data-size="small"] > .auto-toolbar strong {
+  font-size: 14px;
+}
+.auto-table[data-size="small"] > .auto-pagination {
+  padding: 8px 12px;
+  font-size: 11px;
+}
+.auto-overlay[data-size="small"] .auto-dialog-header {
+  padding: 12px 16px;
+}
+.auto-overlay[data-size="small"] .auto-dialog-header h2 {
+  font-size: 15px;
+}
+.auto-overlay[data-size="small"] .auto-dialog-body {
+  padding: 16px;
+}
+.auto-overlay[data-size="small"] .auto-dialog-footer {
+  padding: 10px 16px;
+}
+
+/* Large Size */
+[data-size="large"] {
+  font-size: 15px;
+}
+.auto-form[data-size="large"] > .auto-form-grid > .auto-field > label {
+  font-size: 14px;
+}
+.auto-tabs[data-size="large"] > .auto-tabs-heading > .auto-tab-list button {
+  padding: 15px 24px;
+  font-size: 15px;
+}
+.auto-tabs[data-size="large"]
+  > .auto-tabs-heading
+  > .auto-tab-list
+  .auto-tab-badge {
+  font-size: 12px;
+  padding: 2px 8px;
+  line-height: 18px;
+}
+.auto-tabs[data-size="large"] > .auto-tab-content {
+  padding: 24px 0;
+}
+.auto-table[data-size="large"] {
+  font-size: 14px;
+}
+.auto-table[data-size="large"]
+  > .auto-table-scroll
+  > table
+  > :is(thead, tbody, tfoot)
+  > tr
+  > th {
+  height: 48px;
+  font-size: 13px;
+}
+.auto-table[data-size="large"]
+  > .auto-table-scroll
+  > table
+  > :is(thead, tbody, tfoot)
+  > tr
+  > th,
+.auto-table[data-size="large"]
+  > .auto-table-scroll
+  > table
+  > :is(thead, tbody, tfoot)
+  > tr
+  > td {
+  padding: 12px 16px;
+}
+.auto-table[data-size="large"] > .auto-toolbar {
+  padding: 18px 22px;
+  gap: 16px;
+}
+.auto-table[data-size="large"] > .auto-toolbar strong {
+  font-size: 18px;
+}
+.auto-table[data-size="large"] > .auto-pagination {
+  padding: 16px 22px;
+  font-size: 13px;
+}
+.auto-overlay[data-size="large"] .auto-dialog-header {
+  padding: 20px 24px;
+}
+.auto-overlay[data-size="large"] .auto-dialog-header h2 {
+  font-size: 20px;
+}
+.auto-overlay[data-size="large"] .auto-dialog-body {
+  padding: 28px;
+}
+.auto-overlay[data-size="large"] .auto-dialog-footer {
+  padding: 18px 24px;
+}
+
+/* Tabs Density */
+.auto-tabs[data-density="compact"]
+  > .auto-tabs-heading
+  > .auto-tab-list
+  button {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+.auto-tabs[data-density="compact"] > .auto-tab-content {
+  padding: 10px 0;
+}
+
+/* Table Density */
+.auto-table[data-density="compact"]
+  > .auto-table-scroll
+  > table
+  > :is(thead, tbody, tfoot)
+  > tr
+  > th {
+  height: 32px;
+}
+.auto-table[data-density="compact"]
+  > .auto-table-scroll
+  > table
+  > :is(thead, tbody, tfoot)
+  > tr
+  > th,
+.auto-table[data-density="compact"]
+  > .auto-table-scroll
+  > table
+  > :is(thead, tbody, tfoot)
+  > tr
+  > td {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+.auto-table[data-density="compact"] > .auto-toolbar {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.auto-table[data-density="compact"] > .auto-pagination {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.auto-table[data-density="comfortable"]
+  > .auto-table-scroll
+  > table
+  > :is(thead, tbody, tfoot)
+  > tr
+  > th {
+  height: 48px;
+}
+.auto-table[data-density="comfortable"]
+  > .auto-table-scroll
+  > table
+  > :is(thead, tbody, tfoot)
+  > tr
+  > th,
+.auto-table[data-density="comfortable"]
+  > .auto-table-scroll
+  > table
+  > :is(thead, tbody, tfoot)
+  > tr
+  > td {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.auto-table[data-density="comfortable"] > .auto-toolbar {
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+.auto-table[data-density="comfortable"] > .auto-pagination {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+/* Native selection controls must not inflate the table's configured row height. */
+.auto-table input[type="checkbox"],
+.auto-table input[type="radio"] {
+  margin: 0;
+  vertical-align: middle;
+}
+
+.auto-table[data-density="compact"]
+  > .auto-table-scroll
+  > table
+  > tbody
+  > tr
+  > td
+  > .auto-cell {
+  min-height: 0;
+}
+
+/* Keep translated row actions on one line; the action column measures its labels. */
+.auto-row-actions {
+  flex-wrap: nowrap;
+}
+
+/* ==========================================================================
+   AutoMenu
+   ========================================================================== */
+
+.auto-menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  gap: 4px;
+  color: var(--auto-text);
+  box-sizing: border-box;
+}
+
+.auto-menu-header,
+.auto-menu-label,
+.auto-menu-footer,
+.auto-menu-collapse-btn {
+  flex-shrink: 0;
+}
+
+.auto-menu-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--auto-secondary);
+  margin: 6px 10px 2px;
+  user-select: none;
+}
+
+.auto-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--auto-border) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.auto-menu-item {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Scoped menu item button rules: never override .auto-menu-collapse-btn */
+.auto-menu [data-auto-menu-item] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--auto-secondary);
+  padding: 7px 10px;
+  border-radius: var(--auto-radius);
+  font-size: var(--auto-control-font, 14px);
+  line-height: 1.3;
+  cursor: pointer;
+  box-sizing: border-box;
+  text-decoration: none;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+  position: relative;
+}
+
+.auto-menu [data-auto-menu-item]:hover:not(:disabled) {
+  background: var(--auto-muted);
+  color: var(--auto-text);
+}
+
+/* Active item */
+.auto-menu [data-auto-menu-item].active,
+.auto-menu [data-auto-menu-item][aria-current="page"] {
+  background: var(--auto-accent-soft);
+  color: var(--auto-accent);
+  font-weight: 600;
+}
+
+.auto-menu [data-auto-menu-item].active .auto-menu-icon,
+.auto-menu [data-auto-menu-item][aria-current="page"] .auto-menu-icon {
+  color: var(--auto-accent);
+}
+
+.auto-menu [data-auto-menu-item].active .auto-menu-text small,
+.auto-menu [data-auto-menu-item][aria-current="page"] .auto-menu-text small {
+  color: var(--auto-accent);
+  opacity: 0.85;
+}
+
+/* Active ancestor indication using data-active-branch */
+.auto-menu
+  [data-auto-menu-item][data-active-branch="true"]:not(.active):not(
+    [aria-current="page"]
+  ) {
+  color: var(--auto-text);
+  font-weight: 550;
+}
+
+.auto-menu [data-auto-menu-item][data-active-branch="true"] .auto-menu-icon {
+  color: var(--auto-accent);
+}
+
+.auto-menu [data-auto-menu-item][data-active-branch="true"] .auto-menu-arrow {
+  color: var(--auto-accent);
+}
+
+/* Focus visibility: unclipped focus ring with inset offset and accent ring */
+.auto-menu [data-auto-menu-item]:focus-visible,
+.auto-menu-collapse-btn:focus-visible {
+  outline: 2px solid var(--auto-accent);
+  outline-offset: -2px;
+  box-shadow: 0 0 0 2px var(--auto-accent-soft);
+}
+
+/* Disabled state */
+.auto-menu [data-auto-menu-item]:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.auto-menu [data-auto-menu-item]:disabled:hover {
+  background: transparent;
+  color: var(--auto-secondary);
+}
+
+/* Icons, text and badges */
+.auto-menu-icon {
+  font-size: 1.25em;
+  width: 1.5em;
+  height: 1.5em;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.auto-menu-text {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+.auto-menu-text small {
+  font-size: 0.8em;
+  font-weight: 400;
+  color: var(--auto-secondary);
+  margin-top: 1px;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.auto-menu-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 10px;
+  background: var(--auto-accent-soft);
+  color: var(--auto-accent);
+  flex-shrink: 0;
+  line-height: 1.3;
+  min-width: 18px;
+  height: 18px;
+}
+
+.auto-menu [data-auto-menu-item].active .auto-menu-badge,
+.auto-menu [data-auto-menu-item][aria-current="page"] .auto-menu-badge {
+  background: var(--auto-accent);
+  color: #fff;
+}
+
+.auto-menu-arrow {
+  flex-shrink: 0;
+  color: var(--auto-secondary);
+  font-size: 0.75em;
+  transition: transform 0.15s ease;
+  line-height: 1;
+  margin-left: auto;
+}
+
+.auto-menu-arrow-open {
+  transform: rotate(180deg);
+}
+
+/* Nested lists: guide tree line and indent */
+.auto-menu:not(.auto-menu-flyout) .auto-menu-list .auto-menu-list {
+  margin: 2px 0 3px;
+  padding-left: 12px;
+  border-left: 1px solid var(--auto-border);
+  margin-left: 17px;
+  flex: 0 0 auto;
+  overflow: visible;
+  gap: 2px;
+}
+
+.auto-menu:not(.auto-menu-flyout)
+  .auto-menu-list
+  .auto-menu-list
+  [data-auto-menu-item] {
+  font-size: calc(var(--auto-control-font, 14px) * 0.93);
+  min-height: 32px;
+  padding: 5px 8px;
+}
+
+/* Footer & Collapse control: pinned at bottom, dedicated button styling */
+.auto-menu-footer {
+  margin-top: auto;
+  flex-shrink: 0;
+  border-top: 1px solid var(--auto-border);
+  padding: 8px 8px 4px;
+}
+
+.auto-menu-footer > .sidebar-footer {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 2px;
+}
+
+.auto-menu-collapse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  align-self: flex-end;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  margin: 4px 6px;
+  border-radius: var(--auto-radius, 8px);
+  color: var(--auto-secondary);
+  background: transparent;
+  border: 1px solid var(--auto-border);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.auto-menu-collapse-btn:hover:not(:disabled) {
+  background: var(--auto-muted);
+  color: var(--auto-text);
+  border-color: var(--auto-secondary);
+}
+
+/* Collapsed icon rail */
+.auto-menu[data-collapsed="true"] {
+  gap: 6px;
+  align-items: center;
+}
+
+.auto-menu[data-collapsed="true"] .auto-menu-list {
+  width: 100%;
+  align-items: center;
+  gap: 4px;
+}
+
+.auto-menu[data-collapsed="true"] .auto-menu-item {
+  width: 100%;
+  align-items: center;
+}
+
+.auto-menu[data-collapsed="true"] [data-auto-menu-item] {
+  justify-content: center;
+  padding: 0;
+  width: 42px;
+  height: 42px;
+  min-height: 42px;
+  border-radius: var(--auto-radius, 8px);
+  margin: 0 auto;
+}
+
+.auto-menu[data-collapsed="true"] [data-auto-menu-item] .auto-menu-icon {
+  font-size: 15px;
+  font-weight: 600;
+  width: auto;
+  height: auto;
+}
+
+/* Active ancestor in collapsed rail */
+.auto-menu[data-collapsed="true"]
+  [data-auto-menu-item][data-active-branch="true"] {
+  background: var(--auto-accent-soft);
+  color: var(--auto-accent);
+  font-weight: 600;
+}
+
+.auto-menu[data-collapsed="true"] .auto-menu-label {
+  visibility: hidden;
+  height: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.auto-menu[data-collapsed="true"] .auto-menu-collapse-btn {
+  align-self: center;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  margin: 6px auto;
+}
+
+.auto-menu[data-collapsed="true"] .auto-menu-footer {
+  width: 100%;
+  padding: 8px 4px;
+  text-align: center;
+}
+
+/* Sizes: buttons always >= 32px tall */
+.auto-menu[data-size="small"] [data-auto-menu-item] {
+  padding: 5px 8px;
+  font-size: 13px;
+  min-height: 32px;
+  gap: 8px;
+}
+
+.auto-menu[data-size="small"] .auto-menu-list .auto-menu-list {
+  padding-left: 10px;
+  margin-left: 14px;
+}
+
+.auto-menu[data-size="large"] [data-auto-menu-item] {
+  padding: 10px 14px;
+  font-size: 15px;
+  min-height: 44px;
+  gap: 12px;
+}
+
+.auto-menu[data-size="large"] .auto-menu-text small {
+  font-size: 12px;
+}
+
+.auto-menu[data-size="small"][data-collapsed="true"] [data-auto-menu-item] {
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+}
+
+.auto-menu[data-size="large"][data-collapsed="true"] [data-auto-menu-item] {
+  width: 46px;
+  height: 46px;
+  min-height: 46px;
+}
+
+/* Density */
+.auto-menu[data-density="compact"] {
+  gap: 2px;
+}
+
+.auto-menu[data-density="compact"] .auto-menu-list {
+  gap: 1px;
+}
+
+.auto-menu[data-density="compact"] [data-auto-menu-item] {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  min-height: 32px;
+  gap: 8px;
+}
+
+.auto-menu[data-density="compact"][data-collapsed="true"]
+  [data-auto-menu-item] {
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+}
+
+/* ==========================================================================
+   AutoMenu Flyout (Portal in AutoPopover)
+   Bounded width/height, no 100% height trap, own scroll, correct menu tokens
+   ========================================================================== */
+
+.auto-popover:has(.auto-menu-flyout) {
+  padding: 4px;
+  border-radius: var(--auto-radius, 8px);
+}
+
+.auto-menu.auto-menu-flyout {
+  height: auto;
+  max-height: min(440px, calc(100dvh - 32px), calc(100vh - 32px));
+  min-width: 190px;
+  width: 220px;
+  max-width: min(300px, calc(100vw - 24px));
+  overflow: hidden;
+  gap: 2px;
+}
+
+.auto-menu-flyout .auto-menu-label {
+  margin: 6px 10px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--auto-secondary);
+}
+
+/* Flyout root list: no double indentation from generic depth rules */
+.auto-menu-flyout > .auto-menu-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
+  border-left: none;
+}
+
+.auto-menu-flyout > .auto-menu-list > .auto-menu-item > [data-auto-menu-item] {
+  font-size: var(--auto-control-font, 14px);
+  padding: 7px 10px;
+  min-height: 34px;
+}
+
+/* Nested submenus inside flyout */
+.auto-menu-flyout .auto-menu-list .auto-menu-list {
+  margin: 2px 0 3px;
+  padding-left: 10px;
+  border-left: 1px solid var(--auto-border);
+  margin-left: 14px;
+  flex: 0 0 auto;
+  overflow: visible;
+  gap: 2px;
+}
+
+.auto-menu-flyout .auto-menu-list .auto-menu-list [data-auto-menu-item] {
+  font-size: calc(var(--auto-control-font, 14px) * 0.93);
+  min-height: 32px;
+  padding: 5px 8px;
+}
+
+/* Override popover button defaults inside flyout */
+.auto-popover .auto-menu-flyout [data-auto-menu-item] {
+  border: 0;
+  background: transparent;
+  color: var(--auto-secondary);
+  border-radius: var(--auto-radius, 8px);
+}
+
+.auto-popover .auto-menu-flyout [data-auto-menu-item]:hover:not(:disabled) {
+  background: var(--auto-muted);
+  color: var(--auto-text);
+}
+
+.auto-popover .auto-menu-flyout [data-auto-menu-item].active,
+.auto-popover .auto-menu-flyout [data-auto-menu-item][aria-current="page"] {
+  background: var(--auto-accent-soft);
+  color: var(--auto-accent);
+  font-weight: 600;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .auto-menu-arrow,
+  .auto-menu [data-auto-menu-item],
+  .auto-menu-collapse-btn {
+    transition: none !important;
+  }
+}

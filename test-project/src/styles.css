@@ -1,0 +1,1140 @@
+* {
+  box-sizing: border-box;
+}
+
+/* Document & Viewport Constraint: Avoid whole-document vertical scrolling */
+html,
+body {
+  height: 100%;
+  height: 100dvh;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  color: #23352c;
+  background: #f5f7f5;
+  font-size: 14px;
+}
+
+#root {
+  height: 100%;
+}
+
+button,
+select,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 2px solid #23745c;
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Shell Layout (Studio)
+   ========================================================================== */
+
+.studio,
+.studio-fill {
+  display: flex;
+  height: 100%;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Sidebar Aside: Fixed width, nav scrolls internally on short heights */
+.studio aside {
+  width: 242px;
+  flex-shrink: 0;
+  background: #fcfdfb;
+  border-right: 1px solid #dfe6e0;
+  position: fixed;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 14px;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.brand-mark {
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  background: #24674f;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+
+.brand strong {
+  font-size: 21px;
+  letter-spacing: -0.7px;
+}
+
+.brand strong span {
+  font-weight: 400;
+  color: #64766b;
+}
+
+/* Sidebar menu itself is the library's AutoMenu component. */
+.studio .auto-menu {
+  gap: 0;
+}
+
+.studio .auto-menu-label {
+  margin: 18px 8px 10px;
+}
+
+.sidebar-footer {
+  flex-shrink: 0;
+  border-top: 0;
+  padding: 4px 8px 2px;
+  font-size: 11px;
+  color: #6c7c72;
+}
+
+.sidebar-footer small {
+  display: block;
+  margin-top: 6px;
+  color: #9ba69e;
+}
+
+.online-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3c8b60;
+  margin-right: 7px;
+}
+
+/* ==========================================================================
+   Main Content Area & Topbar
+   ========================================================================== */
+
+.studio-main {
+  margin-left: 242px;
+  width: calc(100% - 242px);
+  height: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.topbar {
+  height: 56px;
+  flex: 0 0 56px;
+  background: #fff;
+  border-bottom: 1px solid #e2e8e3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  font-size: 12px;
+  color: #52665a;
+  gap: 12px;
+  min-width: 0;
+}
+
+.topbar > span:first-child {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breadcrumb {
+  color: #98a59c;
+  margin-left: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar > div,
+.topbar .auto-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.topbar button {
+  background: none;
+  border: 0;
+  font-size: 20px;
+  color: #63776a;
+  display: grid;
+  place-items: center;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.topbar button:hover {
+  background: #edf3ee;
+}
+
+/* LanguagePicker: label wrapper containing span icon and native select */
+.language-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #52665a;
+  cursor: pointer;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.language-picker span {
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.language-picker select {
+  font-size: 12px;
+  height: 28px;
+  padding: 2px 8px;
+  border: 1px solid #dce5dd;
+  border-radius: 6px;
+  background: #fff;
+  color: #43554b;
+  cursor: pointer;
+  max-width: 110px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.language-picker select:hover {
+  border-color: #24674f;
+}
+
+.language-picker select:focus-visible {
+  outline: 2px solid #23745c;
+  outline-offset: 1px;
+}
+
+.version-pill {
+  font-size: 10px;
+  border: 1px solid #dce5dd;
+  border-radius: 20px;
+  padding: 3px 8px;
+  color: #6e8274;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.avatar {
+  background: #e9eee9;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* Main Container: page-heading, .demo-viewport, page-footer */
+.studio main,
+main[data-page] {
+  width: 100%;
+  margin: 0;
+  padding: 16px 20px 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.page-heading {
+  flex: 0 0 auto;
+  margin-bottom: 12px;
+}
+
+.page-heading h1 {
+  font-size: 22px;
+  letter-spacing: -0.5px;
+  margin: 0;
+  font-weight: 650;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+
+.page-footer {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: #a1ada4;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid #e3e9e3;
+  min-width: 0;
+  gap: 12px;
+}
+
+.page-footer span {
+  overflow-wrap: break-word;
+}
+
+/* ==========================================================================
+   Demo Viewport & Responsive Page Routing
+   ========================================================================== */
+
+.demo-viewport {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Table page: chained min-height:0 without outer scrolling */
+main[data-page="table"] .demo-viewport {
+  overflow: hidden;
+}
+
+/* Form, search, dialog, popover, scroll pages: internal overflow handling */
+main[data-page="form"] .demo-viewport,
+main[data-page="search"] .demo-viewport,
+main[data-page="dialog"] .demo-viewport,
+main[data-page="popover"] .demo-viewport,
+main[data-page="scroll"] .demo-viewport {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tabs page: maximizes viewport */
+main[data-page="tabs"] .demo-viewport {
+  overflow: hidden;
+}
+
+main[data-page="tabs"] .card {
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+main[data-page="tabs"] .auto-tabs {
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+main[data-page="tabs"] .auto-tab-content:not([hidden]),
+main[data-page="tabs"] [role="tabpanel"]:not([hidden]) {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* ==========================================================================
+   TableDemo min-height:0 Chain & Auto Height Integration
+   ========================================================================== */
+
+.table-demo {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.table-demo .section-heading {
+  flex: 0 0 auto;
+  margin-bottom: 8px;
+}
+
+.table-demo > .auto-tabs,
+.table-demo .auto-tabs {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.table-demo .auto-tabs-heading {
+  flex: 0 0 auto;
+}
+
+/* Single-line horizontally scrollable tab strip: all tabs keyboard reachable */
+.table-demo .auto-tab-list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.table-demo .auto-tab-list button {
+  padding: 8px 12px;
+  font-size: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.table-demo .auto-tab-content,
+.table-demo [role="tabpanel"] {
+  padding: 8px 0 0;
+}
+
+/* Active tab panel scrolls internally if controls + minimum table height exceed space */
+.table-demo .auto-tab-content:not([hidden]),
+.table-demo .auto-tab-panel:not([hidden]),
+.table-demo [role="tabpanel"]:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-demo .hint {
+  flex: 0 0 auto;
+  margin-top: 8px;
+  padding: 8px 12px;
+}
+
+/* Exact data-height integration for AutoTable in TableDemo */
+.table-demo
+  .auto-tab-content:not([hidden])
+  > section.auto-table[data-height="auto"] {
+  flex: 1 1 0%;
+  min-height: min-content;
+  height: 100%;
+}
+
+.table-demo
+  .auto-tab-content:not([hidden])
+  > section.auto-table[data-height="fixed"] {
+  flex: 0 0 auto;
+}
+
+/* Ensure data area in auto-height table preserves minimum vertical space */
+.auto-table[data-height="auto"] > .auto-table-scroll,
+.auto-table[data-height="auto"] > .auto-json {
+  contain: size;
+  min-height: 160px;
+}
+
+/* ==========================================================================
+   HeightDemo Component Layout (.height-demo)
+   ========================================================================== */
+
+.height-demo {
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+.height-demo[data-layout="grid"] {
+  display: grid;
+  grid-template-rows: auto minmax(min-content, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+.height-demo-header,
+.height-demo-footer {
+  flex: 0 0 auto;
+}
+
+.height-demo-header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.height-demo-header > .auto-actions {
+  margin-bottom: 6px;
+}
+
+.height-demo-explanation {
+  padding: 12px 0;
+  margin: 0;
+  font-size: 13px;
+}
+
+.height-demo-footer {
+  font-size: 11px;
+}
+
+.height-demo-hidden > .auto-table {
+  display: none;
+}
+
+/* ==========================================================================
+   Form Page Layout & Panels (.demo-grid, cards, code previews)
+   ========================================================================== */
+
+.card {
+  border: 1px solid #e0e7e1;
+  background: white;
+  border-radius: 10px;
+  padding: 16px;
+  min-width: 0;
+}
+
+.muted {
+  font-size: 12px;
+  color: #89998e;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 16px;
+  min-height: 0;
+}
+
+/* On desktop: 2 independently scrolling cards/regions while gallery fields remain reachable below */
+@media (min-width: 1101px) {
+  main[data-page="form"] .demo-grid {
+    grid-template-columns: 1.4fr 1fr;
+    max-height: calc(100vh - 170px);
+    min-height: 440px;
+  }
+  main[data-page="form"] .demo-grid > .card {
+    height: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+}
+
+.code-card {
+  background: #1c3027;
+  color: #afc8b7;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.code-card pre {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.code-title {
+  font-size: 12px;
+  border-bottom: 1px solid #354a3d;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.code-title span {
+  font-size: 10px;
+  color: #779381;
+}
+
+.code-note {
+  font-size: 11px;
+  color: #739380;
+  line-height: 1.6;
+  margin-top: 20px;
+}
+
+/* ==========================================================================
+   UI Components & Controls
+   ========================================================================== */
+
+h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  letter-spacing: -0.3px;
+  overflow-wrap: break-word;
+}
+
+h3 {
+  font-size: 15px;
+  margin: 0 0 4px;
+  overflow-wrap: break-word;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.section-heading > div:first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.section-heading p {
+  color: #87968c;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+  overflow-wrap: break-word;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.metric {
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid #e0e7e1;
+  border-radius: 10px;
+  min-width: 0;
+}
+
+.metric > span {
+  color: #829186;
+  font-size: 11px;
+}
+
+.metric strong {
+  display: block;
+  font-size: 20px;
+  font-weight: 550;
+  letter-spacing: -0.7px;
+  margin: 4px 0;
+  overflow-wrap: break-word;
+}
+
+.metric small {
+  font-size: 11px;
+  font-weight: 400;
+  color: #94a196;
+  margin-left: 6px;
+  letter-spacing: 0;
+}
+
+.metric p {
+  font-size: 10px;
+  color: #9ca79f;
+  margin: 0;
+}
+
+.segmented {
+  display: flex;
+  border: 1px solid #dce5de;
+  padding: 3px;
+  border-radius: 7px;
+  background: #edf2ed;
+  white-space: nowrap;
+}
+
+.segmented button {
+  font-size: 11px;
+  border: 0;
+  background: transparent;
+  padding: 6px 10px;
+  color: #8b9a8f;
+  border-radius: 4px;
+}
+
+.segmented button.selected {
+  background: #fff;
+  color: #316d50;
+  box-shadow: 0 1px 4px #20392a12;
+}
+
+.hint {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 7px;
+  border: 1px dashed #d6e2d8;
+  color: #809488;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.hint span {
+  color: #4a8b61;
+}
+
+.status {
+  font-size: 11px;
+  border-radius: 20px;
+  padding: 3px 8px;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.status-active {
+  background: #ecf4ee;
+  color: #448561;
+}
+
+.status-done {
+  background: #e9eff8;
+  color: #5c7ea6;
+}
+
+.status-pending {
+  background: #f5f0e4;
+  color: #ab914e;
+}
+
+.popover-playground {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: clamp(24px, 6vh, 48px) 16px;
+}
+
+.virtual-project {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--auto-border, #dfe6e0);
+}
+
+.virtual-project > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.virtual-project strong {
+  font-size: 13px;
+  font-weight: 500;
+  overflow-wrap: break-word;
+}
+
+.virtual-project p {
+  font-size: 11px;
+  color: #8e9d93;
+  margin: 2px 0 0;
+}
+
+.row-number {
+  font:
+    11px ui-monospace,
+    monospace;
+  color: #9aaba0;
+  width: 38px;
+  flex-shrink: 0;
+}
+
+.tab-demo-content {
+  padding: 16px 0;
+}
+
+.tab-demo-content input {
+  padding: 6px 10px;
+  border: 1px solid #dce5dd;
+  border-radius: 6px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.global-settings {
+  display: grid;
+  gap: 16px;
+}
+
+.global-settings > label:not(.auto-actions) {
+  display: grid;
+  gap: 6px;
+}
+
+.global-settings output {
+  font-size: 12px;
+  color: var(--auto-secondary, #64766b);
+}
+
+.global-settings-width {
+  display: grid;
+  gap: 6px;
+}
+
+/* ==========================================================================
+   Dark Theme (studio-dark)
+   ========================================================================== */
+
+.studio-dark {
+  --auto-bg: #20362b;
+  --auto-text: #e1ebe3;
+  --auto-muted: #294333;
+  --auto-border: #3c5143;
+  --auto-accent: #6ed19d;
+  --auto-accent-soft: #294333;
+  background: #17271e;
+  color: #dde8df;
+}
+
+.studio-dark .card,
+.studio-dark .metric,
+.studio-dark .topbar,
+.studio-dark aside {
+  background: #20362b;
+  border-color: #3c5143;
+}
+
+.studio-dark .metric,
+.studio-dark .card {
+  color: #dce5de;
+}
+
+.studio-dark input,
+.studio-dark select {
+  color: #dce5de;
+  background: #20362b;
+  border-color: #3c5143;
+}
+
+.studio-dark .language-picker {
+  color: #dde8df;
+}
+
+.studio-dark .language-picker select {
+  background: #20362b;
+  border-color: #3c5143;
+  color: #dde8df;
+}
+
+.studio-dark .page-footer {
+  border-color: #3c5143;
+}
+
+.studio-dark .hint {
+  border-color: #3c5143;
+  color: #9ab0a1;
+}
+
+.studio-dark .segmented {
+  background: #17271e;
+  border-color: #3c5143;
+}
+
+.studio-dark .segmented button.selected {
+  background: #20362b;
+  color: #6ed19d;
+}
+
+.studio-dark .avatar {
+  background: #294333;
+  color: #dce5de;
+}
+
+.studio-dark .version-pill {
+  border-color: #3c5143;
+  color: #9ab0a1;
+}
+
+/* ==========================================================================
+   Responsive Media Queries
+   ========================================================================== */
+
+@media (max-width: 1100px) {
+  .studio aside {
+    width: 205px;
+  }
+  .studio-main {
+    margin-left: 205px;
+    width: calc(100% - 205px);
+  }
+  .studio main,
+  main[data-page] {
+    padding: 14px 16px 10px;
+  }
+  .topbar {
+    padding: 0 14px;
+  }
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .metric {
+    padding: 10px 12px;
+  }
+  .metric strong {
+    font-size: 18px;
+  }
+  .demo-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .studio aside {
+    width: 60px;
+    padding: 12px 4px;
+  }
+  .brand {
+    padding: 0 4px;
+    justify-content: center;
+  }
+  .brand strong,
+  .studio .auto-menu-label,
+  .studio .auto-menu-text,
+  .studio .auto-menu-badge,
+  .studio .auto-menu-arrow,
+  .studio .auto-menu-footer,
+  .sidebar-footer {
+    display: none;
+  }
+  .studio .auto-menu-list {
+    margin-top: 14px;
+    align-items: center;
+  }
+  .studio .auto-menu [data-auto-menu-item] {
+    padding: 0;
+    width: 42px;
+    height: 42px;
+    min-height: 42px;
+    margin: 0 auto;
+    justify-content: center;
+    border-radius: var(--auto-radius, 8px);
+  }
+  .studio-main {
+    margin-left: 60px;
+    width: calc(100% - 60px);
+  }
+  .topbar {
+    height: 50px;
+    flex: 0 0 50px;
+    padding: 0 10px;
+    gap: 8px;
+  }
+  .topbar > div,
+  .topbar .auto-actions {
+    gap: 6px;
+  }
+  .topbar .breadcrumb,
+  .version-pill {
+    display: none;
+  }
+  .language-picker {
+    gap: 4px;
+  }
+  .language-picker select {
+    max-width: 76px;
+    height: 26px;
+    font-size: 11px;
+    padding: 2px 4px;
+  }
+  .studio main,
+  main[data-page] {
+    padding: 10px 12px 8px;
+  }
+  .page-heading {
+    margin-bottom: 8px;
+  }
+  .page-heading h1 {
+    font-size: 18px;
+  }
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 8px 0;
+    gap: 8px;
+  }
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .section-heading p {
+    font-size: 11px;
+  }
+  .page-footer {
+    line-height: 1.5;
+    gap: 8px;
+    font-size: 10px;
+    margin-top: 6px;
+    padding-top: 4px;
+  }
+  .page-footer span:last-child {
+    display: none;
+  }
+  .card {
+    padding: 12px;
+  }
+  .virtual-project {
+    gap: 8px;
+  }
+  .virtual-project > span:last-child {
+    display: none;
+  }
+  /* Search panel on mobile: buttons wrap cleanly without clipping the 3rd button */
+  .auto-search {
+    padding: 8px 10px;
+  }
+  .auto-search > .auto-form > .auto-form-actions,
+  .auto-search .auto-form-actions,
+  .auto-search .auto-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+    max-width: 100%;
+  }
+  .auto-search > .auto-form > .auto-form-actions > button,
+  .auto-search .auto-form-actions button {
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-height: 28px;
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  /* Compact readable toolbar */
+  .auto-toolbar {
+    padding: 6px 10px;
+    gap: 6px;
+  }
+  .auto-toolbar strong {
+    font-size: 14px;
+  }
+  .auto-toolbar .auto-actions {
+    gap: 4px 6px;
+  }
+  .auto-toolbar .auto-muted {
+    font-size: 11px;
+    line-height: 1.3;
+  }
+  .auto-toolbar button {
+    padding: 3px 8px;
+    font-size: 11px;
+    min-height: 26px;
+  }
+  .auto-pagination {
+    padding: 8px 10px;
+  }
+  /* Horizontally scrollable single-line tab strip */
+  .table-demo .auto-tab-list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .table-demo .auto-tab-list button {
+    padding: 6px 10px;
+    font-size: 11px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  /* Bounded instructional hint with internal scroll */
+  .table-demo .hint,
+  .hint {
+    max-height: 48px;
+    overflow-y: auto;
+    padding: 6px 10px;
+    font-size: 10px;
+    line-height: 1.35;
+    margin-top: 6px;
+    flex-shrink: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Small 375px screens: compact layout without clipping */
+@media (max-width: 480px) {
+  .metrics {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .table-demo .hint,
+  .hint {
+    max-height: 44px;
+    padding: 5px 8px;
+    font-size: 10px;
+    margin-top: 6px;
+  }
+  .language-picker select {
+    max-width: 68px;
+  }
+  .table-demo .auto-tab-list button {
+    padding: 5px 8px;
+  }
+}
+
+/* The virtual list observes this remaining-space container. */
+main[data-page="scroll"] .demo-viewport > .card {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.scroll-demo-viewport {
+  flex: 1;
+  min-height: 160px;
+  min-width: 0;
+}
+
+.height-demo > .auto-table[data-height="auto"] {
+  min-height: min-content;
+}

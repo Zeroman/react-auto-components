@@ -1,0 +1,24 @@
+node_modules/
+dist/
+demo-dist/
+.superpowers/
+playwright-report/
+test-results/
+*.tgz
+.DS_Store
+
+# Local credentials and agent working files
+.env
+.env.*
+!.env.example
+.npmrc
+*.log
+coverage/
+artifacts/
+data/agent-runs/
+.agent/
+
+# Private development records (kept outside the public source tree)
+/docs/superpowers/
+/docs/source-snapshot.json
+/docs/verification.md

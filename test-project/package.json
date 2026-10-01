@@ -1,0 +1,26 @@
+{
+  "name": "react-auto-components-test-project",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 4173",
+    "build": "tsc --noEmit && vite build",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "@zeroman/react-auto-components": "file:../artifacts/zeroman-react-auto-components-0.1.0-525530e33ea9.tgz",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/node": "^26.6.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@playwright/test": "^1.63.0"
+  },
+  "packageManager": "pnpm@12.5.1"
+}

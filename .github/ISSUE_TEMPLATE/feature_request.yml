@@ -1,0 +1,17 @@
+name: 功能建议
+description: 说明使用场景与建议方案
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 遇到的问题
+      description: 描述具体场景和现有能力的限制。
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议方案
+      description: 说明希望的行为、API 或示例，也可列出替代方案。
+    validations:
+      required: true

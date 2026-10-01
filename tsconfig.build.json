@@ -1,0 +1,1 @@
+{"extends":"./tsconfig.json","compilerOptions":{"noEmit":false,"allowImportingTsExtensions":false,"declaration":true,"emitDeclarationOnly":true,"outDir":"dist","rootDir":"src"},"include":["src"],"exclude":["tests"]}

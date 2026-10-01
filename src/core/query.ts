@@ -1,0 +1,151 @@
+export type QueryNode =
+  | {
+      kind: "condition";
+      field: string;
+      operator: "eq" | "in" | "contains" | "between" | "isNull";
+      value: unknown;
+      ignoreCase?: boolean;
+    }
+  | { kind: "group"; operator: "and" | "or"; children: readonly QueryNode[] };
+export const emptyQuery: QueryNode = {
+  kind: "group",
+  operator: "and",
+  children: [],
+};
+export interface SearchField {
+  name?: string;
+  match?: "eq" | "in" | "contains" | "between" | "isNull";
+  ignoreCase?: boolean;
+  includeNull?: boolean;
+  searchFields?: readonly string[];
+}
+export function buildQuery(
+  values: object,
+  fields: readonly SearchField[],
+): QueryNode {
+  const children: QueryNode[] = [];
+  for (const f of fields) {
+    if (!f.name) continue;
+    const v = (values as Record<string, unknown>)[f.name];
+    if (
+      f.match !== "isNull" &&
+      (v === undefined ||
+        v === null ||
+        v === "" ||
+        (Array.isArray(v) && !v.length))
+    )
+      continue;
+    const operator = f.match ?? (Array.isArray(v) ? "in" : "eq");
+    const conditions: QueryNode[] = (f.searchFields ?? [f.name]).map(
+      (field) => {
+        const node: QueryNode = {
+          kind: "condition",
+          field,
+          operator,
+          value: v,
+          ignoreCase: f.ignoreCase,
+        };
+        return f.includeNull
+          ? {
+              kind: "group",
+              operator: "or",
+              children: [
+                node,
+                { kind: "condition", field, operator: "isNull", value: null },
+              ],
+            }
+          : node;
+      },
+    );
+    children.push(
+      conditions.length === 1
+        ? conditions[0]
+        : { kind: "group", operator: "or", children: conditions },
+    );
+  }
+  return { kind: "group", operator: "and", children };
+}
+export function matchesQuery(row: object, q: QueryNode): boolean {
+  if (q.kind === "group")
+    return q.operator === "and"
+      ? q.children.every((c) => matchesQuery(row, c))
+      : q.children.some((c) => matchesQuery(row, c));
+  const raw = (row as Record<string, unknown>)[q.field];
+  const normalize = (v: unknown) =>
+    q.ignoreCase && typeof v === "string" ? v.toLocaleLowerCase() : v;
+  const a = normalize(raw),
+    b = normalize(q.value);
+  switch (q.operator) {
+    case "isNull":
+      return raw == null;
+    case "eq":
+      return Object.is(a, b);
+    case "contains":
+      return a != null && String(a).includes(String(b));
+    case "in":
+      return (
+        Array.isArray(q.value) &&
+        q.value.some((v) => Object.is(a, normalize(v)))
+      );
+    case "between":
+      return (
+        Array.isArray(q.value) &&
+        raw != null &&
+        (q.value[0] == null || raw >= q.value[0]) &&
+        (q.value[1] == null || raw <= q.value[1])
+      );
+  }
+}
+export function serializeRsql(q: QueryNode): string {
+  if (q.kind === "group") {
+    const parts = q.children.map(serializeRsql).filter(Boolean);
+    return parts.length > 1
+      ? `(${parts.join(q.operator === "and" ? ";" : ",")})`
+      : (parts[0] ?? "");
+  }
+  if (!/^[\w.]+$/.test(q.field))
+    throw new Error(`Invalid query field: ${q.field}`);
+  const quote = (v: unknown) =>
+    typeof v === "string"
+      ? `"${v.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`
+      : String(v);
+  if (q.operator === "isNull") return `${q.field}==null`;
+  if (q.operator === "in")
+    return `${q.field}=in=(${(Array.isArray(q.value) ? q.value : []).map(quote).join(",")})`;
+  if (q.operator === "between") {
+    const [a, b] = q.value as unknown[];
+    return `(${q.field}=ge=${quote(a)};${q.field}=le=${quote(b)})`;
+  }
+  return `${q.field}${q.operator === "contains" ? (q.ignoreCase ? "=ilike=" : "=like=") : "=="}${quote(q.value)}`;
+}
+
+/** Validate persisted/untrusted query shapes before evaluating them. */
+export function isQueryNode(
+  value: unknown,
+  keys?: readonly string[],
+  depth = 0,
+): value is QueryNode {
+  if (!value || typeof value !== "object" || depth > 32) return false;
+  const n = value as Record<string, unknown>;
+  if (n.kind === "group")
+    return (
+      (n.operator === "and" || n.operator === "or") &&
+      Array.isArray(n.children) &&
+      n.children.length <= 1000 &&
+      n.children.every((c) => isQueryNode(c, keys, depth + 1))
+    );
+  if (
+    n.kind !== "condition" ||
+    typeof n.field !== "string" ||
+    (keys && !keys.includes(n.field))
+  )
+    return false;
+  if (
+    !["eq", "in", "contains", "between", "isNull"].includes(String(n.operator))
+  )
+    return false;
+  if (n.operator === "in") return Array.isArray(n.value);
+  if (n.operator === "between")
+    return Array.isArray(n.value) && n.value.length === 2;
+  return true;
+}
