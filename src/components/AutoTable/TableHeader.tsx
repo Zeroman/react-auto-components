@@ -147,6 +147,7 @@ export function TableHeader<T extends object>({
     <thead>
       <tr>
         <th
+          className="auto-table-cell-selection"
           style={{
             width: 44,
           }}

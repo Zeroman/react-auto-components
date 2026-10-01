@@ -678,7 +678,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
                     }}
                     onClick={() => setCurrent(row.id)}
                   >
-                    <td>
+                    <td className="auto-table-cell-selection">
                       <input
                         type="checkbox"
                         aria-label={tr("选择行 {0}", [row.id])}
@@ -854,7 +854,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
             {ordered.some((c) => c.summary) && (
               <tfoot>
                 <tr>
-                  <td>{tr("合计")}</td>
+                  <td className="auto-table-cell-selection">{tr("合计")}</td>
                   {ordered.map((c) => (
                     <td key={c.key} style={cellStyle(c)}>
                       {c.summary &&

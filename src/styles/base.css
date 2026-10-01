@@ -325,6 +325,17 @@
   bottom: 0;
   background: var(--auto-muted) !important;
 }
+.auto-table th.auto-table-cell-selection,
+.auto-table td.auto-table-cell-selection,
+.auto-table th:first-child,
+.auto-table tbody > tr > td:first-child:not([colspan]) {
+  width: 44px;
+  min-width: 44px;
+  max-width: 44px;
+  text-align: center;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
 .auto-table tfoot td:first-child {
   padding: 8px 4px;
   text-align: center;
