@@ -12,7 +12,7 @@
 
 ## Состояние проекта
 
-Текущая версия — 0.1.1, и API могут ещё измениться. Требуется React 19. Пакет предоставляет ESM и декларации TypeScript. Встроенный текст интерфейса по умолчанию на китайском языке и может быть переведён через AutoConfigProvider.config.t.
+Текущая версия — 0.1.2, и API могут ещё измениться. Требуется React 19. Пакет предоставляет ESM и декларации TypeScript. Встроенный текст интерфейса по умолчанию на китайском языке и может быть переведён через AutoConfigProvider.config.t.
 
 Установите пакет командой `pnpm add @zeroman.yang/react-auto-components` (npm и yarn подходят так же). Peer dependencies: React 19 и react-dom 19. Один раз импортируйте таблицу стилей: `import "@zeroman.yang/react-auto-components/style.css"`.
 

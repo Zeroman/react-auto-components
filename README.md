@@ -12,7 +12,7 @@ A standalone, schema-driven component library for React 19, covering forms, tabl
 
 ## Project status
 
-The current version is 0.1.1 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Existing components default to Chinese; AutoChat defaults to English. Built-in text can be translated through AutoConfigProvider.config.t.
+The current version is 0.1.2 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Existing components default to Chinese; AutoChat defaults to English. Built-in text can be translated through AutoConfigProvider.config.t.
 
 Install with `pnpm add @zeroman.yang/react-auto-components` (npm and yarn work the same way). React 19 and react-dom 19 are peer dependencies. Import the stylesheet once: `import "@zeroman.yang/react-auto-components/style.css"`.
 

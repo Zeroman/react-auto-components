@@ -12,7 +12,7 @@ React 19를 위한 독립형 스키마 기반 컴포넌트 라이브러리로, �
 
 ## 프로젝트 상태
 
-현재 버전은 0.1.1이며 API는 아직 변경될 수 있습니다. React 19이 필요합니다. 이 패키지는 ESM 및 TypeScript 선언을 제공합니다. 내장 인터페이스 텍스트는 기본적으로 중국어이며 AutoConfigProvider.config.t를 통해 번역할 수 있습니다.
+현재 버전은 0.1.2이며 API는 아직 변경될 수 있습니다. React 19이 필요합니다. 이 패키지는 ESM 및 TypeScript 선언을 제공합니다. 내장 인터페이스 텍스트는 기본적으로 중국어이며 AutoConfigProvider.config.t를 통해 번역할 수 있습니다.
 
 `pnpm add @zeroman.yang/react-auto-components`로 설치합니다(npm과 yarn도 동일). peer dependency는 React 19와 react-dom 19입니다. 진입점에서 스타일시트를 한 번 불러오세요: `import "@zeroman.yang/react-auto-components/style.css"`.
 

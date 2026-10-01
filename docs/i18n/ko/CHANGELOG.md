@@ -4,7 +4,7 @@
 
 ## 미출시
 
-## 0.1.1 - 2026-10-01
+## 0.1.2 - 2026-10-01
 
 - `@zeroman.yang/react-auto-components`로 게시합니다. npm의 `@zeroman` 스코프는 다른 계정이 소유합니다.
 

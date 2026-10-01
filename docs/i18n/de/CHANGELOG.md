@@ -4,7 +4,7 @@
 
 ## Noch nicht veröffentlicht
 
-## 0.1.1 - 2026-10-01
+## 0.1.2 - 2026-10-01
 
 - Veröffentlichung als `@zeroman.yang/react-auto-components`. Der npm-Scope `@zeroman` gehört einem anderen Konto.
 

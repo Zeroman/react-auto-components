@@ -4,7 +4,7 @@
 
 ## Unreleased
 
-## 0.1.1 - 2026-10-01
+## 0.1.2 - 2026-10-01
 
 - Publish `@zeroman.yang/react-auto-components`. The `@zeroman` npm scope belongs to another account.
 

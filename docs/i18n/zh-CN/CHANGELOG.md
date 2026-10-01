@@ -4,7 +4,7 @@
 
 ## Unreleased
 
-## 0.1.1 - 2026-10-01
+## 0.1.2 - 2026-10-01
 
 - 以 `@zeroman.yang/react-auto-components` 发布。npm 上的 `@zeroman` scope 属于其他账号。
 

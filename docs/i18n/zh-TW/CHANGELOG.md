@@ -4,7 +4,7 @@
 
 ## 尚未發佈
 
-## 0.1.1 - 2026-10-01
+## 0.1.2 - 2026-10-01
 
 - 以 `@zeroman.yang/react-auto-components` 發佈。npm 上的 `@zeroman` scope 屬於其他帳號。
 

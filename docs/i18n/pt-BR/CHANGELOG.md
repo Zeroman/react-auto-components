@@ -4,7 +4,7 @@
 
 ## Não publicado
 
-## 0.1.1 - 2026-10-01
+## 0.1.2 - 2026-10-01
 
 - Publicação como `@zeroman.yang/react-auto-components`. O escopo npm `@zeroman` pertence a outra conta.
 
