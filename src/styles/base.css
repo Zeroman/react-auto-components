@@ -46,7 +46,7 @@
 .auto-root .auto-primary,
 .auto-overlay .auto-primary {
   background: var(--auto-accent);
-  color: white;
+  color: var(--auto-primary-text, white);
   border-color: var(--auto-accent);
 }
 .auto-root input,
@@ -61,6 +61,20 @@
   background: var(--auto-bg);
   color: inherit;
   max-width: 100%;
+}
+.auto-root input[aria-invalid="true"],
+.auto-root select[aria-invalid="true"],
+.auto-root textarea[aria-invalid="true"],
+.auto-overlay input[aria-invalid="true"],
+.auto-overlay select[aria-invalid="true"] {
+  border-color: var(--auto-danger);
+}
+.auto-root input[aria-invalid="true"]:focus-visible,
+.auto-root select[aria-invalid="true"]:focus-visible,
+.auto-root textarea[aria-invalid="true"]:focus-visible,
+.auto-overlay input[aria-invalid="true"]:focus-visible,
+.auto-overlay select[aria-invalid="true"]:focus-visible {
+  outline-color: var(--auto-danger);
 }
 .auto-root :focus-visible,
 .auto-overlay :focus-visible,
@@ -299,9 +313,6 @@
   font-size: 12px;
   height: 42px;
 }
-.auto-table th:first-child {
-  left: 0;
-}
 .auto-table tbody tr:hover td {
   background: var(--auto-accent-soft) !important;
 }
@@ -313,6 +324,19 @@
   position: sticky;
   bottom: 0;
   background: var(--auto-muted) !important;
+}
+.auto-table tfoot td:first-child {
+  padding: 8px 4px;
+  text-align: center;
+  overflow: visible;
+  white-space: nowrap;
+}
+.auto-table progress {
+  accent-color: var(--auto-accent);
+  height: 6px;
+  width: 100%;
+  min-width: 60px;
+  border-radius: 4px;
 }
 .auto-column-heading {
   display: flex;
@@ -546,9 +570,9 @@
   > .auto-form
   > .auto-form-actions
   > button {
-  min-height: 32px;
-  padding: 5px 10px;
-  font-size: 13px;
+  min-height: var(--auto-compact-control-height, 32px);
+  padding: var(--auto-compact-control-padding, 5px 10px);
+  font-size: var(--auto-compact-control-font, 13px);
   line-height: 20px;
 }
 

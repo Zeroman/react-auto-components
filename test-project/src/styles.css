@@ -370,11 +370,18 @@ main[data-page="tabs"] .card {
   overflow: hidden;
 }
 
-main[data-page="tabs"] .auto-tabs {
+main[data-page="tabs"] .auto-tabs:not(.auto-tabs-vertical):not(.auto-tabs-menu) {
   flex: 1 1 0%;
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+main[data-page="tabs"] .auto-tabs.auto-tabs-vertical,
+main[data-page="tabs"] .auto-tabs.auto-tabs-menu {
+  flex: 1 1 0%;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -841,8 +848,31 @@ h3 {
   --auto-border: #3c5143;
   --auto-accent: #6ed19d;
   --auto-accent-soft: #294333;
+  --auto-primary-text: #0f241a;
   background: #17271e;
   color: #dde8df;
+}
+
+.studio-dark .auto-overlay {
+  background: #20362b;
+  border-color: #3c5143;
+  color: #e1ebe3;
+}
+
+.studio-dark .auto-popover {
+  background: #20362b;
+  border-color: #3c5143;
+  color: #e1ebe3;
+}
+
+.studio-dark .auto-dialog-header,
+.studio-dark .auto-dialog-footer {
+  border-color: #3c5143;
+}
+
+.studio-dark .auto-primary {
+  color: #0f241a !important;
+  font-weight: 600;
 }
 
 .studio-dark .card,
@@ -1197,3 +1227,4 @@ main[data-page="scroll"] .demo-viewport > .card {
 .height-demo > .auto-table[data-height="auto"] {
   min-height: min-content;
 }
+

@@ -3,7 +3,7 @@ import { useViewportHeight } from "./useViewportHeight";
 import { useDemoText, useDemoLanguage, LanguagePicker } from "./i18n";
 import { GlobalSettings, defaultStudioSettings } from "./GlobalSettings";
 import { AutoHeightDemo } from "./AutoHeightDemo";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AutoConfigProvider,
   AutoDialogProvider,
@@ -56,6 +56,11 @@ export function App() {
       : "local",
   );
   const fillHeight = true;
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("studio-dark", settings.dark);
+  }, [settings.dark]);
+
   return (
     <AutoConfigProvider
       config={{
@@ -444,7 +449,7 @@ function FormDemo() {
               </select>
             </label>
             <label>
-              {tr("标签文字对齐")}
+              {tr("标签文字对齐")}{" "}
               <select
                 aria-label={tr("表单标签对齐")}
                 value={labelAlign}
@@ -1246,7 +1251,9 @@ function AdvancedTableDemo() {
           key: "budget",
           label: tr("预算"),
           type: "number",
+          align: "right",
           summary: true,
+          format: (value) => `¥ ${Number(value).toLocaleString()}`,
         },
       ]}
       getChildren={(row) => row.children}
