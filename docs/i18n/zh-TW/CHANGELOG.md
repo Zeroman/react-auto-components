@@ -4,6 +4,8 @@
 
 ## 尚未發佈
 
+## 0.1.3 - 2026-10-02
+
 - 內建介面文字預設改為英文，這串英文同時是 `config.t` 的鍵。其他語言請傳入 `t`。原先的中文鍵，例如 `提交` 和 `刷新`，不再是預設值。
 - 搜尋表單改為 `AutoSearch`（`AutoSearchProps`）。`AutoSearchPanel` 與 `AutoSearchPanelProps` 仍作為已棄用別名保留。
 - `Field<T>` 改為依 `type` 的判別聯合。`select` 缺少 `options`、純量用在 `daterange` 或 `datetimerange`、純量欄位上的 `match: "between"` 都是 TypeScript 錯誤。`AnyField` 與 `unsafeField()` 仍是逃生艙。

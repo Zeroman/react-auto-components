@@ -12,7 +12,7 @@ Eine eigenständige, schema-getriebene Komponentenbibliothek für React 19 – m
 
 ## Projektstatus
 
-Die aktuelle Version ist 0.1.2, und die APIs können sich noch ändern. React 19 wird vorausgesetzt. Das Paket stellt ESM- und TypeScript-Deklarationen bereit. Der eingebaute Oberflächentext ist standardmäßig Englisch und kann über AutoConfigProvider.config.t übersetzt werden.
+Die aktuelle Version ist 0.1.3, und die APIs können sich noch ändern. React 19 wird vorausgesetzt. Das Paket stellt ESM- und TypeScript-Deklarationen bereit. Der eingebaute Oberflächentext ist standardmäßig Englisch und kann über AutoConfigProvider.config.t übersetzt werden.
 
 Installation mit `pnpm add @zeroman.yang/react-auto-components` (npm und yarn funktionieren ebenso). Peer Dependencies sind React 19 und react-dom 19. Importieren Sie das Stylesheet einmal: `import "@zeroman.yang/react-auto-components/style.css"`.
 

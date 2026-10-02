@@ -4,6 +4,8 @@
 
 ## Noch nicht veröffentlicht
 
+## 0.1.3 - 2026-10-02
+
 - Eingebaute UI-Texte sind standardmäßig Englisch, und diese Zeichenkette ist der `config.t`-Schlüssel. Für andere Sprachen `t` übergeben. Frühere chinesische Schlüssel wie `提交` und `刷新` sind nicht mehr der Standard.
 - Das Suchformular heißt `AutoSearch` (`AutoSearchProps`). `AutoSearchPanel` und `AutoSearchPanelProps` bleiben veraltete Aliase.
 - `Field<T>` ist eine diskriminierte Union. `select` ohne `options`, ein Skalar auf `daterange` oder `datetimerange` und `match: "between"` auf einem Skalar sind TypeScript-Fehler. `AnyField` und `unsafeField()` bleiben der Ausweg.

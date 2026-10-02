@@ -4,6 +4,8 @@
 
 ## 미출시
 
+## 0.1.3 - 2026-10-02
+
 - 기본 UI 문구는 영어이며, 그 문자열이 `config.t` 키입니다. 다른 언어는 `t`를 넘깁니다. 이전 중국어 키(`提交`, `刷新` 등)는 더 이상 기본값이 아닙니다.
 - 검색 폼은 `AutoSearch`(`AutoSearchProps`)입니다. `AutoSearchPanel`과 `AutoSearchPanelProps`는 더 이상 쓰지 않는 별칭으로 남습니다.
 - `Field<T>`는 `type`으로 구분되는 합집합입니다. `options`가 없는 `select`, 스칼라 `daterange` 또는 `datetimerange`, 스칼라 필드의 `match: "between"`은 TypeScript 오류입니다. `AnyField`와 `unsafeField()`는 탈출구로 남습니다.

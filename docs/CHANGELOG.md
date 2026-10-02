@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 0.1.3 - 2026-10-02
+
 - Built-in UI text defaults to English, and that same string is the `config.t` key. Pass `t` for other languages. Previous Chinese keys such as `提交` and `刷新` are no longer the defaults.
 - The search form is `AutoSearch` (`AutoSearchProps`). `AutoSearchPanel` and `AutoSearchPanelProps` remain as deprecated aliases.
 - `Field<T>` is a discriminated union. `select` without `options`, a scalar on `daterange` or `datetimerange`, and `match: "between"` on a scalar are TypeScript errors. `AnyField` and `unsafeField()` remain the escape hatch.

@@ -4,6 +4,8 @@
 
 ## Sin publicar
 
+## 0.1.3 - 2026-10-02
+
 - El texto de interfaz integrado pasa a inglés por defecto, y esa cadena es la clave de `config.t`. Pasa `t` para otros idiomas. Las claves chinas anteriores, como `提交` y `刷新`, ya no son el valor por defecto.
 - El formulario de búsqueda es `AutoSearch` (`AutoSearchProps`). `AutoSearchPanel` y `AutoSearchPanelProps` siguen como alias en desuso.
 - `Field<T>` es una unión discriminada. Un `select` sin `options`, un escalar en `daterange` o `datetimerange`, y `match: "between"` en un escalar son errores de TypeScript. `AnyField` y `unsafeField()` siguen siendo la salida.

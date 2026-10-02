@@ -4,6 +4,8 @@
 
 ## 未リリース
 
+## 0.1.3 - 2026-10-02
+
 - 組み込み UI 文言の既定は英語になり、その文字列が `config.t` のキーです。他の言語は `t` を渡します。以前の中国語キー（`提交` や `刷新` など）は既定ではありません。
 - 検索フォームは `AutoSearch`（`AutoSearchProps`）です。`AutoSearchPanel` と `AutoSearchPanelProps` は非推奨の別名として残します。
 - `Field<T>` は `type` による判別共用体です。`options` のない `select`、スカラーの `daterange` または `datetimerange`、スカラー項目の `match: "between"` は TypeScript エラーです。`AnyField` と `unsafeField()` は逃げ道として残します。

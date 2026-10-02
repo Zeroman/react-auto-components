@@ -4,6 +4,8 @@
 
 ## Não publicado
 
+## 0.1.3 - 2026-10-02
+
 - O texto de interface embutido passa a ser inglês por padrão, e essa string é a chave de `config.t`. Passe `t` para outros idiomas. Chaves chinesas anteriores, como `提交` e `刷新`, não são mais o padrão.
 - O formulário de busca é `AutoSearch` (`AutoSearchProps`). `AutoSearchPanel` e `AutoSearchPanelProps` permanecem como aliases obsoletos.
 - `Field<T>` é uma união discriminada. `select` sem `options`, um escalar em `daterange` ou `datetimerange`, e `match: "between"` em um escalar são erros de TypeScript. `AnyField` e `unsafeField()` continuam como saída.
