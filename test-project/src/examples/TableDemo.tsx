@@ -43,7 +43,7 @@ export function TableDemo({
       <AutoTable<Project>
         key={mode}
         id={`projects-${mode}`}
-        title={tr("全部项目")}
+        title={tr("All Projects")}
         {...(mode === "remote"
           ? {
               dataSource: source,
@@ -99,7 +99,7 @@ export function TableDemo({
         rowActions={[
           {
             id: "copy",
-            label: tr("复制项目名称"),
+            label: tr("Copy project name"),
             onClick: (row) => navigator.clipboard.writeText(row.name),
           },
         ]}
@@ -110,7 +110,9 @@ export function TableDemo({
               fontSize: 12,
             }}
           >
-            {tr("✦ 双击单元格复制 · Shift 多列排序 · 拖拽调整列宽")}
+            {tr(
+              "✦ Double-click a cell to copy · Shift for multi-column sort · Drag to resize columns",
+            )}
           </span>
         }
         exportXlsx={exportXlsx}
@@ -120,8 +122,12 @@ export function TableDemo({
     <section className="table-demo">
       <div className="section-heading">
         <div>
-          <h2>{tr("项目工作台")}</h2>
-          <p>{tr("搜索、排序、布局、导出与编辑，保持在同一工作流中。")}</p>
+          <h2>{tr("Project Workbench")}</h2>
+          <p>
+            {tr(
+              "Search, sort, layout, export, and edit — all in one workflow.",
+            )}
+          </p>
         </div>
       </div>
       <AutoTabs
@@ -129,11 +135,11 @@ export function TableDemo({
         onChange={(path) => onModeChange(path[0])}
         keepMounted={false}
         items={[
-          ["local", tr("本地数据")],
-          ["remote", tr("服务端")],
-          ["large", tr("万行数据")],
-          ["advanced", tr("树形与展开")],
-          ["auto-height", tr("剩余高度")],
+          ["local", tr("Local Data")],
+          ["remote", tr("Server-side")],
+          ["large", tr("10,000 rows of data")],
+          ["advanced", tr("Tree & Expansion")],
+          ["auto-height", tr("Remaining Height")],
         ].map(([id, label]) => ({
           id,
           label,
@@ -144,7 +150,7 @@ export function TableDemo({
         <div className="hint">
           <span>✦</span>
           {tr(
-            "按住 Shift 点击列标题可多列排序。双击项目名称复制内容，在「设置」中保存专属布局。",
+            'Hold Shift and click column headers to sort by multiple columns. Double-click a project name to copy it, and save your own layout in "Settings".',
           )}
         </div>
       )}

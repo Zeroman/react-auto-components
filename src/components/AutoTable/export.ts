@@ -1,4 +1,5 @@
 import type { AutoColumn } from "./types";
+import { RacError } from "../../core/errors";
 export interface ExportData {
   headers: string[];
   rows: unknown[][];
@@ -91,7 +92,13 @@ export async function fetchExportRows<T extends object>(
     signal.throwIfAborted();
     if (pageIndex === 0) pages = Math.ceil(page.total / query.pageSize);
     if (!page.rows.length && pageIndex < pages)
-      throw new Error("导出数据不完整，请重试");
+      throw new RacError(
+        "AutoTable",
+        "RAC-TABLE-EXPORT-PAGE",
+        `export page ${pageIndex + 1} of ${pages} returned no rows while total said there were more.`,
+        "Return a stable total and the rows for that pageIndex. An empty page before the last page aborts the export so a partial file is not saved.",
+        "Export data is incomplete. Try again.",
+      );
     result.push(...page.rows);
   }
   return result;

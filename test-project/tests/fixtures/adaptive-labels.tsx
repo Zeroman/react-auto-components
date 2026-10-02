@@ -3,22 +3,25 @@ import { createRoot } from "react-dom/client";
 import {
   AutoConfigProvider,
   AutoForm,
-  AutoSearchPanel,
+  AutoSearch,
   type Field,
 } from "@zeroman.yang/react-auto-components";
 const longFields: Field<{ name: string }>[] = [
-  { name: "name", label: "项目所属组织机构完整名称及其审批负责人联系方式" },
+  {
+    name: "name",
+    label: "Full organization name and the approver contact for this project",
+  },
 ];
 const translatedFields: Field<{ name: string }>[] = [
-  { name: "name", lang: "name", label: "名称" },
+  { name: "name", lang: "name", label: "Name" },
 ];
 function TranslationForm() {
   const [long, setLong] = useState(false);
   return (
     <section data-testid="translated-labels">
-      <button onClick={() => setLong((v) => !v)}>切换标签语言</button>
+      <button onClick={() => setLong((v) => !v)}>Switch label language</button>
       <AutoConfigProvider
-        config={{ t: () => (long ? "Translated project name" : "名") }}
+        config={{ t: () => (long ? "Translated project name" : "Name") }}
       >
         <AutoForm
           columns={1}
@@ -47,7 +50,7 @@ export function mount() {
         />
       </section>
       <section data-testid="auto-long-search">
-        <AutoSearchPanel
+        <AutoSearch
           columns={1}
           fields={longFields}
           labelPosition="left"
@@ -56,7 +59,7 @@ export function mount() {
         />
       </section>
       <section data-testid="fixed-long-search">
-        <AutoSearchPanel
+        <AutoSearch
           columns={1}
           fields={longFields}
           labelPosition="left"

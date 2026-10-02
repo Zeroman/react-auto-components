@@ -12,9 +12,13 @@ React 19 向けのスタンドアローンなスキーマ駆動コンポーネ�
 
 ## プロジェクトの状況
 
-現在のバージョンは 0.1.2 であり、API はまだ変更される可能性があります。React 19 が必要です。このパッケージは ESM および TypeScript 型宣言を提供します。組み込みのインターフェーステキストは既定で中国語であり、AutoConfigProvider.config.t を通じて翻訳できます。
+現在のバージョンは 0.1.2 であり、API はまだ変更される可能性があります。React 19 が必要です。このパッケージは ESM および TypeScript 型宣言を提供します。組み込みのインターフェーステキストは既定で英語であり、AutoConfigProvider.config.t を通じて翻訳できます。
 
 `pnpm add @zeroman.yang/react-auto-components` でインストールします（npm と yarn でも同様です）。peer dependency は React 19 と react-dom 19 です。エントリでスタイルシートを一度読み込んでください: `import "@zeroman.yang/react-auto-components/style.css"`。
+
+アプリのエントリーで `import "@zeroman.yang/react-auto-components/style.css"` を一度読み込んでください。スタイルシートがない場合、開発時に `RAC-CSS-MISSING` を警告します。
+
+XLSX 出力で `exportXlsx` アダプターがない場合は `RAC-TABLE-XLSX`、任意依存の `exceljs` を読み込めない場合は `RAC-XLSX-DEP` です。`@zeroman.yang/react-auto-components/xlsx` からアダプターを読み込んで渡し、必要なら `pnpm add exceljs` でインストールしてください。CSV と JSON には不要です。
 
 - [オンラインデモ (GitHub Pages)](https://zeroman.github.io/react-auto-components/)
 - [コントリビューション](https://github.com/Zeroman/react-auto-components/blob/main/docs/i18n/ja/CONTRIBUTING.md)
@@ -85,7 +89,7 @@ t コールバックはメッセージキーとフォールバックを受け取
 | コンポーネント | 機能 |
 | --- | --- |
 | AutoForm | ネイティブフィールド型、選択肢の仮想化、連動選択、アップロードアダプター、カスタムレンダリング、依存フィールド、条件付き表示、非同期バリデーション、制御された状態、失敗後の入力保持 |
-| AutoSearchPanel | 基本／詳細条件、手動／即時検索、リセット、ソートタグ、共有クエリ AST、RSQL シリアライズ |
+| AutoSearch | 基本／詳細条件、手動／即時検索、リセット、ソートタグ、共有クエリ AST、RSQL シリアライズ |
 | AutoTable | ローカル／リモートデータ、複数列ソート、列フィルター、ページネーション、安定した選択状態、仮想化、ツリー／詳細の展開、集計、セル結合、CRUD、コンテキストメニュー、コピー |
 | AutoDialog | 宣言的／命令的 API、分離されたプロバイダー、下書き、閉じる操作のガード、フォーカス管理、ドラッグ、全画面表示、非同期送信 |
 | AutoTabs | 横／縦レイアウト、入れ子、権限、タブの無効化、パネル状態の保持、更新 |
@@ -201,3 +205,5 @@ pnpm test:e2e
 AutoChat は、ストリーミング追従、履歴の読み込み、コンポーザーを備えた軽量な会話レイアウトを提供します。メッセージの表示には React コンテンツか renderMessage を指定でき、追加のランタイム依存関係は不要です。
 
 [AutoChat API](auto-chat.md)
+
+コールバックが throw したあとコンポーネントがどう扱うかは、振る舞いの契約を見てください：[AutoForm](auto-form.md)、[AutoSearch](auto-search.md)、[AutoTable](auto-table.md)、[AutoDialog](auto-dialog.md)、[AutoTabs](auto-tabs.md)、[AutoMenu](auto-menu.md)。開発者向けエラーコード：[errors.md](errors.md)。

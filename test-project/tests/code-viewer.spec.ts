@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("example source dialog shows source with file tabs", async ({ page }) => {
-  await page.getByRole("button", { name: "查看代码" }).click();
+  await page.getByRole("button", { name: "View code" }).click();
   const dialog = page.getByRole("dialog");
   const viewer = dialog.getByTestId("code-viewer");
   await expect(dialog).toBeVisible();
@@ -21,14 +21,14 @@ test("example source dialog shows source with file tabs", async ({ page }) => {
     "export function AutoHeightDemo",
   );
   await expect(
-    viewer.getByRole("link", { name: "在 GitHub 查看" }),
+    viewer.getByRole("link", { name: "View on GitHub" }),
   ).toHaveAttribute(
     "href",
     /.+\/test-project\/src\/examples\/AutoHeightDemo\.tsx$/,
   );
 
-  await viewer.getByRole("button", { name: "复制代码" }).click();
-  await expect(viewer.getByRole("button", { name: "已复制" })).toBeVisible();
+  await viewer.getByRole("button", { name: "Copy code" }).click();
+  await expect(viewer.getByRole("button", { name: "Copied" })).toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     await viewer.locator("pre code").textContent(),
   );
@@ -36,7 +36,7 @@ test("example source dialog shows source with file tabs", async ({ page }) => {
 
 test("example source follows the active demo page", async ({ page }) => {
   await page.getByRole("button", { name: /AutoForm/ }).click();
-  await page.getByRole("button", { name: "查看代码" }).click();
+  await page.getByRole("button", { name: "View code" }).click();
   const viewer = page.getByRole("dialog").getByTestId("code-viewer");
   await expect(viewer.locator("pre code")).toContainText(
     "export function FormDemo",
@@ -50,7 +50,7 @@ test("source dialog stays within a narrow viewport and scrolls code internally",
   page,
 }) => {
   await page.setViewportSize({ width: 375, height: 667 });
-  const trigger = page.getByRole("button", { name: "查看代码" });
+  const trigger = page.getByRole("button", { name: "View code" });
   await trigger.click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();

@@ -47,7 +47,7 @@ export function FormField<T extends object>({
           (value == null
             ? "—"
             : Array.isArray(value)
-              ? value.join("、")
+              ? value.join(", ")
               : String(value))}
       </output>
     );
@@ -138,7 +138,7 @@ export function FormField<T extends object>({
           )
         }
       >
-        {!field.multiple && <option value="-1">{tr("请选择")}</option>}
+        {!field.multiple && <option value="-1">{tr("Select")}</option>}
         {options.map((o, i) => (
           <option value={i} key={i} disabled={o.disabled}>
             {o.label}
@@ -210,14 +210,14 @@ export function FormField<T extends object>({
             }
           }}
         />
-        {uploading && <span role="status">{tr("上传中…")}</span>}
+        {uploading && <span role="status">{tr("Uploading…")}</span>}
         {uploadError && <span role="alert">{uploadError}</span>}
         {value != null && (
           <small>
             {Array.isArray(value)
               ? value
                   .map((v) => (v instanceof File ? v.name : String(v)))
-                  .join("、")
+                  .join(", ")
               : String(value)}
           </small>
         )}
@@ -253,7 +253,9 @@ export function FormField<T extends object>({
             id={i ? `${id}-end` : id}
             key={i}
             aria-label={
-              range ? `${field.label}${i ? tr("结束") : tr("开始")}` : undefined
+              range
+                ? `${field.label} ${i ? tr("end") : tr("start")}`
+                : undefined
             }
             type={withTime ? "datetime-local" : "date"}
             value={format(

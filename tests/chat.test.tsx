@@ -107,7 +107,7 @@ describe("AutoChat", () => {
   test("IME, Shift+Enter and disabled keyboard sending do not submit", () => {
     const onSend = vi.fn();
     const { rerender } = render(
-      <AutoChat messages={[]} onSend={onSend} defaultValue="你好" />,
+      <AutoChat messages={[]} onSend={onSend} defaultValue="Hello" />,
     );
     fireEvent.compositionStart(editor());
     fireEvent.keyDown(editor(), { key: "Enter" });
@@ -211,20 +211,22 @@ describe("AutoChat", () => {
     render(
       <AutoConfigProvider
         config={{
-          t: (key, fallback) => (key === "chat.send" ? "发送" : fallback!),
+          t: (key, fallback) => (key === "chat.send" ? "Send" : fallback!),
         }}
       >
         <AutoChat
           ref={ref}
           messages={[]}
           onSend={() => {}}
-          labels={{ composer: "输入消息" }}
+          labels={{ composer: "Type a message" }}
         />
       </AutoConfigProvider>,
     );
-    expect(screen.getByRole("button", { name: "发送" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Send" })).toBeInTheDocument();
     act(() => ref.current?.focusComposer());
-    expect(screen.getByRole("textbox", { name: "输入消息" })).toHaveFocus();
+    expect(
+      screen.getByRole("textbox", { name: "Type a message" }),
+    ).toHaveFocus();
     expect(ref.current?.getScrollElement()).toBe(screen.getByRole("log"));
   });
   test("blank drafts and disabled composers do not send", () => {

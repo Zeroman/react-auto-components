@@ -17,6 +17,48 @@ void bad;
 void missing;
 void owners;
 
+type Choice = {
+  status: string;
+  created: string;
+  amount: number;
+  period: [string, string];
+};
+const choice: Field<Choice> = {
+  name: "status",
+  type: "select",
+  options: [{ value: "open", label: "Open" }],
+};
+// @ts-expect-error select requires options
+const choiceMissing: Field<Choice> = { name: "status", type: "select" };
+const range: Field<Choice> = {
+  name: "period",
+  type: "daterange",
+  defaultValue: ["2026-01-01", "2026-01-31"],
+};
+// @ts-expect-error daterange rejects a scalar model value
+const rangeScalar: Field<Choice> = {
+  name: "created",
+  type: "daterange",
+  defaultValue: "2026-01-01",
+};
+const between: Field<{ amount: [number, number] }> = {
+  name: "amount",
+  match: "between",
+};
+// @ts-expect-error match between rejects a scalar
+const betweenScalar: Field<Choice> = { name: "amount", match: "between" };
+const loose: import("../src").AnyField<Choice> = {
+  name: "status",
+  type: "select",
+};
+void choice;
+void choiceMissing;
+void range;
+void rangeScalar;
+void between;
+void betweenScalar;
+void loose;
+
 import type { AutoChatMessage, AutoChatProps } from "../src";
 interface ToolMessage extends AutoChatMessage {
   result: number;

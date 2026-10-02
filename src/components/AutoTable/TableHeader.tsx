@@ -60,20 +60,20 @@ function ColumnFilter<T extends object>({
     column.options ??
     [...new Set(rows.map((r) => r[column.key]))].map((value) => ({
       value,
-      label: String(value ?? tr("空")),
+      label: String(value ?? tr("Empty")),
     }));
   return (
     <div className="auto-filter-options">
       <input
-        aria-label={tr("搜索筛选选项")}
-        placeholder={tr("搜索选项")}
+        aria-label={tr("Search filter options")}
+        placeholder={tr("Search options")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
       <button
         onClick={() => onChange(updateColumnFilter(query, column.key, []))}
       >
-        {tr("清除本列筛选")}
+        {tr("Clear this column filter")}
       </button>
       {options
         .filter((o) =>
@@ -155,7 +155,7 @@ export function TableHeader<T extends object>({
           <input
             ref={checkRef}
             type="checkbox"
-            aria-label={tr("选择当前页")}
+            aria-label={tr("Select current page")}
             checked={allSelected}
             onChange={(e) => onSelectAll(e.target.checked)}
           />
@@ -189,7 +189,7 @@ export function TableHeader<T extends object>({
               >
                 {c.header ?? (
                   <button
-                    aria-label={tr("排序 {0}", [c.label ?? c.key])}
+                    aria-label={tr("Sort {0}", [c.label ?? c.key])}
                     disabled={c.sortable === false}
                     onClick={(e) => {
                       const old = sort.find((s) => s.id === c.key);
@@ -233,7 +233,7 @@ export function TableHeader<T extends object>({
                   >
                     <button
                       className={isFiltered ? "auto-filter-active" : undefined}
-                      aria-label={tr("筛选 {0}", [c.label ?? c.key])}
+                      aria-label={tr("Filter {0}", [c.label ?? c.key])}
                     >
                       ⌄
                     </button>
@@ -244,7 +244,7 @@ export function TableHeader<T extends object>({
                   role="separator"
                   tabIndex={0}
                   aria-orientation="vertical"
-                  aria-label={tr("调整 {0} 列宽", [c.label ?? c.key])}
+                  aria-label={tr("Resize column {0}", [c.label ?? c.key])}
                   onKeyDown={(e) => {
                     if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
                       e.preventDefault();
@@ -293,11 +293,11 @@ export function TableHeader<T extends object>({
             style={{
               width: Math.max(
                 140,
-                64 + (tr("编辑").length + tr("删除").length) * 8,
+                64 + (tr("Edit").length + tr("Delete").length) * 8,
               ),
             }}
           >
-            {tr("操作")}
+            {tr("Actions")}
           </th>
         )}
       </tr>

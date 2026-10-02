@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import {
-  AutoSearchPanel,
+  AutoSearch,
   matchesQuery,
   serializeRsql,
   type QueryNode,
@@ -28,16 +28,16 @@ export function SearchDemo() {
   }, [sampleProjects, queryNode]);
   return (
     <section className="card">
-      <h2>{tr("可组合的搜索条件")}</h2>
+      <h2>{tr("Composable Search Criteria")}</h2>
       <label className="auto-root">
         <input
           type="checkbox"
           checked={instant}
           onChange={(e) => setInstant(e.target.checked)}
         />
-        {tr("即时搜索")}
+        {tr("Instant Search")}
       </label>
-      <AutoSearchPanel<Project>
+      <AutoSearch<Project>
         fields={searchFields}
         mode={instant ? "instant" : "manual"}
         onSearch={(q) => {
@@ -47,7 +47,7 @@ export function SearchDemo() {
       />
       <div className="code-card">
         <pre data-testid="query-result">
-          {result || tr("// 搜索后显示 RSQL 查询")}
+          {result || tr("// RSQL query shown after searching")}
         </pre>
       </div>
 
@@ -60,9 +60,11 @@ export function SearchDemo() {
       >
         <div className="section-heading">
           <div>
-            <h3>{tr("实时匹配结果 ({0} 条)", [matched.length])}</h3>
+            <h3>{tr("Real-time matches ({0} items)", [matched.length])}</h3>
             <p className="muted">
-              {tr("根据上方搜索条件实时过滤的示例数据集。")}
+              {tr(
+                "A sample dataset filtered in real time by the search criteria above.",
+              )}
             </p>
           </div>
         </div>
@@ -83,13 +85,7 @@ export function SearchDemo() {
                 margin: 0,
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
+              <div className="search-hit">
                 <strong>{tr(item.name)}</strong>
                 <span className="auto-badge">{tr(item.status)}</span>
               </div>
@@ -100,7 +96,7 @@ export function SearchDemo() {
                   marginTop: 6,
                 }}
               >
-                {tr("负责人: {0} · 地区: {1} · 预算: ¥ {2}", [
+                {tr("Owner: {0} · Region: {1} · Budget: ¥ {2}", [
                   tr(item.owner),
                   tr(item.region),
                   item.budget.toLocaleString(),
@@ -116,7 +112,7 @@ export function SearchDemo() {
                 padding: 24,
               }}
             >
-              {tr("没有找到符合搜索条件的记录")}
+              {tr("No records match the search criteria")}
             </div>
           )}
         </div>

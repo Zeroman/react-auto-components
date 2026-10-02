@@ -7,11 +7,11 @@ test("tree expansion and merged cells render the right rows", async () => {
   const rows: Node[] = [
     {
       id: "1",
-      name: "父",
+      name: "Parent",
       group: "A",
-      children: [{ id: "1.1", name: "子", group: "B" }],
+      children: [{ id: "1.1", name: "Child", group: "B" }],
     },
-    { id: "2", name: "同组", group: "A" },
+    { id: "2", name: "Same group", group: "A" },
   ];
   const u = userEvent.setup();
   const { container } = render(
@@ -29,30 +29,30 @@ test("tree expansion and merged cells render the right rows", async () => {
     "false",
   );
   expect(screen.getByText("A").closest("td")).toHaveAttribute("rowspan", "2");
-  await u.click(screen.getByLabelText("展开行 1"));
-  expect(screen.getByText("子")).toBeVisible();
+  await u.click(screen.getByLabelText("Expand row 1"));
+  expect(screen.getByText("Child")).toBeVisible();
 });
 test("default hidden column can be enabled in settings", async () => {
   const u = userEvent.setup();
   render(
     <AutoTable
       id="hidden"
-      data={[{ id: "1", name: "甲" }]}
+      data={[{ id: "1", name: "A" }]}
       rowKey="id"
       columns={[
-        { key: "id", label: "编号", hidden: true },
-        { key: "name", label: "姓名" },
+        { key: "id", label: "Number", hidden: true },
+        { key: "name", label: "Name" },
       ]}
       virtual={false}
     />,
   );
   expect(
-    screen.queryByRole("button", { name: "排序 编号" }),
+    screen.queryByRole("button", { name: "Sort Number" }),
   ).not.toBeInTheDocument();
-  await u.click(screen.getByText("设置"));
-  await u.click(screen.getByLabelText("编号", { exact: true }));
-  await u.click(screen.getByText("确定"));
-  expect(screen.getByRole("button", { name: "排序 编号" })).toBeVisible();
+  await u.click(screen.getByText("Settings"));
+  await u.click(screen.getByLabelText("Number", { exact: true }));
+  await u.click(screen.getByText("OK"));
+  expect(screen.getByRole("button", { name: "Sort Number" })).toBeVisible();
 });
 
 test("merged groups break at expanded detail rows", async () => {
@@ -66,11 +66,11 @@ test("merged groups break at expanded detail rows", async () => {
       ]}
       rowKey="id"
       columns={[{ key: "group", merge: true }]}
-      renderExpanded={(r) => <p>详情{r.id}</p>}
+      renderExpanded={(r) => <p>Details {r.id}</p>}
       pagination={false}
     />,
   );
-  await u.click(screen.getByLabelText("展开行 1"));
+  await u.click(screen.getByLabelText("Expand row 1"));
   expect(
     container.querySelector('tr[data-row-id="1"] td[rowspan]'),
   ).toHaveAttribute("rowspan", "1");

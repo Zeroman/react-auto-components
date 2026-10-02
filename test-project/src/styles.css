@@ -360,9 +360,14 @@ main[data-page="dialog"] .demo-viewport {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Tabs page: maximizes viewport */
+/* Tabs page: nested examples fill the viewport */
 main[data-page="tabs"] .demo-viewport {
   overflow: hidden;
+}
+
+.tabs-demo-controls {
+  flex: 0 0 auto;
+  margin-bottom: 8px;
 }
 
 main[data-page="tabs"] .card {
@@ -371,6 +376,29 @@ main[data-page="tabs"] .card {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+main[data-page="tabs"] .dynamic-tabs-demo,
+main[data-page="tabs"] .tabs-state-demo {
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tabs-state-switches,
+.dynamic-tabs-demo .auto-actions {
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+}
+
+.tabs-state-switches label,
+.dynamic-tabs-demo .auto-actions label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
 }
 
 main[data-page="tabs"]
@@ -389,11 +417,16 @@ main[data-page="tabs"] .auto-tabs.auto-tabs-menu {
   overflow: hidden;
 }
 
-main[data-page="tabs"] .auto-tab-content:not([hidden]),
-main[data-page="tabs"] [role="tabpanel"]:not([hidden]) {
+main[data-page="tabs"] .auto-tab-content:not([hidden]) {
   flex: 1 1 0%;
   min-height: 0;
   overflow-y: auto;
+}
+
+main[data-page="tabs"] .card > .auto-tabs > .auto-tab-content:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* ==========================================================================
@@ -752,6 +785,25 @@ h3 {
   white-space: nowrap;
 }
 
+.search-hit {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.search-hit strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-hit .auto-badge {
+  flex-shrink: 0;
+}
+
 .status-active {
   background: #ecf4ee;
   color: #448561;
@@ -804,6 +856,7 @@ h3 {
    ========================================================================== */
 
 .studio-dark {
+  color-scheme: dark;
   --auto-bg: #20362b;
   --auto-text: #e1ebe3;
   --auto-secondary: #9eb5a5;
@@ -814,6 +867,21 @@ h3 {
   --auto-primary-text: #0f241a;
   background: #17271e;
   color: #dde8df;
+}
+
+.studio-dark .status-active {
+  background: #1c4332;
+  color: #9ed7b4;
+}
+
+.studio-dark .status-done {
+  background: #1c3348;
+  color: #b7cbe4;
+}
+
+.studio-dark .status-pending {
+  background: #3d3420;
+  color: #e4cb8c;
 }
 
 .studio-dark .auto-overlay {

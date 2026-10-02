@@ -7,7 +7,7 @@ const pages = [
   "AutoChat",
   "AutoTable",
   "AutoForm",
-  "AutoSearchPanel",
+  "AutoSearch",
   "AutoDialog",
   "AutoTabs",
 ];

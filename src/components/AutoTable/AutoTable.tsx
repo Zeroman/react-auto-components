@@ -18,7 +18,14 @@ import * as ContextMenu from "@radix-ui/react-context-menu";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
 import { emptyQuery, matchesQuery, type QueryNode } from "../../core/query";
 import { errorMessage } from "../../core/config";
-import { AutoSearchPanel } from "../AutoSearchPanel";
+import { RacError, userText } from "../../core/errors";
+import {
+  useFieldWarnings,
+  useLibraryStyles,
+  warnRowKeys,
+  warnTableId,
+} from "../../core/dev";
+import { AutoSearch } from "../AutoSearch";
 import { AutoDialog } from "../AutoDialog";
 import { TableHeader } from "./TableHeader";
 import { features } from "./features";
@@ -31,6 +38,8 @@ import {
   type TableSettings,
 } from "./settings";
 import { SettingsPanel } from "./SettingsPanel";
+import { resolveColumn, resolveDataSource, resolveRowAction } from "./registry";
+import { racTestId } from "../../core/testid";
 import {
   collectExport,
   toCsv,
@@ -44,6 +53,13 @@ import type { AutoTableProps, AutoColumn, TableQuery, RowScope } from "./types";
 export function AutoTable<T extends object>(props: AutoTableProps<T>) {
   const tr = useAutoText();
   const services = useAutoConfig();
+  const remoteSource = useMemo(
+    () => resolveDataSource(props, services.sources),
+    [props, services.sources],
+  );
+  useLibraryStyles();
+  useFieldWarnings("AutoTable", props.searchFields);
+  useFieldWarnings("AutoTable", props.formFields);
   const {
     id,
     rowKey,
@@ -88,7 +104,9 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
               label: key,
             }) as AutoColumn<T>,
         );
-    return source.filter((c) => services.canAccess(c));
+    return source
+      .filter((c) => services.canAccess(c))
+      .map((column) => resolveColumn(column, services.columns));
   }, [props.columns, props.data, services]);
   const keys = columns.map((c) => c.key);
   const {
@@ -133,13 +151,13 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
           : settings.filter,
       });
   }
-  const source = useTableData(props.data, props.dataSource, query);
+  const source = useTableData(props.data, remoteSource, query);
   const filtered = useMemo(
     () =>
-      props.dataSource
+      remoteSource
         ? Array.from(source.rows)
         : source.rows.filter((row) => matchesQuery(row, query.filter)),
-    [source.rows, props.dataSource, query.filter],
+    [source.rows, remoteSource, query.filter],
   );
   const ordered = useMemo(() => {
     const list = [...new Set([...layout.order, ...keys])].flatMap((key) => {
@@ -176,6 +194,11 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
   );
   const getId = (row: T) =>
     typeof rowKey === "function" ? rowKey(row) : String(row[rowKey]);
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
+    warnTableId(id, services.namespace);
+    warnRowKeys(source.rows, rowKey);
+  }, [id, services.namespace, source.rows, rowKey]);
   const selectionCache = useRef(new Map<string, T>());
   const sourceIndex = new Map<string, T>();
   function indexRows(items: readonly T[]) {
@@ -190,7 +213,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     return Object.keys(next).flatMap((key) => {
       const row =
         sourceIndex.get(key) ??
-        (props.dataSource ? selectionCache.current.get(key) : undefined);
+        (remoteSource ? selectionCache.current.get(key) : undefined);
       return row ? [row] : [];
     });
   }
@@ -208,8 +231,8 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     getSubRows: props.getChildren,
     getRowCanExpand: (row) =>
       !!props.renderExpanded || !!props.getChildren?.(row.original)?.length,
-    manualSorting: !!props.dataSource,
-    manualPagination: !!props.dataSource || !pagination,
+    manualSorting: !!remoteSource,
+    manualPagination: !!remoteSource || !pagination,
     rowCount: source.total,
     state: {
       sorting: query.sort,
@@ -286,6 +309,21 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
             .getPrePaginatedRowModel()
             .rows.filter((r) => r.depth === 0)
             .map((r) => r.original);
+  function summaryContent(column: AutoColumn<T>) {
+    if (!column.summary) return "";
+    if (remoteSource && (props.summaryScope ?? "filtered") === "filtered")
+      return props.summaryValues?.[column.key] ?? "—";
+    const summaryRows = scopeRows(props.summaryScope ?? "filtered");
+    if (typeof column.summary === "function")
+      return column.summary(summaryRows);
+    const total = summaryRows.reduce(
+      (sum, row) => sum + (Number(row[column.key]) || 0),
+      0,
+    );
+    return column.format && summaryRows[0]
+      ? column.format(total as T[typeof column.key], summaryRows[0])
+      : total;
+  }
   const [exporting, setExporting] = useState(false);
   const exportController = useRef<AbortController | null>(null);
   useEffect(() => () => exportController.current?.abort(), []);
@@ -300,13 +338,20 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     try {
       const config = active(settings.export);
       const exportRows =
-        props.dataSource && scope === "filtered"
-          ? await fetchExportRows(props.dataSource, query, controller.signal)
+        remoteSource && scope === "filtered"
+          ? await fetchExportRows(remoteSource, query, controller.signal)
           : scopeRows(scope);
       const data = collectExport(exportRows, columns, config.columns);
-      const name = config.fileName || title || tr("数据导出");
+      const name = config.fileName || title || tr("Export");
       if (format === "xlsx") {
-        if (!props.exportXlsx) throw new Error(tr("请配置 XLSX 导出适配器"));
+        if (!props.exportXlsx)
+          throw new RacError(
+            "AutoTable",
+            "RAC-TABLE-XLSX",
+            'export(format="xlsx") requires an XLSX adapter.',
+            'Import { exportXlsx } from "@zeroman.yang/react-auto-components/xlsx" and pass exportXlsx={exportXlsx}. exceljs is an optionalDependency and is not installed by default.',
+            "Configure the XLSX export adapter",
+          );
         const buffer = await props.exportXlsx(data, {
           fileName: name,
         });
@@ -321,9 +366,9 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
           `${name}.${format}`,
           format === "csv" ? "text/csv;charset=utf-8" : "application/json",
         );
-      setMessage(tr("导出完成"));
+      setMessage(tr("Export complete"));
     } catch (e) {
-      if (!controller.signal.aborted) setMessage(tr(errorMessage(e)));
+      if (!controller.signal.aborted) setMessage(userText(tr, e));
     } finally {
       exportController.current = null;
       if (!controller.signal.aborted) setExporting(false);
@@ -435,7 +480,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     expanded,
     itemHeight,
   ]);
-  const total = props.dataSource
+  const total = remoteSource
     ? source.total
     : table.getPrePaginatedRowModel().rows.length;
   const pages = Math.max(1, Math.ceil(total / query.pageSize));
@@ -465,9 +510,10 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
       data-size={size}
       data-density={density}
       aria-label={title ?? id}
+      data-testid={racTestId("table", id)}
     >
       {props.searchFields && (
-        <AutoSearchPanel
+        <AutoSearch
           size={size}
           {...props.searchLayout}
           fields={props.searchFields}
@@ -483,11 +529,11 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
         <div className="auto-actions">
           {title && <strong>{title}</strong>}
           <span className="auto-muted">
-            {tr("{0} 条记录", [total.toLocaleString()])}
+            {tr("{0} records", [total.toLocaleString()])}
           </span>
           {selectedRows.length > 0 && (
             <span className="auto-badge">
-              {tr("已选 {0} 项", [selectedRows.length])}
+              {tr("{0} selected", [selectedRows.length])}
             </span>
           )}
           {props.toolbar}
@@ -495,32 +541,49 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
         <div className="auto-actions">
           {props.onAdd && (
             <button
+              type="button"
               className="auto-primary"
+              data-testid="rac-add"
               onClick={() =>
                 setEdit({
                   kind: "add",
                 })
               }
             >
-              {tr("新增")}
+              {tr("Add")}
             </button>
           )}
           {props.onDelete && selectedRows.length > 0 && (
-            <button onClick={() => setDeleting(selectedRows)}>
-              {tr("删除所选")}
+            <button
+              type="button"
+              data-testid="rac-delete-selected"
+              onClick={() => setDeleting(selectedRows)}
+            >
+              {tr("Delete selected")}
             </button>
           )}
-          <button onClick={source.refresh} disabled={source.loading}>
-            {tr("刷新")}
-          </button>
-          <button onClick={() => setDraft(structuredClone(settings))}>
-            {tr("设置")}
+          <button
+            type="button"
+            data-testid="rac-refresh"
+            onClick={source.refresh}
+            disabled={source.loading}
+          >
+            {tr("Refresh")}
           </button>
           <button
+            type="button"
+            data-testid="rac-settings"
+            onClick={() => setDraft(structuredClone(settings))}
+          >
+            {tr("Settings")}
+          </button>
+          <button
+            type="button"
+            data-testid="rac-export"
             disabled={exporting}
             onClick={() => void doExport(active(settings.export).format)}
           >
-            {exporting ? tr("导出中…") : tr("导出")}
+            {exporting ? tr("Exporting…") : tr("Export")}
           </button>
           <button onClick={() => setJson(!json)} aria-pressed={json}>
             JSON
@@ -547,20 +610,30 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
       )}
       {source.error && (
         <div role="alert" className="auto-error">
-          {source.error} <button onClick={source.refresh}>{tr("重试")}</button>
+          {source.error}{" "}
+          <button
+            type="button"
+            data-testid="rac-retry"
+            onClick={source.refresh}
+          >
+            {tr("Retry")}
+          </button>
         </div>
       )}
       {settingsError && (
         <div role="alert" className="auto-error">
-          {tr("配置保存失败：")}
+          {tr("Could not save settings: ")}
           {settingsError}
-          <button onClick={retry}>{tr("重试保存")}</button>
+          <button onClick={retry}>{tr("Retry save")}</button>
         </div>
       )}
       {message && (
         <div role="status" className="auto-notice">
           {message}
-          <button aria-label={tr("关闭消息")} onClick={() => setMessage("")}>
+          <button
+            aria-label={tr("Dismiss message")}
+            onClick={() => setMessage("")}
+          >
             ×
           </button>
         </div>
@@ -571,11 +644,11 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
             onClick={() =>
               void navigator.clipboard
                 .writeText(JSON.stringify(scopeRows("page"), null, 2))
-                .then(() => setMessage(tr("已复制")))
+                .then(() => setMessage(tr("Copied")))
                 .catch((e) => setMessage(tr(errorMessage(e))))
             }
           >
-            {tr("复制 JSON")}
+            {tr("Copy JSON")}
           </button>
           <pre>{JSON.stringify(scopeRows("page"), null, 2)}</pre>
         </div>
@@ -681,7 +754,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
                     <td className="auto-table-cell-selection">
                       <input
                         type="checkbox"
-                        aria-label={tr("选择行 {0}", [row.id])}
+                        aria-label={tr("Select row {0}", [row.id])}
                         checked={!!selected[row.id]}
                         onChange={row.getToggleSelectedHandler()}
                       />
@@ -720,7 +793,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
                             if (c.copyable)
                               void navigator.clipboard
                                 .writeText(String(formatted(c, row.original)))
-                                .then(() => setMessage(tr("已复制")))
+                                .then(() => setMessage(tr("Copied")))
                                 .catch((e) => setMessage(tr(errorMessage(e))));
                           }}
                         >
@@ -731,7 +804,8 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
                                 style={{
                                   marginLeft: row.depth * 16,
                                 }}
-                                aria-label={tr("展开行 {0}", [row.id])}
+                                data-testid={racTestId("expand", row.id)}
+                                aria-label={tr("Expand row {0}", [row.id])}
                                 aria-expanded={row.getIsExpanded()}
                                 onClick={row.getToggleExpandedHandler()}
                               >
@@ -740,7 +814,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
                             )}
                             {props.rowLoading?.(row.original) ? (
                               <span className="auto-skeleton">
-                                {tr("加载中…")}
+                                {tr("Loading…")}
                               </span>
                             ) : c.render ? (
                               c.render(value, row.original, index)
@@ -759,7 +833,8 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
                           <div className="auto-actions auto-row-actions">
                             {props.onEdit && (
                               <button
-                                aria-label={tr("编辑行 {0}", [row.id])}
+                                data-testid={racTestId("edit", row.id)}
+                                aria-label={tr("Edit row {0}", [row.id])}
                                 onClick={() =>
                                   setEdit({
                                     kind: "edit",
@@ -767,15 +842,16 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
                                   })
                                 }
                               >
-                                {tr("编辑")}
+                                {tr("Edit")}
                               </button>
                             )}
                             {props.onDelete && (
                               <button
-                                aria-label={tr("删除行 {0}", [row.id])}
+                                data-testid={racTestId("delete", row.id)}
+                                aria-label={tr("Delete row {0}", [row.id])}
                                 onClick={() => setDeleting([row.original])}
                               >
-                                {tr("删除")}
+                                {tr("Delete")}
                               </button>
                             )}
                           </div>
@@ -801,7 +877,12 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
                                   disabled={a.disabled?.(row.original)}
                                   onSelect={() =>
                                     void Promise.resolve()
-                                      .then(() => a.onClick(row.original))
+                                      .then(() =>
+                                        resolveRowAction(
+                                          a,
+                                          services.rowActions,
+                                        )(row.original),
+                                      )
                                       .catch((e) =>
                                         setMessage(tr(errorMessage(e))),
                                       )
@@ -846,7 +927,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
                 <tr>
                   <td colSpan={colCount} className="auto-empty">
                     {props.empty ??
-                      (source.loading ? tr("正在加载…") : tr("暂无数据"))}
+                      (source.loading ? tr("Loading…") : tr("No data"))}
                   </td>
                 </tr>
               )}
@@ -854,25 +935,10 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
             {ordered.some((c) => c.summary) && (
               <tfoot>
                 <tr>
-                  <td className="auto-table-cell-selection">{tr("合计")}</td>
+                  <td className="auto-table-cell-selection">{tr("Total")}</td>
                   {ordered.map((c) => (
                     <td key={c.key} style={cellStyle(c)}>
-                      {c.summary &&
-                      props.dataSource &&
-                      (props.summaryScope ?? "filtered") === "filtered"
-                        ? (props.summaryValues?.[c.key] ?? "—")
-                        : typeof c.summary === "function"
-                          ? c.summary(
-                              scopeRows(props.summaryScope ?? "filtered"),
-                            )
-                          : c.summary
-                            ? scopeRows(
-                                props.summaryScope ?? "filtered",
-                              ).reduce(
-                                (sum, row) => sum + (Number(row[c.key]) || 0),
-                                0,
-                              )
-                            : ""}
+                      {summaryContent(c)}
                     </td>
                   ))}
                   {(props.onEdit || props.onDelete) && <td />}
@@ -884,10 +950,10 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
       )}
       {pagination && (
         <footer className="auto-pagination">
-          <span>{tr("第 {0} / {1} 页", [query.pageIndex + 1, pages])}</span>
+          <span>{tr("Page {0} / {1}", [query.pageIndex + 1, pages])}</span>
           <div className="auto-actions">
             <select
-              aria-label={tr("每页条数")}
+              aria-label={tr("Rows per page")}
               value={query.pageSize}
               onChange={(e) =>
                 changeQuery({
@@ -900,12 +966,12 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
                 .sort((a, b) => a - b)
                 .map((n) => (
                   <option key={n} value={n}>
-                    {tr("{0} 条 / 页", [n])}
+                    {tr("{0} / page", [n])}
                   </option>
                 ))}
             </select>
             <button
-              aria-label={tr("上一页")}
+              aria-label={tr("Previous page")}
               disabled={query.pageIndex === 0}
               onClick={() =>
                 changeQuery({
@@ -916,7 +982,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
               ←
             </button>
             <button
-              aria-label={tr("下一页")}
+              aria-label={tr("Next page")}
               disabled={query.pageIndex + 1 >= pages}
               onClick={() =>
                 changeQuery({
@@ -934,7 +1000,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
         onOpenChange={(open) => {
           if (!open) setDraft(null);
         }}
-        title={tr("表格设置")}
+        title={tr("Table settings")}
         width={760}
         content={
           draft && (
@@ -964,14 +1030,14 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
         onOpenChange={(open) => {
           if (!open) setEdit(null);
         }}
-        title={edit?.kind === "add" ? tr("新增记录") : tr("编辑记录")}
+        title={edit?.kind === "add" ? tr("Add record") : tr("Edit record")}
         fields={
           props.formFields ??
-          columns.map((c) => ({
-            name: c.key,
-            label: c.label,
-            type: c.type === "number" ? "integer" : "input",
-          }))
+          columns.map((c) =>
+            c.type === "number"
+              ? { name: c.key, label: c.label, type: "integer" as const }
+              : { name: c.key, label: c.label, type: "input" as const },
+          )
         }
         defaultValue={edit?.row}
         draftKey={`${id}:${edit?.kind}:${edit?.row ? getId(edit.row) : "new"}`}
@@ -987,11 +1053,11 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
         onOpenChange={(open) => {
           if (!open) setDeleting(null);
         }}
-        title={tr("确认删除")}
+        title={tr("Delete")}
         content={
-          <p>{tr("确定删除这 {0} 条记录？", [deleting?.length ?? 0])}</p>
+          <p>{tr("Delete these {0} records?", [deleting?.length ?? 0])}</p>
         }
-        confirmLabel={tr("确认删除")}
+        confirmLabel={tr("Delete")}
         onSubmit={async () => {
           if (deleting) await props.onDelete?.(deleting);
           setSelected({});

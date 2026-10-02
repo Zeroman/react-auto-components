@@ -39,11 +39,11 @@ test("automatic form labels remeasure when the translation provider changes", as
   const section = page.getByTestId("translated-labels");
   const label = section.locator("label");
   const initial = (await label.boundingBox())!.width;
-  await section.getByRole("button", { name: "切换标签语言" }).click();
+  await section.getByRole("button", { name: "Switch label language" }).click();
   await expect
     .poll(async () => (await label.boundingBox())!.width)
     .toBeGreaterThan(initial + 20);
-  await section.getByRole("button", { name: "切换标签语言" }).click();
+  await section.getByRole("button", { name: "Switch label language" }).click();
   await expect
     .poll(async () => (await label.boundingBox())!.width)
     .toBeCloseTo(initial, 0);

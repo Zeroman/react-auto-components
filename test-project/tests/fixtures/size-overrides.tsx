@@ -1,5 +1,9 @@
 import { createRoot } from "react-dom/client";
-import { AutoForm, AutoTabs, AutoTable } from "@zeroman.yang/react-auto-components";
+import {
+  AutoForm,
+  AutoTabs,
+  AutoTable,
+} from "@zeroman.yang/react-auto-components";
 export function mount() {
   const node = document.createElement("div");
   node.style.cssText =
@@ -38,8 +42,8 @@ export function mount() {
           density="compact"
           virtual={false}
           rowKey="id"
-          data={[{ id: "1", name: "一行" }]}
-          columns={[{ key: "name", label: "名称" }]}
+          data={[{ id: "1", name: "One row" }]}
+          columns={[{ key: "name", label: "Name" }]}
           pagination={false}
         />
       ))}

@@ -46,14 +46,16 @@ export function ChatLayoutDemo() {
             id: `${role}-short`,
             role,
             content: tr(`chat.${role}`),
-            avatar: avatars ? String(index + 1) : undefined,
+            avatar:
+              avatars && role !== "system" ? String(index + 1) : undefined,
             meta: "09:41",
           },
           {
             id: `${role}-long`,
             role,
             content: tr("chat.lab.paragraph").repeat(4),
-            avatar: avatars ? String(index + 1) : undefined,
+            avatar:
+              avatars && role !== "system" ? String(index + 1) : undefined,
             meta: "09:42",
           },
         ])}

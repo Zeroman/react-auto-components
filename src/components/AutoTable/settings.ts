@@ -27,7 +27,7 @@ export interface TableSettings {
 const group = <V>(value: V): Presets<V> => ({
   activeId: "default",
   version: 1,
-  presets: [{ id: "default", name: "默认方案", value }],
+  presets: [{ id: "default", name: "Default preset", value }],
 });
 export function initialSettings(
   keys: string[],

@@ -25,6 +25,7 @@ jobs:
       - uses: pnpm/action-setup@v4
       - run: pnpm install --frozen-lockfile
       - run: pnpm check:public
+      - run: pnpm check:docs
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm prepare:test-project

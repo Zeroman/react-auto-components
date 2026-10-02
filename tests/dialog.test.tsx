@@ -15,22 +15,22 @@ function Launcher({
     <button
       onClick={() =>
         dialog.open({
-          title: "编辑用户",
-          fields: [{ name: "name", label: "姓名", required: true }],
+          title: "Edit user",
+          fields: [{ name: "name", label: "Name", required: true }],
           defaultValue: { name: "" },
           draftKey: "user",
           onSubmit: submit,
         })
       }
     >
-      打开
+      Open
     </button>
   );
 }
 test("failed submit preserves input, cancel saves draft, successful submit clears it", async () => {
   const submit = vi
       .fn()
-      .mockRejectedValueOnce(new Error("保存失败"))
+      .mockRejectedValueOnce(new Error("Save failed"))
       .mockResolvedValue(undefined),
     u = userEvent.setup();
   render(
@@ -38,18 +38,20 @@ test("failed submit preserves input, cancel saves draft, successful submit clear
       <Launcher submit={submit} />
     </AutoDialogProvider>,
   );
-  await u.click(screen.getByText("打开"));
-  await u.type(screen.getByRole("textbox", { name: "姓名" }), "张三");
-  await u.click(screen.getByText("确定"));
-  expect(await screen.findByText("保存失败")).toBeVisible();
+  await u.click(screen.getByText("Open"));
+  await u.type(screen.getByRole("textbox", { name: "Name" }), "Zhang San");
+  await u.click(screen.getByText("OK"));
+  expect(await screen.findByText("Save failed")).toBeVisible();
   expect(screen.getByRole("dialog")).toBeVisible();
-  await u.click(screen.getByText("取消"));
-  await u.click(screen.getByText("打开"));
-  expect(screen.getByRole("textbox", { name: "姓名" })).toHaveValue("张三");
-  await u.click(screen.getByText("确定"));
+  await u.click(screen.getByText("Cancel"));
+  await u.click(screen.getByText("Open"));
+  expect(screen.getByRole("textbox", { name: "Name" })).toHaveValue(
+    "Zhang San",
+  );
+  await u.click(screen.getByText("OK"));
   await waitFor(() =>
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
   );
-  await u.click(screen.getByText("打开"));
-  expect(screen.getByRole("textbox", { name: "姓名" })).toHaveValue("");
+  await u.click(screen.getByText("Open"));
+  expect(screen.getByRole("textbox", { name: "Name" })).toHaveValue("");
 });

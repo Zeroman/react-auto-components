@@ -12,7 +12,9 @@ A standalone, schema-driven component library for React 19, covering forms, tabl
 
 ## Project status
 
-The current version is 0.1.2 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Existing components default to Chinese; AutoChat defaults to English. Built-in text can be translated through AutoConfigProvider.config.t.
+The current version is 0.1.2 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Built-in interface text defaults to English and can be translated through AutoConfigProvider.config.t.
+
+Agents: start at [llms.txt](llms.txt). It indexes the behavior docs, error codes, JSON registries, and Playwright ids.
 
 Install with `pnpm add @zeroman.yang/react-auto-components` (npm and yarn work the same way). React 19 and react-dom 19 are peer dependencies. Import the stylesheet once: `import "@zeroman.yang/react-auto-components/style.css"`.
 
@@ -126,12 +128,24 @@ The t callback receives a message key and a fallback. Preserve numbered placehol
 | Component       | Capabilities                                                                                                                                                                                                     |
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | AutoForm        | Native field types, virtualized options, cascading selection, upload adapters, custom rendering, dependent fields, conditional visibility, async validation, controlled state, input preservation after failures |
-| AutoSearchPanel | Basic/advanced conditions, manual/instant search, reset, sort tags, a shared query AST, and RSQL serialization                                                                                                   |
+| AutoSearch | Basic/advanced conditions, manual/instant search, reset, sort tags, a shared query AST, and RSQL serialization                                                                                                   |
 | AutoTable       | Local/remote data, multi-column sorting, column filters, pagination, stable selection, virtualization, tree/detail expansion, summaries, merged cells, CRUD, context menus, and copy                             |
 | AutoDialog      | Declarative/imperative APIs, isolated providers, drafts, close guards, focus management, dragging, fullscreen, and async submission                                                                              |
 | AutoTabs        | Horizontal/vertical layouts, nesting, permissions, disabled tabs, preserved panel state, and refresh                                                                                                        |
 | AutoMenu        | Sidebar navigation with icons, descriptions, badges, nested groups, permissions, and a collapsible icon rail                                                                                                     |
-| AutoChat | Caller-owned message rendering, optional virtualization, streaming follow, anchored history loading, send/stop composer, and custom actions |
+| AutoChat | Caller-owned message rendering, optional virtualization, streaming follow, anchored history loading, send/stop composer, and custom actions. [Behavior](docs/auto-chat.md) |
+
+Behavior contracts, including what a thrown callback does: [AutoForm](docs/auto-form.md), [AutoSearch](docs/auto-search.md), [AutoTable](docs/auto-table.md), [AutoDialog](docs/auto-dialog.md), [AutoTabs](docs/auto-tabs.md), [AutoMenu](docs/auto-menu.md). Developer error codes: [errors.md](docs/errors.md).
+
+## Preconditions
+
+Import the stylesheet once: `import "@zeroman.yang/react-auto-components/style.css"`. Without it, `--auto-text` is unset and the page is unstyled. Development mode warns `RAC-CSS-MISSING`.
+
+`AutoConfigProvider` is optional. Defaults are namespace `"auto"`, size `"medium"`, density `"comfortable"`, top labels, and `localStorage`. The namespace is prefixed onto `${namespace}:table:${id}` and `${namespace}:draft:${draftKey}`. Two apps on one origin that both keep `"auto"` share those keys.
+
+`AutoDialogProvider` is required for `useAutoDialog()` and is not provided by `AutoConfigProvider`. `<AutoDialog open>` does not need it.
+
+`exceljs` is an optional dependency used only by `@zeroman.yang/react-auto-components/xlsx`. CSV and JSON export work without it. A missing adapter or a missing `exceljs` install fails with `RAC-TABLE-XLSX` or `RAC-XLSX-DEP`.
 
 Table layout, sorting, filtering, and export each support named presets and independent versions. Persistence defaults to localStorage; remote adapters can be injected. JSON/CSV export is built in. XLSX uses an optional, separate adapter:
 

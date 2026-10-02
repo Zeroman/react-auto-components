@@ -4,6 +4,16 @@
 
 ## Sin publicar
 
+- El texto de interfaz integrado pasa a inglés por defecto, y esa cadena es la clave de `config.t`. Pasa `t` para otros idiomas. Las claves chinas anteriores, como `提交` y `刷新`, ya no son el valor por defecto.
+- El formulario de búsqueda es `AutoSearch` (`AutoSearchProps`). `AutoSearchPanel` y `AutoSearchPanelProps` siguen como alias en desuso.
+- `Field<T>` es una unión discriminada. Un `select` sin `options`, un escalar en `daterange` o `datetimerange`, y `match: "between"` en un escalar son errores de TypeScript. `AnyField` y `unsafeField()` siguen siendo la salida.
+- Los errores de desarrollo son `RacError` en inglés, con componente, corrección y código. Véase [errors.md](errors.md). El modo de desarrollo avisa de una hoja de estilos ausente, un id de tabla vacío, `rowKey` duplicados, campos de elección sin options y valores de intervalo que no son un par.
+- `AutoConfigProvider` acepta registros JSON: `config.fields`, `config.columns`, `config.rowActions` y `config.sources`. Una clave resuelve `Field.component`, `render` / `format` / `sort` / `exportFormat` de la columna, `RowAction.action` y `source` de `AutoTable`. Gana la función puesta en el campo, la columna o la acción. Los providers anidados se fusionan y gana la clave posterior. Pasa solo uno de `data`, `dataSource` o `source`. Un source desconocido muestra `RAC-TABLE-SOURCE` y reintento.
+- Se añaden `data-testid="rac-*"` estables para campos, tablas, búsqueda, formularios y diálogos. No siguen la etiqueta traducida.
+- `useAutoTabsWorkspace` abre, cambia y cierra pestañas dinámicas, con pestañas fijadas y almacenamiento de sesión opcional. Una pestaña puede ser `closable`, `lazy`, `disabled` o `loading`.
+- Contratos: [AutoForm](auto-form.md), [AutoSearch](auto-search.md), [AutoTable](auto-table.md), [AutoDialog](auto-dialog.md), [AutoTabs](auto-tabs.md), [AutoMenu](auto-menu.md). `llms.txt` en la raíz del paquete es la entrada para agentes.
+- Una etiqueta `v*` publica en npm mediante trusted publishing de GitHub Actions. `./run.sh release` sube el parche en un `main` limpio.
+
 ## 0.1.2 - 2026-10-01
 
 - Publicación como `@zeroman.yang/react-auto-components`. El scope `@zeroman` de npm pertenece a otra cuenta.

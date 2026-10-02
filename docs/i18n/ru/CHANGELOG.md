@@ -4,6 +4,16 @@
 
 ## Ещё не выпущено
 
+- Встроенный текст интерфейса по умолчанию английский, и эта строка является ключом `config.t`. Для других языков передайте `t`. Прежние китайские ключи, такие как `提交` и `刷新`, больше не используются по умолчанию.
+- Форма поиска называется `AutoSearch` (`AutoSearchProps`). `AutoSearchPanel` и `AutoSearchPanelProps` остаются устаревшими псевдонимами.
+- `Field<T>` — размеченное объединение. `select` без `options`, скаляр на `daterange` или `datetimerange` и `match: "between"` на скаляре являются ошибками TypeScript. `AnyField` и `unsafeField()` остаются запасным выходом.
+- Ошибки разработчика — английские `RacError` с компонентом, исправлением и кодом. См. [errors.md](errors.md). Режим разработки предупреждает об отсутствующей таблице стилей, пустом id таблицы, повторяющихся `rowKey`, полях выбора без options и значениях диапазона, которые не являются парой.
+- `AutoConfigProvider` принимает JSON-реестры: `config.fields`, `config.columns`, `config.rowActions` и `config.sources`. Строковый ключ находит `Field.component`, `render` / `format` / `sort` / `exportFormat` столбца, `RowAction.action` и `source` у `AutoTable`. Функция на поле, столбце или действии побеждает. Вложенные провайдеры сливаются, поздний ключ побеждает. Передайте ровно одно из `data`, `dataSource` или `source`. Неизвестный source показывает `RAC-TABLE-SOURCE` и повтор.
+- Стабильные `data-testid="rac-*"` для полей, таблиц, поиска, форм и диалогов. Они не следуют переведенной подписи.
+- `useAutoTabsWorkspace` открывает, переключает и закрывает динамические вкладки, с закрепленными вкладками и необязательным session storage. Вкладка может быть `closable`, `lazy`, `disabled` или `loading`.
+- Поведение: [AutoForm](auto-form.md), [AutoSearch](auto-search.md), [AutoTable](auto-table.md), [AutoDialog](auto-dialog.md), [AutoTabs](auto-tabs.md), [AutoMenu](auto-menu.md). `llms.txt` в корне пакета — вход для агентов.
+- Тег `v*` публикует пакет в npm через trusted publishing GitHub Actions. `./run.sh release` повышает патч на чистой ветке `main`.
+
 ## 0.1.2 - 2026-10-01
 
 - Публикация как `@zeroman.yang/react-auto-components`. Скоуп npm `@zeroman` принадлежит другой учётной записи.

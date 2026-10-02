@@ -4,14 +4,30 @@ import { AutoForm, type AutoFormHandle } from "../AutoForm";
 import { defaults, resolve } from "../../core/config";
 import { buildQuery, type QueryNode } from "../../core/query";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
+import { useLibraryStyles } from "../../core/dev";
 import type { Field, AutoFormLayout } from "../../core/types";
-export interface AutoSearchPanelProps<T extends object> extends AutoFormLayout {
+/**
+ * Search form that emits a {@link QueryNode} plus the raw values.
+ * `mode` defaults to `"manual"` (search on submit). `"instant"` also searches on every change.
+ * `columns` defaults to `3`.
+ * A thrown `onSearch` is caught by the inner form: values stay, and the error string is shown. Reset is not implied.
+ * Empty values are omitted. `match: "isNull"` is the exception and matches null.
+ * `match: "between"` requires a two-item value. See docs/auto-search.md.
+ */
+export interface AutoSearchProps<T extends object> extends AutoFormLayout {
   fields: readonly Field<T>[];
   value?: T;
   defaultValue?: Partial<T>;
+  /** Fires when the draft changes, including reset. */
   onChange?: (values: T) => void;
+  /**
+   * Required. Receives the built query and the values.
+   * Reject or throw to keep the draft and show `error.message`.
+   */
   onSearch: (query: QueryNode, values: T) => void;
+  /** Default `"manual"`. `"instant"` searches on each change as well as on submit. */
   mode?: "manual" | "instant";
+  /** Default `3`. */
   columns?: number;
   disabled?: boolean;
   searchLabel?: string;
@@ -23,7 +39,7 @@ export interface AutoSearchPanelProps<T extends object> extends AutoFormLayout {
     onRemove: () => void;
   }[];
 }
-export function AutoSearchPanel<T extends object>({
+export function AutoSearch<T extends object>({
   fields,
   value,
   defaultValue,
@@ -41,9 +57,10 @@ export function AutoSearchPanel<T extends object>({
   resetLabel,
   extraActions,
   sortTags,
-}: AutoSearchPanelProps<T>) {
+}: AutoSearchProps<T>) {
   const tr = useAutoText();
   const services = useAutoConfig();
+  useLibraryStyles();
   const density =
     ownDensity ?? services.form.density ?? services.density ?? "comfortable";
   const size = ownSize ?? services.form.size ?? services.size ?? "medium";
@@ -69,6 +86,7 @@ export function AutoSearchPanel<T extends object>({
   return (
     <section
       className="auto-root auto-search"
+      data-testid="rac-search-panel"
       data-density={density}
       data-size={size}
       data-label-width={
@@ -101,11 +119,17 @@ export function AutoSearchPanel<T extends object>({
         actions={false}
       >
         <div className="auto-actions auto-form-actions">
-          <button type="submit" className="auto-primary" disabled={disabled}>
-            {searchLabel ?? tr("搜索")}
+          <button
+            type="submit"
+            className="auto-primary"
+            data-testid="rac-search"
+            disabled={disabled}
+          >
+            {searchLabel ?? tr("Search")}
           </button>
           <button
             type="button"
+            data-testid="rac-search-reset"
             disabled={disabled}
             onClick={() => {
               const v = defaults<T>(fields, defaultValue);
@@ -114,16 +138,17 @@ export function AutoSearchPanel<T extends object>({
               send(v);
             }}
           >
-            {resetLabel ?? tr("重置")}
+            {resetLabel ?? tr("Reset")}
           </button>
           {extraActions}
           {fields.some((f) => f.more) && (
             <button
               type="button"
+              data-testid="rac-more-filters"
               aria-expanded={more}
               onClick={() => setMore(!more)}
             >
-              {more ? tr("收起条件") : tr("更多条件")}
+              {more ? tr("Hide filters") : tr("More filters")}
             </button>
           )}
           {sortTags?.map((t) => (
@@ -136,3 +161,9 @@ export function AutoSearchPanel<T extends object>({
     </section>
   );
 }
+
+/** @deprecated Use {@link AutoSearchProps}. */
+export type AutoSearchPanelProps<T extends object> = AutoSearchProps<T>;
+
+/** @deprecated Use {@link AutoSearch}. */
+export const AutoSearchPanel: typeof AutoSearch = AutoSearch;

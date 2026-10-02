@@ -10,7 +10,22 @@
     "docs/i18n/*/README.md",
     "docs/i18n/*/migration.md",
     "docs/auto-chat.md",
-    "docs/i18n/*/auto-chat.md"
+    "docs/auto-form.md",
+    "docs/auto-search.md",
+    "docs/auto-table.md",
+    "docs/auto-dialog.md",
+    "docs/auto-tabs.md",
+    "docs/auto-menu.md",
+    "docs/errors.md",
+    "llms.txt",
+    "docs/i18n/*/auto-chat.md",
+    "docs/i18n/*/auto-form.md",
+    "docs/i18n/*/auto-search.md",
+    "docs/i18n/*/auto-table.md",
+    "docs/i18n/*/auto-dialog.md",
+    "docs/i18n/*/auto-tabs.md",
+    "docs/i18n/*/auto-menu.md",
+    "docs/i18n/*/errors.md"
   ],
   "exports": {
     ".": {
@@ -36,6 +51,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "check:public": "node scripts/check-public-source.mjs",
+    "check:docs": "node scripts/check-docs-i18n.mjs",
     "test:e2e": "pnpm --dir test-project test",
     "prepare:test-project": "node scripts/prepare-test-project.mjs",
     "format": "prettier --write src tests test-project/src test-project/tests *.ts",

@@ -11,6 +11,8 @@ import {
 } from "react";
 import { defaults, equal, resolve, errorMessage } from "../../core/config";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
+import { racTestId } from "../../core/testid";
+import { useFieldWarnings, useLibraryStyles } from "../../core/dev";
 import type { Values } from "../../core/types";
 import type { AutoFormProps } from "./types";
 import { FormField } from "./FormField";
@@ -42,6 +44,8 @@ export function AutoForm<T extends object>({
 }: AutoFormProps<T>) {
   const tr = useAutoText();
   const services = useAutoConfig();
+  useLibraryStyles();
+  useFieldWarnings("AutoForm", fields, value);
   const labelPosition =
     ownLabelPosition ?? services.form.labelPosition ?? "top";
   const labelAlign =
@@ -179,7 +183,7 @@ export function AutoForm<T extends object>({
   }
   async function validate() {
     if (pendingUploads.size) {
-      setSubmitError(tr("请等待附件上传完成"));
+      setSubmitError(tr("Wait for the upload to finish"));
       return false;
     }
     const ticket = ++validation.current;
@@ -205,7 +209,7 @@ export function AutoForm<T extends object>({
             v === "" ||
             (Array.isArray(v) && !v.length))
         )
-          next[f.name] = tr("{0}为必填项", [f.label ?? f.name]);
+          next[f.name] = tr("{0} is required", [f.label ?? f.name]);
         else
           for (const rule of f.rules ?? []) {
             try {
@@ -330,6 +334,7 @@ export function AutoForm<T extends object>({
             <div
               key={name ?? i}
               data-field={name}
+              data-testid={name ? racTestId("field", name) : undefined}
               className={`auto-field ${f.className ?? ""}`}
               style={{
                 gridColumn: f.lineBreak
@@ -390,16 +395,18 @@ export function AutoForm<T extends object>({
           <button
             className="auto-primary"
             type="submit"
+            data-testid="rac-submit"
             disabled={disabled || submitting || pendingUploads.size > 0}
           >
-            {submitting ? tr("提交中…") : (submitLabel ?? tr("提交"))}
+            {submitting ? tr("Submitting…") : (submitLabel ?? tr("Submit"))}
           </button>
           <button
             type="button"
+            data-testid="rac-reset"
             disabled={disabled || submitting}
             onClick={() => reset()}
           >
-            {resetLabel ?? tr("重置")}
+            {resetLabel ?? tr("Reset")}
           </button>
           {extraActions}
         </div>

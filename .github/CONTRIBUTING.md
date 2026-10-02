@@ -48,3 +48,11 @@ Follow the existing strict TypeScript settings and code style. React 19 remains 
 ## Documentation translations
 
 English documents use their default filenames. Translations are grouped by locale under `docs/i18n/<locale>/`, for example `docs/i18n/ja/README.md` and `docs/i18n/zh-CN/migration.md`. Keep the same sections, examples, technical meaning, and release status across languages. Preserve public identifiers and command arguments. When updating a document, update its translations and keep language-switch links and links to related documents consistent.
+
+## Translation checks
+
+Run `pnpm check:docs` (or `node scripts/check-docs-i18n.mjs`) before submitting documentation changes. CI runs the same check without extra dependencies. It compares the English README, changelog, error reference, and seven component guides against their nine translations (90 documents).
+
+Missing source/translation files and differing `RAC-*` error-code sets fail the check. Include the translated trigger and repair, not just a code token. Heading-level sequences and body-row counts for each pipe-delimited Markdown table produce non-blocking warnings: translations may legitimately reorganize content. Fenced examples are excluded from structure counts; error codes inside examples still count. This is a drift check, not a guarantee of translation completeness or accuracy.
+
+The expected documents and locales are listed at the top of `scripts/check-docs-i18n.mjs`; update those lists when adding a guide or language. Existing structural differences are reported without a baseline or suppression list.

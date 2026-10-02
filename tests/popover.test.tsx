@@ -6,14 +6,14 @@ import { Popover } from "../src/internal/Popover";
 test("popover opens and treats strings as text", async () => {
   const u = userEvent.setup();
   render(
-    <Popover content={"<b>安全文本</b>"}>
-      <button>详情</button>
+    <Popover content={"<b>Safe text</b>"}>
+      <button>Details</button>
     </Popover>,
   );
-  await u.click(screen.getByText("详情"));
-  expect(await screen.findByText("<b>安全文本</b>")).toBeVisible();
+  await u.click(screen.getByText("Details"));
+  expect(await screen.findByText("<b>Safe text</b>")).toBeVisible();
   await u.keyboard("{Escape}");
-  expect(screen.queryByText("<b>安全文本</b>")).not.toBeInTheDocument();
+  expect(screen.queryByText("<b>Safe text</b>")).not.toBeInTheDocument();
 });
 
 test("internal popover preserves the trigger ref and controlled keyboard dismissal", async () => {

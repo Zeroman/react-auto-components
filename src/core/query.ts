@@ -1,3 +1,10 @@
+import { RacError, devWarn, valueKind } from "./errors";
+
+/**
+ * Filter tree shared by search panels and tables.
+ * A `"between"` condition's `value` must be a two-item array. `"in"` must be an array.
+ * `isQueryNode` rejects other shapes before they are evaluated.
+ */
 export type QueryNode =
   | {
       kind: "condition";
@@ -12,6 +19,10 @@ export const emptyQuery: QueryNode = {
   operator: "and",
   children: [],
 };
+/**
+ * The search slice of a field. `buildQuery` reads only these props.
+ * `match: "between"` expects the form value to be `[from, to]`. A scalar warns in dev and does not match rows.
+ */
 export interface SearchField {
   name?: string;
   match?: "eq" | "in" | "contains" | "between" | "isNull";
@@ -36,6 +47,14 @@ export function buildQuery(
     )
       continue;
     const operator = f.match ?? (Array.isArray(v) ? "in" : "eq");
+    if (operator === "between" && !(Array.isArray(v) && v.length === 2)) {
+      devWarn(
+        "AutoSearch",
+        "RAC-FIELD-BETWEEN",
+        `field "${f.name}" match="between" received ${valueKind(v)}, not a two-item array.`,
+        "Store [from, to] on this field. A scalar is ignored by matchesQuery and still serializes badly.",
+      );
+    }
     const conditions: QueryNode[] = (f.searchFields ?? [f.name]).map(
       (field) => {
         const node: QueryNode = {
@@ -104,7 +123,12 @@ export function serializeRsql(q: QueryNode): string {
       : (parts[0] ?? "");
   }
   if (!/^[\w.]+$/.test(q.field))
-    throw new Error(`Invalid query field: ${q.field}`);
+    throw new RacError(
+      "serializeRsql",
+      "RAC-QUERY-FIELD",
+      `field "${q.field}" is not a safe RSQL identifier.`,
+      "Use only letters, digits, underscore, and dots (regular expression /^[\\w.]+$/). Rename the column or map it before serializing.",
+    );
   const quote = (v: unknown) =>
     typeof v === "string"
       ? `"${v.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`

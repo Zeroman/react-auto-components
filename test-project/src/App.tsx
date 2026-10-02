@@ -101,11 +101,11 @@ function SettingsIcon() {
 }
 
 const pages: ReadonlyArray<readonly [string, ReactNode, string, string]> = [
-  ["table", tableIcon, "AutoTable", "智能表格"],
-  ["form", formIcon, "AutoForm", "动态表单"],
-  ["search", searchIcon, "AutoSearchPanel", "搜索面板"],
-  ["dialog", dialogIcon, "AutoDialog", "对话框"],
-  ["tabs", tabsIcon, "AutoTabs", "标签导航"],
+  ["table", tableIcon, "AutoTable", "Smart table"],
+  ["form", formIcon, "AutoForm", "Dynamic form"],
+  ["search", searchIcon, "AutoSearch", "Search panel"],
+  ["dialog", dialogIcon, "AutoDialog", "Dialog"],
+  ["tabs", tabsIcon, "AutoTabs", "Tab navigation"],
   ["chat", chatIcon, "AutoChat", "chat.title"],
 ];
 export function App() {
@@ -153,7 +153,7 @@ export function App() {
           <aside>
             <AutoMenu
               collapsed={narrowMenu}
-              label={tr("组件工作区")}
+              label={tr("Component workspace")}
               header={
                 <a
                   className="brand"
@@ -170,7 +170,9 @@ export function App() {
                 <div className="sidebar-footer">
                   <span className="online-dot" />
                   React 19.3 · TanStack 9
-                  <small>{tr("独立组件测试项目 / v0.1.0")}</small>
+                  <small>
+                    {tr("Standalone Component Test Project / v0.1.0")}
+                  </small>
                 </div>
               }
               items={[
@@ -182,9 +184,9 @@ export function App() {
                 })),
                 {
                   id: "settings",
-                  label: tr("全局设置"),
+                  label: tr("Global settings"),
                   icon: <SettingsIcon />,
-                  description: tr("布局与外观"),
+                  description: tr("Layout & appearance"),
                 },
               ]}
               value={page}
@@ -197,41 +199,50 @@ export function App() {
           <div className="studio-main">
             <header className="topbar">
               <span>
-                {tr("组件实验室")}{" "}
+                {tr("Component Lab")}{" "}
                 <span className="breadcrumb">
                   / {pages.find((p) => p[0] === page)?.[2]}
                 </span>
               </span>
               <div className="auto-actions">
                 <LanguagePicker />
-                <span className="version-pill" title={tr("全局组件尺寸")}>
-                  {tr("尺寸:  {0}", [
+                <span
+                  className="version-pill"
+                  title={tr("Global Component Size")}
+                >
+                  {tr("Size:  {0}", [
                     settings.size === "small"
-                      ? tr("小 (S)")
+                      ? tr("Small (S)")
                       : settings.size === "large"
-                        ? tr("大 (L)")
-                        : tr("中 (M)"),
+                        ? tr("Large (L)")
+                        : tr("Medium (M)"),
                   ])}
                 </span>
-                <span className="version-pill" title={tr("全局表格紧凑度")}>
-                  {tr("表格:  {0}", [
+                <span
+                  className="version-pill"
+                  title={tr("Global Table Density")}
+                >
+                  {tr("Table:  {0}", [
                     settings.tableDensity === "compact"
-                      ? tr("紧凑")
+                      ? tr("Compact")
                       : settings.tableDensity === "comfortable"
-                        ? tr("舒适")
-                        : tr("标准"),
+                        ? tr("Comfortable")
+                        : tr("Standard"),
                   ])}
                 </span>
-                <span className="version-pill" title={tr("全局标签紧凑度")}>
-                  {tr("标签: {0}", [
+                <span
+                  className="version-pill"
+                  title={tr("Global Tabs Density")}
+                >
+                  {tr("Tabs: {0}", [
                     settings.tabsDensity === "compact"
-                      ? tr("紧凑")
-                      : tr("舒适"),
+                      ? tr("Compact")
+                      : tr("Comfortable"),
                   ])}
                 </span>
                 <button
                   onClick={() => setSettingsOpen(true)}
-                  aria-label={tr("打开全局设置")}
+                  aria-label={tr("Open Global Settings")}
                 >
                   <SettingsIcon />
                 </button>
@@ -247,7 +258,7 @@ export function App() {
                   onClick={() => setCodeOpen(true)}
                 >
                   <span aria-hidden="true">{"</>"}</span>
-                  {tr("查看代码")}
+                  {tr("View code")}
                 </button>
               </div>
               <div className="demo-viewport">
@@ -271,7 +282,11 @@ export function App() {
               </div>
               <footer className="page-footer">
                 <span>Auto Studio — Build with clarity.</span>
-                <span>{tr("通过 npm 打包产物测试 · 无源码路径别名")}</span>
+                <span>
+                  {tr(
+                    "Tested against npm build artifacts · No source path aliases",
+                  )}
+                </span>
               </footer>
             </main>
           </div>
@@ -279,7 +294,7 @@ export function App() {
         <AutoDialog
           open={settingsOpen}
           onOpenChange={setSettingsOpen}
-          title={tr("全局设置")}
+          title={tr("Global settings")}
           width={500}
           hideFooter
           content={<GlobalSettings value={settings} onChange={setSettings} />}

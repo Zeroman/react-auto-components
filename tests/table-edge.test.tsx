@@ -36,10 +36,10 @@ test("remote selected rows survive page changes", async () => {
     />,
   );
   await screen.findByText("row-1");
-  await u.click(screen.getByLabelText("选择行 1"));
-  await u.click(screen.getByLabelText("下一页"));
+  await u.click(screen.getByLabelText("Select row 1"));
+  await u.click(screen.getByLabelText("Next page"));
   await screen.findByText("row-2");
-  expect(screen.getByText("已选 1 项")).toBeVisible();
+  expect(screen.getByText("1 selected")).toBeVisible();
 });
 test("stale requests cannot replace current page", async () => {
   const resolve: ((v: {
@@ -101,7 +101,7 @@ test("controlled settings notify the parent with the chosen sort", async () => {
       id="controlled-settings"
       data={[{ id: "1", name: "a" }]}
       rowKey="id"
-      columns={[{ key: "name", label: "姓名" }]}
+      columns={[{ key: "name", label: "Name" }]}
       virtual={false}
       query={{
         pageIndex: 0,
@@ -112,10 +112,10 @@ test("controlled settings notify the parent with the chosen sort", async () => {
       onQueryChange={change}
     />,
   );
-  await u.click(screen.getByText("设置"));
-  await u.click(screen.getByRole("button", { name: /^排序$/ }));
-  await u.click(screen.getByText("添加排序"));
-  await u.click(screen.getByText("确定"));
+  await u.click(screen.getByText("Settings"));
+  await u.click(screen.getByRole("button", { name: /^Sort$/ }));
+  await u.click(screen.getByText("Add sort"));
+  await u.click(screen.getByText("OK"));
   await waitFor(() =>
     expect(change).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -144,11 +144,32 @@ test("removing the last row on the last page clamps pagination", async () => {
       ]}
     />,
   );
-  await u.click(screen.getByLabelText("下一页"));
+  await u.click(screen.getByLabelText("Next page"));
   expect(screen.getByText("last")).toBeVisible();
   rerender(<AutoTable {...props} data={[{ id: "1", name: "first" }]} />);
   await waitFor(() => expect(screen.getByText("first")).toBeVisible());
-  expect(screen.getByText("第 1 / 1 页")).toBeVisible();
+  expect(screen.getByText("Page 1 / 1")).toBeVisible();
+});
+
+test("local numeric summaries use the column format", () => {
+  render(
+    <AutoTable
+      id="formatted-summary"
+      rowKey="id"
+      data={[
+        { id: "1", amount: 1200 },
+        { id: "2", amount: 800 },
+      ]}
+      columns={[
+        {
+          key: "amount",
+          summary: true,
+          format: (value) => `¥ ${value}`,
+        },
+      ]}
+    />,
+  );
+  expect(screen.getByText("¥ 2000")).toBeVisible();
 });
 
 test("remote filtered summaries require explicit aggregate values", async () => {
@@ -161,7 +182,7 @@ test("remote filtered summaries require explicit aggregate values", async () => 
     summaryScope: "filtered" as const,
   };
   const { container, rerender } = render(<AutoTable {...props} />);
-  await screen.findByText("10 条记录");
+  await screen.findByText("10 records");
   expect(container.querySelector("tfoot")).toHaveTextContent("—");
   expect(container.querySelector("tfoot")).not.toHaveTextContent("5");
   rerender(<AutoTable {...props} summaryValues={{ amount: 50 }} />);

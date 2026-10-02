@@ -1,5 +1,6 @@
 import { useEffect, useId, useImperativeHandle, useRef, useState } from "react";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
+import { useLibraryStyles } from "../../core/dev";
 import { useChatScroll } from "./useChatScroll";
 import {
   VirtualChatMessages,
@@ -70,6 +71,7 @@ function ChatContent<T extends AutoChatMessage>({
   ref,
 }: AutoChatProps<T>) {
   const services = useAutoConfig();
+  useLibraryStyles();
   const labels = Object.fromEntries(
     Object.entries(defaultLabels).map(([key, fallback]) => [
       key,

@@ -29,9 +29,10 @@ export function FormDemo() {
     ...fields,
     {
       name: "id",
-      label: tr("内部编号"),
+      label: tr("Internal ID"),
       hidden: (v) => !v.active,
-      placeholder: tr("启用时显示"),
+      placeholder: tr("Shown when enabled"),
+      span: 2,
     },
   ];
   return (
@@ -43,8 +44,12 @@ export function FormDemo() {
     >
       <div className="demo-grid">
         <section className="card">
-          <h2>{tr("创建一个项目")}</h2>
-          <p className="muted">{tr("必填校验、字段联动和异步提交。")}</p>
+          <h2>{tr("Create a Project")}</h2>
+          <p className="muted">
+            {tr(
+              "Required-field validation, field linkage, and async submission.",
+            )}
+          </p>
           <div className="auto-root">
             <label>
               <input
@@ -52,7 +57,7 @@ export function FormDemo() {
                 checked={fail}
                 onChange={(e) => setFail(e.target.checked)}
               />
-              {tr("模拟提交失败")}
+              {tr("Simulate submission failure")}
             </label>
           </div>
           <div
@@ -62,37 +67,37 @@ export function FormDemo() {
             }}
           >
             <label>
-              {tr("标签位置")}{" "}
+              {tr("Label Position")}{" "}
               <select
-                aria-label={tr("表单标签位置")}
+                aria-label={tr("Form label position")}
                 value={labelPosition}
                 onChange={(e) =>
                   setLabelPosition(e.target.value as "inherit" | "top" | "left")
                 }
               >
-                <option value="inherit">{tr("跟随全局")}</option>
-                <option value="top">{tr("上方")}</option>
-                <option value="left">{tr("左侧")}</option>
+                <option value="inherit">{tr("Follow global")}</option>
+                <option value="top">{tr("Top")}</option>
+                <option value="left">{tr("Left")}</option>
               </select>
             </label>
             <label>
-              {tr("标签文字对齐")}{" "}
+              {tr("Label Text Alignment")}{" "}
               <select
-                aria-label={tr("表单标签对齐")}
+                aria-label={tr("Form label alignment")}
                 value={labelAlign}
                 onChange={(e) =>
                   setLabelAlign(e.target.value as "inherit" | "left" | "right")
                 }
               >
-                <option value="inherit">{tr("跟随全局")}</option>
-                <option value="left">{tr("左对齐")}</option>
-                <option value="right">{tr("右对齐")}</option>
+                <option value="inherit">{tr("Follow global")}</option>
+                <option value="left">{tr("Left-aligned")}</option>
+                <option value="right">{tr("Right-aligned")}</option>
               </select>
             </label>
             <label>
-              {tr("标签宽度")}{" "}
+              {tr("Label Width")}{" "}
               <select
-                aria-label={tr("表单标签宽度")}
+                aria-label={tr("Form label width")}
                 value={labelWidth}
                 onChange={(e) =>
                   setLabelWidth(
@@ -100,10 +105,10 @@ export function FormDemo() {
                   )
                 }
               >
-                <option value="inherit">{tr("跟随全局")}</option>
-                <option value="auto">{tr("自适应 (auto)")}</option>
-                <option value="80">{tr("固定 80px")}</option>
-                <option value="120">{tr("固定 120px")}</option>
+                <option value="inherit">{tr("Follow global")}</option>
+                <option value="auto">{tr("Auto-fit (auto)")}</option>
+                <option value="80">{tr("Fixed 80px")}</option>
+                <option value="120">{tr("Fixed 120px")}</option>
               </select>
             </label>
             <label>
@@ -112,7 +117,7 @@ export function FormDemo() {
                 checked={compact ?? services.form.density === "compact"}
                 onChange={(e) => setCompact(e.target.checked)}
               />
-              {tr("紧凑表单")}
+              {tr("Compact Form")}
             </label>
           </div>
           <AutoForm<Project>
@@ -153,26 +158,33 @@ export function FormDemo() {
                   })
                 }
               >
-                {tr("填入测试数据")}
+                {tr("Fill with Test Data")}
               </button>
             }
             onSubmit={async (value) => {
               if (fail)
-                throw new Error(tr("模拟服务端拒绝，请关闭失败开关后重试"));
+                throw new Error(
+                  tr(
+                    "Simulated server rejection — please turn off the failure toggle and retry",
+                  ),
+                );
               setResult(JSON.stringify(value, null, 2));
             }}
           />
         </section>
         <section className="card code-card">
           <div className="code-title">
-            {tr("提交结果")}
+            {tr("Submission Result")}
             <span>JSON</span>
           </div>
           <pre data-testid="form-result">
-            {result || tr("// 填写表单并提交\n// 数据将显示在这里")}
+            {result ||
+              tr("// Fill in the form and submit\n// Data will appear here")}
           </pre>
           <div className="code-note">
-            {tr("字段类型通过数据模型约束，扩展字段通过 render 注入。")}
+            {tr(
+              "Field types are constrained by the data model; extension fields are injected via render.",
+            )}
           </div>
         </section>
       </div>
@@ -180,10 +192,10 @@ export function FormDemo() {
       <section className="card auto-root">
         <div className="section-heading">
           <div>
-            <h2>{tr("全组件类型画廊")}</h2>
+            <h2>{tr("Full Component Type Gallery")}</h2>
             <p className="muted">
               {tr(
-                "多级级联、自动补全、虚拟滚动大列表、日期范围及快捷键等丰富字段一览。",
+                "A rich overview of fields: multi-level cascades, autocomplete, large virtualized lists, date ranges, shortcuts, and more.",
               )}
             </p>
           </div>
@@ -201,7 +213,7 @@ export function FormDemo() {
                 : "comfortable"
           }
           fields={galleryFields}
-          submitLabel={tr("提交画廊数据")}
+          submitLabel={tr("Submit Gallery Data")}
           onSubmit={async (value) => {
             setResult(JSON.stringify(value, null, 2));
           }}

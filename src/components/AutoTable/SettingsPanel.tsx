@@ -1,4 +1,5 @@
 import { useAutoText } from "../../core/i18n";
+import { devWarn } from "../../core/errors";
 import { useState } from "react";
 import { FilterEditor } from "./FilterEditor";
 import {
@@ -57,13 +58,13 @@ export function SettingsPanel<T extends object>({
               setError("");
             }}
           >
-            {[tr("列布局"), tr("排序"), tr("筛选"), tr("导出")][i]}
+            {[tr("Columns"), tr("Sort"), tr("Filter"), tr("Export")][i]}
           </button>
         ))}
       </div>
       <div className="auto-actions auto-preset">
         <select
-          aria-label={tr("当前方案")}
+          aria-label={tr("Active preset")}
           value={group.activeId}
           onChange={(e) =>
             changeGroup({
@@ -74,13 +75,13 @@ export function SettingsPanel<T extends object>({
         >
           {group.presets.map((p) => (
             <option key={p.id} value={p.id}>
-              {p.id === "default" ? tr("默认方案") : p.name}
+              {p.id === "default" ? tr("Default preset") : p.name}
             </option>
           ))}
         </select>
         <input
-          aria-label={tr("方案名称")}
-          placeholder={tr("方案名称")}
+          aria-label={tr("Preset name")}
+          placeholder={tr("Preset name")}
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
@@ -103,7 +104,7 @@ export function SettingsPanel<T extends object>({
             setName("");
           }}
         >
-          {tr("另存方案")}
+          {tr("Save as new preset")}
         </button>
         <button
           disabled={!name.trim()}
@@ -122,7 +123,7 @@ export function SettingsPanel<T extends object>({
             setName("");
           }}
         >
-          {tr("重命名")}
+          {tr("Rename")}
         </button>
         <button
           disabled={group.presets.length === 1}
@@ -137,13 +138,13 @@ export function SettingsPanel<T extends object>({
             });
           }}
         >
-          {tr("删除方案")}
+          {tr("Delete preset")}
         </button>
       </div>
       {tab === "layout" && (
         <>
           <label>
-            {tr("密度")}{" "}
+            {tr("Density")}{" "}
             <select
               value={layout.density}
               onChange={(e) =>
@@ -153,10 +154,10 @@ export function SettingsPanel<T extends object>({
                 })
               }
             >
-              <option value="inherit">{tr("跟随全局")}</option>
-              <option value="compact">{tr("紧凑")}</option>
-              <option value="normal">{tr("标准")}</option>
-              <option value="comfortable">{tr("宽松")}</option>
+              <option value="inherit">{tr("Follow global")}</option>
+              <option value="compact">{tr("Compact")}</option>
+              <option value="normal">{tr("Normal")}</option>
+              <option value="comfortable">{tr("Comfortable")}</option>
             </select>
           </label>
           {layout.order.map((key, index) => {
@@ -209,7 +210,7 @@ export function SettingsPanel<T extends object>({
                   {c.label ?? key}
                 </label>
                 <input
-                  aria-label={tr("{0}列宽", [c.label ?? key])}
+                  aria-label={tr("Column width {0}", [c.label ?? key])}
                   type="number"
                   min={40}
                   value={layout.widths[key] ?? c.width ?? 150}
@@ -224,7 +225,7 @@ export function SettingsPanel<T extends object>({
                   }
                 />
                 <select
-                  aria-label={tr("{0}固定", [c.label ?? key])}
+                  aria-label={tr("Pin {0}", [c.label ?? key])}
                   value={layout.pin[key] ?? ""}
                   onChange={(e) =>
                     setLayout({
@@ -236,19 +237,19 @@ export function SettingsPanel<T extends object>({
                     })
                   }
                 >
-                  <option value="">{tr("不固定")}</option>
-                  <option value="left">{tr("左固定")}</option>
-                  <option value="right">{tr("右固定")}</option>
+                  <option value="">{tr("Not pinned")}</option>
+                  <option value="left">{tr("Pin left")}</option>
+                  <option value="right">{tr("Pin right")}</option>
                 </select>
                 <button
-                  aria-label={tr("上移 {0}", [c.label ?? key])}
+                  aria-label={tr("Move {0} up", [c.label ?? key])}
                   disabled={!index}
                   onClick={() => move(index - 1)}
                 >
                   ↑
                 </button>
                 <button
-                  aria-label={tr("下移 {0}", [c.label ?? key])}
+                  aria-label={tr("Move {0} down", [c.label ?? key])}
                   disabled={index === layout.order.length - 1}
                   onClick={() => move(index + 1)}
                 >
@@ -264,7 +265,7 @@ export function SettingsPanel<T extends object>({
           {sort.map((s, i) => (
             <div key={i} className="auto-setting-row">
               <select
-                aria-label={tr("排序字段 {0}", [i + 1])}
+                aria-label={tr("Sort field {0}", [i + 1])}
                 value={s.id}
                 onChange={(e) =>
                   setSort(
@@ -286,7 +287,7 @@ export function SettingsPanel<T extends object>({
                 ))}
               </select>
               <select
-                aria-label={tr("排序方向 {0}", [i + 1])}
+                aria-label={tr("Sort direction {0}", [i + 1])}
                 value={String(s.desc)}
                 onChange={(e) =>
                   setSort(
@@ -301,11 +302,11 @@ export function SettingsPanel<T extends object>({
                   )
                 }
               >
-                <option value="false">{tr("升序")}</option>
-                <option value="true">{tr("降序")}</option>
+                <option value="false">{tr("Ascending")}</option>
+                <option value="true">{tr("Descending")}</option>
               </select>
               <button onClick={() => setSort(sort.filter((_, j) => j !== i))}>
-                {tr("移除")}
+                {tr("Remove")}
               </button>
             </div>
           ))}
@@ -322,7 +323,7 @@ export function SettingsPanel<T extends object>({
                 ]);
             }}
           >
-            {tr("添加排序")}
+            {tr("Add sort")}
           </button>
         </>
       )}
@@ -339,9 +340,9 @@ export function SettingsPanel<T extends object>({
               });
             }}
           />
-          <p className="auto-muted">{tr("高级条件编辑（JSON）")}</p>
+          <p className="auto-muted">{tr("Advanced filter (JSON)")}</p>
           <textarea
-            aria-label={tr("筛选条件 JSON")}
+            aria-label={tr("Filter JSON")}
             rows={9}
             value={raw || JSON.stringify(active(value.filter), null, 2)}
             onChange={(e) => setRaw(e.target.value)}
@@ -365,21 +366,39 @@ export function SettingsPanel<T extends object>({
                       columns.some((c) => c.key === n.field) &&
                       ["eq", "in", "contains", "between", "isNull"].includes(
                         n.operator,
-                      ))
+                      ) &&
+                      (n.operator !== "in" || Array.isArray(n.value)) &&
+                      (n.operator !== "between" ||
+                        (Array.isArray(n.value) && n.value.length === 2)))
                   );
                 }
-                if (!valid(q)) throw new Error(tr("条件格式无效"));
+                if (!valid(q)) {
+                  devWarn(
+                    "AutoTable",
+                    "RAC-TABLE-FILTER",
+                    "The filter JSON is not a query this table can apply.",
+                    'Use { kind: "group", operator: "and" | "or", children } or { kind: "condition", field, operator, value }. field must be a column key. operator is eq, in, contains, between, or isNull. between value is [from, to].',
+                  );
+                  setError(tr("Invalid filter"));
+                  return;
+                }
                 onChange({
                   ...value,
                   filter: replaceActive(value.filter, q),
                 });
                 setError("");
               } catch (e) {
-                setError(e instanceof Error ? e.message : String(e));
+                devWarn(
+                  "AutoTable",
+                  "RAC-TABLE-FILTER",
+                  `Filter JSON failed to parse: ${e instanceof Error ? e.message : String(e)}.`,
+                  'Paste a JSON query. Groups use kind "group"; conditions use kind "condition". The screen keeps the previous filter.',
+                );
+                setError(tr("Invalid filter"));
               }
             }}
           >
-            {tr("应用条件")}
+            {tr("Apply filter")}
           </button>
           {error && <p role="alert">{error}</p>}
         </>
@@ -388,7 +407,7 @@ export function SettingsPanel<T extends object>({
         <>
           <div className="auto-actions">
             <input
-              aria-label={tr("导出文件名")}
+              aria-label={tr("Export file name")}
               value={exp.fileName}
               onChange={(e) =>
                 onChange({
@@ -401,7 +420,7 @@ export function SettingsPanel<T extends object>({
               }
             />
             <select
-              aria-label={tr("导出格式")}
+              aria-label={tr("Export format")}
               value={exp.format}
               onChange={(e) =>
                 onChange({
@@ -418,7 +437,7 @@ export function SettingsPanel<T extends object>({
               ))}
             </select>
             <select
-              aria-label={tr("导出范围")}
+              aria-label={tr("Export scope")}
               value={exp.scope}
               onChange={(e) =>
                 onChange({
@@ -430,9 +449,9 @@ export function SettingsPanel<T extends object>({
                 })
               }
             >
-              <option value="filtered">{tr("已筛选数据")}</option>
-              <option value="page">{tr("当前页")}</option>
-              <option value="selected">{tr("已选数据")}</option>
+              <option value="filtered">{tr("Filtered rows")}</option>
+              <option value="page">{tr("Current page")}</option>
+              <option value="selected">{tr("Selected rows")}</option>
             </select>
           </div>
           {columns

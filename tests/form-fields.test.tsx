@@ -10,14 +10,19 @@ test("dependent visibility and readonly fields", async () => {
   render(
     <AutoForm
       fields={[
-        { name: "enabled", type: "switch", label: "启用", defaultValue: false },
-        { name: "details", label: "详情", hidden: (v) => !v.enabled },
+        {
+          name: "enabled",
+          type: "switch",
+          label: "Enabled",
+          defaultValue: false,
+        },
+        { name: "details", label: "Details", hidden: (v) => !v.enabled },
       ]}
     />,
   );
-  expect(screen.queryByLabelText("详情")).not.toBeInTheDocument();
+  expect(screen.queryByLabelText("Details")).not.toBeInTheDocument();
   await u.click(screen.getByRole("switch"));
-  expect(screen.getByLabelText("详情")).toBeVisible();
+  expect(screen.getByLabelText("Details")).toBeVisible();
 });
 test("cascader keeps path and checkbox preserves false", async () => {
   const u = userEvent.setup(),
@@ -27,30 +32,30 @@ test("cascader keeps path and checkbox preserves false", async () => {
       fields={[
         {
           name: "path",
-          label: "路径",
+          label: "Path",
           type: "cascader",
           options: [
             {
-              label: "根",
+              label: "Root",
               value: 0,
-              children: [{ label: "叶", value: false }],
+              children: [{ label: "Leaf", value: false }],
             },
           ],
         },
         {
           name: "flags",
-          label: "标志",
+          label: "Flag",
           type: "checkbox",
-          options: [{ value: false, label: "否" }],
+          options: [{ value: false, label: "No" }],
         },
       ]}
       onSubmit={submit}
     />,
   );
-  await u.selectOptions(screen.getByLabelText("级联第 1 级"), "0");
-  await u.selectOptions(screen.getByLabelText("级联第 2 级"), "0");
-  await u.click(screen.getByLabelText("否"));
-  await u.click(screen.getByText("提交"));
+  await u.selectOptions(screen.getByLabelText("Cascader level 1"), "0");
+  await u.selectOptions(screen.getByLabelText("Cascader level 2"), "0");
+  await u.click(screen.getByLabelText("No"));
+  await u.click(screen.getByText("Submit"));
   await waitFor(() =>
     expect(submit).toHaveBeenCalledWith({ path: [0, false], flags: [false] }),
   );
@@ -58,9 +63,9 @@ test("cascader keeps path and checkbox preserves false", async () => {
 test("float intermediate values are editable", async () => {
   const u = userEvent.setup();
   render(
-    <AutoForm fields={[{ name: "amount", type: "float", label: "金额" }]} />,
+    <AutoForm fields={[{ name: "amount", type: "float", label: "Amount" }]} />,
   );
-  const input = screen.getByLabelText("金额");
+  const input = screen.getByLabelText("Amount");
   await u.type(input, "-1.2.3x");
   expect(input).toHaveValue("-1.23");
 });
@@ -74,7 +79,7 @@ test("date range timestamp round trip uses local calendar dates", async () => {
       fields={[
         {
           name: "range",
-          label: "日期",
+          label: "Date",
           type: "daterange",
           dateValue: "timestamp",
           defaultValue: [start, end],
@@ -83,8 +88,8 @@ test("date range timestamp round trip uses local calendar dates", async () => {
       onSubmit={submit}
     />,
   );
-  expect(screen.getByLabelText("日期开始")).toHaveValue("2026-09-01");
-  await u.click(screen.getByText("提交"));
+  expect(screen.getByLabelText("Date start")).toHaveValue("2026-09-01");
+  await u.click(screen.getByText("Submit"));
   await waitFor(() =>
     expect(submit).toHaveBeenCalledWith({ range: [start, end] }),
   );
@@ -96,20 +101,20 @@ test("upload callback error is visible and does not submit a successful value", 
       fields={[
         {
           name: "file",
-          label: "附件",
+          label: "Attachment",
           type: "upload",
           upload: async () => {
-            throw new Error("上传失败");
+            throw new Error("Upload failed");
           },
         },
       ]}
     />,
   );
   await u.upload(
-    screen.getByLabelText("附件"),
+    screen.getByLabelText("Attachment"),
     new File(["a"], "a.txt", { type: "text/plain" }),
   );
-  expect(await screen.findByText("上传失败")).toBeVisible();
+  expect(await screen.findByText("Upload failed")).toBeVisible();
 });
 test("stale async validation cannot overwrite changed values", async () => {
   const ref = createRef<AutoFormHandle<{ name: string }>>();
@@ -121,7 +126,7 @@ test("stale async validation cannot overwrite changed values", async () => {
       fields={[
         {
           name: "name",
-          label: "姓名",
+          label: "Name",
           rules: [
             () =>
               new Promise<string>((r) => {
@@ -138,10 +143,10 @@ test("stale async validation cannot overwrite changed values", async () => {
   });
   act(() => ref.current!.setValue("name", "new"));
   await act(async () => {
-    finish("旧值无效");
+    finish("Stale value");
     expect(await result).toBe(false);
   });
-  expect(screen.queryByText("旧值无效")).not.toBeInTheDocument();
+  expect(screen.queryByText("Stale value")).not.toBeInTheDocument();
 });
 test("virtual select bounds large option lists", async () => {
   vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(220);
@@ -153,16 +158,16 @@ test("virtual select bounds large option lists", async () => {
         {
           name: "option",
           type: "select-v2",
-          label: "选择",
+          label: "Choose",
           options: Array.from({ length: 10000 }, (_, i) => ({
             value: i,
-            label: `选项${i}`,
+            label: `Option ${i}`,
           })),
         },
       ]}
     />,
   );
-  await u.click(screen.getByLabelText("选择"));
+  await u.click(screen.getByLabelText("Choose"));
   expect(screen.getAllByRole("option").length).toBeLessThan(30);
 });
 
@@ -177,7 +182,7 @@ test("reset aborts pending uploads and ignores late results even when reset valu
       fields={[
         {
           name: "file",
-          label: "附件",
+          label: "Attachment",
           type: "upload",
           upload: (_, s) => {
             signal = s;
@@ -190,14 +195,14 @@ test("reset aborts pending uploads and ignores late results even when reset valu
     />,
   );
   await u.upload(
-    screen.getByLabelText("附件"),
+    screen.getByLabelText("Attachment"),
     new File(["a"], "a.txt", { type: "text/plain" }),
   );
-  await u.click(screen.getByText("重置"));
+  await u.click(screen.getByText("Reset"));
   await act(async () => finish("late-upload"));
   expect(ref.current!.getValues().file).toBe("original");
   expect(signal.aborted).toBe(true);
-  expect(screen.queryByText("上传中…")).not.toBeInTheDocument();
+  expect(screen.queryByText("Uploading…")).not.toBeInTheDocument();
 });
 
 test("submission waits for pending uploads", async () => {
@@ -210,7 +215,7 @@ test("submission waits for pending uploads", async () => {
         {
           name: "file",
           type: "upload",
-          label: "附件",
+          label: "Attachment",
           upload: () =>
             new Promise<string>((resolve) => {
               finish = resolve;
@@ -220,9 +225,9 @@ test("submission waits for pending uploads", async () => {
       onSubmit={submit}
     />,
   );
-  await u.upload(screen.getByLabelText("附件"), new File(["a"], "a.txt"));
-  expect(screen.getByRole("button", { name: "提交" })).toBeDisabled();
+  await u.upload(screen.getByLabelText("Attachment"), new File(["a"], "a.txt"));
+  expect(screen.getByRole("button", { name: "Submit" })).toBeDisabled();
   await act(async () => finish("uploaded"));
-  await u.click(screen.getByRole("button", { name: "提交" }));
+  await u.click(screen.getByRole("button", { name: "Submit" }));
   expect(submit).toHaveBeenCalledWith({ file: "uploaded" });
 });

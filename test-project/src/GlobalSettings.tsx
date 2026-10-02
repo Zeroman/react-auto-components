@@ -47,12 +47,14 @@ export function GlobalSettings({
     <div className="global-settings">
       <LanguagePicker variant="block" />
       <p className="auto-muted">
-        {tr("设置立即应用于所有组件，关闭面板后继续当前示例。")}
+        {tr(
+          "Settings apply immediately to all components; the current example continues after you close the panel.",
+        )}
       </p>
       <label>
-        {tr("全局尺寸")}
+        {tr("Global size")}
         <select
-          aria-label={tr("全局组件尺寸")}
+          aria-label={tr("Global Component Size")}
           value={value.size}
           onChange={(e) => {
             const s = e.target.value as ComponentSize;
@@ -66,15 +68,15 @@ export function GlobalSettings({
             });
           }}
         >
-          <option value="large">{tr("大 (large)")}</option>
-          <option value="medium">{tr("中 (medium)")}</option>
-          <option value="small">{tr("小 (small)")}</option>
+          <option value="large">{tr("Large (large)")}</option>
+          <option value="medium">{tr("Medium (medium)")}</option>
+          <option value="small">{tr("Small (small)")}</option>
         </select>
       </label>
       <label>
-        {tr("表格紧凑度")}
+        {tr("Table density")}
         <select
-          aria-label={tr("全局表格紧凑度")}
+          aria-label={tr("Global Table Density")}
           value={value.tableDensity}
           onChange={(e) =>
             onChange({
@@ -83,15 +85,15 @@ export function GlobalSettings({
             })
           }
         >
-          <option value="compact">{tr("紧凑 (compact)")}</option>
-          <option value="normal">{tr("标准 (normal)")}</option>
-          <option value="comfortable">{tr("舒适 (comfortable)")}</option>
+          <option value="compact">{tr("Compact (compact)")}</option>
+          <option value="normal">{tr("Normal (normal)")}</option>
+          <option value="comfortable">{tr("Comfortable (comfortable)")}</option>
         </select>
       </label>
       <label>
-        {tr("标签紧凑度")}
+        {tr("Tab density")}
         <select
-          aria-label={tr("全局标签紧凑度")}
+          aria-label={tr("Global Tabs Density")}
           value={value.tabsDensity}
           onChange={(e) =>
             onChange({
@@ -100,14 +102,14 @@ export function GlobalSettings({
             })
           }
         >
-          <option value="compact">{tr("紧凑 (compact)")}</option>
-          <option value="comfortable">{tr("舒适 (comfortable)")}</option>
+          <option value="compact">{tr("Compact (compact)")}</option>
+          <option value="comfortable">{tr("Comfortable (comfortable)")}</option>
         </select>
       </label>
       <label>
-        {tr("表单布局")}
+        {tr("Form layout")}
         <select
-          aria-label={tr("全局表单布局")}
+          aria-label={tr("Global form layout")}
           value={value.form.labelPosition === "left" ? "inline" : "stacked"}
           onChange={(e) =>
             form({
@@ -115,14 +117,14 @@ export function GlobalSettings({
             })
           }
         >
-          <option value="stacked">{tr("标签上下排列")}</option>
-          <option value="inline">{tr("标签在左侧（同行）")}</option>
+          <option value="stacked">{tr("Labels stacked vertically")}</option>
+          <option value="inline">{tr("Labels on the left (same row)")}</option>
         </select>
       </label>
       <label>
-        {tr("标签文字对齐")}
+        {tr("Label Text Alignment")}
         <select
-          aria-label={tr("全局标签对齐")}
+          aria-label={tr("Global label alignment")}
           value={value.form.labelAlign}
           onChange={(e) =>
             form({
@@ -130,14 +132,14 @@ export function GlobalSettings({
             })
           }
         >
-          <option value="left">{tr("左对齐")}</option>
-          <option value="right">{tr("右对齐")}</option>
+          <option value="left">{tr("Left-aligned")}</option>
+          <option value="right">{tr("Right-aligned")}</option>
         </select>
       </label>
       <label>
-        {tr("表单密度")}
+        {tr("Form density")}
         <select
-          aria-label={tr("全局表单密度")}
+          aria-label={tr("Global form density")}
           value={value.form.density}
           onChange={(e) =>
             form({
@@ -145,12 +147,12 @@ export function GlobalSettings({
             })
           }
         >
-          <option value="comfortable">{tr("舒适")}</option>
-          <option value="compact">{tr("紧凑")}</option>
+          <option value="comfortable">{tr("Comfortable")}</option>
+          <option value="compact">{tr("Compact")}</option>
         </select>
       </label>
       <div className="global-settings-width">
-        <span>{tr("标签宽度")}</span>
+        <span>{tr("Label Width")}</span>
         <div
           style={{
             display: "flex",
@@ -171,7 +173,7 @@ export function GlobalSettings({
           >
             <input
               type="checkbox"
-              aria-label={tr("全局标签宽度自适应")}
+              aria-label={tr("Global label width auto-fit")}
               checked={value.form.labelWidth === "auto"}
               onChange={(e) =>
                 form({
@@ -179,7 +181,7 @@ export function GlobalSettings({
                 })
               }
             />
-            {tr("自适应 (auto)")}
+            {tr("Auto-fit (auto)")}
           </label>
         </div>
         <div
@@ -190,7 +192,7 @@ export function GlobalSettings({
           }}
         >
           <input
-            aria-label={tr("全局标签宽度")}
+            aria-label={tr("Global label width")}
             type="range"
             min={64}
             max={160}
@@ -209,7 +211,7 @@ export function GlobalSettings({
           />
           <output>
             {value.form.labelWidth === "auto"
-              ? tr("自适应")
+              ? tr("Auto-fit")
               : `${value.form.labelWidth}px`}
           </output>
         </div>
@@ -225,7 +227,7 @@ export function GlobalSettings({
             })
           }
         />
-        {tr("深色主题")}
+        {tr("Dark theme")}
       </label>
       <div
         style={{
@@ -241,7 +243,7 @@ export function GlobalSettings({
             marginBottom: 8,
           }}
         >
-          {tr("快捷预设")}
+          {tr("Quick presets")}
         </div>
         <div className="auto-actions">
           <button
@@ -263,7 +265,7 @@ export function GlobalSettings({
               })
             }
           >
-            {tr("标准紧凑同行")}
+            {tr("Standard compact, same row")}
           </button>
           <button
             type="button"
@@ -284,7 +286,7 @@ export function GlobalSettings({
               })
             }
           >
-            {tr("舒适上下堆叠")}
+            {tr("Comfortable, stacked")}
           </button>
           <button
             type="button"
@@ -305,7 +307,7 @@ export function GlobalSettings({
               })
             }
           >
-            {tr("小尺寸极简紧凑")}
+            {tr("Small minimal compact")}
           </button>
           <button
             type="button"
@@ -326,7 +328,7 @@ export function GlobalSettings({
               })
             }
           >
-            {tr("大尺寸宽适展示")}
+            {tr("Large size with spacious display")}
           </button>
         </div>
       </div>

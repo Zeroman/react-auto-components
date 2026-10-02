@@ -4,7 +4,7 @@ export default defineConfig({
   timeout: 30000,
   fullyParallel: false,
   use: {
-    locale: "zh-CN",
+    locale: "en-US",
     baseURL: "http://127.0.0.1:4174",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",

@@ -12,8 +12,17 @@ import {
 import { AutoForm, type AutoFormHandle } from "../AutoForm";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
 import { defaults, errorMessage } from "../../core/config";
+import { RacError } from "../../core/errors";
+import { useLibraryStyles } from "../../core/dev";
 import type { ComponentSize, Field } from "../../core/types";
+/** Why a dialog closed. `"submit"` only happens after `onSubmit` resolves and `beforeClose` allows it. */
 export type CloseReason = "cancel" | "close" | "submit";
+/**
+ * Dialog content. Provide `fields` for a schema form, or `content` for custom nodes.
+ * `onSubmit` rejection keeps the dialog open and shows `error.message`. Values stay.
+ * `beforeClose` returning `false` cancels the close. Throwing also cancels it and shows the message.
+ * `draftKey` persists the draft at `${namespace}:draft:${draftKey}` until a successful submit clears it.
+ */
 export interface DialogOptions<T extends object> {
   title: string;
   description?: string;
@@ -21,7 +30,15 @@ export interface DialogOptions<T extends object> {
   fields?: readonly Field<T>[];
   defaultValue?: Partial<T>;
   draftKey?: string;
+  /**
+   * Resolve to close (after `beforeClose`). Reject or throw to stay open and show the message.
+   * A failed `validate()` does not call this.
+   */
   onSubmit?: (values: T) => void | Promise<void>;
+  /**
+   * Return `false` to keep the dialog open. Throw to keep it open and show `error.message`.
+   * Runs for submit, cancel, and dismiss.
+   */
   beforeClose?: (reason: CloseReason) => boolean | Promise<boolean>;
   onClose?: (reason: CloseReason) => void;
   size?: ComponentSize;
@@ -128,7 +145,13 @@ export function AutoDialogProvider({ children }: { children: ReactNode }) {
 }
 export function useAutoDialog() {
   const ctx = useContext(Context);
-  if (!ctx) throw new Error("AutoDialogProvider is required");
+  if (!ctx)
+    throw new RacError(
+      "AutoDialog",
+      "RAC-DIALOG-PROVIDER",
+      "useAutoDialog() was called outside AutoDialogProvider.",
+      "Render <AutoDialogProvider> above this component. AutoConfigProvider does not provide dialogs and is optional.",
+    );
   return ctx;
 }
 export function AutoDialog<T extends object>({
@@ -154,6 +177,7 @@ function ManagedDialog<T extends object>({
 }) {
   const tr = useAutoText();
   const services = useAutoConfig();
+  useLibraryStyles();
   const size = options.size ?? services.size ?? "medium";
   const key = options.draftKey
     ? `${services.namespace}:draft:${options.draftKey}`
@@ -236,6 +260,7 @@ function ManagedDialog<T extends object>({
         <Dialog.Content
           aria-describedby={options.description ? undefined : undefined}
           className={`auto-root auto-overlay ${full ? "auto-dialog-full" : ""}`}
+          data-testid="rac-dialog"
           data-size={size}
           style={{
             width: full ? undefined : (options.width ?? 560),
@@ -291,14 +316,15 @@ function ManagedDialog<T extends object>({
             <div className="auto-actions">
               <button
                 type="button"
-                aria-label={tr("切换全屏")}
+                aria-label={tr("Toggle fullscreen")}
                 onClick={() => setFull(!full)}
               >
                 ⛶
               </button>
               <button
                 type="button"
-                aria-label={tr("关闭弹窗")}
+                data-testid="rac-dialog-close"
+                aria-label={tr("Close dialog")}
                 disabled={busy}
                 onClick={() => void close("close")}
               >
@@ -344,29 +370,30 @@ function ManagedDialog<T extends object>({
                   {options.showReset && (
                     <button
                       type="button"
+                      data-testid="rac-dialog-reset"
                       disabled={busy}
                       onClick={() => form.current?.reset()}
                     >
-                      {tr("重置")}
+                      {tr("Reset")}
                     </button>
                   )}
                   {options.extraActions}
                   <button
                     type="button"
+                    data-testid="rac-cancel"
                     disabled={busy}
                     onClick={() => void close("cancel")}
                   >
-                    {options.cancelLabel ?? tr("取消")}
+                    {options.cancelLabel ?? tr("Cancel")}
                   </button>
                   <button
                     type="button"
                     className="auto-primary"
+                    data-testid="rac-ok"
                     disabled={busy}
                     onClick={() => void submit()}
                   >
-                    {busy
-                      ? tr("处理中…")
-                      : (options.confirmLabel ?? tr("确定"))}
+                    {busy ? tr("Working…") : (options.confirmLabel ?? tr("OK"))}
                   </button>
                 </>
               )}

@@ -28,27 +28,27 @@ export function AdvancedTableDemo() {
   return (
     <AutoTable<Tree>
       id="advanced-projects"
-      title={tr("树形与动态展开")}
+      title={tr("Tree and dynamic expansion")}
       data={rows}
       rowKey="id"
       columns={[
         {
           key: "name",
-          label: tr("名称"),
+          label: tr("Name"),
           format: (value, row) =>
             row.id.endsWith("-child")
-              ? tr("{0} · 子任务", [String(value)])
+              ? tr("{0} · Subtasks", [String(value)])
               : tr(String(value)),
           width: 280,
         },
         {
           key: "owner",
-          label: tr("负责人"),
+          label: tr("Owner"),
           format: (value) => tr(String(value)),
         },
         {
           key: "budget",
-          label: tr("预算"),
+          label: tr("Budget"),
           type: "number",
           align: "right",
           summary: true,
@@ -65,10 +65,10 @@ export function AdvancedTableDemo() {
             padding: 24,
           }}
         >
-          <h3>{tr("{0} · 详细信息", [row.name])}</h3>
+          <h3>{tr("{0} · Details", [row.name])}</h3>
           <p>
             {tr(
-              "展开区域参与虚拟高度测量。继续滚动时，后续行仍保持正确的位置。",
+              "Expanded areas participate in virtual height measurement. As you keep scrolling, subsequent rows stay correctly positioned.",
             )}
           </p>
         </div>

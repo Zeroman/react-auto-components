@@ -40,13 +40,6 @@ export function detectLocale(preferences: readonly string[]): Locale {
   return "en";
 }
 
-const englishKeys = new Map(
-  Object.entries(messages.en ?? {}).map(([source, english]) => [
-    english,
-    source,
-  ]),
-);
-
 export function translateMessage(
   locale: Locale,
   key: string,
@@ -59,14 +52,11 @@ export function translateMessage(
   if (rendererText) return rendererText;
   const chatText = chatMessages[locale]?.[key] ?? chatMessages.en?.[key];
   if (chatText) return chatText;
-  const source = Object.hasOwn(messages["zh-CN"] ?? {}, key)
-    ? key
-    : englishKeys.get(key);
-  if (source)
-    return messages[locale]?.[source] ?? messages.en?.[source] ?? fallback;
-  // Generated demo project names have a stable numeric suffix.
+  const text = messages[locale]?.[key];
+  if (text) return text;
+  // Generated demo project names keep a stable numeric suffix.
   const numbered = key.match(/^(.+) (\d+)$/);
-  if (numbered && englishKeys.has(numbered[1])) {
+  if (numbered && Object.hasOwn(messages.en ?? {}, numbered[1])) {
     return `${translateMessage(locale, numbered[1])} ${numbered[2]}`;
   }
   return fallback;

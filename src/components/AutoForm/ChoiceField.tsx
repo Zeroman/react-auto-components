@@ -51,20 +51,20 @@ export function VirtualSelect({
         {options
           .filter(selected)
           .map((o) => o.label)
-          .join("、") || tr("请选择")}{" "}
+          .join(", ") || tr("Select")}{" "}
         ▾
       </button>
       {open && (
         <div className="auto-select-menu">
           <input
-            aria-label={tr("搜索选项")}
+            aria-label={tr("Search options")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
           <div
             ref={ref}
             role="listbox"
-            aria-label={tr("选项")}
+            aria-label={tr("Options")}
             aria-multiselectable={multiple}
             style={{
               height: 220,
@@ -111,7 +111,7 @@ export function VirtualSelect({
             </div>
           </div>
           <button type="button" onClick={() => setOpen(false)}>
-            {tr("完成")}
+            {tr("Done")}
           </button>
         </div>
       )}
@@ -147,7 +147,7 @@ export function Cascader({
         <select
           key={i}
           id={i === 0 ? id : undefined}
-          aria-label={tr("级联第 {0} 级", [i + 1])}
+          aria-label={tr("Cascader level {0}", [i + 1])}
           disabled={disabled}
           value={level.findIndex((o) => Object.is(o.value, path[i]))}
           onChange={(e) =>
@@ -155,7 +155,7 @@ export function Cascader({
           }
         >
           <option value={-1} disabled>
-            {tr("请选择")}
+            {tr("Select")}
           </option>
           {level.map((o, j) => (
             <option key={j} value={j} disabled={o.disabled}>

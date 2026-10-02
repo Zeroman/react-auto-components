@@ -107,6 +107,7 @@
   color: var(--auto-accent);
   border-radius: 20px;
   font-size: 12px;
+  white-space: nowrap;
 }
 .auto-form-grid {
   display: grid;
@@ -130,6 +131,7 @@
 .auto-field select,
 .auto-field textarea {
   width: 100%;
+  text-overflow: ellipsis;
 }
 .auto-form-actions {
   margin-top: 22px;
@@ -214,6 +216,22 @@
   gap: 4px;
   overflow: auto;
 }
+.auto-tab-entry {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: stretch;
+}
+.auto-tab-entry > [role="tab"] {
+  flex: 1;
+}
+.auto-tab-list .auto-tab-entry > .auto-tab-close {
+  padding-inline: 8px;
+}
+.auto-tab-entry:has([data-state="active"]) > .auto-tab-close {
+  color: var(--auto-accent);
+  background: var(--auto-accent-soft);
+  border-bottom-color: var(--auto-accent);
+}
 .auto-tab-list button {
   border: 0;
   border-radius: 0;
@@ -254,10 +272,23 @@
 }
 .auto-tabs-vertical > .auto-tabs-heading {
   border: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
 }
 .auto-tabs-vertical > .auto-tabs-heading .auto-tab-list {
   flex-direction: column;
   width: 100%;
+  overflow: visible;
+}
+.auto-tabs-vertical > .auto-tabs-heading .auto-tab-list button {
+  white-space: normal;
+  text-align: start;
+}
+.auto-tabs-vertical > .auto-tabs-heading .auto-badge {
+  white-space: normal;
+  justify-content: center;
 }
 .auto-table {
   border: 1px solid var(--auto-border);

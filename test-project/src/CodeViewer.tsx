@@ -19,6 +19,8 @@ const rawSources = import.meta.glob<string>(
     "./examples/SearchDemo.tsx",
     "./examples/DialogDemo.tsx",
     "./examples/TabsDemo.tsx",
+    "./examples/DynamicTabsDemo.tsx",
+    "./examples/TabsStateDemo.tsx",
   ],
   { query: "?raw", import: "default", eager: true },
 );
@@ -40,7 +42,7 @@ const exampleFiles: Record<string, readonly string[]> = {
   form: ["FormDemo.tsx"],
   search: ["SearchDemo.tsx"],
   dialog: ["DialogDemo.tsx"],
-  tabs: ["TabsDemo.tsx"],
+  tabs: ["TabsDemo.tsx", "DynamicTabsDemo.tsx", "TabsStateDemo.tsx"],
 };
 
 type CodeViewerProps = {
@@ -92,7 +94,7 @@ export function CodeViewer({
     <AutoDialog
       open={open && files.length > 0}
       onOpenChange={onOpenChange}
-      title={`${title} · ${tr("示例源码")}`}
+      title={`${title} · ${tr("Example source")}`}
       width={880}
       hideFooter
       content={
@@ -116,7 +118,7 @@ export function CodeViewer({
             </div>
             <div className="code-viewer-actions">
               <button type="button" onClick={copyCode}>
-                {copied ? tr("已复制") : tr("复制代码")}
+                {copied ? tr("Copied") : tr("Copy code")}
               </button>
               {currentName && (
                 <a
@@ -124,7 +126,7 @@ export function CodeViewer({
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {tr("在 GitHub 查看")}
+                  {tr("View on GitHub")}
                 </a>
               )}
             </div>

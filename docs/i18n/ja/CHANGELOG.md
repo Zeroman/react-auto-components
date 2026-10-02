@@ -4,6 +4,16 @@
 
 ## 未リリース
 
+- 組み込み UI 文言の既定は英語になり、その文字列が `config.t` のキーです。他の言語は `t` を渡します。以前の中国語キー（`提交` や `刷新` など）は既定ではありません。
+- 検索フォームは `AutoSearch`（`AutoSearchProps`）です。`AutoSearchPanel` と `AutoSearchPanelProps` は非推奨の別名として残します。
+- `Field<T>` は `type` による判別共用体です。`options` のない `select`、スカラーの `daterange` または `datetimerange`、スカラー項目の `match: "between"` は TypeScript エラーです。`AnyField` と `unsafeField()` は逃げ道として残します。
+- 開発者向けエラーは英語の `RacError` です。コンポーネント、修正方法、コードを含みます。[errors.md](errors.md) を参照。開発モードは、スタイル未読込、空のテーブル id、重複する `rowKey`、options のない選択項目、長さ 2 でない範囲値を警告します。
+- `AutoConfigProvider` に JSON レジストリを追加：`config.fields`、`config.columns`、`config.rowActions`、`config.sources`。文字列キーは `Field.component`、列の `render` / `format` / `sort` / `exportFormat`、`RowAction.action`、`AutoTable` の `source` を解決します。フィールド、列、アクション上の関数が優先します。ネストした provider はマージされ、後のキーが勝ちます。`data`、`dataSource`、`source` は一つだけ渡します。未知の source は `RAC-TABLE-SOURCE` と再試行を表示します。
+- フィールド、テーブル、検索、フォーム、ダイアログに安定した `data-testid="rac-*"` を追加。翻訳ラベルには従いません。
+- 動的タブの開閉と切り替えに `useAutoTabsWorkspace` を追加。固定タブと任意の session 保存に対応します。タブは `closable`、`lazy`、`disabled`、`loading` にできます。
+- 振る舞い: [AutoForm](auto-form.md)、[AutoSearch](auto-search.md)、[AutoTable](auto-table.md)、[AutoDialog](auto-dialog.md)、[AutoTabs](auto-tabs.md)、[AutoMenu](auto-menu.md)。パッケージ直下の `llms.txt` がエージェントの入口です。
+- `v*` タグは GitHub Actions の Trusted Publishing で npm に公開されます。`./run.sh release` はきれいな `main` でパッチ番号を上げます。
+
 ## 0.1.2 - 2026-10-01
 
 - `@zeroman.yang/react-auto-components` として公開。npm の `@zeroman` スコープは別のアカウントが所有しています。

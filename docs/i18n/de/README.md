@@ -12,9 +12,13 @@ Eine eigenständige, schema-getriebene Komponentenbibliothek für React 19 – m
 
 ## Projektstatus
 
-Die aktuelle Version ist 0.1.2, und die APIs können sich noch ändern. React 19 wird vorausgesetzt. Das Paket stellt ESM- und TypeScript-Deklarationen bereit. Der eingebaute Oberflächentext ist standardmäßig Chinesisch und kann über AutoConfigProvider.config.t übersetzt werden.
+Die aktuelle Version ist 0.1.2, und die APIs können sich noch ändern. React 19 wird vorausgesetzt. Das Paket stellt ESM- und TypeScript-Deklarationen bereit. Der eingebaute Oberflächentext ist standardmäßig Englisch und kann über AutoConfigProvider.config.t übersetzt werden.
 
 Installation mit `pnpm add @zeroman.yang/react-auto-components` (npm und yarn funktionieren ebenso). Peer Dependencies sind React 19 und react-dom 19. Importieren Sie das Stylesheet einmal: `import "@zeroman.yang/react-auto-components/style.css"`.
+
+Importiere einmal im App-Einstieg `import "@zeroman.yang/react-auto-components/style.css"`. Ohne Stylesheet erscheint in der Entwicklung `RAC-CSS-MISSING`.
+
+Beim XLSX-Export bedeutet `RAC-TABLE-XLSX`, dass der Adapter `exportXlsx` fehlt; `RAC-XLSX-DEP` bedeutet, dass die optionale Abhängigkeit `exceljs` nicht geladen werden konnte. Importiere und übergib den Adapter aus `@zeroman.yang/react-auto-components/xlsx`; installiere bei Bedarf mit `pnpm add exceljs`. CSV und JSON benötigen ihn nicht.
 
 - [Live-Demo (GitHub Pages)](https://zeroman.github.io/react-auto-components/)
 - [Mitwirken](https://github.com/Zeroman/react-auto-components/blob/main/docs/i18n/de/CONTRIBUTING.md)
@@ -85,7 +89,7 @@ Der t-Callback erhält einen Nachrichtenschlüssel und einen Fallback-Text. Numm
 | Komponente | Funktionen |
 | --- | --- |
 | AutoForm | Native Feldtypen, virtualisierte Optionen, kaskadierende Auswahl, Upload-Adapter, benutzerdefinierte Darstellung, abhängige Felder, bedingte Sichtbarkeit, asynchrone Validierung, kontrollierter Zustand, Erhalt von Eingaben nach Fehlern |
-| AutoSearchPanel | Einfache/erweiterte Bedingungen, manuelle/sofortige Suche, Zurücksetzen, Sortier-Tags, gemeinsamer Abfrage-AST und RSQL-Serialisierung |
+| AutoSearch | Einfache/erweiterte Bedingungen, manuelle/sofortige Suche, Zurücksetzen, Sortier-Tags, gemeinsamer Abfrage-AST und RSQL-Serialisierung |
 | AutoTable | Lokale/entfernte Daten, Mehrspaltensortierung, Spaltenfilter, Paginierung, stabile Auswahl, Virtualisierung, Aufklappen von Bäumen/Details, Zusammenfassungen, verbundene Zellen, CRUD, Kontextmenüs und Kopieren |
 | AutoDialog | Deklarative/imperative APIs, isolierte Provider, Entwürfe, Schließschutz, Fokusverwaltung, Ziehen, Vollbild und asynchrones Absenden |
 | AutoTabs | Horizontale/vertikale Layouts, Verschachtelung, Berechtigungen, deaktivierte Tabs, Erhalt des Panelzustands und Aktualisierung |
@@ -201,3 +205,5 @@ Formulare unterstützen `resetLabel`, `extraActions` und `onReset`; Suchpanels u
 AutoChat bietet ein leichtgewichtiges Unterhaltungs-Layout mit Stream-Follow, Verlaufsladen und einem Eingabebereich. Für das Rendern der Nachrichten übergibst du React-Inhalte oder renderMessage; zusätzliche Laufzeit-Abhängigkeiten sind nicht erforderlich.
 
 [AutoChat API](auto-chat.md)
+
+Was die Komponente tut, wenn ein Callback wirft: [AutoForm](auto-form.md), [AutoSearch](auto-search.md), [AutoTable](auto-table.md), [AutoDialog](auto-dialog.md), [AutoTabs](auto-tabs.md), [AutoMenu](auto-menu.md). Fehlercodes für Entwickler: [errors.md](errors.md).

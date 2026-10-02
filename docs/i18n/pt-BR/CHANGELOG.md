@@ -4,6 +4,16 @@
 
 ## Não publicado
 
+- O texto de interface embutido passa a ser inglês por padrão, e essa string é a chave de `config.t`. Passe `t` para outros idiomas. Chaves chinesas anteriores, como `提交` e `刷新`, não são mais o padrão.
+- O formulário de busca é `AutoSearch` (`AutoSearchProps`). `AutoSearchPanel` e `AutoSearchPanelProps` permanecem como aliases obsoletos.
+- `Field<T>` é uma união discriminada. `select` sem `options`, um escalar em `daterange` ou `datetimerange`, e `match: "between"` em um escalar são erros de TypeScript. `AnyField` e `unsafeField()` continuam como saída.
+- Erros de desenvolvimento são `RacError` em inglês, com componente, correção e código. Veja [errors.md](errors.md). O modo de desenvolvimento avisa sobre folha de estilo ausente, id de tabela vazio, `rowKey` duplicados, campos de escolha sem options e valores de intervalo que não são um par.
+- `AutoConfigProvider` aceita registros JSON: `config.fields`, `config.columns`, `config.rowActions` e `config.sources`. Uma chave resolve `Field.component`, `render` / `format` / `sort` / `exportFormat` da coluna, `RowAction.action` e `source` de `AutoTable`. A função no campo, na coluna ou na ação vence. Providers aninhados se fundem, e a chave posterior vence. Passe exatamente um de `data`, `dataSource` ou `source`. Uma source desconhecida mostra `RAC-TABLE-SOURCE` e nova tentativa.
+- `data-testid="rac-*"` estáveis para campos, tabelas, busca, formulários e diálogos. Não seguem o rótulo traduzido.
+- `useAutoTabsWorkspace` abre, troca e fecha abas dinâmicas, com abas fixadas e armazenamento de sessão opcional. Uma aba pode ser `closable`, `lazy`, `disabled` ou `loading`.
+- Contratos: [AutoForm](auto-form.md), [AutoSearch](auto-search.md), [AutoTable](auto-table.md), [AutoDialog](auto-dialog.md), [AutoTabs](auto-tabs.md), [AutoMenu](auto-menu.md). `llms.txt` na raiz do pacote é a entrada para agentes.
+- Uma tag `v*` publica no npm pelo trusted publishing do GitHub Actions. `./run.sh release` sobe o patch em um `main` limpo.
+
 ## 0.1.2 - 2026-10-01
 
 - Publicação como `@zeroman.yang/react-auto-components`. O escopo npm `@zeroman` pertence a outra conta.

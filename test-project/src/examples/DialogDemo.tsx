@@ -11,16 +11,18 @@ export function DialogDemo() {
   const [result, setResult] = useState("");
   return (
     <section className="card auto-root">
-      <h2>{tr("让编辑流程保持完整")}</h2>
+      <h2>{tr("Keep the editing workflow intact")}</h2>
       <p className="muted">
-        {tr("取消会保留草稿；提交成功后清除。支持拖动和全屏。")}
+        {tr(
+          "Canceling keeps the draft; it is cleared after a successful submission. Supports dragging and fullscreen.",
+        )}
       </p>
       <div className="auto-actions">
         <button
           className="auto-primary"
           onClick={() =>
             dialog.open<Project>({
-              title: tr("新建项目"),
+              title: tr("New Project"),
               fields,
               defaultValue: {
                 name: "",
@@ -28,48 +30,52 @@ export function DialogDemo() {
               draftKey: "demo-project",
               draggable: true,
               showReset: true,
-              onSubmit: (value) => setResult(tr("已保存：{0}", [value.name])),
+              onSubmit: (value) => setResult(tr("Saved: {0}", [value.name])),
             })
           }
         >
-          {tr("打开表单弹窗")}
+          {tr("Open form dialog")}
         </button>
         <button
           onClick={() =>
             dialog.open({
-              title: tr("关闭拦截示例"),
-              content: <p>{tr("取消操作会被拦截，点击确定即可关闭。")}</p>,
+              title: tr("Close interception example"),
+              content: (
+                <p>{tr("Canceling is intercepted; click OK to close.")}</p>
+              ),
               beforeClose: (reason) => reason === "submit",
             })
           }
         >
-          {tr("测试关闭拦截")}
+          {tr("Test close interception")}
         </button>
         <button
           onClick={() =>
             dialog.open({
-              title: tr("第一层"),
+              title: tr("First level"),
               content: (
                 <button
                   onClick={() =>
                     dialog.open({
-                      title: tr("第二层"),
-                      content: <p>{tr("嵌套弹窗会恢复到正确的焦点。")}</p>,
+                      title: tr("Second level"),
+                      content: (
+                        <p>{tr("Nested dialogs restore focus correctly.")}</p>
+                      ),
                     })
                   }
                 >
-                  {tr("打开第二层")}
+                  {tr("Open second level")}
                 </button>
               ),
             })
           }
         >
-          {tr("嵌套弹窗")}
+          {tr("Nested dialog")}
         </button>
         <button
           onClick={() =>
             dialog.open({
-              title: tr("高危归档操作确认"),
+              title: tr("High-Risk Archive Operation Confirmation"),
               content: (
                 <div>
                   <p
@@ -79,7 +85,9 @@ export function DialogDemo() {
                       margin: "0 0 8px",
                     }}
                   >
-                    {tr("警告：此操作将永久冻结该业务单元全部资源与子任务！")}
+                    {tr(
+                      "Warning: This operation will permanently freeze all resources and subtasks of this business unit!",
+                    )}
                   </p>
                   <p
                     className="auto-muted"
@@ -88,22 +96,25 @@ export function DialogDemo() {
                       fontSize: 13,
                     }}
                   >
-                    {tr("系统将保存审计日志。请核对权限后操作。")}
+                    {tr(
+                      "The system will save an audit log. Please verify permissions before proceeding.",
+                    )}
                   </p>
                 </div>
               ),
-              confirmLabel: tr("确认归档"),
-              cancelLabel: tr("放弃"),
-              onSubmit: () => setResult(tr("已确认执行高危归档操作")),
+              confirmLabel: tr("Confirm Archive"),
+              cancelLabel: tr("Abort"),
+              onSubmit: () =>
+                setResult(tr("High-risk archive operation confirmed")),
             })
           }
         >
-          {tr("高危确认弹窗")}
+          {tr("High-risk confirmation dialog")}
         </button>
         <button
           onClick={() =>
             dialog.open({
-              title: tr("全屏数据展示工作区"),
+              title: tr("Fullscreen Data Display Workspace"),
               fullscreen: true,
               content: (
                 <div
@@ -111,10 +122,10 @@ export function DialogDemo() {
                     padding: 12,
                   }}
                 >
-                  <h3>{tr("全屏模式工作区")}</h3>
+                  <h3>{tr("Fullscreen Mode Workspace")}</h3>
                   <p className="auto-muted">
                     {tr(
-                      "支持复杂业务流、图表分析与多级表格，按 Esc 或右上角关闭返回。",
+                      "Supports complex business flows, chart analysis, and multi-level tables. Press Esc or close at the top right to return.",
                     )}
                   </p>
                   <div
@@ -124,22 +135,22 @@ export function DialogDemo() {
                     }}
                   >
                     <Metric
-                      label={tr("节点健康度")}
+                      label={tr("Node health")}
                       value="100"
                       unit="%"
-                      detail={tr("全域集群正常")}
+                      detail={tr("All clusters normal")}
                     />
                     <Metric
-                      label={tr("并发处理")}
+                      label={tr("Concurrent processing")}
                       value="1,240"
                       unit="qps"
-                      detail={tr("平均响应 18ms")}
+                      detail={tr("Avg response 18ms")}
                     />
                     <Metric
-                      label={tr("内存开销")}
+                      label={tr("Memory overhead")}
                       value="14"
                       unit="MB"
-                      detail={tr("TanStack 虚拟化优化")}
+                      detail={tr("Optimized with TanStack virtualization")}
                     />
                   </div>
                 </div>
@@ -147,15 +158,15 @@ export function DialogDemo() {
             })
           }
         >
-          {tr("全屏模式弹窗")}
+          {tr("Fullscreen mode dialog")}
         </button>
         <button
           onClick={() => {
             localStorage.removeItem("auto-studio:draft:demo-project");
-            setResult(tr("已重置新建项目草稿"));
+            setResult(tr("New project draft has been reset"));
           }}
         >
-          {tr("重置弹窗草稿")}
+          {tr("Reset dialog draft")}
         </button>
       </div>
       <p role="status">{result}</p>

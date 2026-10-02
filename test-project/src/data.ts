@@ -98,26 +98,26 @@ function createDemoData(
   const columns: AutoColumn<Project>[] = [
     {
       key: "name",
-      label: tr("项目名称"),
+      label: tr("Project Name"),
       width: 220,
       pin: "left",
       copyable: true,
     },
     {
       key: "owner",
-      label: tr("负责人"),
+      label: tr("Owner"),
       width: 110,
       filterable: true,
     },
     {
       key: "status",
-      label: tr("状态"),
+      label: tr("Status"),
       width: 110,
       filterable: true,
     },
     {
       key: "budget",
-      label: tr("预算"),
+      label: tr("Budget"),
       type: "number",
       width: 130,
       align: "right",
@@ -126,33 +126,33 @@ function createDemoData(
     },
     {
       key: "progress",
-      label: tr("进度"),
+      label: tr("Progress"),
       type: "progress",
       width: 140,
     },
     {
       key: "region",
-      label: tr("地区"),
+      label: tr("Region"),
       width: 110,
       filterable: true,
     },
     {
       key: "date",
-      label: tr("交付日期"),
+      label: tr("Delivery Date"),
       width: 130,
     },
   ];
   const fields: Field<Project>[] = [
     {
       name: "name",
-      label: tr("项目名称"),
+      label: tr("Project Name"),
       required: true,
-      placeholder: tr("例如：客户数据平台"),
+      placeholder: tr("e.g., Customer Data Platform"),
       span: 2,
     },
     {
       name: "owner",
-      label: tr("负责人"),
+      label: tr("Owner"),
       required: true,
       type: "select",
       options: people.map((value) => ({
@@ -163,7 +163,7 @@ function createDemoData(
     },
     {
       name: "status",
-      label: tr("状态"),
+      label: tr("Status"),
       type: "select",
       defaultValue: "Pending Start",
       options: ["In Progress", "Completed", "Pending Start"].map((value) => ({
@@ -173,14 +173,14 @@ function createDemoData(
     },
     {
       name: "budget",
-      label: tr("预算"),
+      label: tr("Budget"),
       type: "integer",
       defaultValue: 10000,
       min: 0,
     },
     {
       name: "progress",
-      label: tr("进度"),
+      label: tr("Progress"),
       type: "integer",
       defaultValue: 0,
       min: 0,
@@ -188,7 +188,7 @@ function createDemoData(
     },
     {
       name: "region",
-      label: tr("地区"),
+      label: tr("Region"),
       type: "select",
       options: ["Shanghai", "Hangzhou", "Shenzhen"].map((value) => ({
         value,
@@ -198,13 +198,13 @@ function createDemoData(
     },
     {
       name: "date",
-      label: tr("交付日期"),
+      label: tr("Delivery Date"),
       type: "date",
       defaultValue: "2026-10-01",
     },
     {
       name: "active",
-      label: tr("启用项目"),
+      label: tr("Enable project"),
       type: "switch",
       defaultValue: true,
     },
@@ -212,13 +212,13 @@ function createDemoData(
   const searchFields: Field<Project>[] = [
     {
       name: "name",
-      label: tr("项目名称"),
+      label: tr("Project Name"),
       match: "contains",
-      placeholder: tr("搜索项目…"),
+      placeholder: tr("Search projects…"),
     },
     {
       name: "status",
-      label: tr("状态"),
+      label: tr("Status"),
       type: "select",
       options: ["In Progress", "Completed", "Pending Start"].map((value) => ({
         value,
@@ -227,7 +227,7 @@ function createDemoData(
     },
     {
       name: "region",
-      label: tr("地区"),
+      label: tr("Region"),
       type: "select",
       more: true,
       options: ["Shanghai", "Hangzhou", "Shenzhen"].map((value) => ({
@@ -239,75 +239,75 @@ function createDemoData(
   const galleryFields: Field<GalleryRecord>[] = [
     {
       name: "title",
-      label: tr("任务名称"),
+      label: tr("Task Name"),
       required: true,
-      placeholder: tr("输入完整的任务或工单标题"),
+      placeholder: tr("Enter the full task or ticket title"),
       span: 2,
     },
     {
       name: "category",
-      label: tr("任务类别"),
+      label: tr("Task Category"),
       type: "autocomplete",
-      placeholder: tr("可输入或选择推荐类别"),
+      placeholder: tr("Type or select a recommended category"),
       defaultValue: "Technical Architecture",
       options: [
         {
-          label: tr("技术架构重构"),
+          label: tr("Technical Architecture Refactoring"),
           value: "Technical Architecture",
         },
         {
-          label: tr("设计系统建设"),
+          label: tr("Design System Development"),
           value: "Design System",
         },
         {
-          label: tr("性能与可用性优化"),
+          label: tr("Performance & Usability Optimization"),
           value: "Performance Optimization",
         },
         {
-          label: tr("自动化测试与发布"),
+          label: tr("Automated Testing & Release"),
           value: "Engineering Delivery",
         },
         {
-          label: tr("安全合规性审计"),
+          label: tr("Security & Compliance Audit"),
           value: "Security & Compliance",
         },
       ],
     },
     {
       name: "department",
-      label: tr("归属部门"),
+      label: tr("Owning Department"),
       type: "cascader",
       defaultValue: ["tech", "frontend"],
       options: [
         {
           value: "tech",
-          label: tr("研发中心"),
+          label: tr("R&D Center"),
           children: [
             {
               value: "frontend",
-              label: tr("前端工程部"),
+              label: tr("Frontend Engineering"),
             },
             {
               value: "backend",
-              label: tr("基础平台部"),
+              label: tr("Platform Infrastructure"),
             },
             {
               value: "ai",
-              label: tr("认知智能部"),
+              label: tr("Cognitive Intelligence"),
             },
           ],
         },
         {
           value: "product",
-          label: tr("产品中心"),
+          label: tr("Product Center"),
           children: [
             {
               value: "core",
-              label: tr("核心体验组"),
+              label: tr("Core Experience Team"),
             },
             {
               value: "growth",
-              label: tr("增长与留存组"),
+              label: tr("Growth & Retention Team"),
             },
           ],
         },
@@ -315,27 +315,27 @@ function createDemoData(
     },
     {
       name: "priority",
-      label: tr("优先级"),
+      label: tr("Priority"),
       type: "radio",
       defaultValue: "High",
       options: [
         {
-          label: tr("日常 P3"),
+          label: tr("Routine P3"),
           value: "Low",
         },
         {
-          label: tr("重要 P2"),
+          label: tr("Important P2"),
           value: "Medium",
         },
         {
-          label: tr("紧迫 P1"),
+          label: tr("Urgent P1"),
           value: "High",
         },
       ],
     },
     {
       name: "level",
-      label: tr("标签分级"),
+      label: tr("Tag Tier"),
       type: "select-v2",
       defaultValue: "tag-1",
       options: Array.from(
@@ -344,58 +344,58 @@ function createDemoData(
         },
         (_, i) => ({
           value: `tag-${i + 1}`,
-          label: tr("业务标签 #{0} ({1})", [
+          label: tr("Business tag #{0} ({1})", [
             i + 1,
-            [tr("核心"), tr("拓展"), tr("归档"), tr("测试")][i % 4],
+            [tr("Core"), tr("Expansion"), tr("Archive"), tr("Test")][i % 4],
           ]),
         }),
       ),
     },
     {
       name: "period",
-      label: tr("执行周期"),
+      label: tr("Execution Cycle"),
       type: "daterange",
       span: 2,
       defaultValue: ["2026-10-01", "2026-11-15"],
       shortcuts: [
         {
-          label: tr("本月"),
+          label: tr("This Month"),
           value: () => ["2026-10-01", "2026-10-31"],
         },
         {
-          label: tr("第四季度"),
+          label: tr("Q4"),
           value: () => ["2026-10-01", "2026-12-31"],
         },
         {
-          label: tr("跨年规划"),
+          label: tr("Cross-Year Planning"),
           value: () => ["2026-10-01", "2027-03-31"],
         },
       ],
     },
     {
       name: "budget",
-      label: tr("预期投入 (元)"),
+      label: tr("Expected Investment (CNY)"),
       type: "integer",
       min: 0,
       defaultValue: 25000,
     },
     {
       name: "discount",
-      label: tr("进度系数 (%)"),
+      label: tr("Progress Factor (%)"),
       type: "percentage",
       defaultValue: "85.5",
     },
     {
       name: "notify",
-      label: tr("实时通知订阅"),
+      label: tr("Real-time Notification Subscription"),
       type: "switch",
       defaultValue: true,
     },
     {
       name: "notes",
-      label: tr("详细备忘与约束"),
+      label: tr("Detailed Notes & Constraints"),
       type: "textarea",
-      placeholder: tr("在此输入任务执行要点与上下文约束条件…"),
+      placeholder: tr("Enter task execution points and context constraints…"),
       rows: 3,
       span: 2,
       defaultValue:

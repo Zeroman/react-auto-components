@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { AutoConfigProvider, AutoMenu } from "@zeroman.yang/react-auto-components";
+import {
+  AutoConfigProvider,
+  AutoMenu,
+} from "@zeroman.yang/react-auto-components";
 
 function MenuFixture() {
   const [value, setValue] = useState("overview");
@@ -8,14 +11,7 @@ function MenuFixture() {
   return (
     <AutoConfigProvider
       config={{
-        t: (key, fallback) =>
-          ({
-            导航菜单: "Navigation",
-            展开菜单: "Expand menu",
-            收起菜单: "Collapse menu",
-          })[key] ??
-          fallback ??
-          key,
+        t: (key, fallback) => fallback ?? key,
       }}
     >
       <div

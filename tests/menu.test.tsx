@@ -5,29 +5,33 @@ import { AutoMenu, type AutoMenuItem } from "../src/components/AutoMenu";
 import { AutoConfigProvider, type AutoServices } from "../src";
 
 const items = [
-  { id: "table", label: "AutoTable", description: "智能表格" },
-  { id: "form", label: "AutoForm", description: "动态表单" },
+  { id: "table", label: "AutoTable", description: "Smart table" },
+  { id: "form", label: "AutoForm", description: "Dynamic form" },
 ];
 
 test("cyclic references in remote items cannot cause runaway recursion", () => {
   const poisoned: AutoMenuItem[] = [
     {
       id: "loop",
-      label: "环",
-      children: [{ id: "inner", label: "内", children: [] }],
+      label: "Ring",
+      children: [{ id: "inner", label: "Inner", children: [] }],
     },
-    { id: "safe", label: "安全页" },
+    { id: "safe", label: "Safe page" },
   ];
-  // 模拟被污染的远端数据：子级指回祖先
+  // Remote data is corrupted: a child points back at an ancestor.
   (poisoned[0].children as AutoMenuItem[])[0].children = [poisoned[0]];
   render(<AutoMenu items={poisoned} defaultValue="safe" />);
-  expect(screen.getByRole("button", { name: "安全页" })).toHaveAttribute(
+  expect(screen.getByRole("button", { name: "Safe page" })).toHaveAttribute(
     "aria-current",
     "page",
   );
-  // 环所在的子树被丢弃，渲染安全终止且不挂起
-  expect(screen.queryByRole("button", { name: "环" })).not.toBeInTheDocument();
-  expect(screen.queryByRole("button", { name: "内" })).not.toBeInTheDocument();
+  // The cycle's subtree is dropped, so rendering finishes and does not hang.
+  expect(
+    screen.queryByRole("button", { name: "Ring" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Inner" }),
+  ).not.toBeInTheDocument();
 });
 
 test("renders items, auto-selects the first entry and reports selection", async () => {
@@ -36,16 +40,18 @@ test("renders items, auto-selects the first entry and reports selection", async 
   render(
     <AutoMenu
       items={items}
-      label="组件工作区"
+      label="Component workspace"
       header={<strong>AutoStudio</strong>}
       footer={<small>v0.1.0</small>}
       onChange={change}
     />,
   );
-  expect(screen.getByRole("navigation", { name: "组件工作区" })).toBeVisible();
+  expect(
+    screen.getByRole("navigation", { name: "Component workspace" }),
+  ).toBeVisible();
   expect(screen.getByText("AutoStudio")).toBeVisible();
   expect(screen.getByText("v0.1.0")).toBeVisible();
-  expect(screen.getByText("智能表格")).toBeVisible();
+  expect(screen.getByText("Smart table")).toBeVisible();
   expect(screen.getByRole("button", { name: /AutoTable/ })).toHaveAttribute(
     "aria-current",
     "page",
@@ -89,28 +95,28 @@ test("nested items expand, carry their path and filter hidden entries", async ()
         items={[
           {
             id: "group",
-            label: "分组",
+            label: "Group",
             children: [
-              { id: "group/child", label: "子项", description: "嵌套" },
-              { id: "group/hidden", label: "隐藏项", hidden: true },
+              { id: "group/child", label: "Child item", description: "Nested" },
+              { id: "group/hidden", label: "Hidden item", hidden: true },
             ],
           },
-          { id: "single", label: "单页", roles: ["admin"] },
+          { id: "single", label: "Single page", roles: ["admin"] },
         ]}
         onChange={change}
       />
     </AutoConfigProvider>,
   );
-  const group = screen.getByRole("button", { name: "分组" });
+  const group = screen.getByRole("button", { name: "Group" });
   expect(group).toHaveAttribute("aria-expanded", "true");
-  expect(screen.getByText("嵌套")).toBeVisible();
-  expect(screen.queryByText("隐藏项")).not.toBeInTheDocument();
-  expect(screen.queryByText("单页")).not.toBeInTheDocument();
+  expect(screen.getByText("Nested")).toBeVisible();
+  expect(screen.queryByText("Hidden item")).not.toBeInTheDocument();
+  expect(screen.queryByText("Single page")).not.toBeInTheDocument();
   await u.click(group);
   expect(group).toHaveAttribute("aria-expanded", "false");
-  expect(screen.queryByText("嵌套")).not.toBeInTheDocument();
+  expect(screen.queryByText("Nested")).not.toBeInTheDocument();
   await u.click(group);
-  await u.click(screen.getByRole("button", { name: /子项/ }));
+  await u.click(screen.getByRole("button", { name: /Child item/ }));
   expect(change).toHaveBeenCalledWith("group/child", expect.anything(), [
     "group",
     "group/child",
@@ -122,18 +128,18 @@ test("collapsible menus toggle into an icon rail with notifications", async () =
     u = userEvent.setup();
   render(
     <AutoMenu
-      items={[{ id: "a", label: "标签页", icon: "▤" }]}
+      items={[{ id: "a", label: "Tabs", icon: "▤" }]}
       collapsible
       onCollapsedChange={collapsedChange}
     />,
   );
-  const toggle = screen.getByRole("button", { name: "收起菜单" });
+  const toggle = screen.getByRole("button", { name: "Collapse menu" });
   await u.click(toggle);
   expect(collapsedChange).toHaveBeenCalledWith(true);
-  expect(screen.getByRole("button", { name: "展开菜单" })).toBeVisible();
-  expect(screen.getByRole("button", { name: "标签页" })).toHaveAttribute(
+  expect(screen.getByRole("button", { name: "Expand menu" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "Tabs" })).toHaveAttribute(
     "title",
-    "标签页",
+    "Tabs",
   );
 });
 
@@ -142,14 +148,14 @@ test("provider menu settings drive size, density and translations", () => {
     <AutoConfigProvider
       config={{
         t: (key, fallback) =>
-          key === "导航菜单" ? "Navigation" : (fallback ?? key),
+          key === "Navigation" ? "Nav" : (fallback ?? key),
         menu: { size: "small", density: "compact" },
       }}
     >
       <AutoMenu items={items} />
     </AutoConfigProvider>,
   );
-  const nav = screen.getByRole("navigation", { name: "Navigation" });
+  const nav = screen.getByRole("navigation", { name: "Nav" });
   expect(nav).toHaveAttribute("data-size", "small");
   expect(nav).toHaveAttribute("data-density", "compact");
 });

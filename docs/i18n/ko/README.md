@@ -12,9 +12,13 @@ React 19를 위한 독립형 스키마 기반 컴포넌트 라이브러리로, �
 
 ## 프로젝트 상태
 
-현재 버전은 0.1.2이며 API는 아직 변경될 수 있습니다. React 19이 필요합니다. 이 패키지는 ESM 및 TypeScript 선언을 제공합니다. 내장 인터페이스 텍스트는 기본적으로 중국어이며 AutoConfigProvider.config.t를 통해 번역할 수 있습니다.
+현재 버전은 0.1.2이며 API는 아직 변경될 수 있습니다. React 19이 필요합니다. 이 패키지는 ESM 및 TypeScript 선언을 제공합니다. 내장 인터페이스 텍스트는 기본적으로 영어이며 AutoConfigProvider.config.t를 통해 번역할 수 있습니다.
 
 `pnpm add @zeroman.yang/react-auto-components`로 설치합니다(npm과 yarn도 동일). peer dependency는 React 19와 react-dom 19입니다. 진입점에서 스타일시트를 한 번 불러오세요: `import "@zeroman.yang/react-auto-components/style.css"`.
+
+앱 진입점에서 `import "@zeroman.yang/react-auto-components/style.css"`를 한 번 가져오세요. 스타일시트가 없으면 개발 모드에서 `RAC-CSS-MISSING`을 경고합니다.
+
+XLSX 내보내기에서 `exportXlsx` 어댑터가 없으면 `RAC-TABLE-XLSX`, 선택적 의존성 `exceljs`를 불러올 수 없으면 `RAC-XLSX-DEP`입니다. `@zeroman.yang/react-auto-components/xlsx`에서 어댑터를 가져와 전달하고, 필요하면 `pnpm add exceljs`로 설치하세요. CSV와 JSON에는 필요하지 않습니다.
 
 - [온라인 데모 (GitHub Pages)](https://zeroman.github.io/react-auto-components/)
 - [기여 안내](https://github.com/Zeroman/react-auto-components/blob/main/docs/i18n/ko/CONTRIBUTING.md)
@@ -85,7 +89,7 @@ t 콜백은 메시지 키와 폴백을 받습니다. 번역된 내장 메시지�
 | 컴포넌트 | 기능 |
 | --- | --- |
 | AutoForm | 네이티브 필드 유형, 옵션 가상화, 계층형 선택, 업로드 어댑터, 사용자 정의 렌더링, 종속 필드, 조건부 표시, 비동기 유효성 검사, 제어 상태, 실패 후 입력 유지 |
-| AutoSearchPanel | 기본/고급 조건, 수동/즉시 검색, 초기화, 정렬 태그, 공유 쿼리 AST, RSQL 직렬화 |
+| AutoSearch | 기본/고급 조건, 수동/즉시 검색, 초기화, 정렬 태그, 공유 쿼리 AST, RSQL 직렬화 |
 | AutoTable | 로컬/원격 데이터, 다중 열 정렬, 열 필터, 페이지 나누기, 안정적인 선택 상태, 가상화, 트리/상세 펼치기, 집계, 셀 병합, CRUD, 컨텍스트 메뉴, 복사 |
 | AutoDialog | 선언형/명령형 API, 격리된 프로바이더, 초안, 닫기 가드, 포커스 관리, 드래그, 전체 화면, 비동기 제출 |
 | AutoTabs | 가로/세로 레이아웃, 중첩, 권한, 탭 비활성화, 패널 상태 유지, 새로 고침 |
@@ -201,3 +205,5 @@ pnpm test:e2e
 AutoChat은 스트리밍 따라가기, 기록 불러오기, 작성기를 갖춘 가벼운 대화 레이아웃을 제공합니다. 메시지 렌더링을 위해 React 콘텐츠나 renderMessage를 전달하면 되며, 추가 런타임 의존성이 필요하지 않습니다.
 
 [AutoChat API](auto-chat.md)
+
+콜백이 throw 된 뒤 컴포넌트가 어떻게 동작하는지는 동작 계약을 보세요: [AutoForm](auto-form.md), [AutoSearch](auto-search.md), [AutoTable](auto-table.md), [AutoDialog](auto-dialog.md), [AutoTabs](auto-tabs.md), [AutoMenu](auto-menu.md). 개발자 오류 코드: [errors.md](errors.md).

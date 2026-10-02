@@ -27,9 +27,9 @@ export function FilterEditor<T extends object>({
   return (
     <div>
       <label>
-        {tr("条件关系")}{" "}
+        {tr("Match")}{" "}
         <select
-          aria-label={tr("条件关系")}
+          aria-label={tr("Match")}
           value={group.operator}
           onChange={(e) =>
             onChange({
@@ -38,14 +38,14 @@ export function FilterEditor<T extends object>({
             })
           }
         >
-          <option value="and">{tr("满足全部")}</option>
-          <option value="or">{tr("满足任一")}</option>
+          <option value="and">{tr("Match all")}</option>
+          <option value="or">{tr("Match any")}</option>
         </select>
       </label>
       {group.children.map((node, index) =>
         node.kind === "group" ? (
           <div className="auto-setting-row" key={index}>
-            <span>{tr("嵌套条件组（可在高级编辑中调整）")}</span>
+            <span>{tr("Nested group (edit it in advanced mode)")}</span>
             <button
               onClick={() =>
                 onChange({
@@ -54,13 +54,13 @@ export function FilterEditor<T extends object>({
                 })
               }
             >
-              {tr("移除")}
+              {tr("Remove")}
             </button>
           </div>
         ) : (
           <div className="auto-setting-row" key={index}>
             <select
-              aria-label={tr("筛选字段 {0}", [index + 1])}
+              aria-label={tr("Filter field {0}", [index + 1])}
               value={node.field}
               onChange={(e) =>
                 change(index, {
@@ -77,7 +77,7 @@ export function FilterEditor<T extends object>({
               ))}
             </select>
             <select
-              aria-label={tr("筛选运算 {0}", [index + 1])}
+              aria-label={tr("Filter operator {0}", [index + 1])}
               value={node.operator}
               onChange={(e) => {
                 const operator = e.target.value as typeof node.operator;
@@ -94,11 +94,11 @@ export function FilterEditor<T extends object>({
               }}
             >
               {[
-                ["eq", tr("等于")],
-                ["contains", tr("包含")],
-                ["in", tr("属于")],
-                ["between", tr("范围")],
-                ["isNull", tr("为空")],
+                ["eq", tr("Equals")],
+                ["contains", tr("Contains")],
+                ["in", tr("In")],
+                ["between", tr("Between")],
+                ["isNull", tr("Is empty")],
               ].map(([v, label]) => (
                 <option key={v} value={v}>
                   {label}
@@ -107,13 +107,13 @@ export function FilterEditor<T extends object>({
             </select>
             {node.operator !== "isNull" && (
               <input
-                aria-label={tr("筛选值 {0}", [index + 1])}
+                aria-label={tr("Filter value {0}", [index + 1])}
                 placeholder={
                   node.operator === "between"
-                    ? tr("最小值,最大值")
+                    ? tr("Min, max")
                     : node.operator === "in"
-                      ? tr("值1,值2")
-                      : tr("输入值")
+                      ? tr("Value 1, value 2")
+                      : tr("Value")
                 }
                 value={
                   Array.isArray(node.value)
@@ -143,7 +143,7 @@ export function FilterEditor<T extends object>({
                 })
               }
             >
-              {tr("移除")}
+              {tr("Remove")}
             </button>
           </div>
         ),
@@ -165,7 +165,7 @@ export function FilterEditor<T extends object>({
             });
         }}
       >
-        {tr("添加条件")}
+        {tr("Add condition")}
       </button>
     </div>
   );

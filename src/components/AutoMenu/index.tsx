@@ -9,6 +9,7 @@ import {
 } from "react";
 import type { Access, ComponentDensity, ComponentSize } from "../../core/types";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
+import { useLibraryStyles } from "../../core/dev";
 import { Popover } from "../../internal/Popover";
 
 export interface AutoMenuItem extends Access {
@@ -26,8 +27,15 @@ export interface AutoMenuItem extends Access {
   children?: readonly AutoMenuItem[];
 }
 
+/**
+ * Sidebar navigation. `value` is the selected leaf id. Omit it to use internal state starting at `defaultValue`.
+ * `onChange` is not caught. A cyclic `children` list is dropped so a bad schema cannot recurse forever.
+ * `collapsible` defaults to `false`. `collapsed` controls the icon rail; otherwise `defaultCollapsed` (default `false`) is used.
+ * Items that are hidden, disabled by an ancestor, or rejected by `canAccess` are not rendered.
+ */
 export interface AutoMenuProps {
   items: readonly AutoMenuItem[];
+  /** Selected leaf id. Pass it to control selection. */
   value?: string;
   defaultValue?: string;
   onChange?: (id: string, item: AutoMenuItem, path: readonly string[]) => void;
@@ -291,6 +299,7 @@ export function AutoMenu({
 }: AutoMenuProps) {
   const tr = useAutoText();
   const services = useAutoConfig();
+  useLibraryStyles();
   const density =
     ownDensity ?? services.menu?.density ?? services.density ?? "comfortable";
   const size = ownSize ?? services.menu?.size ?? services.size ?? "medium";
@@ -361,7 +370,7 @@ export function AutoMenu({
       data-size={size}
       data-density={density}
       data-collapsed={isCollapsed ? "true" : undefined}
-      aria-label={label ?? tr("导航菜单")}
+      aria-label={label ?? tr("Navigation")}
       style={style}
       onKeyDown={navigate}
     >
@@ -390,7 +399,7 @@ export function AutoMenu({
         <button
           type="button"
           className="auto-menu-collapse-btn"
-          aria-label={isCollapsed ? tr("展开菜单") : tr("收起菜单")}
+          aria-label={isCollapsed ? tr("Expand menu") : tr("Collapse menu")}
           aria-expanded={!isCollapsed}
           onClick={() => {
             const next = !isCollapsed;

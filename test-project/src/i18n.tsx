@@ -112,9 +112,9 @@ export function LanguagePicker({
   if (variant === "block") {
     return (
       <label>
-        {tr("界面语言")}
+        {tr("Interface language")}
         <select
-          aria-label={tr("界面语言")}
+          aria-label={tr("Interface language")}
           data-testid="language-picker"
           value={preference}
           onChange={(event) => {
@@ -123,7 +123,7 @@ export function LanguagePicker({
           }}
         >
           <option value="auto">
-            {tr("自动（浏览器）")} · {languages[locale]}
+            {tr("Auto (browser)")} · {languages[locale]}
           </option>
           {Object.entries(languages).map(([id, name]) => (
             <option key={id} value={id}>
@@ -138,7 +138,7 @@ export function LanguagePicker({
     <label className="language-picker">
       <span aria-hidden="true">◎</span>
       <select
-        aria-label={tr("界面语言")}
+        aria-label={tr("Interface language")}
         data-testid="language-picker"
         value={preference}
         onChange={(event) => {
@@ -147,7 +147,7 @@ export function LanguagePicker({
         }}
       >
         <option value="auto">
-          {tr("自动（浏览器）")} · {languages[locale]}
+          {tr("Auto (browser)")} · {languages[locale]}
         </option>
         {Object.entries(languages).map(([id, name]) => (
           <option key={id} value={id}>

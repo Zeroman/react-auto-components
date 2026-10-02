@@ -1,10 +1,13 @@
 export * from "./core/types";
+export * from "./core/registry";
+export * from "./core/testid";
+export * from "./core/errors";
 export * from "./core/config";
 export * from "./core/query";
 export * from "./core/AutoConfigProvider";
 import "./styles/base.css";
 export * from "./components/AutoForm";
-export * from "./components/AutoSearchPanel";
+export * from "./components/AutoSearch";
 export * from "./components/AutoDialog";
 export * from "./components/AutoTabs";
 export * from "./components/AutoMenu";

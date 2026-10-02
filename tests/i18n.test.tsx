@@ -22,7 +22,8 @@ describe("demo language resolution", () => {
   });
 
   it("translates UI and stable demo data while preserving unknown user text", () => {
-    expect(translateMessage("en", "搜索")).toBe("Search");
+    expect(translateMessage("en", "Search")).toBe("Search");
+    expect(translateMessage("zh-CN", "Search")).toBe("搜索");
     expect(translateMessage("zh-CN", "Customer Data Platform 42")).toBe(
       "客户数据平台 42",
     );
@@ -34,9 +35,9 @@ describe("demo language resolution", () => {
 
 it("switches built-in form messages through t without clearing edits or overriding custom labels", () => {
   const dict: Record<string, string> = {
-    提交: "Submit",
-    重置: "Reset",
-    "{0}为必填项": "{0} is required",
+    Submit: "Send",
+    Reset: "Clear",
+    "{0} is required": "{0} is required",
   };
   const t = (key: string, fallback?: string) => dict[key] ?? fallback ?? key;
   const view = (translated: boolean) => (
@@ -49,7 +50,7 @@ it("switches built-in form messages through t without clearing edits or overridi
     target: { value: "Keep this draft" },
   });
   rerender(view(true));
-  expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Send" })).toBeInTheDocument();
   expect(screen.getByLabelText(/Name/)).toHaveValue("Keep this draft");
   rerender(
     <AutoConfigProvider config={{ t }}>
@@ -63,9 +64,11 @@ it("switches built-in form messages through t without clearing edits or overridi
 
 it("isolates translations between providers and uses interpolated table messages", () => {
   const t = (key: string) =>
-    ({ "{0} 条记录": "Records: {0}", 刷新: "Refresh", 设置: "Settings" })[
-      key
-    ] ?? key;
+    ({
+      "{0} records": "Records: {0}",
+      Refresh: "Reload",
+      Settings: "Settings",
+    })[key] ?? key;
   render(
     <>
       <AutoConfigProvider config={{ t }}>
@@ -85,6 +88,6 @@ it("isolates translations between providers and uses interpolated table messages
     </>,
   );
   expect(screen.getByText("Records: 1")).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Reload" })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Refresh" })).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "刷新" })).toBeInTheDocument();
 });

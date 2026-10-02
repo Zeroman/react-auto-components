@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { safeStorage } from "./config";
+import type { ColumnRegistry, SourceLoader } from "./registry";
 import type {
   Access,
   AutoFormLayout,
@@ -23,7 +24,20 @@ export interface MenuGlobalConfig {
   density?: ComponentDensity;
   size?: ComponentSize;
 }
+/**
+ * App-wide defaults. The provider is optional.
+ * With no provider, `namespace` is `"auto"`, `size` is `"medium"`, `density` is `"comfortable"`,
+ * form labels sit on top, `t` returns the key, `canAccess` allows everything, and storage is `localStorage`.
+ *
+ * `namespace` is prepended to persisted keys: `${namespace}:table:${tableId}` and `${namespace}:draft:${draftKey}`.
+ * Two apps on one origin that both leave `"auto"` share table settings and dialog drafts. Set a distinct namespace per app.
+ * This provider does not mount dialogs. `useAutoDialog()` still needs `AutoDialogProvider`.
+ */
 export interface AutoServices {
+  /**
+   * Storage prefix. Default `"auto"`.
+   * Change it when more than one app on the same origin uses tables or dialog drafts.
+   */
   namespace: string;
   size?: ComponentSize;
   density?: ComponentDensity;
@@ -36,7 +50,20 @@ export interface AutoServices {
   storage: StorageAdapter;
   settings?: SettingsAdapter;
   notify: (message: string, level: "success" | "error") => void;
+  /** Custom field widgets, keyed for `Field.component`. */
   fields: Record<string, (context: FieldContext<Values>) => ReactNode>;
+  /**
+   * Column render, format, sort, and export functions, keyed for `AutoColumn.component`.
+   * A function on the column wins over the registry.
+   */
+  columns: Record<string, ColumnRegistry>;
+  /** Row menu handlers, keyed for `RowAction.action` when `onClick` is omitted. */
+  rowActions: Record<string, (row: object) => void | Promise<void>>;
+  /**
+   * Remote table loaders, keyed for `AutoTable` `source`.
+   * The registered function must return rows of that table's model.
+   */
+  sources: Record<string, SourceLoader>;
 }
 const defaultServices: AutoServices = {
   namespace: "auto",
@@ -51,6 +78,9 @@ const defaultServices: AutoServices = {
   storage: safeStorage,
   notify: () => {},
   fields: {},
+  columns: {},
+  rowActions: {},
+  sources: {},
 };
 const Context = createContext(defaultServices);
 export function AutoConfigProvider({
@@ -66,6 +96,9 @@ export function AutoConfigProvider({
       ...parent,
       ...config,
       fields: { ...parent.fields, ...config?.fields },
+      columns: { ...parent.columns, ...config?.columns },
+      rowActions: { ...parent.rowActions, ...config?.rowActions },
+      sources: { ...parent.sources, ...config?.sources },
       form: { ...parent.form, ...config?.form },
       table: config?.table
         ? { ...parent.table, ...config.table }

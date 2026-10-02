@@ -12,9 +12,13 @@
 
 ## 專案狀態
 
-目前版本為 0.1.2,API 仍可能變動。需要 React 19。本套件提供 ESM 與 TypeScript 型別宣告。內建介面文字預設為中文,可透過 AutoConfigProvider.config.t 進行翻譯。
+目前版本為 0.1.2,API 仍可能變動。需要 React 19。本套件提供 ESM 與 TypeScript 型別宣告。內建介面文字預設為英文,可透過 AutoConfigProvider.config.t 進行翻譯。
 
 使用 `pnpm add @zeroman.yang/react-auto-components` 安裝（npm、yarn 同樣可用）。peer dependency 為 React 19 與 react-dom 19。請在入口引入一次樣式：`import "@zeroman.yang/react-auto-components/style.css"`。
+
+在應用程式入口引入一次 `import "@zeroman.yang/react-auto-components/style.css"`。缺少樣式時，開發模式警告 `RAC-CSS-MISSING`。
+
+XLSX 匯出缺少 `exportXlsx` 配接器時為 `RAC-TABLE-XLSX`；無法載入選用相依套件 `exceljs` 時為 `RAC-XLSX-DEP`。從 `@zeroman.yang/react-auto-components/xlsx` 匯入並傳入配接器，按需執行 `pnpm add exceljs`。CSV 與 JSON 不需要它。
 
 - [線上示範 (GitHub Pages)](https://zeroman.github.io/react-auto-components/)
 - [貢獻指南](https://github.com/Zeroman/react-auto-components/blob/main/docs/i18n/zh-TW/CONTRIBUTING.md)
@@ -99,7 +103,7 @@ t 回呼會接收訊息鍵值與後備文字。翻譯內建訊息時請保留 {0
 | 元件 | 功能 |
 | --- | --- |
 | AutoForm | 原生欄位型別、選項虛擬化、連動選擇、上傳介接器、自訂繪製、相依欄位、條件式顯示、非同步驗證、受控狀態、失敗後保留輸入 |
-| AutoSearchPanel | 基本／進階條件、手動／即時搜尋、重設、排序標籤、共用查詢 AST 和 RSQL 序列化 |
+| AutoSearch | 基本／進階條件、手動／即時搜尋、重設、排序標籤、共用查詢 AST 和 RSQL 序列化 |
 | AutoTable | 本機／遠端資料、多欄排序、欄位篩選、分頁、穩定的選取狀態、虛擬化、樹狀／詳細資料展開、彙總、合併儲存格、CRUD、快顯功能表和複製 |
 | AutoDialog | 宣告式／命令式 API、隔離的 Provider、草稿、關閉防護、焦點管理、拖曳、全螢幕和非同步提交 |
 | AutoTabs | 水平／垂直版面、巢狀結構、權限、停用分頁、保留面板狀態和重新整理 |
@@ -215,3 +219,5 @@ pnpm test:e2e
 AutoChat 提供輕量的對話版面，具備串流跟隨、歷史載入與輸入區。供應 React 內容或 renderMessage 來渲染訊息，無需額外的執行時相依套件。
 
 [AutoChat API](auto-chat.md)
+
+回呼拋錯之後元件會怎樣，見行為契約：[AutoForm](auto-form.md)、[AutoSearch](auto-search.md)、[AutoTable](auto-table.md)、[AutoDialog](auto-dialog.md)、[AutoTabs](auto-tabs.md)、[AutoMenu](auto-menu.md)。開發者錯誤碼：[errors.md](errors.md)。

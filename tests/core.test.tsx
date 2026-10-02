@@ -12,12 +12,12 @@ test("defaults preserve falsy values and reject duplicate names without mutating
 test("options preserve boolean and numeric identity", () => {
   expect(
     normalizeOptions([
-      { value: 0, label: "零" },
-      { value: false, label: "否" },
+      { value: 0, label: "Zero" },
+      { value: false, label: "No" },
     ]),
   ).toEqual([
-    { value: 0, label: "零" },
-    { value: false, label: "否" },
+    { value: 0, label: "Zero" },
+    { value: false, label: "No" },
   ]);
 });
 test("storage tolerates corrupt or absent values", () => {

@@ -44,7 +44,14 @@ export interface AutoChatLabels {
   error: string;
 }
 
+/**
+ * Conversation shell. Message text is the host's: a string is rendered as text, anything else is your React node.
+ * `onSend` rejection keeps the draft and shows a generic error. See the `onSend` prop.
+ * Defaults: `height` `"100%"`, `autoFollow` `true`, `composer` `true`, `sendOnEnter` `true`,
+ * `messageLayout` `"role"`, `estimatedMessageHeight` `120`, `overscan` `6`.
+ */
 export interface AutoChatProps<T extends AutoChatMessage = AutoChatMessage> {
+  /** Newest message last. Ids must stay stable while a reply streams. */
   messages: readonly T[];
   /** Own Markdown, code, tool output and attachment rendering in the host. */
   renderMessage?: (message: T, context: { index: number }) => ReactNode;

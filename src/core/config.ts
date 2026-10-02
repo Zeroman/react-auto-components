@@ -1,4 +1,5 @@
-import type { Option, StorageAdapter } from "./types";
+import { RacError } from "./errors";
+import type { AnyField, Field, Option, StorageAdapter } from "./types";
 export function resolve<V, T>(
   value: V | ((values: T) => V) | undefined,
   values: T,
@@ -16,7 +17,13 @@ export function defaults<T extends object>(
   const seen = new Set<string>();
   for (const f of fields) {
     if (!f.name) continue;
-    if (seen.has(f.name)) throw new Error(`Duplicate field: ${f.name}`);
+    if (seen.has(f.name))
+      throw new RacError(
+        "AutoForm",
+        "RAC-FIELD-DUPLICATE",
+        `fields contains a duplicate name "${f.name}".`,
+        "Give every named field a unique name. Title, tip, append, and button fields have no name and are skipped.",
+      );
     seen.add(f.name);
     if (f.defaultValue !== undefined)
       out[f.name] = structuredClone(f.defaultValue);
@@ -52,6 +59,14 @@ export const safeStorage: StorageAdapter = {
     }
   },
 };
+/**
+ * Skip the {@link Field} discriminant. `select` without `options` then compiles.
+ * Dev mode still warns. Prefer a typed `Field<T>` literal.
+ */
+export function unsafeField<T extends object>(field: AnyField<T>): Field<T> {
+  return field as Field<T>;
+}
+
 export function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }

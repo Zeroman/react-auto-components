@@ -13,21 +13,23 @@ test("nested tabs, hidden entries and retained state", async () => {
     <AutoTabs
       onChange={change}
       items={[
-        { id: "a", label: "甲", content: <input aria-label="草稿" /> },
+        { id: "a", label: "A", content: <input aria-label="Draft" /> },
         {
           id: "b",
-          label: "乙",
-          children: [{ id: "b1", label: "子页", content: "子内容" }],
+          label: "B",
+          children: [
+            { id: "b1", label: "Child page", content: "Child content" },
+          ],
         },
-        { id: "c", label: "隐藏", hidden: true },
+        { id: "c", label: "Hidden", hidden: true },
       ]}
     />,
   );
-  await u.type(screen.getByLabelText("草稿"), "保留");
-  await u.click(screen.getByRole("tab", { name: "乙" }));
-  expect(screen.getByText("子内容")).toBeVisible();
-  await u.click(screen.getByRole("tab", { name: "甲" }));
-  expect(screen.getByLabelText("草稿")).toHaveValue("保留");
-  expect(screen.queryByText("隐藏")).not.toBeInTheDocument();
+  await u.type(screen.getByLabelText("Draft"), "Kept");
+  await u.click(screen.getByRole("tab", { name: "B" }));
+  expect(screen.getByText("Child content")).toBeVisible();
+  await u.click(screen.getByRole("tab", { name: "A" }));
+  expect(screen.getByLabelText("Draft")).toHaveValue("Kept");
+  expect(screen.queryByText("Hidden")).not.toBeInTheDocument();
   expect(change).toHaveBeenCalled();
 });
