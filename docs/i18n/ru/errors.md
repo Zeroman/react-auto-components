@@ -108,3 +108,7 @@ JSON фильтра — не запрос. Показывается перево
 `useAutoDialog()` вне `AutoDialogProvider`.
 
 Исправление: Оберните дерево в `<AutoDialogProvider>`. `AutoConfigProvider` диалогов не дает и необязателен. `<AutoDialog open>` этот хук не использует.
+
+## RAC-TABS-ROUTE-VALUE
+
+Не передавайте `route` и `value` в `AutoTabs` одновременно. Если указаны оба свойства, приоритет имеет `route`, а в режиме разработки появляется предупреждение `RAC-TABS-ROUTE-VALUE`. Уберите `value`, когда выбором управляет `AutoNavigation`.

@@ -4,7 +4,20 @@
 
 按 schema 渲染的表单。控件、校验和提交都在这里。`AutoSearch` 和 `AutoDialog` 内部也渲染 `AutoForm`，所以下面的回调规则对它们同样有效。
 
-`Field<T>` 按 `type` 做判别联合。`select` 不给 `options`、`daterange` 配标量、标量字段上写 `match: "between"`，都是 TypeScript 错误。`AnyField` 和 `unsafeField()` 是逃生舱；开发模式仍会警告。错误码见 [errors.md](errors.md)。
+`Field<T>`（别名 `FormItem<T>`）按 `type` 做判别联合，由交互控件 `FormField<T>` 和结构化展示项 `DisplayItem<T>` 组成：
+- **表单字段**：绑定值的录入控件（如 `input`、`number`、`integer`、`select`、`virtual-select`、`date`、`daterange`、`switch`、`checkbox`、`radio`、`file`）。`select` 不给 `options`、`daterange` 配标量、标量字段上写 `match: "between"`，都是 TypeScript 错误。`virtual-select`（或 `type: "select", virtual: true`）支持长列表虚拟滚动（替代旧版 `select-v2`）。`AnyField` 和 `unsafeField()` 是逃生舱；开发模式仍会警告。错误码见 [errors.md](errors.md)。
+- **展示项**：纯展示与辅助排版项（`title`、`tip`、`button`、`append`、`divider`）。校验时自动跳过，不收集表单值。`tip` 和 `append` 支持传入 `content?: ReactNode`。
+
+具名字段的 `tip` 在字段悬停或内部控件聚焦时显示浮层；输入框通过 `aria-describedby` 同时关联持久的帮助文本与校验错误。自定义 `render`／注册字段应将 `context.describedBy` 传给每个控件的 `aria-describedby`。字段的 `tipComponent` 优先于表单参数。展示字段 `type: "tip"` 和 `"append"` 仍直接显示内容。
+
+优先级为：单项／字段／列参数 → 所属组件参数 → Provider 的组件默认配置（`config.tabs`、`config.form`、`config.table` 或 `config.menu`）→ 全局 `AutoConfigProvider.config.tipComponent` → 内置 `DefaultTip`。自定义组件接收 `{ content, children, placement }`（`AutoTipProps`），需保留触发元素的事件、ref 和无障碍属性。`AutoTip` 与 `DefaultTip` 均已导出；默认实现通过 portal 显示，支持 Escape 关闭，触发元素位置不变。
+
+### 样式插槽（Slots）
+
+`AutoForm` 与单个字段均支持细粒度的 `classNames` 和 `styles` 插槽：
+- **`AutoForm`**：`classNames?: AutoFormClassNames`（`root`、`field`、`label`、`input`、`tip`、`error`、`actions`、`submit`、`reset`、`cancel`）与 `styles?: AutoFormStyles`。
+- **字段 / 展示项**：`classNames?: FieldClassNames`（`root`、`label`、`input`、`tip`、`error`）与 `styles?: FieldStyles`。
+
 
 ## 用法
 

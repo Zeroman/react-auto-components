@@ -1,6 +1,12 @@
 import { useAutoText } from "../../core/i18n";
 import { useEffect, useRef, useState } from "react";
-import type { AnyField, FieldContext, Values } from "../../core/types";
+import type {
+  AnyField,
+  FieldContext,
+  FieldClassNames,
+  FieldStyles,
+  Values,
+} from "../../core/types";
 import { resolve, errorMessage } from "../../core/config";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
 import { Cascader, VirtualSelect } from "./ChoiceField";
@@ -10,12 +16,16 @@ export function FormField<T extends object>({
   readOnly,
   resetEpoch = 0,
   onUploadPending,
+  classNames,
+  styles,
 }: {
   field: AnyField<T>;
   context: FieldContext<T>;
   readOnly?: boolean;
   resetEpoch?: number;
   onUploadPending?: (id: string, pending: boolean) => void;
+  classNames?: FieldClassNames;
+  styles?: FieldStyles;
 }) {
   const tr = useAutoText();
   const services = useAutoConfig();
@@ -37,12 +47,46 @@ export function FormField<T extends object>({
     onUploadPending?.(id, uploading);
     return () => onUploadPending?.(id, false);
   }, [id, uploading, onUploadPending]);
-  if (field.render) return field.render(context);
+
+  const inputClassName =
+    Array.from(
+      new Set(
+        [context.className, classNames?.input, field.classNames?.input]
+          .filter(Boolean)
+          .flatMap((s) => s!.split(/\s+/)),
+      ),
+    ).join(" ") || undefined;
+
+  const inputStyle = {
+    ...context.style,
+    ...styles?.input,
+    ...field.styles?.input,
+  };
+  const hasInputStyle = Object.keys(inputStyle).length > 0;
+
+  const enrichedContext: FieldContext<T> = {
+    ...context,
+    describedBy:
+      [context.describedBy, context.error ? `${id}-error` : undefined]
+        .filter(Boolean)
+        .join(" ") || undefined,
+    className: inputClassName,
+    style: hasInputStyle ? inputStyle : undefined,
+  };
+
+  if (field.render) return field.render(enrichedContext);
   if (field.component && services.fields[field.component])
-    return services.fields[field.component](context as FieldContext<Values>);
+    return services.fields[field.component](
+      enrichedContext as FieldContext<Values>,
+    );
   if (readOnly || type === "text")
     return (
-      <output id={id}>
+      <output
+        id={id}
+        aria-describedby={enrichedContext.describedBy}
+        className={inputClassName}
+        style={hasInputStyle ? inputStyle : undefined}
+      >
         {options.find((o) => Object.is(o.value, value))?.label ??
           (value == null
             ? "—"
@@ -51,15 +95,52 @@ export function FormField<T extends object>({
               : String(value))}
       </output>
     );
-  if (type === "title") return <h3>{field.label}</h3>;
+  if (type === "title")
+    return (
+      <h3
+        id={id}
+        className={field.classNames?.label ?? classNames?.label}
+        style={{ ...styles?.label, ...field.styles?.label }}
+      >
+        {field.label}
+      </h3>
+    );
   if (type === "tip")
-    return <span className="auto-muted">{field.tip ?? field.label}</span>;
-  if (type === "append") return field.tip ?? null;
+    return (
+      <span
+        id={id}
+        className={["auto-muted", field.classNames?.control, classNames?.control].filter(Boolean).join(" ")}
+        style={{ ...styles?.control, ...field.styles?.control }}
+      >
+        {field.content ?? field.tip ?? field.label}
+      </span>
+    );
+  if (type === "append")
+    return (
+      <div
+        id={id}
+        className={[field.classNames?.control, classNames?.control].filter(Boolean).join(" ") || undefined}
+        style={{ ...styles?.control, ...field.styles?.control }}
+      >
+        {field.content ?? field.tip}
+      </div>
+    );
+  if (type === "divider")
+    return (
+      <hr
+        id={id}
+        className={["auto-divider", field.classNames?.root, classNames?.root].filter(Boolean).join(" ")}
+        style={{ ...styles?.root, ...field.styles?.root }}
+      />
+    );
   if (type === "button")
     return (
       <button
+        id={id}
         type="button"
         disabled={disabled}
+        className={[classNames?.input, field.classNames?.input].filter(Boolean).join(" ") || undefined}
+        style={hasInputStyle ? inputStyle : undefined}
         onClick={() => field.onAction?.(values)}
       >
         {field.label}
@@ -68,8 +149,10 @@ export function FormField<T extends object>({
   const common = {
     id,
     disabled,
+    className: inputClassName,
+    style: hasInputStyle ? inputStyle : undefined,
     "aria-invalid": !!context.error,
-    "aria-describedby": context.error ? `${id}-error` : undefined,
+    "aria-describedby": enrichedContext.describedBy,
   };
   if (type === "switch")
     return (
@@ -95,7 +178,11 @@ export function FormField<T extends object>({
         onChange={(e) => onChange(e.target.value)}
       />
     );
-  if (type === "select-v2")
+  if (
+    type === "select-v2" ||
+    type === "virtual-select" ||
+    (type === "select" && field.virtual)
+  )
     return (
       <VirtualSelect
         {...common}
@@ -158,6 +245,8 @@ export function FormField<T extends object>({
           <label key={i}>
             <input
               type={type}
+              aria-describedby={enrichedContext.describedBy}
+              aria-invalid={!!context.error}
               disabled={disabled || o.disabled}
               name={id}
               checked={

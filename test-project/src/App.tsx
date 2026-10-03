@@ -7,12 +7,21 @@ import {
   AutoDialogProvider,
   AutoDialog,
   AutoMenu,
+  AutoTabs,
+  AutoNavigationProvider,
+  useAutoNavigation,
+  useAutoRoute,
+  createHashHistory,
 } from "@zeroman.yang/react-auto-components";
 import { TableDemo } from "./examples/TableDemo";
 import { FormDemo } from "./examples/FormDemo";
-import { SearchDemo } from "./examples/SearchDemo";
+import { examplesFor } from "./demoNavigation";
+import { SearchDemo, type SearchExampleKind } from "./examples/SearchDemo";
 import { DialogDemo } from "./examples/DialogDemo";
 import { TabsDemo } from "./examples/TabsDemo";
+import { MenuDemo } from "./examples/MenuDemo";
+import { ServerDrivenDemo } from "./examples/ServerDrivenDemo";
+import { NavigationDemo } from "./examples/NavigationDemo";
 const ChatDemo = lazy(() =>
   import("./examples/ChatDemo").then((module) => ({
     default: module.ChatDemo,
@@ -100,27 +109,55 @@ function SettingsIcon() {
   );
 }
 
+const treeIcon = (
+  <NavIcon>
+    <circle cx="12" cy="5" r="2.5" />
+    <line x1="12" y1="7.5" x2="12" y2="13" />
+    <circle cx="6" cy="18" r="2.5" />
+    <circle cx="18" cy="18" r="2.5" />
+    <path d="M6 15.5V13h12v2.5" />
+  </NavIcon>
+);
+
 const pages: ReadonlyArray<readonly [string, ReactNode, string, string]> = [
   ["table", tableIcon, "AutoTable", "Smart table"],
   ["form", formIcon, "AutoForm", "Dynamic form"],
   ["search", searchIcon, "AutoSearch", "Search panel"],
   ["dialog", dialogIcon, "AutoDialog", "Dialog"],
   ["tabs", tabsIcon, "AutoTabs", "Tab navigation"],
+  ["menu", tabsIcon, "AutoMenu", "mock.menuPage"],
   ["chat", chatIcon, "AutoChat", "chat.title"],
+  ["tree-demo", treeIcon, "AutoNav", "Component Tree Navigation"],
 ];
-export function App() {
+
+function AppContent() {
   const tr = useDemoText();
   const { translate } = useDemoLanguage();
   const narrowMenu = useMediaQuery("(max-width: 700px)");
-  const [page, setPage] = useState<string>("table");
+  const nav = useAutoNavigation();
+  const [role, setRole] = useState<string>("admin");
   const [settings, setSettings] = useState(defaultStudioSettings);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [codeOpen, setCodeOpen] = useState(false);
-  const [tableMode, setTableMode] = useState(() =>
-    new URLSearchParams(window.location.search).get("demo") === "auto-height"
-      ? "auto-height"
-      : "local",
-  );
+
+  // Top-level route declaration for known pages
+  useAutoRoute({
+    children: [
+      ...pages.map(([id]) => ({
+        id,
+        defaultChild: examplesFor(id)[0][0],
+      })),
+      { id: "tree-demo", defaultChild: "details" },
+    ],
+    defaultChild: "table",
+  });
+
+  const page = nav.path[0] || "table";
+  const example = nav.path[1] || examplesFor(page)?.[0]?.[0] || "local";
+  const serverExample = example === "server";
+
+  const exampleLabel = (id: string, label: string) =>
+    id === "remote" ? `${tr(label)} (Mock)` : tr(label);
   const fillHeight = true;
 
   useEffect(() => {
@@ -132,6 +169,7 @@ export function App() {
       config={{
         namespace: "auto-studio",
         t: translate,
+        canAccess: (access) => (access.roles ? access.roles.includes(role) : true),
         size: settings.size,
         density: settings.density,
         table: {
@@ -176,12 +214,30 @@ export function App() {
                 </div>
               }
               items={[
-                ...pages.map(([id, icon, name, label]) => ({
-                  id,
-                  label: name,
-                  icon,
-                  description: tr(label),
-                })),
+                ...pages.map(([id, icon, name, label]) => {
+                  if (id === "tree-demo") {
+                    return {
+                      id,
+                      label: name,
+                      icon,
+                      description: tr(label),
+                      target: "tree-demo:details",
+                    };
+                  }
+                  return {
+                    id,
+                    label: name,
+                    icon,
+                    description: tr(label),
+                    children: examplesFor(id).map(
+                      ([exampleId, exampleTitle]) => ({
+                        id: `${id}/${exampleId}`,
+                        label: exampleLabel(exampleId, exampleTitle),
+                        target: `${id}:${exampleId}`,
+                      }),
+                    ),
+                  };
+                }),
                 {
                   id: "settings",
                   label: tr("Global settings"),
@@ -189,10 +245,8 @@ export function App() {
                   description: tr("Layout & appearance"),
                 },
               ]}
-              value={page}
               onChange={(id) => {
                 if (id === "settings") setSettingsOpen(true);
-                else setPage(id);
               }}
             />
           </aside>
@@ -201,7 +255,7 @@ export function App() {
               <span>
                 {tr("Component Lab")}{" "}
                 <span className="breadcrumb">
-                  / {pages.find((p) => p[0] === page)?.[2]}
+                  / {pages.find((p) => p[0] === page)?.[2] ?? page}
                 </span>
               </span>
               <div className="auto-actions">
@@ -249,9 +303,12 @@ export function App() {
                 <span className="avatar">AS</span>
               </div>
             </header>
-            <main data-page={page}>
+            <main
+              data-page={page}
+              data-example={serverExample ? "server" : "component"}
+            >
               <div className="page-heading">
-                <h1>{tr(pages.find((p) => p[0] === page)?.[3] ?? "")}</h1>
+                <h1>{tr(pages.find((p) => p[0] === page)?.[3] ?? page)}</h1>
                 <button
                   type="button"
                   className="code-button"
@@ -261,23 +318,131 @@ export function App() {
                   {tr("View code")}
                 </button>
               </div>
+
+              {/* Component Navigation Showcase toolbar */}
+              <div
+                className="demo-navigation-bar"
+                data-testid="demo-navigation-bar"
+              >
+                <span style={{ fontWeight: 600 }}>{tr("Navigation Tree:")}</span>
+                <span className="version-pill" data-testid="nav-path-badge">
+                  path: <strong>{nav.path.join(":") || "/"}</strong>
+                </span>
+                {Object.keys(nav.params).length > 0 && (
+                  <span className="version-pill" data-testid="nav-params-badge">
+                    params: <strong>{JSON.stringify(nav.params)}</strong>
+                  </span>
+                )}
+                <button
+                  type="button"
+                  className="code-button"
+                  style={{ height: "22px", padding: "0 6px", fontSize: "11px" }}
+                  data-testid="nav-goto-large"
+                  onClick={() => nav.goto("table:large")}
+                >
+                  {tr("Global:")} table:large
+                </button>
+                <button
+                  type="button"
+                  className="code-button"
+                  style={{ height: "22px", padding: "0 6px", fontSize: "11px" }}
+                  data-testid="nav-goto-chat-perf"
+                  onClick={() => nav.goto("chat:performance")}
+                >
+                  {tr("Global:")} chat:performance
+                </button>
+                <button
+                  type="button"
+                  className="code-button"
+                  style={{ height: "22px", padding: "0 6px", fontSize: "11px" }}
+                  data-testid="nav-goto-deep-search"
+                  onClick={() =>
+                    nav.goto("search:instant", {
+                      params: { query: "audit", status: "active" },
+                    })
+                  }
+                >
+                  {tr("Deep:")} search:instant?query=audit
+                </button>
+                <button
+                  type="button"
+                  className="code-button"
+                  style={{ height: "22px", padding: "0 6px", fontSize: "11px" }}
+                  data-testid="nav-relative-server"
+                  onClick={() => nav.goto("./server", { basePath: [page] })}
+                >
+                  {tr("Relative:")} ./server
+                </button>
+                <button
+                  type="button"
+                  className="code-button"
+                  style={{ height: "22px", padding: "0 6px", fontSize: "11px" }}
+                  data-testid="nav-goto-tree-demo"
+                  onClick={() =>
+                    nav.goto("tree-demo:details", {
+                      params: { projectId: "42", tab: "specs" },
+                    })
+                  }
+                >
+                  {tr("Tree Demo Node")}
+                </button>
+                <button
+                  type="button"
+                  className="code-button"
+                  style={{ height: "22px", padding: "0 6px", fontSize: "11px" }}
+                  data-testid="nav-toggle-role"
+                  onClick={() =>
+                    setRole((r) => (r === "admin" ? "guest" : "admin"))
+                  }
+                >
+                  {tr("Role")}: <strong>{role}</strong>
+                </button>
+              </div>
+
+              {page !== "tree-demo" && (
+                <div className="demo-navigation">
+                  <AutoTabs
+                    route={{ name: page, defaultChild: examplesFor(page)[0][0] }}
+                    keepMounted={false}
+                    items={examplesFor(page).map(([id, label]) => ({
+                      id,
+                      label: exampleLabel(id, label),
+                      tip:
+                        page === "table" && id === "remote"
+                          ? tr(
+                              "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.",
+                            )
+                          : undefined,
+                    }))}
+                  />
+                </div>
+              )}
               <div className="demo-viewport">
-                {page === "table" ? (
-                  <TableDemo mode={tableMode} onModeChange={setTableMode} />
+                {page === "tree-demo" ? (
+                  <NavigationDemo
+                    role={role}
+                    onToggleRole={() => setRole((r) => (r === "admin" ? "guest" : "admin"))}
+                  />
+                ) : serverExample ? (
+                  <ServerDrivenDemo component={page} />
+                ) : page === "menu" ? (
+                  <MenuDemo />
+                ) : page === "table" ? (
+                  <TableDemo mode={example} />
                 ) : page === "form" ? (
                   <FormDemo />
                 ) : page === "search" ? (
-                  <SearchDemo />
+                  <SearchDemo example={example as SearchExampleKind} />
                 ) : page === "dialog" ? (
                   <DialogDemo />
                 ) : page === "chat" ? (
                   <Suspense
                     fallback={<div role="status">{tr("chat.loading")}</div>}
                   >
-                    <ChatDemo />
+                    <ChatDemo mode={example} />
                   </Suspense>
                 ) : (
-                  <TabsDemo />
+                  <TabsDemo example={example} />
                 )}
               </div>
               <footer className="page-footer">
@@ -301,11 +466,30 @@ export function App() {
         />
         <CodeViewer
           open={codeOpen}
+          serverDriven={serverExample}
           onOpenChange={setCodeOpen}
           page={page}
           title={tr(pages.find((p) => p[0] === page)?.[3] ?? "")}
         />
       </AutoDialogProvider>
     </AutoConfigProvider>
+  );
+}
+
+export function App() {
+  const initialExample =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("demo") === "auto-height"
+      ? "auto-height"
+      : "local";
+  const initialPath = ["table", initialExample];
+
+  return (
+    <AutoNavigationProvider
+      initialPath={initialPath}
+      history={createHashHistory()}
+    >
+      <AppContent />
+    </AutoNavigationProvider>
   );
 }

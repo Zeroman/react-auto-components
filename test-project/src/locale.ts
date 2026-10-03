@@ -2,6 +2,10 @@ import messages from "./messages";
 import chatLabMessages from "./chatLabMessages";
 import chatMessages from "./chatMessages";
 import chatRendererMessages from "./chatRendererMessages";
+import mockMessages from "./mockMessages";
+import serverFormMessages from "./examples/mock/ServerFormMessages";
+import serverNavigationMessages from "./examples/mock/ServerNavigationMessages";
+import serverDataMessages from "./examples/mock/ServerDataMessages";
 
 export const languages = {
   en: "English",
@@ -45,6 +49,15 @@ export function translateMessage(
   key: string,
   fallback = key,
 ): string {
+  for (const catalog of [
+    mockMessages,
+    serverFormMessages,
+    serverNavigationMessages,
+    serverDataMessages,
+  ]) {
+    const text = catalog[locale]?.[key] ?? catalog.en?.[key];
+    if (text) return text;
+  }
   const labText = chatLabMessages[locale]?.[key] ?? chatLabMessages.en?.[key];
   if (labText) return labText;
   const rendererText =

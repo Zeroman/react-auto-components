@@ -1,18 +1,12 @@
 import { useMemo, useState } from "react";
-import { AutoTable, AutoTabs } from "@zeroman.yang/react-auto-components";
+import { AutoTable } from "@zeroman.yang/react-auto-components";
 import { exportXlsx } from "@zeroman.yang/react-auto-components/xlsx";
 import { useDemoText } from "../i18n";
 import { useDemoData, makeProjects, createSource, type Project } from "../data";
 import { AutoHeightDemo } from "./AutoHeightDemo";
 import { AdvancedTableDemo } from "./AdvancedTableDemo";
 
-export function TableDemo({
-  mode,
-  onModeChange,
-}: {
-  mode: string;
-  onModeChange: (mode: string) => void;
-}) {
+export function TableDemo({ mode }: { mode: string }) {
   const tr = useDemoText();
   const { columns, fields, searchFields } = useDemoData();
   const [rows, setRows] = useState(() => makeProjects(48));
@@ -130,22 +124,7 @@ export function TableDemo({
           </p>
         </div>
       </div>
-      <AutoTabs
-        value={[mode]}
-        onChange={(path) => onModeChange(path[0])}
-        keepMounted={false}
-        items={[
-          ["local", tr("Local Data")],
-          ["remote", tr("Server-side")],
-          ["large", tr("10,000 rows of data")],
-          ["advanced", tr("Tree & Expansion")],
-          ["auto-height", tr("Remaining Height")],
-        ].map(([id, label]) => ({
-          id,
-          label,
-          content: id === mode ? content : null,
-        }))}
-      />
+      {content}
       {mode !== "auto-height" && (
         <div className="hint">
           <span>✦</span>

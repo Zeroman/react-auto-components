@@ -1,4 +1,5 @@
 import { RacError, devWarn, valueKind } from "./errors";
+import type { SearchConfig, MatchOperator } from "./types";
 
 /**
  * Filter tree shared by search panels and tables.
@@ -25,7 +26,8 @@ export const emptyQuery: QueryNode = {
  */
 export interface SearchField {
   name?: string;
-  match?: "eq" | "in" | "contains" | "between" | "isNull";
+  search?: SearchConfig;
+  match?: MatchOperator;
   ignoreCase?: boolean;
   includeNull?: boolean;
   searchFields?: readonly string[];
@@ -38,15 +40,20 @@ export function buildQuery(
   for (const f of fields) {
     if (!f.name) continue;
     const v = (values as Record<string, unknown>)[f.name];
+    const s = f.search;
+    const match = s?.match ?? f.match;
+    const ignoreCase = s?.ignoreCase ?? f.ignoreCase;
+    const includeNull = s?.includeNull ?? f.includeNull;
+    const searchFields = s?.searchFields ?? f.searchFields;
     if (
-      f.match !== "isNull" &&
+      match !== "isNull" &&
       (v === undefined ||
         v === null ||
         v === "" ||
         (Array.isArray(v) && !v.length))
     )
       continue;
-    const operator = f.match ?? (Array.isArray(v) ? "in" : "eq");
+    const operator = match ?? (Array.isArray(v) ? "in" : "eq");
     if (operator === "between" && !(Array.isArray(v) && v.length === 2)) {
       devWarn(
         "AutoSearch",
@@ -55,16 +62,16 @@ export function buildQuery(
         "Store [from, to] on this field. A scalar is ignored by matchesQuery and still serializes badly.",
       );
     }
-    const conditions: QueryNode[] = (f.searchFields ?? [f.name]).map(
+    const conditions: QueryNode[] = (searchFields ?? [f.name]).map(
       (field) => {
         const node: QueryNode = {
           kind: "condition",
           field,
           operator,
           value: v,
-          ignoreCase: f.ignoreCase,
+          ignoreCase,
         };
-        return f.includeNull
+        return includeNull
           ? {
               kind: "group",
               operator: "or",

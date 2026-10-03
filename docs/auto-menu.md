@@ -4,6 +4,11 @@
 
 Sidebar. Items can nest, collapse to an icon rail, and carry an icon, description, and badge. It is navigation, not a tab panel. Use [AutoTabs](auto-tabs.md) for panels.
 
+
+Menu items accept `tip: ReactNode` on hover or focus. Nested items share the menu tip component. Collapsed entries fall back to their label when no tip is supplied.
+
+Resolution order is the item/field/column parameter, the owning component parameter, provider component defaults (`config.tabs`, `config.form`, `config.table`, or `config.menu`), shared `AutoConfigProvider.config.tipComponent`, then built-in `DefaultTip`. Custom components receive `{ content, children, placement }` (`AutoTipProps`) and must preserve the trigger events, ref and accessibility props. `AutoTip` and `DefaultTip` are public exports; the default uses a portal, supports Escape, and keeps the trigger in place.
+
 ## Usage
 
 ```tsx
@@ -28,7 +33,8 @@ import "@zeroman.yang/react-auto-components/style.css";
 
 | Prop | Behavior |
 | --- | --- |
-| `items` | `id` must be unique in the tree. `hidden` and a failed `canAccess` drop the item. A `children` list that points at an ancestor is dropped so a bad schema cannot recurse. |
+| `items` | `id` must be unique in the tree. `hidden` and a failed `canAccess` drop the item. A `children` list that points at an ancestor is dropped so a bad schema cannot recurse. Each item may define `content` to mount in `.auto-menu-content`, or `target` for shortcut navigation. |
+| `route` | Optional `AutoRouteConfig` (`{ name?: string, defaultChild?: string }`). Participates directly in [AutoNavigation](auto-navigation.md) component tree; selecting a leaf automatically triggers `goto`. |
 | `value` | Controlled selected leaf id. Omit it to keep selection internally. |
 | `defaultValue` | Uncontrolled initial leaf. If it does not match a leaf, the first enabled leaf is selected. |
 | `onChange(id, item, path)` | **Not caught.** `path` is the id chain from the root to the leaf. A parent with children toggles expansion instead of selecting. |
@@ -40,8 +46,8 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `header`, `footer` | Slots above and below the list. |
 | `size`, `density` | Override the provider. The menu reads `config.menu`, then the global size and density. |
 
-Keyboard movement stays inside the menu. Selecting a leaf does not navigate by itself; `onChange` is the only signal.
+Keyboard movement stays inside the menu. Selecting a leaf without `route` does not navigate by itself; `onChange` is the signal. When `route` is provided or items have `target`, selecting triggers `goto` in the navigation tree. If any item defines `content`, the layout renders the menu alongside a `.auto-menu-content` area; otherwise a clean standalone `<nav>` is rendered.
 
 ## Preconditions
 
-Import `style.css` once (`RAC-CSS-MISSING` in development). `AutoConfigProvider` is optional. Permissions use `config.canAccess`.
+Import `style.css` once (`RAC-CSS-MISSING` in development). `AutoConfigProvider` is optional. Permissions use `config.canAccess`. See [AutoNavigation](auto-navigation.md) for tree navigation setup.

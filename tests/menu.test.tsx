@@ -137,10 +137,8 @@ test("collapsible menus toggle into an icon rail with notifications", async () =
   await u.click(toggle);
   expect(collapsedChange).toHaveBeenCalledWith(true);
   expect(screen.getByRole("button", { name: "Expand menu" })).toBeVisible();
-  expect(screen.getByRole("button", { name: "Tabs" })).toHaveAttribute(
-    "title",
-    "Tabs",
-  );
+  await u.hover(screen.getByRole("button", { name: "Tabs" }));
+  expect(await screen.findByRole("tooltip")).toHaveTextContent("Tabs");
 });
 
 test("provider menu settings drive size, density and translations", () => {

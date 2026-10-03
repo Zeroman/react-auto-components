@@ -5,7 +5,7 @@ import {
   type ReactNode,
 } from "react";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
-import { equal } from "../../core/config";
+import { equal, resolveHidden } from "../../core/config";
 import type { Access, StorageAdapter } from "../../core/types";
 import type { AutoTab, AutoTabsProps } from "./index";
 
@@ -215,11 +215,7 @@ export function useAutoTabsWorkspace(
   function pageFor(tab: AutoWorkspaceTab) {
     if (!Object.hasOwn(options.pages, tab.page)) return;
     const page = options.pages[tab.page];
-    if (
-      !page ||
-      (typeof page.hidden === "function" ? page.hidden() : page.hidden) ||
-      !services.canAccess(page)
-    )
+    if (!page || resolveHidden(page.hidden) || !services.canAccess(page))
       return;
     if (page.validate && !page.validate(tab)) return;
     return page;

@@ -4,6 +4,12 @@
 
 ## 未リリース
 
+- `AutoNavigation` を追加。マウントされたコンポーネントがパスツリーに登録されます。`goto` は相対パス、アクセス確認、中止シグナルに対応します。確定した位置だけが hash、browser、memory の history に同期されます。`AutoMenu` と `AutoTabs` は `route` を受け取り、現在の子に従います。
+- `AutoTip` と `DefaultTip` を追加。フィールド、列、メニュー、タブのヒントはフローティング表示です。表示型の `tip` と `append` はインラインのままです。項目自身のコンポーネント、所有コンポーネント、`config.form` / `config.table` / `config.tabs` / `config.menu`、最後に `config.tipComponent` の順で決まります。
+- `AutoSearch` の `mode` の既定は `"instant"` です。非表示のフィールドと `canAccess` を通らないフィールドは値オブジェクトに残り、クエリからは除かれます。検索オプションは `search` に書きます。従来のトップレベル `match` も使えます。
+- `AutoTable` の `toolbarActions` で更新、設定、エクスポート、JSON の各ボタンを表示または非表示にします。`handle.refresh()` と `handle.export()` はそのまま使えます。並べ替えが 2 件以上のときだけ並べ替えタグを出します。
+- フォームは `classNames` と `styles` のスロット、`divider` の表示項目、`virtual-select` に対応します。
+
 ## 0.1.3 - 2026-10-02
 
 - 組み込み UI 文言の既定は英語になり、その文字列が `config.t` のキーです。他の言語は `t` を渡します。以前の中国語キー（`提交` や `刷新` など）は既定ではありません。

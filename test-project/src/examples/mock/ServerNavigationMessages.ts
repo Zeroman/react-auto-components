@@ -1,0 +1,96 @@
+const messages: Record<string, Record<string, string>> = {
+  en: {
+    "mock.tabs.title": "Server-configured tabs",
+    "mock.tabs.description":
+      "JSON controls tab visibility, order, badges and disabled state. Restricted access hides Billing and moves Activity first. Each selected tab requests its own content; Activity fails once so you can retry.",
+    "mock.tabs.overview": "Overview",
+    "mock.tabs.billing": "Billing",
+    "mock.tabs.activity": "Activity",
+    "mock.tabs.archive": "Archive",
+    "mock.tabs.overviewTitle": "Project overview",
+    "mock.tabs.overviewDetail":
+      "The content endpoint returned {0} active projects.",
+    "mock.tabs.billingTitle": "Billing summary",
+    "mock.tabs.billingDetail":
+      "The content endpoint returned {0} pending invoices.",
+    "mock.tabs.activityTitle": "Recent activity",
+    "mock.tabs.activityDetail":
+      "The content endpoint returned {0} recent events.",
+    "mock.tabs.contentError":
+      "The activity endpoint failed. Retry to load its content.",
+    "mock.tabs.loadingContent": "Loading selected tab content…",
+    "mock.tabs.contentPayload": "Tab content response",
+    "mock.tabs.empty": "The server returned no tabs.",
+    "mock.menu.title": "Server-configured navigation",
+    "mock.menu.description":
+      "Nested JSON and granted permissions control menu entries and badges. Restricted access removes Administration and its pages. Selecting a leaf requests content; Reports fails once so you can retry.",
+    "mock.menu.navigation": "Workspace navigation",
+    "mock.menu.workspace": "Workspace",
+    "mock.menu.inbox": "Inbox",
+    "mock.menu.projects": "Projects",
+    "mock.menu.administration": "Administration",
+    "mock.menu.members": "Members",
+    "mock.menu.reports": "Reports",
+    "mock.menu.maintenance": "Maintenance",
+    "mock.menu.inboxTitle": "Inbox messages",
+    "mock.menu.inboxDetail":
+      "The content endpoint returned {0} unread messages.",
+    "mock.menu.projectsTitle": "Available projects",
+    "mock.menu.projectsDetail":
+      "The content endpoint returned {0} active projects.",
+    "mock.menu.membersTitle": "Team members",
+    "mock.menu.membersDetail":
+      "The content endpoint returned {0} team members.",
+    "mock.menu.reportsTitle": "Monthly reports",
+    "mock.menu.reportsDetail":
+      "The content endpoint returned {0} published reports.",
+    "mock.menu.contentError":
+      "The reports endpoint failed. Retry to load its content.",
+    "mock.menu.loadingContent": "Loading selected page…",
+    "mock.menu.contentPayload": "Page content response",
+    "mock.menu.empty": "The server returned no navigation entries.",
+  },
+  "zh-CN": {
+    "mock.tabs.title": "服务端配置标签页",
+    "mock.tabs.description":
+      "JSON 决定标签页的显示、顺序、角标和禁用状态。受限权限隐藏账单，并将动态排在首位。选中标签后异步请求内容；动态接口首次失败，可点击重试。",
+    "mock.tabs.overview": "概览",
+    "mock.tabs.billing": "账单",
+    "mock.tabs.activity": "动态",
+    "mock.tabs.archive": "归档",
+    "mock.tabs.overviewTitle": "项目概览",
+    "mock.tabs.overviewDetail": "内容接口返回了 {0} 个活跃项目。",
+    "mock.tabs.billingTitle": "账单汇总",
+    "mock.tabs.billingDetail": "内容接口返回了 {0} 张待处理发票。",
+    "mock.tabs.activityTitle": "近期动态",
+    "mock.tabs.activityDetail": "内容接口返回了 {0} 条近期动态。",
+    "mock.tabs.contentError": "动态接口请求失败，请重试以加载内容。",
+    "mock.tabs.loadingContent": "正在加载所选标签页内容…",
+    "mock.tabs.contentPayload": "标签页内容响应",
+    "mock.tabs.empty": "服务端未返回任何标签页。",
+    "mock.menu.title": "服务端配置导航菜单",
+    "mock.menu.description":
+      "嵌套 JSON 和授权列表决定菜单及角标。受限权限移除管理菜单及其页面。选择末级菜单会请求内容；报表接口首次失败，可点击重试。",
+    "mock.menu.navigation": "工作区导航",
+    "mock.menu.workspace": "工作区",
+    "mock.menu.inbox": "收件箱",
+    "mock.menu.projects": "项目",
+    "mock.menu.administration": "管理",
+    "mock.menu.members": "成员",
+    "mock.menu.reports": "报表",
+    "mock.menu.maintenance": "维护",
+    "mock.menu.inboxTitle": "收件箱消息",
+    "mock.menu.inboxDetail": "内容接口返回了 {0} 条未读消息。",
+    "mock.menu.projectsTitle": "可用项目",
+    "mock.menu.projectsDetail": "内容接口返回了 {0} 个活跃项目。",
+    "mock.menu.membersTitle": "团队成员",
+    "mock.menu.membersDetail": "内容接口返回了 {0} 位团队成员。",
+    "mock.menu.reportsTitle": "月度报表",
+    "mock.menu.reportsDetail": "内容接口返回了 {0} 份已发布报表。",
+    "mock.menu.contentError": "报表接口请求失败，请重试以加载内容。",
+    "mock.menu.loadingContent": "正在加载所选页面…",
+    "mock.menu.contentPayload": "页面内容响应",
+    "mock.menu.empty": "服务端未返回任何导航条目。",
+  },
+};
+export default messages;

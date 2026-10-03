@@ -9,6 +9,19 @@ export function resolve<V, T>(
     ? (value as (v: T) => V)(values)
     : (value ?? fallback);
 }
+export function resolveHidden(hidden?: boolean | (() => boolean)): boolean;
+export function resolveHidden<T>(
+  hidden?: boolean | ((context: T) => boolean),
+  context?: T,
+): boolean;
+export function resolveHidden<T>(
+  hidden?: boolean | ((context: T) => boolean),
+  context?: T,
+): boolean {
+  return typeof hidden === "function"
+    ? (hidden as (c?: T) => boolean)(context)
+    : !!hidden;
+}
 export function defaults<T extends object>(
   fields: readonly { name?: string; defaultValue?: unknown }[],
   initial: Partial<T> = {},

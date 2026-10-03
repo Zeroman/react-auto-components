@@ -46,6 +46,7 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `exportXlsx` | 只有 xlsx 需要。缺少介面卡拋 `RAC-TABLE-XLSX`，狀態行顯示翻譯後的介面卡文案。CSV 和 JSON 是內建的。 |
 | `versions` | 提高 layout、sort、filter 或 export 的版本號，丟掉對應的已存方案。 |
 | `summaryValues` | 篩選結果的服務端合計，按列鍵索引。 |
+| `toolbarActions` | 重新整理、設定、匯出和 JSON。預設都顯示。`false` 關掉這四個按鈕。物件只關掉設為 `false` 的按鈕。`handle.refresh()` 和 `handle.export()` 仍然可用。JSON 按鈕文案走翻譯，鍵是 `"JSON"`。 |
 
 ## 匯出與設定
 

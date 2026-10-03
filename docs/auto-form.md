@@ -4,9 +4,22 @@
 
 Schema form. Field widgets, validation, and submit live here. `AutoSearch` and `AutoDialog` render an `AutoForm` internally, so the callback rules below apply to them too.
 
-`Field<T>` is a discriminated union on `type`. `select` without `options`, a scalar on `daterange`, and `match: "between"` on a scalar model field are TypeScript errors. `AnyField` and `unsafeField()` skip those checks; development mode still warns. Codes are in [errors.md](errors.md).
+`Field<T>` (aliased as `FormItem<T>`) is a discriminated union on `type`, composed of interactive `FormField<T>` and structural `DisplayItem<T>`:
+- **Form fields**: Value-bound controls (e.g. `input`, `number`, `integer`, `select`, `virtual-select`, `date`, `daterange`, `switch`, `checkbox`, `radio`, `file`). `select` without `options`, a scalar on `daterange`, and `match: "between"` on a scalar model field are TypeScript errors. `virtual-select` (or `type: "select", virtual: true`) enables virtualized scrolling for large option lists (modernized replacement for `select-v2`).
+- **Display items**: Non-input presentational items (`title`, `tip`, `button`, `append`, `divider`). They are skipped during validation and do not contribute to form values. `tip` and `append` accept `content?: ReactNode`.
 
 `component` is a key in `AutoConfigProvider` `config.fields`, used when `render` is absent. The field wrapper has `data-testid="rac-field-{name}"`. Submit is `rac-submit` and reset is `rac-reset`. See [llms.txt](../llms.txt).
+
+Named fields show `tip` when the field is hovered or a control inside it is focused. Controls reference persistent help text through `aria-describedby`, together with any validation error. Custom `render`/registered fields should apply `context.describedBy` to each control's `aria-describedby`. Field `tipComponent` overrides the form component. Display fields `type: "tip"` and `"append"` retain their inline content.
+
+Resolution order is the item/field/column parameter, the owning component parameter, provider component defaults (`config.tabs`, `config.form`, `config.table`, or `config.menu`), shared `AutoConfigProvider.config.tipComponent`, then built-in `DefaultTip`. Custom components receive `{ content, children, placement }` (`AutoTipProps`) and must preserve the trigger events, ref and accessibility props. `AutoTip` and `DefaultTip` are public exports; the default uses a portal, supports Escape, and keeps the trigger in place.
+
+### Styling Slots
+
+Both `AutoForm` and individual fields support slot-level `classNames` and `styles`:
+- **`AutoForm`**: `classNames?: AutoFormClassNames` (`root`, `field`, `label`, `input`, `tip`, `error`, `actions`, `submit`, `reset`, `cancel`) and `styles?: AutoFormStyles`.
+- **Field / Item**: `classNames?: FieldClassNames` (`root`, `label`, `input`, `tip`, `error`) and `styles?: FieldStyles`.
+
 
 ## Usage
 

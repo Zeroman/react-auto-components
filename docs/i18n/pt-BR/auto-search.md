@@ -11,7 +11,7 @@ Formulário de busca. Desenha um `AutoForm` e emite um `QueryNode` e os valores.
 | Prop | Comportamento |
 | --- | --- |
 | `onSearch(query, values)` | Obrigatório. **Lançar ou rejeitar: o formulário interno captura, os valores ficam e `error.message` aparece. Sem reset.** |
-| `mode` | Padrão `"manual"` (botão). `"instant"` busca também a cada mudança. |
+| `mode` | Padrão `"instant"`: busca ao alterar, enviar ou redefinir. `"manual"` busca apenas ao enviar ou redefinir. |
 | `columns` | Padrão `3`. |
 | `more: true` | Esconde o campo até abrir "Mais". Campos ocultos não entram na consulta. |
 

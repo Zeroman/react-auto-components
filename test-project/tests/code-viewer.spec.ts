@@ -1,3 +1,4 @@
+import { openComponent } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 
 test.use({ permissions: ["clipboard-read", "clipboard-write"] });
@@ -35,7 +36,7 @@ test("example source dialog shows source with file tabs", async ({ page }) => {
 });
 
 test("example source follows the active demo page", async ({ page }) => {
-  await page.getByRole("button", { name: /AutoForm/ }).click();
+  await openComponent(page, "AutoForm");
   await page.getByRole("button", { name: "View code" }).click();
   const viewer = page.getByRole("dialog").getByTestId("code-viewer");
   await expect(viewer.locator("pre code")).toContainText(
@@ -44,6 +45,25 @@ test("example source follows the active demo page", async ({ page }) => {
   await expect(
     viewer.getByRole("button", { name: "TableDemo.tsx" }),
   ).toHaveCount(0);
+});
+
+test("server-driven mode opens its integration source and includes shared schema mapping", async ({
+  page,
+}) => {
+  await page
+    .getByRole("tab", { name: "Server-driven Mock", exact: true })
+    .click();
+  await page.getByRole("button", { name: "View code" }).click();
+  const viewer = page.getByRole("dialog").getByTestId("code-viewer");
+  await expect(viewer.locator("pre code")).toContainText(
+    "export function ServerTableDemo",
+  );
+  await viewer
+    .getByRole("button", { name: "mock/ServerSearchDemo.tsx", exact: true })
+    .click();
+  await expect(viewer.locator("pre code")).toContainText(
+    "export function mapSearchFields",
+  );
 });
 
 test("source dialog stays within a narrow viewport and scrolls code internally", async ({

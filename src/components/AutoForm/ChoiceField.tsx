@@ -1,5 +1,5 @@
 import { useAutoText } from "../../core/i18n";
-import { useRef, useState } from "react";
+import { useRef, useState, type AriaAttributes } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import type { Option } from "../../core/types";
 export function VirtualSelect({
@@ -9,6 +9,8 @@ export function VirtualSelect({
   onChange,
   disabled,
   multiple,
+  "aria-describedby": describedBy,
+  "aria-invalid": invalid,
 }: {
   id: string;
   value: unknown;
@@ -16,6 +18,8 @@ export function VirtualSelect({
   onChange: (value: unknown) => void;
   disabled: boolean;
   multiple?: boolean;
+  "aria-describedby"?: string;
+  "aria-invalid"?: AriaAttributes["aria-invalid"];
 }) {
   const tr = useAutoText();
   const [open, setOpen] = useState(false),
@@ -46,6 +50,8 @@ export function VirtualSelect({
         disabled={disabled}
         aria-haspopup="listbox"
         aria-expanded={open}
+        aria-describedby={describedBy}
+        aria-invalid={invalid}
         onClick={() => setOpen(!open)}
       >
         {options
@@ -58,6 +64,8 @@ export function VirtualSelect({
         <div className="auto-select-menu">
           <input
             aria-label={tr("Search options")}
+            aria-describedby={describedBy}
+            aria-invalid={invalid}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -84,6 +92,7 @@ export function VirtualSelect({
                     type="button"
                     role="option"
                     aria-selected={selected(o)}
+                    aria-describedby={describedBy}
                     disabled={o.disabled}
                     key={item.key}
                     style={{
@@ -124,12 +133,16 @@ export function Cascader({
   options,
   onChange,
   disabled,
+  "aria-describedby": describedBy,
+  "aria-invalid": invalid,
 }: {
   id: string;
   value: unknown;
   options: readonly Option[];
   onChange: (value: unknown) => void;
   disabled: boolean;
+  "aria-describedby"?: string;
+  "aria-invalid"?: AriaAttributes["aria-invalid"];
 }) {
   const tr = useAutoText();
   const path = Array.isArray(value) ? value : [];
@@ -148,6 +161,8 @@ export function Cascader({
           key={i}
           id={i === 0 ? id : undefined}
           aria-label={tr("Cascader level {0}", [i + 1])}
+          aria-describedby={describedBy}
+          aria-invalid={invalid}
           disabled={disabled}
           value={level.findIndex((o) => Object.is(o.value, path[i]))}
           onChange={(e) =>

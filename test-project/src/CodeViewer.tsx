@@ -21,6 +21,17 @@ const rawSources = import.meta.glob<string>(
     "./examples/TabsDemo.tsx",
     "./examples/DynamicTabsDemo.tsx",
     "./examples/TabsStateDemo.tsx",
+    "./examples/MenuDemo.tsx",
+    "./examples/NavigationDemo.tsx",
+    "./examples/ServerDrivenDemo.tsx",
+    "./examples/mock/MockDemo.tsx",
+    "./examples/mock/ServerTableDemo.tsx",
+    "./examples/mock/ServerFormDemo.tsx",
+    "./examples/mock/ServerSearchDemo.tsx",
+    "./examples/mock/ServerDialogDemo.tsx",
+    "./examples/mock/ServerTabsDemo.tsx",
+    "./examples/mock/ServerMenuDemo.tsx",
+    "./examples/mock/ServerChatDemo.tsx",
   ],
   { query: "?raw", import: "default", eager: true },
 );
@@ -43,13 +54,34 @@ const exampleFiles: Record<string, readonly string[]> = {
   search: ["SearchDemo.tsx"],
   dialog: ["DialogDemo.tsx"],
   tabs: ["TabsDemo.tsx", "DynamicTabsDemo.tsx", "TabsStateDemo.tsx"],
+  menu: ["MenuDemo.tsx"],
+  "tree-demo": ["NavigationDemo.tsx"],
 };
+
+for (const [page, name] of Object.entries({
+  table: "Table",
+  form: "Form",
+  search: "Search",
+  dialog: "Dialog",
+  tabs: "Tabs",
+  menu: "Menu",
+  chat: "Chat",
+})) {
+  exampleFiles[page] = [
+    ...exampleFiles[page],
+    `mock/Server${name}Demo.tsx`,
+    "mock/MockDemo.tsx",
+  ];
+}
+
+exampleFiles.table = [...exampleFiles.table, "mock/ServerSearchDemo.tsx"];
 
 type CodeViewerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   page: string;
   title: string;
+  serverDriven?: boolean;
 };
 
 export function CodeViewer({
@@ -57,10 +89,15 @@ export function CodeViewer({
   onOpenChange,
   page,
   title,
+  serverDriven = false,
 }: CodeViewerProps) {
   const tr = useDemoText();
   const files = exampleFiles[page] ?? [];
-  const [activeName, setActiveName] = useState(files[0] ?? "");
+  const defaultName =
+    (serverDriven
+      ? files.find((name) => name.startsWith("mock/Server"))
+      : files[0]) ?? "";
+  const [activeName, setActiveName] = useState(defaultName);
   const [copied, setCopied] = useState(false);
   const currentName = files.includes(activeName)
     ? activeName
@@ -70,9 +107,9 @@ export function CodeViewer({
     : "";
 
   useEffect(() => {
-    setActiveName(files[0] ?? "");
+    setActiveName(defaultName);
     setCopied(false);
-  }, [open, page, files]);
+  }, [open, page, defaultName]);
 
   useEffect(() => {
     if (!copied) return;

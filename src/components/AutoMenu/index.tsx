@@ -1,3 +1,4 @@
+import { AutoTip, type TipConfig } from "../AutoTip";
 import { useAutoText } from "../../core/i18n";
 import {
   useId,
@@ -8,11 +9,24 @@ import {
   type ReactNode,
 } from "react";
 import type { Access, ComponentDensity, ComponentSize } from "../../core/types";
+import { resolveHidden } from "../../core/config";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
 import { useLibraryStyles } from "../../core/dev";
 import { Popover } from "../../internal/Popover";
+import {
+  type AutoRouteChildDeclaration,
+  type AutoRouteConfig,
+  useAutoRoute,
+  useEnclosingNavigation,
+  RoutePathContext,
+  RouteActiveContext,
+  isSubpath,
+  parsePath,
+} from "../../core/navigation";
 
-export interface AutoMenuItem extends Access {
+export interface AutoMenuItem extends Access, TipConfig {
+  /** Floating help on the menu entry. */
+  tip?: ReactNode;
   /** Stable and unique across the entire menu. */
   id: string;
   label: string;
@@ -23,6 +37,10 @@ export interface AutoMenuItem extends Access {
   hidden?: boolean | (() => boolean);
   /** Disables this entry and its descendants. */
   disabled?: boolean;
+  /** Business content mounted when this menu entry is selected. */
+  content?: ReactNode;
+  /** Shortcut target; clicking calls goto without mounting duplicate content. */
+  target?: string | readonly string[];
   /** Sub-menu entries; clicking a parent toggles its expansion. */
   children?: readonly AutoMenuItem[];
 }
@@ -33,8 +51,10 @@ export interface AutoMenuItem extends Access {
  * `collapsible` defaults to `false`. `collapsed` controls the icon rail; otherwise `defaultCollapsed` (default `false`) is used.
  * Items that are hidden, disabled by an ancestor, or rejected by `canAccess` are not rendered.
  */
-export interface AutoMenuProps {
+export interface AutoMenuProps extends TipConfig {
   items: readonly AutoMenuItem[];
+  /** Optional route configuration to participate in the AutoNavigation component tree. */
+  route?: AutoRouteConfig;
   /** Selected leaf id. Pass it to control selection. */
   value?: string;
   defaultValue?: string;
@@ -53,7 +73,7 @@ export interface AutoMenuProps {
   style?: CSSProperties;
 }
 
-interface MenuListProps {
+interface MenuListProps extends TipConfig {
   items: readonly AutoMenuItem[];
   depth: number;
   currentId?: string;
@@ -152,6 +172,7 @@ function MenuItem({
     onSelect,
     size,
     density,
+    tipComponent,
   } = list;
   const hasChildren = !!item.children?.length;
   useEffect(() => setFlyoutOpen(false), [collapsed, item.disabled]);
@@ -185,7 +206,6 @@ function MenuItem({
           : undefined
       }
       disabled={item.disabled}
-      title={collapsed ? item.label : undefined}
       onClick={() => {
         if (!hasChildren) onSelect(item, nextPath);
         else if (!collapsed) onToggle(item.id);
@@ -219,6 +239,8 @@ function MenuItem({
     <li className="auto-menu-item">
       {hasChildren && collapsed ? (
         <Popover
+          tip={item.tip ?? item.label}
+          tipComponent={item.tipComponent ?? tipComponent}
           placement="right-start"
           open={flyoutOpen && !item.disabled}
           onOpenChange={setFlyoutOpen}
@@ -254,7 +276,12 @@ function MenuItem({
           {button}
         </Popover>
       ) : (
-        button
+        <AutoTip
+          content={item.tip ?? (collapsed ? item.label : undefined)}
+          tipComponent={item.tipComponent ?? tipComponent}
+        >
+          {button}
+        </AutoTip>
       )}
       {hasChildren && !collapsed && isExpanded && (
         <div id={submenuId}>
@@ -280,8 +307,74 @@ function MenuList({ items, ...props }: MenuListProps) {
   );
 }
 
+/** The leaf whose `target` is the longest prefix of the current path. */
+function findTargetPath(
+  list: readonly AutoMenuItem[],
+  navPath: readonly string[],
+): readonly AutoMenuItem[] | undefined {
+  let best: readonly AutoMenuItem[] | undefined;
+  let bestLength = 0;
+  (function walk(
+    entries: readonly AutoMenuItem[],
+    trail: readonly AutoMenuItem[],
+  ) {
+    for (const item of entries) {
+      if (item.disabled) continue;
+      if (item.children?.length) {
+        walk(item.children, [...trail, item]);
+        continue;
+      }
+      if (!item.target) continue;
+      const target = parsePath(item.target);
+      if (target.length > bestLength && isSubpath(target, navPath)) {
+        best = [...trail, item];
+        bestLength = target.length;
+      }
+    }
+  })(list, []);
+  return best;
+}
+
+const isHidden = resolveHidden;
+
+/**
+ * A menu is one route level: groups only organize entries, so every leaf is a
+ * direct child segment and inherits its ancestors' disabled, hidden, and access rules.
+ */
+function routeChildren(
+  list: readonly AutoMenuItem[],
+  parent?: AutoRouteChildDeclaration,
+  ancestors: ReadonlySet<string> = new Set(),
+): AutoRouteChildDeclaration[] {
+  if (list.some((item) => ancestors.has(item.id))) return [];
+  return list.flatMap((item) => {
+    const parentHidden = parent?.hidden;
+    const roles = [...(parent?.roles ?? []), ...(item.roles ?? [])];
+    const permissions = [
+      ...(parent?.permissions ?? []),
+      ...(item.permissions ?? []),
+    ];
+    const entry: AutoRouteChildDeclaration = {
+      id: item.id,
+      label: item.label,
+      disabled: !!(parent?.disabled || item.disabled),
+      hidden:
+        parentHidden === undefined
+          ? item.hidden
+          : () => isHidden(parentHidden) || isHidden(item.hidden),
+      roles: roles.length ? roles : undefined,
+      permissions: permissions.length ? permissions : undefined,
+      target: item.target,
+    };
+    return item.children?.length
+      ? routeChildren(item.children, entry, new Set(ancestors).add(item.id))
+      : [entry];
+  });
+}
+
 export function AutoMenu({
   items,
+  route,
   value,
   defaultValue,
   onChange,
@@ -294,14 +387,27 @@ export function AutoMenu({
   onCollapsedChange,
   size: ownSize,
   density: ownDensity,
+  tipComponent: ownTipComponent,
   className,
   style,
 }: AutoMenuProps) {
   const tr = useAutoText();
   const services = useAutoConfig();
   useLibraryStyles();
+  const nav = useEnclosingNavigation();
+
+  const routeConfig = route
+    ? {
+        ...route,
+        children: routeChildren(items),
+      }
+    : undefined;
+
+  const routeContext = useAutoRoute(routeConfig);
+
   const density =
     ownDensity ?? services.menu?.density ?? services.density ?? "comfortable";
+  const tipComponent = ownTipComponent ?? services.menu?.tipComponent;
   const size = ownSize ?? services.menu?.size ?? services.size ?? "medium";
   const [local, setLocal] = useState<string | undefined>(defaultValue);
   const [collapsedLocal, setCollapsedLocal] = useState(defaultCollapsed);
@@ -319,7 +425,7 @@ export function AutoMenu({
     if (list.some((item) => ancestors.has(item.id))) return [];
     return list.flatMap((item) => {
       if (
-        (typeof item.hidden === "function" ? item.hidden() : item.hidden) ||
+        resolveHidden(item.hidden) ||
         !services.canAccess(item) ||
         ancestors.has(item.id)
       )
@@ -338,10 +444,17 @@ export function AutoMenu({
       return [disabled === item.disabled ? item : { ...item, disabled }];
     });
   })(items);
+
+  const navMatch =
+    (route && routeContext.activeChild
+      ? findPath(visible, routeContext.activeChild)
+      : undefined) ??
+    (nav ? findTargetPath(visible, routeContext.path) : undefined);
+
   const selectedPath =
     value !== undefined
       ? (findPath(visible, value) ?? [])
-      : (findPath(visible, local ?? "") ?? firstPath(visible));
+      : (navMatch ?? findPath(visible, local ?? "") ?? firstPath(visible));
   const selectionPathIds = selectedPath.map((item) => item.id);
   const selectedIds = new Set(selectionPathIds);
   const currentId = selectedPath.at(-1)?.id;
@@ -357,6 +470,24 @@ export function AutoMenu({
     }
   }, [selectionKey]);
   function select(item: AutoMenuItem, path: readonly AutoMenuItem[]) {
+    if (item.target && nav) {
+      nav.goto(item.target);
+      onChange?.(
+        item.id,
+        item,
+        path.map((entry) => entry.id),
+      );
+      return;
+    }
+    if (route) {
+      routeContext.goto(`./${item.id}`);
+      onChange?.(
+        item.id,
+        item,
+        path.map((entry) => entry.id),
+      );
+      return;
+    }
     if (value === undefined) setLocal(item.id);
     onChange?.(
       item.id,
@@ -364,7 +495,24 @@ export function AutoMenu({
       path.map((entry) => entry.id),
     );
   }
-  return (
+
+  const hasAnyContent = (function checkContent(
+    list: readonly AutoMenuItem[],
+    ancestors = new Set<string>(),
+  ): boolean {
+    return list.some((i) => {
+      if (ancestors.has(i.id)) return false;
+      if (i.content != null) return true;
+      if (i.children?.length) {
+        return checkContent(i.children, new Set(ancestors).add(i.id));
+      }
+      return false;
+    });
+  })(items);
+
+  const selectedItem = selectedPath.at(-1);
+
+  const navElement = (
     <nav
       className={`auto-root auto-menu${isCollapsed ? " auto-menu-collapsed" : ""}${className ? ` ${className}` : ""}`}
       data-size={size}
@@ -379,6 +527,7 @@ export function AutoMenu({
         <div className="auto-menu-label">{label}</div>
       )}
       <MenuList
+        tipComponent={tipComponent}
         items={visible}
         depth={0}
         currentId={currentId}
@@ -413,4 +562,25 @@ export function AutoMenu({
       {footer != null && <div className="auto-menu-footer">{footer}</div>}
     </nav>
   );
+
+  if (hasAnyContent) {
+    return (
+      <div className="auto-root auto-menu-container">
+        {navElement}
+        <div className="auto-menu-content">
+          {selectedItem?.content && (
+            <RoutePathContext
+              value={[...routeContext.nodePath, selectedItem.id]}
+            >
+              <RouteActiveContext value={true}>
+                {selectedItem.content}
+              </RouteActiveContext>
+            </RoutePathContext>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return navElement;
 }

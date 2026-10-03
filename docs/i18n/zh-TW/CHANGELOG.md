@@ -4,6 +4,12 @@
 
 ## 尚未發佈
 
+- 新增 `AutoNavigation`。已掛載的元件登記到路徑樹上。`goto` 支援相對路徑、權限檢查和中止訊號。只有提交後的位置會同步到 hash、browser 或 memory history。`AutoMenu` 和 `AutoTabs` 可傳入 `route`，並跟隨目前的子節點。
+- 新增 `AutoTip` 和 `DefaultTip`。欄位、欄、選單和標籤的提示改為浮動層。展示類型 `tip` 和 `append` 仍是行內內容。優先順序是項目自身的元件、所屬元件、`config.form` / `config.table` / `config.tabs` / `config.menu`，然後是 `config.tipComponent`。
+- `AutoSearch` 的 `mode` 預設改為 `"instant"`。隱藏欄位和 `canAccess` 未通過的欄位仍留在值物件裡，但不進入查詢。搜尋選項寫在 `search` 上；原本的頂層 `match` 仍然可用。
+- `AutoTable` 的 `toolbarActions` 控制重新整理、設定、匯出和 JSON 按鈕的顯示。`handle.refresh()` 和 `handle.export()` 仍然可用。兩個及以上排序時才顯示排序標籤。
+- 表單支援 `classNames` 和 `styles` 槽、`divider` 展示項，以及 `virtual-select`。
+
 ## 0.1.3 - 2026-10-02
 
 - 內建介面文字預設改為英文，這串英文同時是 `config.t` 的鍵。其他語言請傳入 `t`。原先的中文鍵，例如 `提交` 和 `刷新`，不再是預設值。

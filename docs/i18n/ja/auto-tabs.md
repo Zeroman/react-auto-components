@@ -16,6 +16,8 @@
 | `onRefresh` | あるとそのタブに更新ボタン。**捕捉しません。** |
 | `disabled` | 見えたまま選べません。既定の選択は無効タブを飛ばします。 |
 
+`AutoTabs` に `route` と `value` を同時に渡さないでください。両方を指定すると `route` が優先され、開発モードで `RAC-TABS-ROUTE-VALUE` が表示されます。`AutoNavigation` が選択を管理する場合は `value` を省略してください。
+
 ## 前提
 
 `style.css` を一度（開発時 `RAC-CSS-MISSING`）。`AutoConfigProvider` は任意です。

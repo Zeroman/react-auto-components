@@ -41,3 +41,32 @@ test("null and quoted RSQL", () => {
     }),
   ).toBe('name=="a\\";b"');
 });
+
+test("search sub-object configuration builds valid query node", () => {
+  const q = buildQuery({ keyword: "test", range: [10, 20] }, [
+    {
+      name: "keyword",
+      search: {
+        match: "contains",
+        ignoreCase: true,
+        searchFields: ["title", "description"],
+      },
+    },
+    {
+      name: "range",
+      search: {
+        match: "between",
+      },
+    },
+  ]);
+  expect(
+    matchesQuery({ title: "Testing title", description: "foo", range: 15 }, q),
+  ).toBe(true);
+  expect(
+    matchesQuery({ title: "Other", description: "testing desc", range: 10 }, q),
+  ).toBe(true);
+  expect(
+    matchesQuery({ title: "test", description: "foo", range: 25 }, q),
+  ).toBe(false);
+});
+

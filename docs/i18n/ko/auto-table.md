@@ -19,6 +19,7 @@
 | `component` | 열의 `component`가 `AutoConfigProvider`의 `config.columns`에 등록되지 않으면 개발 모드에서 `RAC-COLUMN-COMPONENT`를 경고하고 셀은 기본 형식을 사용합니다. 키를 등록하거나 열에 `render`, `format`, `sort`를 지정하세요. 열에 직접 지정한 함수가 우선합니다. |
 | `source` | `source`는 `AutoConfigProvider`의 `config.sources` 키입니다. 알 수 없는 키이면 `RAC-TABLE-SOURCE`와 재시도 버튼을 표시합니다. 키를 등록하거나 `data` / `dataSource`를 사용하세요. 세 가지 중 하나만 제공해야 합니다. |
 | `exportXlsx` | xlsx에만 필요합니다. 없으면 `RAC-TABLE-XLSX`. CSV와 JSON은 내장입니다. |
+| `toolbarActions` | 새로고침, 설정, 내보내기, JSON. 기본값은 모두 표시입니다. `false`는 네 버튼을 숨깁니다. 객체는 `false`인 버튼만 숨깁니다. `handle.refresh()`와 `handle.export()`는 그대로 쓸 수 있습니다. JSON 라벨은 번역 키 `"JSON"`입니다. |
 
 `handle.export`는 상태 줄에 오류가 나와도 resolve 하고 다시 던지지 않습니다. 원격 `"filtered"`는 모든 페이지를 걷습니다. 마지막 전의 빈 페이지는 `RAC-TABLE-EXPORT-PAGE`이며 부분 파일은 저장하지 않습니다.
 

@@ -1,5 +1,10 @@
 import { expect, test } from "vitest";
-import { defaults, normalizeOptions, safeStorage } from "../src/core/config";
+import {
+  defaults,
+  normalizeOptions,
+  resolveHidden,
+  safeStorage,
+} from "../src/core/config";
 test("defaults preserve falsy values and reject duplicate names without mutating input", () => {
   const fields = Object.freeze([
     Object.freeze({ name: "enabled", defaultValue: false }),
@@ -27,4 +32,13 @@ test("storage tolerates corrupt or absent values", () => {
   expect(safeStorage.get("ok")).toEqual({ a: 1 });
   safeStorage.remove("ok");
   expect(safeStorage.get("ok")).toBeUndefined();
+});
+test("resolveHidden handles boolean and function values", () => {
+  expect(resolveHidden(true)).toBe(true);
+  expect(resolveHidden(false)).toBe(false);
+  expect(resolveHidden(undefined)).toBe(false);
+  expect(resolveHidden(() => true)).toBe(true);
+  expect(resolveHidden(() => false)).toBe(false);
+  expect(resolveHidden((x: number) => x > 5, 10)).toBe(true);
+  expect(resolveHidden((x: number) => x > 5, 2)).toBe(false);
 });

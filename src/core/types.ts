@@ -1,3 +1,4 @@
+import type { TipConfig } from "./tip";
 import type { CSSProperties, ReactNode } from "react";
 
 /** Loose record used by custom field renderers registered on the provider. */
@@ -25,6 +26,67 @@ export type TableDensity = "compact" | "normal" | "comfortable";
  * Label layout shared by `AutoForm` and `AutoSearch`.
  * Defaults: `labelPosition` `"top"`, `labelWidth` `"auto"` (measured, capped at 45% of the field).
  */
+/**
+ * CSS class name slots for field components.
+ */
+export interface FieldClassNames {
+  /** Applied to the outer `.auto-field` container */
+  root?: string;
+  /** Applied to the `<label>` element */
+  label?: string;
+  /** Applied to the `.auto-field-control` wrapper */
+  control?: string;
+  /** Applied to the input / select / textarea control element */
+  input?: string;
+  /** Applied to the error message element (`.auto-error`) */
+  error?: string;
+  /** Applied to the tip trigger or marker */
+  tip?: string;
+}
+
+/**
+ * CSS style slots for field components.
+ */
+export interface FieldStyles {
+  root?: CSSProperties;
+  label?: CSSProperties;
+  control?: CSSProperties;
+  input?: CSSProperties;
+  error?: CSSProperties;
+  tip?: CSSProperties;
+}
+
+/**
+ * CSS class name slots for form components.
+ */
+export interface AutoFormClassNames extends FieldClassNames {
+  /** Applied to the root `<form>` element */
+  form?: string;
+  /** Applied to the `.auto-form-grid` layout grid */
+  grid?: string;
+  /** Applied to the `.auto-actions` container */
+  actions?: string;
+  /** Applied to the submit button */
+  submit?: string;
+  /** Applied to the reset button */
+  reset?: string;
+}
+
+/**
+ * CSS style slots for form components.
+ */
+export interface AutoFormStyles extends FieldStyles {
+  form?: CSSProperties;
+  grid?: CSSProperties;
+  actions?: CSSProperties;
+  submit?: CSSProperties;
+  reset?: CSSProperties;
+}
+
+/**
+ * Label layout shared by `AutoForm` and `AutoSearch`.
+ * Defaults: `labelPosition` `"top"`, `labelWidth` `"auto"` (measured, capped at 45% of the field).
+ */
 export interface AutoFormLayout {
   /** `"top"` stacks the label. `"left"` puts it beside the control. Default `"top"`. */
   labelPosition?: "top" | "left";
@@ -37,6 +99,8 @@ export interface AutoFormLayout {
   labelWidth?: CSSProperties["width"];
   density?: ComponentDensity;
   size?: ComponentSize;
+  classNames?: AutoFormClassNames;
+  styles?: AutoFormStyles;
 }
 
 /** String keys of the value object. Symbols and numbers are not field names. */
@@ -73,10 +137,9 @@ export interface Option {
 }
 
 /**
- * Widget id. Omit it and the field renders as a text input.
- * Illegal combinations (`select` without `options`, a scalar on `daterange`) are rejected by {@link Field}.
+ * Input / data-bearing field types.
  */
-export type FieldType =
+export type ValueFieldType =
   | "input"
   | "email"
   | "textarea"
@@ -87,6 +150,7 @@ export type FieldType =
   | "switch"
   | "select"
   | "select-v2"
+  | "virtual-select"
   | "radio"
   | "checkbox"
   | "cascader"
@@ -97,15 +161,27 @@ export type FieldType =
   | "datetimerange"
   | "upload"
   | "text"
-  | "title"
-  | "tip"
-  | "button"
-  | "append"
   | "custom";
+
+/**
+ * Display, decorator, and layout element types.
+ */
+export type DisplayItemType = "title" | "tip" | "button" | "append" | "divider";
+
+/**
+ * Widget id. Omit it and the field renders as a text input.
+ * Illegal combinations (`select` without `options`, a scalar on `daterange`) are rejected by {@link Field}.
+ */
+export type FieldType = ValueFieldType | DisplayItemType;
 
 /** Widgets that render an empty control when `options` is missing. `options` is required. */
 export type ChoiceFieldType =
-  "select" | "select-v2" | "radio" | "checkbox" | "cascader";
+  | "select"
+  | "select-v2"
+  | "virtual-select"
+  | "radio"
+  | "checkbox"
+  | "cascader";
 
 /** Value is a two-item `[start, end]`. A scalar string or number is rejected. */
 export type DateRangeFieldType = "daterange" | "datetimerange";
@@ -116,6 +192,28 @@ export type DateRangeFieldType = "daterange" | "datetimerange";
  * `"isNull"` ignores the value and matches null or undefined.
  */
 export type MatchOperator = "eq" | "in" | "contains" | "between" | "isNull";
+
+/**
+ * Search-specific configuration when used in AutoSearch or table search panels.
+ */
+export interface SearchConfig {
+  /**
+   * Search comparison. See {@link MatchOperator}.
+   * `"between"` requires `T[name]` to be a two-item tuple.
+   */
+  match?: MatchOperator;
+  /** Case-fold string comparisons. Only affects `"contains"` and `"eq"` style matches. */
+  ignoreCase?: boolean;
+  /** Also match rows where the field is null or undefined (`OR` with `isNull`). */
+  includeNull?: boolean;
+  /**
+   * Query these row keys instead of `name`, OR-ed together.
+   * Example: one "keyword" input searching `first` and `last`.
+   */
+  searchFields?: readonly string[];
+  /** Search panels hide this field behind "More" until the user expands them. */
+  more?: boolean;
+}
 
 /**
  * Recommended `[from, to]` / `[start, end]` value.
@@ -134,6 +232,12 @@ export interface FieldContext<T extends object> {
   disabled: boolean;
   /** Present when this field failed validation. Also referenced by `aria-describedby`. */
   error?: string;
+  /** Space-separated IDs for field help and validation errors; apply to each control's `aria-describedby`. */
+  describedBy?: string;
+  /** Slot class name for the input element */
+  className?: string;
+  /** Slot style for the input element */
+  style?: CSSProperties;
 }
 
 type RangeOk<V> = 0 extends 1 & V
@@ -152,7 +256,8 @@ type RangeOk<V> = 0 extends 1 & V
 export interface FieldShared<
   T extends object,
   K extends FieldName<T> = FieldName<T>,
-> extends Access {
+>
+  extends Access, TipConfig {
   /** Key of `T`. Title, tip, append, and button omit it. */
   name: K;
   /**
@@ -183,7 +288,9 @@ export interface FieldShared<
   lineBreak?: boolean;
   style?: CSSProperties;
   className?: string;
-  /** Help text under the control. Also the body of `type: "tip"` and `type: "append"`. */
+  classNames?: FieldClassNames;
+  styles?: FieldStyles;
+  /** Floating help next to the label. Display fields `type: "tip"` and `type: "append"` keep inline content. */
   tip?: ReactNode;
   /**
    * Run after the required check, in order. Return an error string, or throw (the message is shown).
@@ -209,20 +316,26 @@ export interface FieldShared<
    */
   onChange?: (value: unknown, values: T) => Partial<T> | void;
   /**
+   * Search-specific configuration when used in AutoSearch or table search panels.
+   */
+  search?: SearchConfig;
+  /**
    * Search comparison. See {@link MatchOperator}.
    * `"between"` requires `T[name]` to be a two-item tuple.
+   * @deprecated Use `search.match` instead.
    */
   match?: MatchOperator;
-  /** Case-fold string comparisons. Only affects `"contains"` and `"eq"` style matches. */
+  /** Case-fold string comparisons. Only affects `"contains"` and `"eq"` style matches. @deprecated Use `search.ignoreCase` instead. */
   ignoreCase?: boolean;
-  /** Also match rows where the field is null or undefined (`OR` with `isNull`). */
+  /** Also match rows where the field is null or undefined (`OR` with `isNull`). @deprecated Use `search.includeNull` instead. */
   includeNull?: boolean;
   /**
    * Query these row keys instead of `name`, OR-ed together.
    * Example: one "keyword" input searching `first` and `last`.
+   * @deprecated Use `search.searchFields` instead.
    */
   searchFields?: readonly string[];
-  /** Search panels hide this field behind "More" until the user expands them. */
+  /** Search panels hide this field behind "More" until the user expands them. @deprecated Use `search.more` instead. */
   more?: boolean;
 }
 
@@ -279,7 +392,7 @@ export interface SwitchField<
  * Closed set of options. `options` is required at compile time.
  * `"checkbox"` stores an array and keeps `false` as a real value.
  * `"cascader"` stores the path array and reads `Option.children`.
- * `"select-v2"` virtualizes long lists. `"multiple"` applies to `"select"` and `"select-v2"`.
+ * `"select-v2"` / `"virtual-select"` virtualizes long lists. `"multiple"` applies to selects.
  */
 export interface ChoiceField<
   T extends object,
@@ -288,8 +401,10 @@ export interface ChoiceField<
   type: ChoiceFieldType;
   /** Static list, or a function of the other values. An empty list renders no choices. */
   options: Dynamic<readonly Option[], T>;
-  /** `"select"` / `"select-v2"` only. Stores an array of option values. */
+  /** `"select"` / `"select-v2"` / `"virtual-select"` only. Stores an array of option values. */
   multiple?: boolean;
+  /** Virtualize long lists of options. */
+  virtual?: boolean;
 }
 
 /**
@@ -398,11 +513,84 @@ type WithMatch<T extends object, K extends FieldName<T>> =
     ? FieldVariant<T, K>
     : | (FieldVariant<T, K> & {
           match?: Exclude<MatchOperator, "between">;
+          search?: SearchConfig & {
+            match?: Exclude<MatchOperator, "between">;
+          };
         })
       | BetweenError<T, K>;
 
 /**
- * One schema field.
+ * Pure display, decorator, and layout items (no data binding).
+ */
+export interface DisplayItemBase extends Access, TipConfig {
+  name?: undefined;
+  span?: number;
+  lineBreak?: boolean;
+  hidden?: Dynamic<boolean, any>;
+  disabled?: Dynamic<boolean, any>;
+  style?: CSSProperties;
+  className?: string;
+  classNames?: FieldClassNames;
+  styles?: FieldStyles;
+}
+
+export interface TitleItem extends DisplayItemBase {
+  type: "title";
+  label: string;
+}
+
+export interface TipItem extends DisplayItemBase {
+  type: "tip";
+  /** Body content of the tip item. */
+  content?: ReactNode;
+  /** @deprecated Use `content` instead */
+  tip?: ReactNode;
+  label?: string;
+}
+
+export interface ButtonItem<T extends object = Record<string, unknown>>
+  extends DisplayItemBase {
+  type: "button";
+  label: string;
+  disabled?: Dynamic<boolean, T>;
+  onAction?: (values: Readonly<T>) => void;
+}
+
+export interface AppendItem extends DisplayItemBase {
+  type: "append";
+  content?: ReactNode;
+  /** @deprecated Use `content` instead */
+  tip?: ReactNode;
+}
+
+export interface DividerItem extends DisplayItemBase {
+  type: "divider";
+}
+
+/**
+ * Non-data display item union.
+ */
+export type DisplayItem<T extends object = Record<string, unknown>> =
+  | TitleItem
+  | TipItem
+  | ButtonItem<T>
+  | AppendItem
+  | DividerItem;
+
+/**
+ * Data-bearing form field for model `T`.
+ */
+export type FormField<T extends object> = {
+  [K in FieldName<T>]: WithMatch<T, K>;
+}[FieldName<T>];
+
+/**
+ * Single item in a form: either a data-bearing field or a display item.
+ */
+export type FormItem<T extends object> = FormField<T> | DisplayItem<T>;
+
+/**
+ * One schema field or display item.
  *
  * Discriminant is `type` (and `name`, and `match: "between"`).
  * `type: "select"` without `options` errors on {@link ChoiceField} only.
@@ -412,36 +600,37 @@ type WithMatch<T extends object, K extends FieldName<T>> =
  *
  * {@link AnyField} plus `unsafeField` skip these checks. Dev warnings still run.
  */
-export type Field<T extends object> =
-  { [K in FieldName<T>]: WithMatch<T, K> }[FieldName<T>] | DisplayField<T>;
+export type Field<T extends object> = FormItem<T>;
 
 /**
- * No `name` and no value. `"title"` renders `label` as a heading.
- * Do not add `defaultValue` here. An optional `undefined` default collapses `type` in error messages and hides `RAC-FIELD-RANGE`.
- * `"tip"` and `"append"` render `tip`. `"button"` renders `label` and calls `onAction` on click.
- * `onAction` throwing propagates to the click handler; the form value does not change.
+ * Backwards-compatibility alias for display items.
+ * `"title"` renders `label` as a heading.
+ * `"tip"` and `"append"` render `content` / `tip`. `"button"` renders `label` and calls `onAction` on click.
  */
-export interface DisplayField<T extends object> extends Access {
-  /** Display fields are not keys of T. A string name belongs on a value field. */
-  name?: undefined;
-  type: "title" | "tip" | "append" | "button";
-  label?: string;
-  tip?: ReactNode;
-  span?: number;
-  lineBreak?: boolean;
-  hidden?: Dynamic<boolean, T>;
-  disabled?: Dynamic<boolean, T>;
-  style?: CSSProperties;
-  className?: string;
-  /** Ignored. Present so a mixed field list can be read without narrowing. */
+export type DisplayField<T extends object> = DisplayItem<T> & {
   lang?: string;
   required?: boolean;
   rules?: FieldShared<T>["rules"];
   onChange?: (value: unknown, values: T) => Partial<T> | void;
-  /** Ignored. Search panels only hide named fields. */
   more?: boolean;
-  /** `"button"` click. Receives the current values. */
-  onAction?: (values: Readonly<T>) => void;
+};
+
+/**
+ * Type guard checking if an item is a display item without value binding.
+ */
+export function isDisplayItem<T extends object>(
+  item: Field<T> | AnyField<T> | DisplayItem<T>,
+): item is DisplayItem<T> {
+  const i = item as { name?: unknown; type?: unknown };
+  return (
+    !("name" in i) ||
+    !i.name ||
+    i.type === "title" ||
+    i.type === "tip" ||
+    i.type === "button" ||
+    i.type === "append" ||
+    i.type === "divider"
+  );
 }
 
 /**
@@ -449,7 +638,7 @@ export interface DisplayField<T extends object> extends Access {
  * This is the escape hatch. Pass it through {@link unsafeField} when a component asks for {@link Field}.
  * Dev mode still warns about missing options, scalar ranges, and `match: "between"`.
  */
-export interface AnyField<T extends object> extends Access {
+export interface AnyField<T extends object> extends Access, TipConfig {
   name?: FieldName<T>;
   label?: string;
   lang?: string;
@@ -461,12 +650,16 @@ export interface AnyField<T extends object> extends Access {
   placeholder?: string;
   options?: Dynamic<readonly Option[], T>;
   multiple?: boolean;
+  virtual?: boolean;
   span?: number;
   lineBreak?: boolean;
   style?: CSSProperties;
   className?: string;
+  classNames?: FieldClassNames;
+  styles?: FieldStyles;
   tip?: ReactNode;
-  rules?: FieldShared<T>["rules"];
+  content?: ReactNode;
+  rules?: readonly ((value: unknown, values: Readonly<T>) => unknown)[];
   render?: (context: FieldContext<T>) => ReactNode;
   component?: string;
   onChange?: (value: unknown, values: T) => Partial<T> | void;
@@ -479,6 +672,7 @@ export interface AnyField<T extends object> extends Access {
   dateValue?: "string" | "timestamp";
   shortcuts?: readonly { label: string; value: () => unknown }[];
   onAction?: (values: Readonly<T>) => void;
+  search?: SearchConfig;
   more?: boolean;
   match?: MatchOperator;
   ignoreCase?: boolean;

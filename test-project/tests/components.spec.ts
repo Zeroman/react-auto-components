@@ -1,3 +1,4 @@
+import { openComponent } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
@@ -89,7 +90,7 @@ test("column filter selection, keyboard dismissal and reset survive internal pop
 test("form failures retain values and successful submission produces typed output", async ({
   page,
 }) => {
-  await page.getByRole("button", { name: /AutoForm/ }).click();
+  await openComponent(page, "AutoForm");
   await page.getByRole("button", { name: "Submit", exact: true }).click();
   await expect(page.getByText("Project Name is required")).toBeVisible();
   await page.getByRole("textbox", { name: "Project Name" }).fill("Form check");
@@ -108,7 +109,7 @@ test("form failures retain values and successful submission produces typed outpu
   await expect(page.getByTestId("form-result")).toContainText("Form check");
 });
 test("dialog draft and focus restoration", async ({ page }) => {
-  await page.getByRole("button", { name: /AutoDialog/ }).click();
+  await openComponent(page, "AutoDialog");
   const trigger = page.getByRole("button", { name: "Open form dialog" });
   await trigger.click();
   await page
@@ -128,7 +129,7 @@ for (const mode of ["horizontal", "vertical"] as const) {
   test(`${mode} nested tabs preserve state and keep panel navigation separate`, async ({
     page,
   }) => {
-    await page.getByRole("button", { name: /AutoTabs/ }).click();
+    await openComponent(page, "AutoTabs");
     const modes = page.getByRole("combobox", { name: "Tab mode", exact: true });
     await expect(modes.locator("option")).toHaveCount(2);
     await modes.selectOption(mode);
@@ -160,7 +161,9 @@ for (const mode of ["horizontal", "vertical"] as const) {
 test("server mode and large table have no runtime errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.getByRole("tab", { name: "Server-side", exact: true }).click();
+  await page
+    .getByRole("tab", { name: "Server-side (Mock)", exact: true })
+    .click();
   await expect(page.getByText("48 records")).toBeVisible();
   await page.getByRole("button", { name: "Next page" }).click();
   await expect(page.getByText("Page 2 / 5")).toBeVisible();
@@ -172,7 +175,8 @@ test("server mode and large table have no runtime errors", async ({ page }) => {
 test("search panel preserves manual mode and handles more conditions", async ({
   page,
 }) => {
-  await page.getByRole("button", { name: /AutoSearch/ }).click();
+  await openComponent(page, "AutoSearch");
+  await page.getByRole("tab", { name: "Manual Search" }).click();
   await page.getByRole("textbox", { name: "Project Name" }).fill("Customer");
   await expect(page.getByTestId("query-result")).not.toContainText("Customer");
   await page.getByRole("button", { name: "Search", exact: true }).click();
@@ -239,7 +243,7 @@ test("visual capture", async ({ page }) => {
 test("dialog traps focus, drags, toggles fullscreen and honors close guard", async ({
   page,
 }) => {
-  await page.getByRole("button", { name: /AutoDialog/ }).click();
+  await openComponent(page, "AutoDialog");
   await page.getByRole("button", { name: "Open form dialog" }).click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("button", { name: "OK", exact: true }).focus();

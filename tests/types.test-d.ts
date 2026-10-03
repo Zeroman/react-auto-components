@@ -47,6 +47,27 @@ const between: Field<{ amount: [number, number] }> = {
 };
 // @ts-expect-error match between rejects a scalar
 const betweenScalar: Field<Choice> = { name: "amount", match: "between" };
+const betweenSearch: Field<{ amount: [number, number] }> = {
+  name: "amount",
+  search: { match: "between" },
+};
+// @ts-expect-error search match between rejects a scalar
+const betweenSearchScalar: Field<Choice> = {
+  name: "amount",
+  search: { match: "between" },
+};
+const virtualSelect: Field<Choice> = {
+  name: "status",
+  type: "virtual-select",
+  options: [{ value: "open", label: "Open" }],
+};
+const displayTitle: Field<Choice> = {
+  type: "title",
+  label: "Section Title",
+};
+const displayDivider: Field<Choice> = {
+  type: "divider",
+};
 const loose: import("../src").AnyField<Choice> = {
   name: "status",
   type: "select",
@@ -57,6 +78,11 @@ void range;
 void rangeScalar;
 void between;
 void betweenScalar;
+void betweenSearch;
+void betweenSearchScalar;
+void virtualSelect;
+void displayTitle;
+void displayDivider;
 void loose;
 
 import type { AutoChatMessage, AutoChatProps } from "../src";

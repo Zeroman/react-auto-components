@@ -6,6 +6,68 @@ import {
   reconcileSettings,
   initialSettings,
 } from "../src/components/AutoTable/settings";
+import type { TableQuery } from "../src/components/AutoTable/types";
+
+test("remote multi-sort forwards priority and directions without reordering server rows", async () => {
+  const u = userEvent.setup();
+  const source = vi.fn(async (_query: TableQuery) => ({
+    rows: [
+      { id: "b", owner: "Z", budget: 10 },
+      { id: "a", owner: "A", budget: 20 },
+    ],
+    total: 4,
+  }));
+  const { container } = render(
+    <AutoTable
+      id="remote-multi-sort"
+      dataSource={source}
+      rowKey="id"
+      columns={[
+        { key: "owner", label: "Owner" },
+        { key: "budget", label: "Budget" },
+      ]}
+      pageSize={2}
+      virtual={false}
+    />,
+  );
+  await screen.findByText("Z");
+  await u.click(screen.getByRole("button", { name: "Sort Owner" }));
+  await u.keyboard("{Shift>}");
+  await u.click(screen.getByRole("button", { name: "Sort Budget" }));
+  await u.click(screen.getByRole("button", { name: "Sort Budget" }));
+  await u.keyboard("{/Shift}");
+  const expectedSort = [
+    { id: "owner", desc: false },
+    { id: "budget", desc: true },
+  ];
+  await waitFor(() =>
+    expect(source.mock.lastCall?.[0]).toMatchObject({
+      sort: expectedSort,
+      pageIndex: 0,
+      pageSize: 2,
+    }),
+  );
+  await u.click(screen.getByRole("button", { name: "Next page" }));
+  await waitFor(() =>
+    expect(source.mock.lastCall?.[0]).toMatchObject({
+      sort: expectedSort,
+      pageIndex: 1,
+      pageSize: 2,
+    }),
+  );
+  expect(
+    Array.from(container.querySelectorAll("tbody tr[data-row-id]"), (row) =>
+      row.getAttribute("data-row-id"),
+    ),
+  ).toEqual(["b", "a"]);
+  await u.click(screen.getByRole("button", { name: "Budget ↓ ×" }));
+  await waitFor(() =>
+    expect(source.mock.lastCall?.[0]).toMatchObject({
+      sort: [{ id: "owner", desc: false }],
+      pageIndex: 0,
+    }),
+  );
+});
 test("malformed persisted filter is discarded", () => {
   const s = initialSettings(["name"]);
   (s.filter.presets[0] as { value: unknown }).value = {

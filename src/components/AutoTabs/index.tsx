@@ -1,11 +1,22 @@
+import { AutoTip, type TipConfig } from "../AutoTip";
 import { useAutoText } from "../../core/i18n";
 import * as Tabs from "@radix-ui/react-tabs";
 import { useEffect, useState, type ReactNode } from "react";
 import type { Access, ComponentDensity, ComponentSize } from "../../core/types";
+import { resolveHidden } from "../../core/config";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
 import { useLibraryStyles } from "../../core/dev";
+import { devWarn } from "../../core/errors";
+import {
+  type AutoRouteConfig,
+  useAutoRoute,
+  RoutePathContext,
+  RouteActiveContext,
+} from "../../core/navigation";
 export * from "./useAutoTabsWorkspace";
-export interface AutoTab extends Access {
+export interface AutoTab extends Access, TipConfig {
+  /** Help shown on hover or focus without changing the tab layout. */
+  tip?: ReactNode;
   id: string;
   label: string;
   icon?: ReactNode;
@@ -27,8 +38,10 @@ export interface AutoTab extends Access {
  * `onChange` and `onRefresh` are not caught. A throw leaves the previously selected tab in place only if you never committed the change.
  * Disabled tabs are skipped when choosing the default selection. Hidden tabs and failed `canAccess` are removed.
  */
-export interface AutoTabsProps {
+export interface AutoTabsProps extends TipConfig {
   items: readonly AutoTab[];
+  /** Optional route configuration to participate in the AutoNavigation component tree. */
+  route?: AutoRouteConfig;
   /** Controlled selection path. Omit to let the tabs keep state from `defaultValue`. */
   value?: readonly string[];
   defaultValue?: readonly string[];
@@ -51,6 +64,7 @@ export interface AutoTabsProps {
 }
 export function AutoTabs({
   items,
+  route,
   value,
   defaultValue,
   onChange,
@@ -59,27 +73,61 @@ export function AutoTabs({
   lazy = false,
   onClose,
   extra,
+  tipComponent: ownTipComponent,
   size: ownSize,
   density: ownDensity,
 }: AutoTabsProps) {
   const tr = useAutoText();
   const services = useAutoConfig();
   useLibraryStyles();
+
+  if (route && value !== undefined) {
+    devWarn(
+      "AutoTabs",
+      "RAC-TABS-ROUTE-VALUE",
+      "Both route and value were supplied to AutoTabs.",
+      "Omit value when using route-driven navigation; route owns tab selection.",
+    );
+  }
+
+  const routeConfig = route
+    ? {
+        ...route,
+        children: items.map((tab) => ({
+          id: tab.id,
+          disabled: tab.disabled,
+          hidden: tab.hidden,
+          roles: tab.roles,
+          permissions: tab.permissions,
+          awaitRegistration: !!tab.children?.length,
+        })),
+      }
+    : undefined;
+
+  const routeContext = useAutoRoute(routeConfig);
+
   const density =
     ownDensity ?? services.tabs?.density ?? services.density ?? "comfortable";
+  const tipComponent = ownTipComponent ?? services.tabs?.tipComponent;
   const size = ownSize ?? services.tabs?.size ?? services.size ?? "medium";
   const visible = items.filter(
-    (i) =>
-      !(typeof i.hidden === "function" ? i.hidden() : i.hidden) &&
-      services.canAccess(i),
+    (i) => !resolveHidden(i.hidden) && services.canAccess(i),
   );
   const [local, setLocal] = useState<readonly string[]>(defaultValue ?? []);
   const path = value ?? local;
-  const selected =
-    visible.find((i) => i.id === path[0] && !i.disabled) ??
-    visible.find((i) => !i.disabled);
+  const selected = route
+    ? (visible.find((i) => i.id === routeContext.activeChild && !i.disabled) ??
+      visible.find((i) => i.id === route.defaultChild && !i.disabled) ??
+      visible.find((i) => !i.disabled))
+    : (visible.find((i) => i.id === path[0] && !i.disabled) ??
+      visible.find((i) => !i.disabled));
   const current = selected?.id ?? "";
   function change(next: readonly string[], item: AutoTab) {
+    if (route) {
+      routeContext.goto(`./${next[0]}`);
+      onChange?.(next, item);
+      return;
+    }
     if (value === undefined) setLocal(next);
     onChange?.(next, item);
   }
@@ -90,8 +138,8 @@ export function AutoTabs({
       data-density={density}
       value={current}
       onValueChange={(v) => {
-        const item = visible.find((i) => i.id === v)!;
-        change([v], item);
+        const item = visible.find((i) => i.id === v);
+        if (item) change([v], item);
       }}
       orientation={mode === "horizontal" ? "horizontal" : "vertical"}
     >
@@ -99,28 +147,33 @@ export function AutoTabs({
         <Tabs.List aria-label={tr("Tabs")} className="auto-tab-list">
           {visible.map((i) => (
             <div key={i.id} className="auto-tab-entry">
-              <Tabs.Trigger
-                value={i.id}
-                disabled={i.disabled}
-                onKeyDown={(event) => {
-                  if (
-                    event.key === "Delete" &&
-                    i.closable &&
-                    onClose &&
-                    !i.disabled
-                  ) {
-                    event.preventDefault();
-                    onClose([i.id], i);
-                  }
-                }}
+              <AutoTip
+                content={i.tip}
+                tipComponent={i.tipComponent ?? tipComponent}
               >
-                {i.icon}
-                {i.label}
-                {i.badge != null && (
-                  <span className="auto-tab-badge">{i.badge}</span>
-                )}
-                {i.loading ? " …" : ""}
-              </Tabs.Trigger>
+                <Tabs.Trigger
+                  value={i.id}
+                  disabled={i.disabled}
+                  onKeyDown={(event) => {
+                    if (
+                      event.key === "Delete" &&
+                      i.closable &&
+                      onClose &&
+                      !i.disabled
+                    ) {
+                      event.preventDefault();
+                      onClose([i.id], i);
+                    }
+                  }}
+                >
+                  {i.icon}
+                  {i.label}
+                  {i.badge != null && (
+                    <span className="auto-tab-badge">{i.badge}</span>
+                  )}
+                  {i.loading ? " …" : ""}
+                </Tabs.Trigger>
+              </AutoTip>
               {i.closable && onClose && (
                 <button
                   type="button"
@@ -137,19 +190,13 @@ export function AutoTabs({
         </Tabs.List>
         {extra}
       </div>
-      {visible.map((i) => (
-        <VisitedPanel
-          key={i.id}
-          active={i.id === current}
-          lazy={lazy}
-          keepMounted={keepMounted}
-        >
-          <Tabs.Content
-            value={i.id}
-            forceMount={keepMounted ? true : undefined}
-            hidden={i.id !== current}
-            className="auto-tab-content"
-          >
+      {visible.map((i) => {
+        const isCurrent = i.id === current;
+        const childRoutePath = route
+          ? [...routeContext.nodePath, i.id]
+          : undefined;
+        const panelContent = (
+          <>
             {i.onRefresh && (
               <button onClick={i.onRefresh}>
                 {tr("Refresh {0}", [i.label])}
@@ -158,8 +205,10 @@ export function AutoTabs({
             {i.children ? (
               <AutoTabs
                 items={i.children}
+                route={route ? { defaultChild: i.defaultActive } : undefined}
+                tipComponent={tipComponent}
                 value={
-                  i.id === current && path.length > 1
+                  !route && isCurrent && path.length > 1
                     ? path.slice(1)
                     : undefined
                 }
@@ -173,14 +222,44 @@ export function AutoTabs({
                 }
                 size={size}
                 density={density}
-                onChange={(next, item) => change([i.id, ...next], item)}
+                onChange={
+                  route
+                    ? (next, item) => onChange?.([i.id, ...next], item)
+                    : (next, item) => change([i.id, ...next], item)
+                }
               />
             ) : (
               i.content
             )}
-          </Tabs.Content>
-        </VisitedPanel>
-      ))}
+          </>
+        );
+
+        return (
+          <VisitedPanel
+            key={i.id}
+            active={isCurrent}
+            lazy={lazy}
+            keepMounted={keepMounted}
+          >
+            <Tabs.Content
+              value={i.id}
+              forceMount={keepMounted ? true : undefined}
+              hidden={!isCurrent}
+              className="auto-tab-content"
+            >
+              {childRoutePath ? (
+                <RoutePathContext value={childRoutePath}>
+                  <RouteActiveContext value={isCurrent}>
+                    {panelContent}
+                  </RouteActiveContext>
+                </RoutePathContext>
+              ) : (
+                panelContent
+              )}
+            </Tabs.Content>
+          </VisitedPanel>
+        );
+      })}
     </Tabs.Root>
   );
 }

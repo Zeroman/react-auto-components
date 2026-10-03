@@ -16,6 +16,7 @@
     "docs/auto-dialog.md",
     "docs/auto-tabs.md",
     "docs/auto-menu.md",
+    "docs/auto-navigation.md",
     "docs/errors.md",
     "llms.txt",
     "docs/i18n/*/auto-chat.md",
@@ -25,6 +26,7 @@
     "docs/i18n/*/auto-dialog.md",
     "docs/i18n/*/auto-tabs.md",
     "docs/i18n/*/auto-menu.md",
+    "docs/i18n/*/auto-navigation.md",
     "docs/i18n/*/errors.md"
   ],
   "exports": {

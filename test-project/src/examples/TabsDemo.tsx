@@ -4,7 +4,7 @@ import { useDemoText } from "../i18n";
 import { DynamicTabsDemo } from "./DynamicTabsDemo";
 import { TabsStateDemo } from "./TabsStateDemo";
 
-export function TabsDemo() {
+export function TabsDemo({ example }: { example: string }) {
   const tr = useDemoText();
   const [mode, setMode] = useState<"horizontal" | "vertical">("horizontal");
   const [localSize, setLocalSize] = useState<
@@ -48,11 +48,8 @@ export function TabsDemo() {
           <option value="comfortable">{tr("Comfortable (comfortable)")}</option>
         </select>
       </div>
-      <AutoTabs
-        mode={mode}
-        size={size}
-        density={density}
-        items={[
+      {
+        [
           {
             id: "basic",
             label: tr("Basic"),
@@ -149,8 +146,8 @@ export function TabsDemo() {
               <TabsStateDemo mode={mode} size={size} density={density} />
             ),
           },
-        ]}
-      />
+        ].find((item) => item.id === example)?.content
+      }
     </section>
   );
 }

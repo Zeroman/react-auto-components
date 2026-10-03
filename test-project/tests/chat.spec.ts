@@ -1,12 +1,10 @@
+import { openComponent } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 
 test.use({ locale: "en-US" });
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
-  await page
-    .getByRole("navigation")
-    .getByRole("button", { name: "AutoChat", exact: true })
-    .click();
+  await openComponent(page, "AutoChat");
 });
 
 test("chat sends, streams, stops and retains failed drafts", async ({
@@ -56,6 +54,8 @@ test("history prepends preserve the visible message and streams respect paused r
     .toBeLessThan(3);
   await log.evaluate((el) => {
     el.scrollTop = 150;
+    // Notify the scroll hook before the next React render can reconcile its old anchor.
+    el.dispatchEvent(new Event("scroll", { bubbles: true }));
   });
   await expect(
     page.getByRole("button", { name: "Back to latest" }),

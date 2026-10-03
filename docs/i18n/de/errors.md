@@ -108,3 +108,7 @@ Korrektur: Nur Buchstaben, Ziffern, Unterstrich und Punkte.
 `useAutoDialog()` außerhalb von `AutoDialogProvider`.
 
 Korrektur: Umschließe den Baum mit `<AutoDialogProvider>`. `AutoConfigProvider` liefert keine Dialoge und ist optional. `<AutoDialog open>` nutzt diesen Hook nicht.
+
+## RAC-TABS-ROUTE-VALUE
+
+`route` und `value` dürfen nicht gleichzeitig an `AutoTabs` übergeben werden. Bei gemeinsamer Verwendung hat `route` Vorrang; im Entwicklungsmodus erscheint `RAC-TABS-ROUTE-VALUE`. Entfernen Sie `value`, wenn `AutoNavigation` die Auswahl steuert.

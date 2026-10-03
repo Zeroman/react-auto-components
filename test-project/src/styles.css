@@ -346,6 +346,58 @@ main[data-page] {
   min-width: 0;
 }
 
+.demo-navigation {
+  flex: 0 0 auto;
+  min-width: 0;
+  margin-bottom: 12px;
+}
+
+.demo-navigation-bar {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  min-width: 0;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--auto-muted, #f4f6f5);
+  border-bottom: 1px solid var(--auto-border, #dce4df);
+  color: var(--auto-text, #202e29);
+  font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  .demo-navigation-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .demo-navigation-bar > * {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
+
+.demo-navigation .auto-tab-content {
+  display: none;
+}
+.demo-navigation .auto-tab-list {
+  overflow-x: auto;
+}
+main[data-page][data-example="server"] .demo-viewport,
+main[data-page="menu"] .demo-viewport {
+  overflow: auto;
+}
+main[data-page][data-example="server"] .mock-demo {
+  flex: 0 0 auto;
+  display: block;
+  overflow: visible;
+}
+main[data-page="tabs"][data-example="server"] .mock-demo .auto-tabs {
+  display: block;
+  overflow: visible;
+}
+
 /* Table page: chained min-height:0 without outer scrolling */
 main[data-page="table"] .demo-viewport {
   overflow: hidden;

@@ -19,6 +19,7 @@ Lokale oder entfernte Tabelle. Übergib genau eine Variante: `data`, `dataSource
 | `component` | Ist der Spaltenwert `component` nicht in `AutoConfigProvider` unter `config.columns` registriert, erscheint in der Entwicklung `RAC-COLUMN-COMPONENT`; die Zelle verwendet das Standardformat. Registriere den Schlüssel oder setze `render`, `format` oder `sort` auf der Spalte. Funktionen auf der Spalte haben Vorrang. |
 | `source` | `source` bezeichnet einen Schlüssel in `AutoConfigProvider` unter `config.sources`. Ein unbekannter Schlüssel zeigt `RAC-TABLE-SOURCE` mit einer Schaltfläche zum Wiederholen. Registriere ihn oder verwende `data` / `dataSource`. Übergib genau eine der drei Varianten. |
 | `exportXlsx` | Nur für xlsx nötig. Fehlt er, `RAC-TABLE-XLSX`. CSV und JSON sind eingebaut. |
+| `toolbarActions` | Aktualisieren, Einstellungen, Export und JSON. Standard alle sichtbar. `false` blendet die vier Schaltflächen aus. Ein Objekt blendet nur Schaltflächen aus, die `false` sind. `handle.refresh()` und `handle.export()` bleiben verfügbar. Die JSON-Beschriftung ist der übersetzte Text `"JSON"`. |
 
 `handle.export` resolved auch wenn der Status einen Fehler zeigt; er wirft nicht erneut. Entferntes `"filtered"` geht alle Seiten durch. Eine leere Seite vor der letzten wirft `RAC-TABLE-EXPORT-PAGE` und lädt keine halbe Datei herunter.
 

@@ -1,3 +1,4 @@
+import { AutoTip, type TipConfig } from "../AutoTip";
 import { useAutoText } from "../../core/i18n";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Popover } from "../../internal/Popover";
@@ -107,6 +108,7 @@ function ColumnFilter<T extends object>({
 }
 export function TableHeader<T extends object>({
   columns,
+  tipComponent,
   rows,
   sort,
   filter,
@@ -118,7 +120,7 @@ export function TableHeader<T extends object>({
   allSelected,
   indeterminate,
   onSelectAll,
-}: {
+}: TipConfig & {
   columns: readonly AutoColumn<T>[];
   rows: readonly T[];
   sort: TableSort[];
@@ -161,6 +163,7 @@ export function TableHeader<T extends object>({
           />
         </th>
         {columns.map((c) => {
+          const activeSort = sort.find((s) => s.id === c.key);
           const isFiltered = filterChildren.some(
             (node) => node.kind === "condition" && node.field === c.key,
           );
@@ -169,8 +172,8 @@ export function TableHeader<T extends object>({
               key={c.key}
               style={style(c)}
               aria-sort={
-                sort.find((s) => s.id === c.key)
-                  ? sort.find((s) => s.id === c.key)?.desc
+                activeSort
+                  ? activeSort.desc
                     ? "descending"
                     : "ascending"
                   : "none"
@@ -189,6 +192,7 @@ export function TableHeader<T extends object>({
               >
                 {c.header ?? (
                   <button
+                    className={activeSort ? "auto-sort-active" : undefined}
                     aria-label={tr("Sort {0}", [c.label ?? c.key])}
                     disabled={c.sortable === false}
                     onClick={(e) => {
@@ -212,13 +216,27 @@ export function TableHeader<T extends object>({
                       ]);
                     }}
                   >
-                    {c.label ?? c.key}{" "}
-                    {sort.find((s) => s.id === c.key)
-                      ? sort.find((s) => s.id === c.key)?.desc
-                        ? "↓"
-                        : "↑"
-                      : ""}
+                    {c.label ?? c.key}
+                    {activeSort && (
+                      <span className="auto-sort-indicator" aria-hidden="true">
+                        {activeSort.desc ? "↓" : "↑"}
+                      </span>
+                    )}
                   </button>
+                )}
+                {c.tip != null && c.tip !== false && c.tip !== "" && (
+                  <AutoTip
+                    content={c.tip}
+                    tipComponent={c.tipComponent ?? tipComponent}
+                  >
+                    <button
+                      type="button"
+                      className="auto-tip-trigger"
+                      aria-label={c.label ?? c.key}
+                    >
+                      <span aria-hidden="true">ⓘ</span>
+                    </button>
+                  </AutoTip>
                 )}
                 {c.filterable && (
                   <Popover

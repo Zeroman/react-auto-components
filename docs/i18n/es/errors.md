@@ -108,3 +108,7 @@ Arreglo: Solo letras, dígitos, guion bajo y puntos.
 `useAutoDialog()` fuera de `AutoDialogProvider`.
 
 Arreglo: Envuelve el árbol en `<AutoDialogProvider>`. `AutoConfigProvider` no da diálogos y es opcional. `<AutoDialog open>` no usa este hook.
+
+## RAC-TABS-ROUTE-VALUE
+
+No pase `route` y `value` a `AutoTabs` al mismo tiempo. Si se proporcionan ambos, `route` tiene prioridad y el modo de desarrollo muestra `RAC-TABS-ROUTE-VALUE`. Omita `value` cuando `AutoNavigation` controle la selección.

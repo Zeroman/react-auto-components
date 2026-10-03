@@ -1,3 +1,4 @@
+import { openComponent } from "./helpers/navigation";
 import { test, expect, type Page } from "@playwright/test";
 
 test.use({ locale: "en-US" });
@@ -13,10 +14,7 @@ const pages = [
 ];
 
 async function openDemo(page: Page, name: string) {
-  await page
-    .getByRole("navigation")
-    .getByRole("button", { name, exact: true })
-    .click();
+  await openComponent(page, name);
 }
 
 async function bounded(page: Page) {

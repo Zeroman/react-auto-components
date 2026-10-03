@@ -16,6 +16,8 @@ Abas. As aninhadas são outro `AutoTabs` alimentado por `children`. Para uma bar
 | `onRefresh` | Se existir, há um botão de atualizar. **Não é capturado.** |
 | `disabled` | Continua visível e não pode ser escolhida. A seleção padrão pula abas desabilitadas. |
 
+Não passe `route` e `value` simultaneamente para `AutoTabs`. Se ambos forem fornecidos, `route` tem prioridade e o modo de desenvolvimento exibe `RAC-TABS-ROUTE-VALUE`. Omita `value` quando `AutoNavigation` controlar a seleção.
+
 ## Pré-condições
 
 Importe `style.css` uma vez (`RAC-CSS-MISSING` em desenvolvimento). `AutoConfigProvider` é opcional.

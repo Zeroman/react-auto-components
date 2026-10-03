@@ -6,19 +6,18 @@ import {
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import {
-  Fragment,
   useImperativeHandle,
   useEffect,
   useMemo,
   useRef,
   useState,
   type CSSProperties,
+  type MouseEvent as ReactMouseEvent,
 } from "react";
-import * as ContextMenu from "@radix-ui/react-context-menu";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
 import { emptyQuery, matchesQuery, type QueryNode } from "../../core/query";
 import { errorMessage } from "../../core/config";
-import { RacError, userText } from "../../core/errors";
+import { devWarn } from "../../core/errors";
 import {
   useFieldWarnings,
   useLibraryStyles,
@@ -26,7 +25,7 @@ import {
   warnTableId,
 } from "../../core/dev";
 import { AutoSearch } from "../AutoSearch";
-import { AutoDialog } from "../AutoDialog";
+import { DefaultTip } from "../AutoTip";
 import { TableHeader } from "./TableHeader";
 import { features } from "./features";
 import { useTableData } from "./useTableData";
@@ -37,26 +36,57 @@ import {
   initialSettings,
   type TableSettings,
 } from "./settings";
-import { SettingsPanel } from "./SettingsPanel";
-import { resolveColumn, resolveDataSource, resolveRowAction } from "./registry";
-import { racTestId } from "../../core/testid";
 import {
-  collectExport,
-  toCsv,
-  toJson,
-  download,
-  formatted,
-  fetchExportRows,
-} from "./export";
+  missingSource,
+  resolveColumn,
+  resolveDataSource,
+  resolveRowAction,
+} from "./registry";
+import { racTestId } from "../../core/testid";
+import { formatted } from "./export";
+import { useTableExport } from "./useTableExport";
+import { TableRow } from "./TableRow";
+import { TablePagination } from "./TablePagination";
+import { TableDialogs } from "./TableDialogs";
+import {
+  RowContextMenu,
+  showToolbarAction,
+  stickyColumnStyles,
+} from "./layout";
 import type { ComponentSize, TableDensity } from "../../core/types";
-import type { AutoTableProps, AutoColumn, TableQuery, RowScope } from "./types";
+import type {
+  AutoTableProps,
+  AutoColumn,
+  DataSource,
+  TableQuery,
+  RowScope,
+  RowAction,
+  TableToolbarActions,
+} from "./types";
 export function AutoTable<T extends object>(props: AutoTableProps<T>) {
   const tr = useAutoText();
   const services = useAutoConfig();
+  const hasLocalData = "data" in props && !!props.data;
+  const dataSource = "dataSource" in props ? props.dataSource : undefined;
+  const sourceName = "source" in props ? props.source : undefined;
+  const registeredSource = (
+    sourceName ? services.sources[sourceName] : undefined
+  ) as DataSource<T> | undefined;
   const remoteSource = useMemo(
-    () => resolveDataSource(props, services.sources),
-    [props, services.sources],
+    () =>
+      resolveDataSource(
+        { local: hasLocalData, dataSource, source: sourceName },
+        sourceName && registeredSource
+          ? { [sourceName]: registeredSource }
+          : {},
+      ),
+    [hasLocalData, dataSource, sourceName, registeredSource],
   );
+  useEffect(() => {
+    if (hasLocalData || dataSource || !sourceName || registeredSource) return;
+    const missing = missingSource(sourceName);
+    devWarn("AutoTable", "RAC-TABLE-SOURCE", missing.problem, missing.fix);
+  }, [hasLocalData, dataSource, sourceName, registeredSource]);
   useLibraryStyles();
   useFieldWarnings("AutoTable", props.searchFields);
   useFieldWarnings("AutoTable", props.formFields);
@@ -64,6 +94,8 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     id,
     rowKey,
     title,
+    sortTagsLayout = "inline",
+    toolbarActions,
     height = 440,
     rowHeight = 40,
     pagination = true,
@@ -80,6 +112,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     ),
     [current, setCurrent] = useState(""),
     [json, setJson] = useState(false),
+    [contextRow, setContextRow] = useState<T | null>(null),
     [message, setMessage] = useState("");
   useEffect(() => {
     if (!message) return;
@@ -121,6 +154,11 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     ),
   });
   const layout = active(settings.layout);
+  const tipComponent =
+    props.tipComponent ??
+    services.table?.tipComponent ??
+    services.tipComponent ??
+    DefaultTip;
   const size = props.size ?? services.table?.size ?? services.size ?? "medium";
   const globalDensity =
     services.table?.density ??
@@ -200,15 +238,20 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     warnRowKeys(source.rows, rowKey);
   }, [id, services.namespace, source.rows, rowKey]);
   const selectionCache = useRef(new Map<string, T>());
-  const sourceIndex = new Map<string, T>();
-  function indexRows(items: readonly T[]) {
-    for (const row of items) {
-      sourceIndex.set(getId(row), row);
-      const children = props.getChildren?.(row);
-      if (children) indexRows(children);
-    }
-  }
-  indexRows(source.rows);
+  const sourceIndex = useMemo(() => {
+    const identify = (row: T) =>
+      typeof rowKey === "function" ? rowKey(row) : String(row[rowKey]);
+    const index = new Map<string, T>();
+    const visit = (items: readonly T[]) => {
+      for (const row of items) {
+        index.set(identify(row), row);
+        const children = props.getChildren?.(row);
+        if (children?.length) visit(children);
+      }
+    };
+    visit(source.rows);
+    return index;
+  }, [source.rows, rowKey, props.getChildren]);
   function selectionValues(next: Record<string, true>) {
     return Object.keys(next).flatMap((key) => {
       const row =
@@ -324,56 +367,16 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
       ? column.format(total as T[typeof column.key], summaryRows[0])
       : total;
   }
-  const [exporting, setExporting] = useState(false);
-  const exportController = useRef<AbortController | null>(null);
-  useEffect(() => () => exportController.current?.abort(), []);
-  async function doExport(
-    format: "csv" | "json" | "xlsx",
-    scope: RowScope = active(settings.export).scope,
-  ) {
-    if (exportController.current) return;
-    const controller = new AbortController();
-    exportController.current = controller;
-    setExporting(true);
-    try {
-      const config = active(settings.export);
-      const exportRows =
-        remoteSource && scope === "filtered"
-          ? await fetchExportRows(remoteSource, query, controller.signal)
-          : scopeRows(scope);
-      const data = collectExport(exportRows, columns, config.columns);
-      const name = config.fileName || title || tr("Export");
-      if (format === "xlsx") {
-        if (!props.exportXlsx)
-          throw new RacError(
-            "AutoTable",
-            "RAC-TABLE-XLSX",
-            'export(format="xlsx") requires an XLSX adapter.',
-            'Import { exportXlsx } from "@zeroman.yang/react-auto-components/xlsx" and pass exportXlsx={exportXlsx}. exceljs is an optionalDependency and is not installed by default.',
-            "Configure the XLSX export adapter",
-          );
-        const buffer = await props.exportXlsx(data, {
-          fileName: name,
-        });
-        download(
-          buffer as BlobPart,
-          `${name}.xlsx`,
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        );
-      } else
-        download(
-          format === "csv" ? toCsv(data) : toJson(data),
-          `${name}.${format}`,
-          format === "csv" ? "text/csv;charset=utf-8" : "application/json",
-        );
-      setMessage(tr("Export complete"));
-    } catch (e) {
-      if (!controller.signal.aborted) setMessage(userText(tr, e));
-    } finally {
-      exportController.current = null;
-      if (!controller.signal.aborted) setExporting(false);
-    }
-  }
+  const { exporting, doExport } = useTableExport({
+    remoteSource,
+    query,
+    scopeRows,
+    columns,
+    settings,
+    title,
+    exportXlsx: props.exportXlsx,
+    setMessage,
+  });
   useImperativeHandle(props.ref, () => ({
     refresh: source.refresh,
     reset() {
@@ -404,32 +407,11 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     export: doExport,
   }));
   const width = (c: AutoColumn<T>) => layout.widths[c.key] ?? c.width ?? 150;
-  function cellStyle(c: AutoColumn<T>): CSSProperties {
-    const pin = layout.pin[c.key];
-    const peers = ordered.filter((x) => layout.pin[x.key] === pin);
-    const i = peers.indexOf(c);
-    return {
-      width: width(c),
-      minWidth: width(c),
-      maxWidth: width(c),
-      textAlign: c.align ?? "left",
-      ...(pin
-        ? {
-            position: "sticky",
-            zIndex: 2,
-            [pin]:
-              peers
-                .slice(
-                  pin === "left" ? 0 : i + 1,
-                  pin === "left" ? i : undefined,
-                )
-                .reduce((sum, x) => sum + width(x), 0) +
-              (pin === "left" ? 44 : 0),
-            background: "var(--auto-bg)",
-          }
-        : {}),
-    };
-  }
+  const columnStyle = useMemo(
+    () => stickyColumnStyles(ordered, layout.pin, layout.widths),
+    [ordered, layout.pin, layout.widths],
+  );
+  const cellStyle = (column: AutoColumn<T>) => columnStyle.get(column.key)!;
   const renderRows = effectiveVirtual
     ? virtual.getVirtualItems().map((v) => ({
         row: rows[v.index],
@@ -441,7 +423,13 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
         index,
         virtual: undefined,
       }));
-  const visibleSignature = renderRows.map(({ row }) => row.id).join("|");
+  const visibleSignature =
+    effectiveVirtual && props.renderExpanded
+      ? virtual
+          .getVirtualItems()
+          .map((v) => v.key)
+          .join("|")
+      : "";
   useEffect(() => {
     if (!effectiveVirtual || !props.renderExpanded || !scroll.current) return;
     const container = scroll.current;
@@ -502,6 +490,36 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
   ]);
   const colCount =
     ordered.length + 1 + (props.onEdit || props.onDelete ? 1 : 0);
+  const sortTags = query.sort.length > 1 && (
+    <div className="auto-actions auto-sort-tags">
+      {query.sort.map((s) => (
+        <button
+          key={s.id}
+          onClick={() =>
+            changeQuery({
+              sort: query.sort.filter((x) => x.id !== s.id),
+              pageIndex: 0,
+            })
+          }
+        >
+          {columns.find((c) => c.key === s.id)?.label ?? s.id}{" "}
+          {s.desc ? "↓" : "↑"} ×
+        </button>
+      ))}
+    </div>
+  );
+  function openRowMenu(event: ReactMouseEvent<HTMLTableElement>) {
+    const rowElement = (event.target as HTMLElement | null)?.closest?.(
+      "tr[data-row-id]",
+    );
+    const id = rowElement?.getAttribute("data-row-id");
+    const row = id ? sourceIndex.get(id) : undefined;
+    if (!row) {
+      event.preventDefault();
+      return;
+    }
+    setContextRow(row);
+  }
   return (
     <section
       className="auto-root auto-table"
@@ -516,6 +534,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
         <AutoSearch
           size={size}
           {...props.searchLayout}
+          tipComponent={props.searchLayout?.tipComponent ?? tipComponent}
           fields={props.searchFields}
           onSearch={(filter) =>
             changeQuery({
@@ -536,6 +555,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
               {tr("{0} selected", [selectedRows.length])}
             </span>
           )}
+          {sortTagsLayout === "inline" && sortTags}
           {props.toolbar}
         </div>
         <div className="auto-actions">
@@ -562,52 +582,47 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
               {tr("Delete selected")}
             </button>
           )}
-          <button
-            type="button"
-            data-testid="rac-refresh"
-            onClick={source.refresh}
-            disabled={source.loading}
-          >
-            {tr("Refresh")}
-          </button>
-          <button
-            type="button"
-            data-testid="rac-settings"
-            onClick={() => setDraft(structuredClone(settings))}
-          >
-            {tr("Settings")}
-          </button>
-          <button
-            type="button"
-            data-testid="rac-export"
-            disabled={exporting}
-            onClick={() => void doExport(active(settings.export).format)}
-          >
-            {exporting ? tr("Exporting…") : tr("Export")}
-          </button>
-          <button onClick={() => setJson(!json)} aria-pressed={json}>
-            JSON
-          </button>
+          {showToolbarAction(toolbarActions, "refresh") && (
+            <button
+              type="button"
+              data-testid="rac-refresh"
+              onClick={source.refresh}
+              disabled={source.loading}
+            >
+              {tr("Refresh")}
+            </button>
+          )}
+          {showToolbarAction(toolbarActions, "settings") && (
+            <button
+              type="button"
+              data-testid="rac-settings"
+              onClick={() => setDraft(structuredClone(settings))}
+            >
+              {tr("Settings")}
+            </button>
+          )}
+          {showToolbarAction(toolbarActions, "export") && (
+            <button
+              type="button"
+              data-testid="rac-export"
+              disabled={exporting}
+              onClick={() => void doExport(active(settings.export).format)}
+            >
+              {exporting ? tr("Exporting…") : tr("Export")}
+            </button>
+          )}
+          {showToolbarAction(toolbarActions, "json") && (
+            <button
+              type="button"
+              onClick={() => setJson(!json)}
+              aria-pressed={json}
+            >
+              {tr("JSON")}
+            </button>
+          )}
         </div>
       </div>
-      {query.sort.length > 0 && (
-        <div className="auto-actions auto-sort-tags">
-          {query.sort.map((s) => (
-            <button
-              key={s.id}
-              onClick={() =>
-                changeQuery({
-                  sort: query.sort.filter((x) => x.id !== s.id),
-                  pageIndex: 0,
-                })
-              }
-            >
-              {columns.find((c) => c.key === s.id)?.label ?? s.id}{" "}
-              {s.desc ? "↓" : "↑"} ×
-            </button>
-          ))}
-        </div>
-      )}
+      {sortTagsLayout === "separate" && sortTags}
       {source.error && (
         <div role="alert" className="auto-error">
           {source.error}{" "}
@@ -638,7 +653,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
           </button>
         </div>
       )}
-      {json ? (
+      {json && showToolbarAction(toolbarActions, "json") ? (
         <div className="auto-json">
           <button
             onClick={() =>
@@ -662,407 +677,199 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
           }}
           aria-busy={source.loading}
         >
-          <table
-            style={{
-              minWidth: ordered.reduce((n, c) => n + width(c), 44),
-              width: "100%",
-              tableLayout: "fixed",
+          <RowContextMenu
+            actions={props.rowActions}
+            row={contextRow}
+            onOpenChange={(open) => {
+              if (!open) setContextRow(null);
+            }}
+            onSelect={(action, row) => {
+              void Promise.resolve()
+                .then(() => resolveRowAction(action, services.rowActions)(row))
+                .catch((error) => setMessage(tr(errorMessage(error))));
             }}
           >
-            <TableHeader
-              columns={ordered}
-              rows={source.rows}
-              sort={query.sort}
-              filter={query.filter}
-              style={cellStyle}
-              hasActions={!!(props.onEdit || props.onDelete)}
-              allSelected={rows.length > 0 && rows.every((r) => selected[r.id])}
-              indeterminate={
-                rows.length > 0 &&
-                rows.some((r) => selected[r.id]) &&
-                !rows.every((r) => selected[r.id])
-              }
-              onSelectAll={(checked) => {
-                const next = {
-                  ...selected,
-                };
-                rows.forEach((r) => {
-                  if (checked) next[r.id] = true;
-                  else delete next[r.id];
-                });
-                changeSelection(next);
+            <table
+              onContextMenu={props.rowActions?.length ? openRowMenu : undefined}
+              style={{
+                minWidth: ordered.reduce((n, c) => n + width(c), 44),
+                width: "100%",
+                tableLayout: "fixed",
               }}
-              onSort={(sort) =>
-                changeQuery({
-                  sort,
-                  pageIndex: 0,
-                })
-              }
-              onFilter={(filter) =>
-                changeQuery({
-                  filter,
-                  pageIndex: 0,
-                })
-              }
-              onResize={(key, width) =>
-                saveSettings({
-                  ...settings,
-                  layout: replaceActive(settings.layout, {
-                    ...layout,
-                    widths: {
-                      ...layout.widths,
-                      [key]: width,
-                    },
-                  }),
-                })
-              }
-            />
+            >
+              <TableHeader
+                tipComponent={tipComponent}
+                columns={ordered}
+                rows={source.rows}
+                sort={query.sort}
+                filter={query.filter}
+                style={cellStyle}
+                hasActions={!!(props.onEdit || props.onDelete)}
+                allSelected={
+                  rows.length > 0 && rows.every((r) => selected[r.id])
+                }
+                indeterminate={
+                  rows.length > 0 &&
+                  rows.some((r) => selected[r.id]) &&
+                  !rows.every((r) => selected[r.id])
+                }
+                onSelectAll={(checked) => {
+                  const next = {
+                    ...selected,
+                  };
+                  rows.forEach((r) => {
+                    if (checked) next[r.id] = true;
+                    else delete next[r.id];
+                  });
+                  changeSelection(next);
+                }}
+                onSort={(sort) =>
+                  changeQuery({
+                    sort,
+                    pageIndex: 0,
+                  })
+                }
+                onFilter={(filter) =>
+                  changeQuery({
+                    filter,
+                    pageIndex: 0,
+                  })
+                }
+                onResize={(key, width) =>
+                  saveSettings({
+                    ...settings,
+                    layout: replaceActive(settings.layout, {
+                      ...layout,
+                      widths: {
+                        ...layout.widths,
+                        [key]: width,
+                      },
+                    }),
+                  })
+                }
+              />
 
-            <tbody>
-              {effectiveVirtual &&
-                renderRows[0]?.virtual &&
-                renderRows[0].virtual.start > 0 && (
+              <tbody>
+                {effectiveVirtual &&
+                  renderRows[0]?.virtual &&
+                  renderRows[0].virtual.start > 0 && (
+                    <tr aria-hidden="true">
+                      <td
+                        colSpan={colCount}
+                        style={{
+                          height: renderRows[0].virtual.start,
+                          padding: 0,
+                          border: 0,
+                        }}
+                      />
+                    </tr>
+                  )}
+                {renderRows.map(({ row, index }) => (
+                  <TableRow
+                    key={row.id}
+                    row={row}
+                    index={index}
+                    rows={rows}
+                    ordered={ordered}
+                    current={current}
+                    setCurrent={setCurrent}
+                    selected={!!selected[row.id]}
+                    effectiveVirtual={effectiveVirtual}
+                    renderExpanded={props.renderExpanded}
+                    rowClassName={props.rowClassName}
+                    rowStyle={props.rowStyle}
+                    itemHeight={itemHeight}
+                    measureRef={virtual.measureElement}
+                    cellStyle={cellStyle}
+                    formatted={formatted}
+                    rowLoading={props.rowLoading}
+                    onEdit={
+                      props.onEdit
+                        ? (row) => setEdit({ kind: "edit", row })
+                        : undefined
+                    }
+                    onDelete={
+                      props.onDelete ? (row) => setDeleting([row]) : undefined
+                    }
+                    colCount={colCount}
+                    setMessage={setMessage}
+                    tr={tr}
+                  />
+                ))}
+                {effectiveVirtual && renderRows.length > 0 && (
                   <tr aria-hidden="true">
                     <td
                       colSpan={colCount}
                       style={{
-                        height: renderRows[0].virtual.start,
+                        height: Math.max(
+                          0,
+                          virtual.getTotalSize() -
+                            (renderRows.at(-1)?.virtual?.end ?? 0),
+                        ),
                         padding: 0,
                         border: 0,
                       }}
                     />
                   </tr>
                 )}
-              {renderRows.map(({ row, index, virtual: v }) => {
-                const rowNode = (
-                  <tr
-                    data-row-id={row.id}
-                    data-index={index}
-                    key={row.id}
-                    ref={
-                      effectiveVirtual && !props.renderExpanded
-                        ? virtual.measureElement
-                        : undefined
-                    }
-                    className={`${current === row.id ? "auto-current" : ""} ${props.rowClassName?.(row.original) ?? ""}`}
-                    style={{
-                      height: itemHeight,
-                      ...props.rowStyle?.(row.original),
-                    }}
-                    onClick={() => setCurrent(row.id)}
-                  >
-                    <td className="auto-table-cell-selection">
-                      <input
-                        type="checkbox"
-                        aria-label={tr("Select row {0}", [row.id])}
-                        checked={!!selected[row.id]}
-                        onChange={row.getToggleSelectedHandler()}
-                      />
+                {!rows.length && (
+                  <tr>
+                    <td colSpan={colCount} className="auto-empty">
+                      {props.empty ??
+                        (source.loading ? tr("Loading…") : tr("No data"))}
                     </td>
-                    {ordered.map((c, ci) => {
-                      let span = 1;
-                      if (c.merge) {
-                        const val = row.original[c.key];
-                        if (
-                          index > 0 &&
-                          !(
-                            props.renderExpanded &&
-                            rows[index - 1].getIsExpanded()
-                          ) &&
-                          Object.is(rows[index - 1].original[c.key], val)
-                        )
-                          return null;
-                        while (
-                          index + span < rows.length &&
-                          !(
-                            props.renderExpanded &&
-                            rows[index + span - 1].getIsExpanded()
-                          ) &&
-                          Object.is(rows[index + span].original[c.key], val)
-                        )
-                          span++;
-                      }
-                      const value = row.original[c.key];
-                      return (
-                        <td
-                          key={c.key}
-                          rowSpan={span}
-                          style={cellStyle(c)}
-                          tabIndex={0}
-                          onDoubleClick={() => {
-                            if (c.copyable)
-                              void navigator.clipboard
-                                .writeText(String(formatted(c, row.original)))
-                                .then(() => setMessage(tr("Copied")))
-                                .catch((e) => setMessage(tr(errorMessage(e))));
-                          }}
-                        >
-                          <div className="auto-cell">
-                            {ci === 0 && row.getCanExpand() && (
-                              <button
-                                className="auto-expand"
-                                style={{
-                                  marginLeft: row.depth * 16,
-                                }}
-                                data-testid={racTestId("expand", row.id)}
-                                aria-label={tr("Expand row {0}", [row.id])}
-                                aria-expanded={row.getIsExpanded()}
-                                onClick={row.getToggleExpandedHandler()}
-                              >
-                                {row.getIsExpanded() ? "−" : "+"}
-                              </button>
-                            )}
-                            {props.rowLoading?.(row.original) ? (
-                              <span className="auto-skeleton">
-                                {tr("Loading…")}
-                              </span>
-                            ) : c.render ? (
-                              c.render(value, row.original, index)
-                            ) : c.type === "progress" ? (
-                              <progress value={Number(value ?? 0)} max={100} />
-                            ) : (
-                              formatted(c, row.original)
-                            )}
-                          </div>
-                        </td>
-                      );
-                    })}
-                    <>
-                      {(props.onEdit || props.onDelete) && (
-                        <td>
-                          <div className="auto-actions auto-row-actions">
-                            {props.onEdit && (
-                              <button
-                                data-testid={racTestId("edit", row.id)}
-                                aria-label={tr("Edit row {0}", [row.id])}
-                                onClick={() =>
-                                  setEdit({
-                                    kind: "edit",
-                                    row: row.original,
-                                  })
-                                }
-                              >
-                                {tr("Edit")}
-                              </button>
-                            )}
-                            {props.onDelete && (
-                              <button
-                                data-testid={racTestId("delete", row.id)}
-                                aria-label={tr("Delete row {0}", [row.id])}
-                                onClick={() => setDeleting([row.original])}
-                              >
-                                {tr("Delete")}
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      )}
-                    </>
                   </tr>
-                );
-                return (
-                  <Fragment key={row.id}>
-                    {props.rowActions?.length ? (
-                      <ContextMenu.Root>
-                        <ContextMenu.Trigger asChild>
-                          {rowNode}
-                        </ContextMenu.Trigger>
-                        <ContextMenu.Portal>
-                          <ContextMenu.Content className="auto-popover auto-context-menu">
-                            {props.rowActions
-                              .filter((a) => !a.hidden?.(row.original))
-                              .map((a) => (
-                                <ContextMenu.Item
-                                  key={a.id}
-                                  disabled={a.disabled?.(row.original)}
-                                  onSelect={() =>
-                                    void Promise.resolve()
-                                      .then(() =>
-                                        resolveRowAction(
-                                          a,
-                                          services.rowActions,
-                                        )(row.original),
-                                      )
-                                      .catch((e) =>
-                                        setMessage(tr(errorMessage(e))),
-                                      )
-                                  }
-                                >
-                                  {a.label}
-                                </ContextMenu.Item>
-                              ))}
-                          </ContextMenu.Content>
-                        </ContextMenu.Portal>
-                      </ContextMenu.Root>
-                    ) : (
-                      rowNode
-                    )}
-                    {row.getIsExpanded() && props.renderExpanded && (
-                      <tr data-expanded-row-id={row.id}>
-                        <td colSpan={colCount}>
-                          {props.renderExpanded(row.original)}
-                        </td>
-                      </tr>
-                    )}
-                  </Fragment>
-                );
-              })}
-              {effectiveVirtual && renderRows.length > 0 && (
-                <tr aria-hidden="true">
-                  <td
-                    colSpan={colCount}
-                    style={{
-                      height: Math.max(
-                        0,
-                        virtual.getTotalSize() -
-                          (renderRows.at(-1)?.virtual?.end ?? 0),
-                      ),
-                      padding: 0,
-                      border: 0,
-                    }}
-                  />
-                </tr>
+                )}
+              </tbody>
+              {ordered.some((c) => c.summary) && (
+                <tfoot>
+                  <tr>
+                    <td className="auto-table-cell-selection">{tr("Total")}</td>
+                    {ordered.map((c) => (
+                      <td key={c.key} style={cellStyle(c)}>
+                        {summaryContent(c)}
+                      </td>
+                    ))}
+                    {(props.onEdit || props.onDelete) && <td />}
+                  </tr>
+                </tfoot>
               )}
-              {!rows.length && (
-                <tr>
-                  <td colSpan={colCount} className="auto-empty">
-                    {props.empty ??
-                      (source.loading ? tr("Loading…") : tr("No data"))}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-            {ordered.some((c) => c.summary) && (
-              <tfoot>
-                <tr>
-                  <td className="auto-table-cell-selection">{tr("Total")}</td>
-                  {ordered.map((c) => (
-                    <td key={c.key} style={cellStyle(c)}>
-                      {summaryContent(c)}
-                    </td>
-                  ))}
-                  {(props.onEdit || props.onDelete) && <td />}
-                </tr>
-              </tfoot>
-            )}
-          </table>
+            </table>
+          </RowContextMenu>
         </div>
       )}
       {pagination && (
-        <footer className="auto-pagination">
-          <span>{tr("Page {0} / {1}", [query.pageIndex + 1, pages])}</span>
-          <div className="auto-actions">
-            <select
-              aria-label={tr("Rows per page")}
-              value={query.pageSize}
-              onChange={(e) =>
-                changeQuery({
-                  pageIndex: 0,
-                  pageSize: Number(e.target.value),
-                })
-              }
-            >
-              {[...new Set([props.pageSize ?? 10, 10, 20, 50, 100])]
-                .sort((a, b) => a - b)
-                .map((n) => (
-                  <option key={n} value={n}>
-                    {tr("{0} / page", [n])}
-                  </option>
-                ))}
-            </select>
-            <button
-              aria-label={tr("Previous page")}
-              disabled={query.pageIndex === 0}
-              onClick={() =>
-                changeQuery({
-                  pageIndex: query.pageIndex - 1,
-                })
-              }
-            >
-              ←
-            </button>
-            <button
-              aria-label={tr("Next page")}
-              disabled={query.pageIndex + 1 >= pages}
-              onClick={() =>
-                changeQuery({
-                  pageIndex: query.pageIndex + 1,
-                })
-              }
-            >
-              →
-            </button>
-          </div>
-        </footer>
+        <TablePagination
+          pageIndex={query.pageIndex}
+          pageSize={query.pageSize}
+          pages={pages}
+          pageSizeOptions={[
+            ...new Set([props.pageSize ?? 10, 10, 20, 50, 100]),
+          ].sort((a, b) => a - b)}
+          onChange={changeQuery}
+        />
       )}
-      <AutoDialog
-        open={!!draft}
-        onOpenChange={(open) => {
-          if (!open) setDraft(null);
-        }}
-        title={tr("Table settings")}
-        width={760}
-        content={
-          draft && (
-            <SettingsPanel
-              value={draft}
-              columns={columns}
-              onChange={setDraft}
-            />
-          )
-        }
-        onSubmit={() => {
-          if (draft) {
-            saveSettings(draft);
-            const next = {
-              ...query,
-              pageIndex: 0,
-              sort: active(draft.sort),
-              filter: active(draft.filter),
-            };
-            setLocalQuery(next);
-            props.onQueryChange?.(next);
-          }
-        }}
-      />
-      <AutoDialog<T>
-        open={!!edit}
-        onOpenChange={(open) => {
-          if (!open) setEdit(null);
-        }}
-        title={edit?.kind === "add" ? tr("Add record") : tr("Edit record")}
-        fields={
-          props.formFields ??
-          columns.map((c) =>
-            c.type === "number"
-              ? { name: c.key, label: c.label, type: "integer" as const }
-              : { name: c.key, label: c.label, type: "input" as const },
-          )
-        }
-        defaultValue={edit?.row}
-        draftKey={`${id}:${edit?.kind}:${edit?.row ? getId(edit.row) : "new"}`}
-        showReset
-        onSubmit={async (values) => {
-          if (edit?.kind === "add") await props.onAdd?.(values);
-          else if (edit?.row) await props.onEdit?.(edit.row, values);
-          source.refresh();
-        }}
-      />
-      <AutoDialog
-        open={!!deleting}
-        onOpenChange={(open) => {
-          if (!open) setDeleting(null);
-        }}
-        title={tr("Delete")}
-        content={
-          <p>{tr("Delete these {0} records?", [deleting?.length ?? 0])}</p>
-        }
-        confirmLabel={tr("Delete")}
-        onSubmit={async () => {
-          if (deleting) await props.onDelete?.(deleting);
-          setSelected({});
-          source.refresh();
-        }}
+      <TableDialogs
+        id={id}
+        columns={columns}
+        formFields={props.formFields}
+        tipComponent={tipComponent}
+        getId={getId}
+        sourceRefresh={source.refresh}
+        draft={draft}
+        setDraft={setDraft}
+        saveSettings={saveSettings}
+        query={query}
+        setLocalQuery={setLocalQuery}
+        onQueryChange={props.onQueryChange}
+        edit={edit}
+        setEdit={setEdit}
+        onAdd={props.onAdd}
+        onEdit={props.onEdit}
+        deleting={deleting}
+        setDeleting={setDeleting}
+        onDelete={props.onDelete}
+        setSelected={setSelected}
       />
     </section>
   );

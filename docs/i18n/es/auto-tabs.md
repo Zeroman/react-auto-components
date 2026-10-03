@@ -16,6 +16,8 @@ Pestañas. Las anidadas son otro `AutoTabs` alimentado por `children`. Para una 
 | `onRefresh` | Si existe, hay un botón de refresco. **No se captura.** |
 | `disabled` | Sigue visible y no se puede elegir. La selección por defecto salta las pestañas deshabilitadas. |
 
+No pase `route` y `value` a `AutoTabs` al mismo tiempo. Si se proporcionan ambos, `route` tiene prioridad y el modo de desarrollo muestra `RAC-TABS-ROUTE-VALUE`. Omita `value` cuando `AutoNavigation` controle la selección.
+
 ## Precondiciones
 
 Importa `style.css` una vez (`RAC-CSS-MISSING` en desarrollo). `AutoConfigProvider` es opcional.

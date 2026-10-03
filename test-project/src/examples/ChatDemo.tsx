@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { AutoChat } from "@zeroman.yang/react-auto-components";
+import { AutoChat, AutoTabs } from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../i18n";
 
 import {
@@ -23,10 +23,11 @@ const initialMessages = (): DemoMessage[] => [
 ];
 
 /** A local simulation; the host owns transport, content rendering and cancellation. */
-export function ChatDemo() {
+export function ChatDemo({ mode: controlledMode }: { mode?: string } = {}) {
   const tr = useDemoText();
   const [messages, setMessages] = useState(initialMessages);
-  const [mode, setMode] = useState("conversation");
+  const [internalMode, setInternalMode] = useState("conversation");
+  const mode = controlledMode ?? internalMode;
   const [format, setFormat] = useState<ChatFormat>("markdown");
   const [draft, setDraft] = useState("");
   const [generating, setGenerating] = useState(false);
@@ -91,32 +92,28 @@ export function ChatDemo() {
 
   return (
     <div className="chat-demo chat-demo-formats">
-      <div
-        className="chat-demo-modes"
-        role="group"
-        aria-label={tr("chat.render.mode")}
-      >
-        {[
-          "conversation",
-          "performance",
-          "rendering",
-          "layouts",
-          "hooks",
-          "edges",
-        ].map((next) => (
-          <button
-            key={next}
-            type="button"
-            aria-pressed={mode === next}
-            onClick={() => {
+      {!controlledMode && (
+        <div className="chat-demo-modes">
+          <AutoTabs
+            value={[mode]}
+            onChange={(next) => {
               stop();
-              setMode(next);
+              setInternalMode(next[0]);
             }}
-          >
-            {tr(`chat.render.${next}`)}
-          </button>
-        ))}
-      </div>
+            items={[
+              "conversation",
+              "performance",
+              "rendering",
+              "layouts",
+              "hooks",
+              "edges",
+            ].map((next) => ({
+              id: next,
+              label: tr(`chat.render.${next}`),
+            }))}
+          />
+        </div>
+      )}
       {mode === "performance" ? (
         <ChatPerformanceDemo />
       ) : mode === "rendering" ? (

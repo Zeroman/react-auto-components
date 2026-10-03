@@ -1,14 +1,12 @@
+import { openComponent } from "./helpers/navigation";
 import { test, expect, type Page } from "@playwright/test";
 test.use({ locale: "en-US" });
 async function openChat(page: Page, tab: string) {
   await page.goto("/");
+  await openComponent(page, "AutoChat");
   await page
-    .getByRole("navigation")
-    .getByRole("button", { name: "AutoChat", exact: true })
-    .click();
-  await page
-    .locator(".chat-demo-modes")
-    .getByRole("button", { name: tab, exact: true })
+    .locator(".demo-navigation")
+    .getByRole("tab", { name: tab, exact: true })
     .click();
 }
 async function contained(page: Page) {
@@ -280,16 +278,16 @@ test("edge states retain drafts and isolate pending requests across conversation
   await expect(editor).toHaveValue("New draft");
 });
 
-test("six tabs and new scenarios keep mobile controls and history visible", async ({
+test("seven tabs and new scenarios keep mobile controls and history visible", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await openChat(page, "Rendering");
-  await expect(page.locator(".chat-demo-modes button")).toHaveCount(6);
+  await expect(page.locator('.demo-navigation [role="tab"]')).toHaveCount(7);
   for (const tab of ["Rendering", "Message layout", "Hooks", "Edge states"]) {
     await page
-      .locator(".chat-demo-modes")
-      .getByRole("button", { name: tab, exact: true })
+      .locator(".demo-navigation")
+      .getByRole("tab", { name: tab, exact: true })
       .click();
     await contained(page);
     if (tab === "Hooks" || tab === "Edge states")
@@ -318,9 +316,9 @@ test("new test tabs have translated, bounded controls in all ten languages", asy
   ]) {
     await page.getByTestId("language-picker").selectOption(locale);
     for (const index of [2, 3, 4, 5]) {
-      await page.locator(".chat-demo-modes button").nth(index).click();
+      await page.locator('.demo-navigation [role="tab"]').nth(index).click();
       await contained(page);
-      expect(await page.locator(".chat-demo-modes").innerText()).not.toContain(
+      expect(await page.locator(".demo-navigation").innerText()).not.toContain(
         "chat.",
       );
       expect(await page.locator(".chat-lab-toolbar").innerText()).not.toContain(

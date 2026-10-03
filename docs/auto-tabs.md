@@ -4,6 +4,24 @@
 
 Tab list. Nested tabs are another `AutoTabs` fed by `children`, not a menu. Use [AutoMenu](auto-menu.md) for a sidebar.
 
+
+Each tab accepts `tip: ReactNode` for help on hover or focus, without changing layout. `tipComponent` can be passed to AutoTabs or a tab; nested groups inherit the parent component.
+
+Resolution order is the item/field/column parameter, the owning component parameter, provider component defaults (`config.tabs`, `config.form`, `config.table`, or `config.menu`), shared `AutoConfigProvider.config.tipComponent`, then built-in `DefaultTip`. Custom components receive `{ content, children, placement }` (`AutoTipProps`) and must preserve the trigger events, ref and accessibility props. `AutoTip` and `DefaultTip` are public exports; the default uses a portal, supports Escape, and keeps the trigger in place.
+
+
+```tsx
+import { AutoConfigProvider, AutoTabs, DefaultTip, type AutoTipProps } from "@zeroman.yang/react-auto-components";
+
+function AppTip(props: AutoTipProps) {
+  return <DefaultTip {...props} placement="bottom" />;
+}
+
+<AutoConfigProvider config={{ tipComponent: AppTip }}>
+  <AutoTabs items={[{ id: "mock", label: "Mock", tip: "Runs in the browser" }]} />
+</AutoConfigProvider>
+```
+
 ## Usage
 
 ```tsx
@@ -23,7 +41,8 @@ import "@zeroman.yang/react-auto-components/style.css";
 | Prop | Behavior |
 | --- | --- |
 | `items` | Each tab needs a stable `id`. `hidden` (boolean or function) and a failed `canAccess` remove the tab. |
-| `value` | Controlled path of ids from the root. Nested selection is `["parent", "child"]`. |
+| `route` | Optional `AutoRouteConfig` (`{ name?: string, defaultChild?: string }`). Participates in the [AutoNavigation](auto-navigation.md) component tree; active tab is driven by route state, and clicking a tab calls `goto()`. |
+| `value` | Controlled path of ids from the root. Nested selection is `["parent", "child"]`. Mutually exclusive with `route` (`RAC-TABS-ROUTE-VALUE`). |
 | `defaultValue` | Uncontrolled initial path. |
 | `onChange(path, item)` | **Not caught.** If it throws, React reports the error and the last committed path stays when the component is controlled by you. |
 | `mode` | Default `"horizontal"`. `"vertical"` stacks the tab list. |
@@ -37,6 +56,8 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `lazy` | Default `false`. `true` mounts a panel on its first visit. |
 
 A nested `children` list replaces `content` for that tab. `defaultActive` is the nested uncontrolled id.
+
+When `route` is provided, `AutoNavigation` drives the selected tab. Omit `value` when using `route`; if both are supplied, `route` takes precedence and `RAC-TABS-ROUTE-VALUE` is warned in development.
 
 ## Dynamic tabs
 

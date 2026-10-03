@@ -110,3 +110,7 @@ xlsx 介面卡載入不到 `exceljs`。它是 `optionalDependency`，普通安�
 在 `AutoDialogProvider` 之外呼叫了 `useAutoDialog()`。
 
 修復：在該樹外包一層 `<AutoDialogProvider>`。`AutoConfigProvider` 不提供彈窗，而且是可選的。宣告式 `<AutoDialog open>` 不用這個 hook。
+
+## RAC-TABS-ROUTE-VALUE
+
+請勿同時向 `AutoTabs` 傳入 `route` 與 `value`。若同時提供，`route` 優先，開發模式會顯示 `RAC-TABS-ROUTE-VALUE` 警告。由 `AutoNavigation` 管理選擇時，請省略 `value`。

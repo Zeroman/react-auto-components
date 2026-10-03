@@ -4,6 +4,12 @@
 
 ## Noch nicht veröffentlicht
 
+- `AutoNavigation` kommt hinzu. Gemountete Komponenten tragen sich in einen Pfadbaum ein. `goto` unterstützt relative Pfade, Zugriffsprüfungen und ein Abbruchsignal. Nur bestätigte Orte werden mit Hash-, Browser- oder Speicherverlauf synchronisiert. `AutoMenu` und `AutoTabs` nehmen `route` an und folgen dem aktiven Kind.
+- `AutoTip` und `DefaultTip` kommen hinzu. Hinweise an Feldern, Spalten, Menüs und Tabs schweben. Die Anzeigetypen `tip` und `append` bleiben inline. Es gilt die Komponente des Eintrags, dann die des Besitzers, dann `config.form`, `config.table`, `config.tabs` oder `config.menu`, danach `config.tipComponent`.
+- `mode` von `AutoSearch` ist standardmäßig `"instant"`. Versteckte Felder und Felder, die `canAccess` nicht bestehen, bleiben in den Werten und fehlen in der Abfrage. Suchoptionen stehen auf `search`; die bisherigen `match`-Props der obersten Ebene funktionieren weiter.
+- `toolbarActions` von `AutoTable` zeigt oder verbirgt Aktualisieren, Einstellungen, Export und JSON. `handle.refresh()` und `handle.export()` bleiben verfügbar. Sortiermarken erscheinen erst bei zwei oder mehr sortierten Spalten.
+- Formulare akzeptieren `classNames`- und `styles`-Slots, ein `divider`-Anzeigeelement und `virtual-select`.
+
 ## 0.1.3 - 2026-10-02
 
 - Eingebaute UI-Texte sind standardmäßig Englisch, und diese Zeichenkette ist der `config.t`-Schlüssel. Für andere Sprachen `t` übergeben. Frühere chinesische Schlüssel wie `提交` und `刷新` sind nicht mehr der Standard.

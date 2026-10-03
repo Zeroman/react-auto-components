@@ -220,4 +220,10 @@ AutoChat 提供轻量的对话布局，支持流式跟随、历史消息加载�
 
 [AutoChat API](auto-chat.md)
 
-回调抛错之后组件会怎样，见行为契约：[AutoForm](auto-form.md)、[AutoSearch](auto-search.md)、[AutoTable](auto-table.md)、[AutoDialog](auto-dialog.md)、[AutoTabs](auto-tabs.md)、[AutoMenu](auto-menu.md)。开发者错误码：[errors.md](errors.md)。
+### 组件导航树（AutoNavigation）
+
+`AutoNavigation` 提供基于组件树的声明式导航系统。将结构化路径、参数、权限校验及 URL 历史同步彻底解耦，支持深度相对路径跳转（`./child`、`../sibling`）、严苛模式安全生命周期控制以及与 React Router、TanStack Router、Next.js 和静态 Hash 路由的高性能适配。
+
+[AutoNavigation API 与路由接入指南](auto-navigation.md)
+
+回调抛错之后组件会怎样，见行为契约：[AutoForm](auto-form.md)、[AutoSearch](auto-search.md)、[AutoTable](auto-table.md)、[AutoDialog](auto-dialog.md)、[AutoTabs](auto-tabs.md)、[AutoMenu](auto-menu.md)、[AutoNavigation](auto-navigation.md)。开发者错误码：[errors.md](errors.md)。

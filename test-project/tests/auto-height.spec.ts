@@ -155,6 +155,10 @@ test("remaining height is an in-page tab and the old link opens the same applica
   await page.getByRole("tab", { name: "Local Data", exact: true }).focus();
   await page.keyboard.press("End");
   await expect(
+    page.getByRole("tab", { name: "Server-driven Mock", exact: true }),
+  ).toBeFocused();
+  await page.keyboard.press("ArrowLeft");
+  await expect(
     page.getByRole("tab", { name: "Remaining Height", exact: true }),
   ).toBeFocused();
   await fitted(page);
@@ -173,7 +177,7 @@ test("switching to remaining height preserves the page heading, description and 
   const selectors = [
     ".page-heading",
     ".section-heading",
-    ".table-demo .auto-tabs-heading",
+    ".demo-navigation .auto-tabs-heading",
   ];
   const before = await Promise.all(
     selectors.map((selector) => page.locator(selector).boundingBox()),

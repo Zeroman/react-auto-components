@@ -1,18 +1,30 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   AutoSearch,
+  type Field,
   matchesQuery,
   serializeRsql,
   type QueryNode,
 } from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../i18n";
-import { useDemoData, makeProjects, type Project } from "../data";
+import { useDemoData, makeProjects, createSource, type Project } from "../data";
 
-export function SearchDemo() {
+export type SearchExampleKind = "instant" | "manual" | "advanced" | "remote";
+
+export function SearchDemo({ example }: { example: SearchExampleKind }) {
+  const tr = useDemoText();
+  return (
+    <section className="card">
+      <h2>{tr("Composable Search Criteria")}</h2>
+      <SearchExample key={example} example={example} />
+    </section>
+  );
+}
+
+function SearchExample({ example }: { example: SearchExampleKind }) {
   const tr = useDemoText();
   const { searchFields } = useDemoData();
-  const [result, setResult] = useState(""),
-    [instant, setInstant] = useState(false);
+  const [result, setResult] = useState("");
   const [queryNode, setQueryNode] = useState<QueryNode | null>(null);
   const sampleProjects = useMemo(
     () =>
@@ -22,29 +34,108 @@ export function SearchDemo() {
       })),
     [tr],
   );
+  const source = useMemo(() => createSource(sampleProjects), [sampleProjects]);
+  const [remote, setRemote] = useState<{
+    rows: Project[];
+    total: number;
+    loading: boolean;
+    error: string;
+  }>({
+    rows: [],
+    total: 0,
+    loading: true,
+    error: "",
+  });
+  useEffect(() => {
+    if (example !== "remote") return;
+    const controller = new AbortController();
+    setRemote((current) => ({ ...current, loading: true, error: "" }));
+    source(
+      {
+        pageIndex: 0,
+        pageSize: 6,
+        sort: [],
+        filter: queryNode ?? { kind: "group", operator: "and", children: [] },
+      },
+      { signal: controller.signal },
+    ).then(
+      (response) => {
+        if (!controller.signal.aborted)
+          setRemote({ ...response, loading: false, error: "" });
+      },
+      (error: unknown) => {
+        if (!controller.signal.aborted)
+          setRemote({
+            rows: [],
+            total: 0,
+            loading: false,
+            error: String(error),
+          });
+      },
+    );
+    return () => controller.abort();
+  }, [example, queryNode, source]);
+  const advancedFields: Field<Project>[] = [
+    {
+      name: "name",
+      label: tr("Keyword"),
+      match: "contains",
+      ignoreCase: true,
+      searchFields: ["name", "owner", "region"],
+    },
+    {
+      name: "status",
+      label: tr("Status"),
+      type: "select",
+      multiple: true,
+      options: ["In Progress", "Completed", "Pending Start"].map((value) => ({
+        value,
+        label: tr(value),
+      })),
+    },
+    {
+      name: "region",
+      label: tr("Region"),
+      type: "select",
+      options: ["Shanghai", "Hangzhou", "Shenzhen"].map((value) => ({
+        value,
+        label: tr(value),
+      })),
+    },
+  ];
   const matched = useMemo(() => {
     if (!queryNode) return sampleProjects;
     return sampleProjects.filter((r) => matchesQuery(r, queryNode));
   }, [sampleProjects, queryNode]);
+  const hits = example === "remote" ? remote.rows : matched;
+  const count = example === "remote" ? remote.total : matched.length;
   return (
-    <section className="card">
-      <h2>{tr("Composable Search Criteria")}</h2>
-      <label className="auto-root">
-        <input
-          type="checkbox"
-          checked={instant}
-          onChange={(e) => setInstant(e.target.checked)}
-        />
-        {tr("Instant Search")}
-      </label>
+    <div data-testid={`search-example-${example}`}>
+      <p className="muted">
+        {tr(
+          example === "manual"
+            ? "Edit criteria, then click Search to apply them."
+            : example === "advanced"
+              ? "Search project name, owner or region together, and combine multiple statuses."
+              : example === "remote"
+                ? "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required."
+                : "Results update as you type or select a value. Reset restores all results.",
+        )}
+      </p>
       <AutoSearch<Project>
-        fields={searchFields}
-        mode={instant ? "instant" : "manual"}
+        fields={example === "advanced" ? advancedFields : searchFields}
+        mode={example === "manual" ? "manual" : undefined}
         onSearch={(q) => {
           setQueryNode(q);
           setResult(serializeRsql(q));
         }}
       />
+      {example === "remote" && remote.loading && (
+        <p role="status">{tr("Processing…")}</p>
+      )}
+      {example === "remote" && remote.error && (
+        <p role="alert">{remote.error}</p>
+      )}
       <div className="code-card">
         <pre data-testid="query-result">
           {result || tr("// RSQL query shown after searching")}
@@ -60,7 +151,7 @@ export function SearchDemo() {
       >
         <div className="section-heading">
           <div>
-            <h3>{tr("Real-time matches ({0} items)", [matched.length])}</h3>
+            <h3>{tr("Real-time matches ({0} items)", [count])}</h3>
             <p className="muted">
               {tr(
                 "A sample dataset filtered in real time by the search criteria above.",
@@ -76,7 +167,7 @@ export function SearchDemo() {
             marginTop: 12,
           }}
         >
-          {matched.slice(0, 6).map((item) => (
+          {hits.slice(0, 6).map((item) => (
             <div
               key={item.id}
               className="card"
@@ -104,7 +195,7 @@ export function SearchDemo() {
               </div>
             </div>
           ))}
-          {matched.length === 0 && (
+          {count === 0 && (example !== "remote" || !remote.loading) && (
             <div
               className="auto-empty"
               style={{
@@ -117,6 +208,6 @@ export function SearchDemo() {
           )}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

@@ -103,3 +103,128 @@ test("controlled normalization preserves focus and subsequent typing", async () 
   expect(screen.getByLabelText("Name")).toHaveValue("ABC");
   expect(screen.getByLabelText("Name")).toHaveFocus();
 });
+
+test("display items render cleanly and are skipped during validation and submit", async () => {
+  const submit = vi.fn();
+  const action = vi.fn();
+  const user = userEvent.setup();
+  render(
+    <AutoForm<{ username: string }>
+      fields={[
+        { type: "title", label: "User Registration" },
+        { type: "tip", content: "Please fill in your details below." },
+        { type: "divider" },
+        { name: "username", label: "Username", required: true },
+        { type: "button", label: "Click Me", onAction: action },
+      ]}
+      onSubmit={submit}
+    />,
+  );
+  expect(screen.getByText("User Registration")).toBeVisible();
+  expect(screen.getByText("Please fill in your details below.")).toBeVisible();
+  expect(screen.getByRole("button", { name: "Click Me" })).toBeVisible();
+
+  await user.click(screen.getByRole("button", { name: "Click Me" }));
+  expect(action).toHaveBeenCalled();
+
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  expect(submit).not.toHaveBeenCalled();
+  expect(await screen.findByText("Username is required")).toBeVisible();
+
+  await user.type(screen.getByRole("textbox", { name: "Username" }), "alice");
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() =>
+    expect(submit).toHaveBeenCalledWith({ username: "alice" }),
+  );
+});
+
+test("slot classNames and styles apply to form and fields", () => {
+  const { container } = render(
+    <AutoForm<{ email: string }>
+      classNames={{
+        form: "custom-form-root",
+        grid: "custom-grid",
+        submit: "custom-submit-btn",
+        input: "custom-global-input",
+      }}
+      styles={{
+        form: { padding: "20px" },
+      }}
+      fields={[
+        {
+          name: "email",
+          label: "Email Address",
+          classNames: {
+            root: "email-field-root",
+            input: "email-specific-input",
+            label: "email-custom-label",
+          },
+        },
+      ]}
+    />,
+  );
+
+  const formEl = container.querySelector("form");
+  expect(formEl).toHaveClass("custom-form-root");
+  expect(formEl).toHaveStyle({ padding: "20px" });
+
+  const gridEl = container.querySelector(".auto-form-grid");
+  expect(gridEl).toHaveClass("custom-grid");
+
+  const submitBtn = screen.getByRole("button", { name: "Submit" });
+  expect(submitBtn).toHaveClass("custom-submit-btn");
+
+  const inputEl = screen.getByLabelText("Email Address");
+  expect(inputEl).toHaveClass("custom-global-input");
+  expect(inputEl).toHaveClass("email-specific-input");
+
+  const labelEl = container.querySelector("label");
+  expect(labelEl).toHaveClass("email-custom-label");
+});
+
+test("virtual-select and virtual choice field render and update form value", async () => {
+  vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(220);
+  vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockReturnValue(300);
+  const submit = vi.fn();
+  const user = userEvent.setup();
+  render(
+    <AutoForm<{ role: string; tag: string }>
+      fields={[
+        {
+          name: "role",
+          label: "Role",
+          type: "virtual-select",
+          options: [
+            { value: "admin", label: "Admin Role" },
+            { value: "user", label: "User Role" },
+          ],
+        },
+        {
+          name: "tag",
+          label: "Tag",
+          type: "select",
+          virtual: true,
+          options: [
+            { value: "frontend", label: "Frontend" },
+            { value: "backend", label: "Backend" },
+          ],
+        },
+      ]}
+      onSubmit={submit}
+    />,
+  );
+
+  const roleButton = screen.getByLabelText("Role");
+  await user.click(roleButton);
+  await user.click(screen.getByText("Admin Role"));
+
+  const tagButton = screen.getByLabelText("Tag");
+  await user.click(tagButton);
+  await user.click(screen.getByText("Backend"));
+
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() =>
+    expect(submit).toHaveBeenCalledWith({ role: "admin", tag: "backend" }),
+  );
+});
+

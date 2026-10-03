@@ -1,3 +1,4 @@
+import { openComponent } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 
 test.use({ locale: "en-US" });
@@ -81,10 +82,7 @@ test("mobile sidebar retains accessible names and a narrow flyout stays in the v
 }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.goto("/");
-  const form = page
-    .getByRole("navigation")
-    .getByRole("button", { name: "AutoForm", exact: true });
-  await form.click();
+  await openComponent(page, "AutoForm");
   await expect(page.locator("main")).toHaveAttribute("data-page", "form");
   const preview = await fixture(page);
   await preview.getByRole("button", { name: "Collapse menu" }).click();

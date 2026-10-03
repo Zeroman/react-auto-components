@@ -11,6 +11,7 @@ Schema-driven React 19 components. Read this file first. Behavior, thrown callba
 - Tabs, including dynamic tabs: docs/auto-tabs.md
 - Menu: docs/auto-menu.md
 - Chat: docs/auto-chat.md
+- Component navigation: docs/auto-navigation.md
 - Error codes: docs/errors.md
 
 Each component doc has a "Behavior and props" table. That table is the callback contract, including what happens when a callback throws. English docs are the source. `docs/i18n/*` mirrors them.

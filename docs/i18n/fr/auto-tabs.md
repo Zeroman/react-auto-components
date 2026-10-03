@@ -16,6 +16,8 @@ Onglets. L'imbrication est un autre `AutoTabs` nourri par `children`. Pour une b
 | `onRefresh` | S'il est défini, un bouton d'actualisation apparaît. **Non capturé.** |
 | `disabled` | Reste visible et ne peut pas être choisi. La sélection par défaut saute les onglets désactivés. |
 
+Ne passez pas simultanément `route` et `value` à `AutoTabs`. Si les deux sont fournis, `route` est prioritaire et le mode développement affiche `RAC-TABS-ROUTE-VALUE`. Omettez `value` lorsque `AutoNavigation` contrôle la sélection.
+
 ## Préconditions
 
 Importez `style.css` une fois (`RAC-CSS-MISSING` en développement). `AutoConfigProvider` est optionnel.

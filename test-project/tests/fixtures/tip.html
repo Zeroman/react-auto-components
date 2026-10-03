@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <div id="root"></div>
+    <script type="module">
+      import React, { useState } from "react";
+      import { createRoot } from "react-dom/client";
+      import { AutoDialog } from "@zeroman.yang/react-auto-components";
+      import "@zeroman.yang/react-auto-components/style.css";
+      const h = React.createElement;
+      function Example() {
+        const [open, setOpen] = useState(false);
+        return h(
+          React.Fragment,
+          null,
+          h("button", { onClick: () => setOpen(true) }, "Open dialog"),
+          h(AutoDialog, {
+            open,
+            onOpenChange: setOpen,
+            title: "Tip dialog",
+            fields: [
+              {
+                name: "name",
+                label: "Name",
+                tip: h(
+                  "div",
+                  null,
+                  ...Array.from({ length: 30 }, (_, i) =>
+                    h("p", { key: i }, `Help paragraph ${i + 1}`),
+                  ),
+                ),
+              },
+            ],
+          }),
+        );
+      }
+      createRoot(document.getElementById("root")).render(h(Example));
+    </script>
+  </body>
+</html>

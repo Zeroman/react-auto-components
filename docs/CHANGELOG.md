@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+- Add `AutoNavigation`. Mounted components register on a path tree. `goto` supports relative paths, access checks, and an abort signal. Committed locations sync through hash, browser, or memory history. `AutoMenu` and `AutoTabs` accept `route` and follow the active child.
+- Add `AutoTip` and `DefaultTip`. Field, column, menu, and tab tips float. Display types `tip` and `append` stay inline. The component on the item wins, then the owning component, then `config.form`, `config.table`, `config.tabs`, or `config.menu`, then `config.tipComponent`.
+- `AutoSearch` `mode` defaults to `"instant"`. Hidden fields and fields that fail `canAccess` stay on the values object and are omitted from the query. Put search options on `search`; the old top-level `match` props still work.
+- `AutoTable` `toolbarActions` shows or hides Refresh, Settings, Export, and JSON. `handle.refresh()` and `handle.export()` stay available. Sort tags appear when two or more columns are sorted.
+- Forms accept `classNames` and `styles` slots, a `divider` display item, and `virtual-select`.
+
 ## 0.1.3 - 2026-10-02
 
 - Built-in UI text defaults to English, and that same string is the `config.t` key. Pass `t` for other languages. Previous Chinese keys such as `提交` and `刷新` are no longer the defaults.

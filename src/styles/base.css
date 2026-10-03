@@ -382,6 +382,27 @@
   color: inherit;
   cursor: default;
 }
+.auto-column-heading button.auto-sort-active {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--auto-accent);
+  font-weight: 700;
+}
+.auto-sort-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: var(--auto-accent);
+  color: var(--auto-on-accent, #fff);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+}
 .auto-column-heading button.auto-filter-active {
   color: var(--auto-accent);
   background: var(--auto-accent-soft);
@@ -419,7 +440,7 @@
   border-top: 1px solid var(--auto-border);
   font-size: 12px;
 }
-.auto-sort-tags {
+.auto-table > .auto-sort-tags {
   padding: 0 18px 12px;
 }
 .auto-sort-tags button {
@@ -455,6 +476,18 @@
 }
 .auto-settings {
   min-width: 0;
+}
+.auto-overlay:has(.auto-settings):not(.auto-dialog-full) {
+  height: min(640px, 90dvh);
+}
+.auto-overlay:has(.auto-settings) > .auto-dialog-body {
+  flex: 1;
+  min-height: 0;
+  scrollbar-gutter: stable;
+}
+.auto-overlay:has(.auto-settings)
+  > :is(.auto-dialog-header, .auto-dialog-footer) {
+  flex-shrink: 0;
 }
 .auto-preset {
   margin: 18px 0;
@@ -924,6 +957,19 @@
 /* ==========================================================================
    AutoMenu
    ========================================================================== */
+
+.auto-menu-container {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  min-height: 100%;
+}
+
+.auto-menu-content {
+  flex: 1;
+  min-width: 0;
+}
 
 .auto-menu {
   display: flex;
@@ -1442,4 +1488,41 @@
   .auto-menu-collapse-btn {
     transition: none !important;
   }
+}
+
+/* Tips render in a portal so opening them never changes surrounding layout. */
+.auto-tip {
+  z-index: 1200;
+  box-sizing: border-box;
+  max-width: min(360px, calc(100vw - 16px));
+  max-height: calc(100vh - 16px);
+  overflow: auto;
+  overflow-wrap: anywhere;
+  padding: 8px 12px;
+  border: 1px solid var(--auto-border);
+  border-radius: 6px;
+  background: var(--auto-bg);
+  color: var(--auto-text);
+  box-shadow: 0 4px 16px #0000001f;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.auto-root .auto-tip-trigger {
+  flex: 0 0 auto;
+  min-height: 0;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--auto-secondary);
+  cursor: help;
+}
+.auto-field > label .auto-tip-marker {
+  color: var(--auto-secondary);
+  cursor: help;
+}
+.auto-divider {
+  border: none;
+  border-top: 1px solid var(--auto-border);
+  margin: 8px 0;
+  width: 100%;
 }

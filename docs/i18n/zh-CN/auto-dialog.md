@@ -4,6 +4,11 @@
 
 模态弹窗。可以声明式（`<AutoDialog open>`），也可以命令式（`useAutoDialog().open()`）。传入 `fields` 会渲染 [AutoForm](auto-form.md)。不传字段时渲染 `content`。
 
+
+弹窗参数支持 `tipComponent` 并传给内部表单，`useAutoDialog().open()` 打开的弹窗也适用。
+
+优先级为：单项／字段／列参数 → 所属组件参数 → Provider 的组件默认配置（`config.tabs`、`config.form`、`config.table` 或 `config.menu`）→ 全局 `AutoConfigProvider.config.tipComponent` → 内置 `DefaultTip`。自定义组件接收 `{ content, children, placement }`（`AutoTipProps`），需保留触发元素的事件、ref 和无障碍属性。`AutoTip` 与 `DefaultTip` 均已导出；默认实现通过 portal 显示，支持 Escape 关闭，触发元素位置不变。
+
 ## 用法
 
 ```tsx

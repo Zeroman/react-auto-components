@@ -272,3 +272,9 @@ Forms support `resetLabel`, `extraActions`, and `onReset`; search panels support
 AutoChat provides a lightweight conversation layout with streaming follow, history loading and a composer. Supply React content or renderMessage for message rendering; no extra runtime dependencies are required.
 
 [AutoChat API](docs/auto-chat.md)
+
+### Component Navigation Tree (AutoNavigation)
+
+`AutoNavigation` provides a declarative, tree-structured component navigation system. It separates location paths, parameters, access checks, and history synchronization, while enabling deep relative navigation (`./child`, `../sibling`), StrictMode-safe `AbortSignal` management, and seamless adapter integration with React Router, TanStack Router, Next.js, and static hash routes.
+
+[AutoNavigation API & Router Integration](docs/auto-navigation.md)

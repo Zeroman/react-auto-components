@@ -1,3 +1,4 @@
+import type { TipConfig } from "../AutoTip";
 import { useAutoText } from "../../core/i18n";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
@@ -23,7 +24,7 @@ export type CloseReason = "cancel" | "close" | "submit";
  * `beforeClose` returning `false` cancels the close. Throwing also cancels it and shows the message.
  * `draftKey` persists the draft at `${namespace}:draft:${draftKey}` until a successful submit clears it.
  */
-export interface DialogOptions<T extends object> {
+export interface DialogOptions<T extends object> extends TipConfig {
   title: string;
   description?: string;
   content?: ReactNode;
@@ -228,9 +229,11 @@ function ManagedDialog<T extends object>({
       setBusy(false);
     }
   }
+  const closeRef = useRef(close);
+  closeRef.current = close;
   useEffect(() => {
-    register?.(() => close("close"));
-  });
+    register?.(() => closeRef.current("close"));
+  }, [register]);
   async function submit() {
     if (lock.current) return;
     lock.current = true;
@@ -258,7 +261,6 @@ function ManagedDialog<T extends object>({
       <Dialog.Portal>
         <Dialog.Overlay className="auto-overlay-backdrop" />
         <Dialog.Content
-          aria-describedby={options.description ? undefined : undefined}
           className={`auto-root auto-overlay ${full ? "auto-dialog-full" : ""}`}
           data-testid="rac-dialog"
           data-size={size}
@@ -338,6 +340,7 @@ function ManagedDialog<T extends object>({
           <div className="auto-dialog-body">
             {options.fields ? (
               <AutoForm
+                tipComponent={options.tipComponent}
                 ref={form}
                 fields={options.fields}
                 value={values}

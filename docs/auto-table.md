@@ -6,6 +6,11 @@ Table with local or remote rows, sort, filter, selection, optional virtualizatio
 
 Pass exactly one of `data`, `dataSource`, or `source`. Combining them is a type error.
 
+
+Columns accept `tip: ReactNode`, shown through a help button beside the header. The table passes `tipComponent` to column tips, search fields and its add/edit dialog; `searchLayout.tipComponent` can override search help. Within the table, the fallback is table prop → `config.table.tipComponent` → global `config.tipComponent` → `DefaultTip`; nested search/edit forms do not fall back to `config.form.tipComponent`. Standalone AutoSearch/AutoDialog continue to use form defaults.
+
+Resolution order is the item/field/column parameter, the owning component parameter, provider component defaults (`config.tabs`, `config.form`, `config.table`, or `config.menu`), shared `AutoConfigProvider.config.tipComponent`, then built-in `DefaultTip`. Custom components receive `{ content, children, placement }` (`AutoTipProps`) and must preserve the trigger events, ref and accessibility props. `AutoTip` and `DefaultTip` are public exports; the default uses a portal, supports Escape, and keeps the trigger in place.
+
 ## Usage
 
 ```tsx
@@ -21,6 +26,8 @@ import "@zeroman.yang/react-auto-components/style.css";
   exportXlsx={exportXlsx}
 />
 ```
+
+Sort tags appear only for multi-column sorting (two or more active sort fields) and share the title row by default (`sortTagsLayout="inline"`). Set `sortTagsLayout="separate"` to display them on a separate row below the toolbar. With zero or one sort field, neither layout reserves space for tags; sorted column headers show a highlighted direction indicator.
 
 `exportXlsx` is imported from `@zeroman.yang/react-auto-components/xlsx`, not the main entry. `exceljs` is an optional dependency (`RAC-XLSX-DEP` if it is missing).
 
@@ -112,13 +119,13 @@ For isolated renders during AI/browser verification, see the [deterministic test
 | `rowKey` | Field name or `(row) => string`. Must be unique on the loaded rows. Missing or duplicate ids warn `RAC-TABLE-ROWID`. Selection, expansion, and `scrollToRow` use it. |
 | `data` | Local rows. Filtering and paging happen in the browser. |
 | `dataSource(query, { signal })` | Remote page. **Reject: the message is shown with a retry button. Abort is ignored.** Return `{ rows, total }` where `total` is the full filtered count. |
-| `columns` | Omit to use the first row's keys, skipping `_auto_*`. Column `type` formats values; it is not a form widget. |
+| `columns` | Omit to use the first row's keys, skipping `_auto_*`. Column `type` formats values; it is not a form widget. Column `formField?: Partial<Field<T>> | false` customizes or skips the derived form field in add/edit dialogs. |
 | `pageSize` | Default `10`. `pagination` default `true`. |
 | `height` | Default `440` pixels. `"auto"` fills a parent that already has a height. |
 | `virtual` | Optional. Measures rows with TanStack Virtual. |
 | `query`, `onQueryChange` | Controlled query. Omit to keep page, sort, and filter inside the table (sort and filter also follow saved presets). |
 | `searchFields` | Renders `AutoSearch`. Its `onSearch` updates the table filter. |
-| `formFields` | Schema for the add/edit dialog. If omitted, columns become text or integer fields. |
+| `formFields` | Schema for the add/edit dialog. If omitted, fields are inferred from `columns`. Column `formField: false` excludes the column; `formField: { ... }` overrides field properties (e.g. `type`, `options`, `rules`). Columns with `options` become `select`, `date`/`datetime`/`percentage`/`progress` map to matching field types, and `number` becomes `integer`. |
 | `onAdd`, `onEdit`, `onDelete` | Called from the dialog after validation. **Reject or throw: the dialog stays open and shows `error.message`. Rows do not change unless your handler already changed them.** |
 | `rowActions` | **`onClick` rejection is caught and shown in the status line for about 2.5s.** The row stays. `action` is a `config.rowActions` key used when `onClick` is omitted. Neither one warns `RAC-ROW-ACTION` and the status shows the message. |
 | `component` on a column | Key in `config.columns` for `render`, `format`, `sort`, and `exportFormat`. A function on the column wins. An unknown key warns `RAC-COLUMN-COMPONENT` and the cell uses the default format. |
@@ -126,6 +133,7 @@ For isolated renders during AI/browser verification, see the [deterministic test
 | `exportXlsx` | Required only for xlsx. Missing adapter throws `RAC-TABLE-XLSX` and the status shows the translated adapter sentence. CSV and JSON are built in. |
 | `versions` | Bump a layout, sort, filter, or export version to drop that saved preset. |
 | `summaryValues` | Server totals for the filtered result, keyed by column. |
+| `toolbarActions` | Refresh, settings, export, and JSON. Default all shown. `false` hides the four buttons. An object hides only the buttons set to `false`. `handle.refresh()` and `handle.export()` stay available. The JSON label is the translated string `"JSON"`. |
 
 ## Export and settings
 

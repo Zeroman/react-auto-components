@@ -167,8 +167,8 @@ importers:
   .:
     dependencies:
       '@zeroman.yang/react-auto-components':
-        specifier: file:../artifacts/zeroman.yang-react-auto-components-0.1.2-a704da3032ca.tgz
-        version: file:../artifacts/zeroman.yang-react-auto-components-0.1.2-a704da3032ca.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: file:../artifacts/zeroman.yang-react-auto-components-0.1.3-ea08bc6e1fac.tgz
+        version: file:../artifacts/zeroman.yang-react-auto-components-0.1.3-ea08bc6e1fac.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react:
         specifier: 19.3.0
         version: 19.3.0
@@ -858,9 +858,9 @@ packages:
       oxc-transform-react:
         optional: true
 
-  '@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.1.2-a704da3032ca.tgz':
-    resolution: {integrity: sha512-vxhH1Hhxfl/n+vPpmOyentBCvZLdT02BcAvje40Uq9IaXeKWdTtemhMATFyRDEZh6lXaZZE9xs1+t1hrhXAR7g==, tarball: file:../artifacts/zeroman.yang-react-auto-components-0.1.2-a704da3032ca.tgz}
-    version: 0.1.2
+  '@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.1.3-ea08bc6e1fac.tgz':
+    resolution: {integrity: sha512-oIuyygMQK2U6gMxCN9foipcA7FccRgOEx1717QdT+qTF5yHMLQSnUH4+0VKLEkmJGkgbn3wHhp+hwiBWlQ4ViQ==, tarball: file:../artifacts/zeroman.yang-react-auto-components-0.1.3-ea08bc6e1fac.tgz}
+    version: 0.1.3
     engines: {node: '>=22.12.0'}
     peerDependencies:
       react: '>=19.0.0 <20'
@@ -2232,7 +2232,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.1
       vite: 8.3.1(@types/node@26.6.3)
 
-  '@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.1.2-a704da3032ca.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.1.3-ea08bc6e1fac.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@floating-ui/react': 0.27.20(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@radix-ui/react-context-menu': 2.3.7(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)

@@ -19,6 +19,7 @@
 | `component` | 列の `component` が `AutoConfigProvider` の `config.columns` に未登録の場合、開発時に `RAC-COLUMN-COMPONENT` を警告し、セルは既定の書式を使います。キーを登録するか、列に `render`、`format`、`sort` を指定してください。列に直接指定した関数が優先されます。 |
 | `source` | `source` は `AutoConfigProvider` の `config.sources` のキーです。未知のキーでは `RAC-TABLE-SOURCE` と再試行ボタンを表示します。キーを登録するか `data` / `dataSource` を使ってください。三つのうち一つだけ指定します。 |
 | `exportXlsx` | xlsx だけ必要です。無いと `RAC-TABLE-XLSX`。CSV と JSON は組み込みです。 |
+| `toolbarActions` | 更新、設定、エクスポート、JSON。既定では全部表示。`false` で4つとも隠します。オブジェクトは `false` のボタンだけ隠します。`handle.refresh()` と `handle.export()` は使えます。JSON のラベルは翻訳キー `"JSON"` です。 |
 
 `handle.export` はステータスにエラーが出ても resolve し、投げ直しません。リモートの `"filtered"` は全ページを歩きます。最後より前の空ページは `RAC-TABLE-EXPORT-PAGE` で、部分ファイルは保存しません。
 

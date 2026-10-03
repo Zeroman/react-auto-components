@@ -1,3 +1,4 @@
+import type { TipConfig } from "../AutoTip";
 import type { CSSProperties, ReactNode, Ref } from "react";
 import type { Field, FieldName, AutoFormLayout } from "../../core/types";
 
@@ -23,7 +24,8 @@ export interface AutoFormHandle<T extends object> {
  * `columns` defaults to `2`. `actions` defaults to `true` (submit + reset).
  * Label layout defaults come from `AutoConfigProvider` (`labelPosition` `"top"`, `labelWidth` `"auto"`).
  */
-export interface AutoFormProps<T extends object> extends AutoFormLayout {
+export interface AutoFormProps<T extends object>
+  extends AutoFormLayout, TipConfig {
   /** Checked schema. Use `unsafeField` only to bypass a discriminant on purpose. */
   fields: readonly Field<T>[];
   /** Controlled value. The form copies it in when it differs from internal state. */

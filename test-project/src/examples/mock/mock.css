@@ -1,0 +1,48 @@
+.mock-demo {
+  min-width: 0;
+}
+.mock-demo > h2 {
+  margin-top: 0;
+}
+.mock-controls {
+  margin: 16px 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--auto-border);
+}
+.mock-content {
+  min-width: 0;
+}
+.mock-response {
+  margin-top: 20px;
+  border-top: 1px solid var(--auto-border);
+  padding-top: 12px;
+}
+.mock-response summary {
+  cursor: pointer;
+  color: var(--auto-secondary);
+}
+.mock-demo pre {
+  max-height: 320px;
+  max-width: 100%;
+  overflow: auto;
+  font-size: 12px;
+}
+.mock-demo .mock-result {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid var(--auto-border);
+  border-radius: 8px;
+}
+.mock-demo .mock-split {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  gap: 20px;
+}
+.mock-demo .mock-split > * {
+  min-width: 0;
+}
+@media (max-width: 700px) {
+  .mock-demo .mock-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,3 +1,4 @@
+import { AutoTip } from "../AutoTip";
 import { useAutoText } from "../../core/i18n";
 import { useForm, useStore } from "@tanstack/react-form";
 import {
@@ -13,13 +14,14 @@ import { defaults, equal, resolve, errorMessage } from "../../core/config";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
 import { racTestId } from "../../core/testid";
 import { useFieldWarnings, useLibraryStyles } from "../../core/dev";
-import type { Values } from "../../core/types";
+import { isDisplayItem, type Values } from "../../core/types";
 import type { AutoFormProps } from "./types";
 import { FormField } from "./FormField";
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 export function AutoForm<T extends object>({
   fields,
+  tipComponent: ownTipComponent,
   value,
   defaultValue,
   onChange,
@@ -40,6 +42,8 @@ export function AutoForm<T extends object>({
   children,
   className = "",
   style,
+  classNames: propsClassNames,
+  styles: propsStyles,
   ref,
 }: AutoFormProps<T>) {
   const tr = useAutoText();
@@ -58,8 +62,12 @@ export function AutoForm<T extends object>({
   const density =
     ownDensity ?? services.form.density ?? services.density ?? "comfortable";
   const size = ownSize ?? services.form.size ?? services.size ?? "medium";
+  const tipComponent = ownTipComponent ?? services.form.tipComponent;
   const id = useId();
-  const initial = useRef(defaults<T>(fields, value ?? defaultValue));
+  const initial = useRef<T | null>(null);
+  if (initial.current === null) {
+    initial.current = defaults<T>(fields, value ?? defaultValue);
+  }
   const form = useForm({
     defaultValues: initial.current as Values,
   });
@@ -165,7 +173,8 @@ export function AutoForm<T extends object>({
       ...form.state.values,
       [name]: next,
     } as T;
-    const patch = field?.onChange?.(next, result);
+    const patch =
+      field && "onChange" in field ? field.onChange?.(next, result) : undefined;
     if (patch)
       result = {
         ...result,
@@ -195,6 +204,7 @@ export function AutoForm<T extends object>({
     await Promise.all(
       fields.map(async (f) => {
         if (
+          isDisplayItem(f) ||
           !f.name ||
           resolve(f.hidden, snapshot, false) ||
           !services.canAccess(f) ||
@@ -280,10 +290,26 @@ export function AutoForm<T extends object>({
       if (mounted.current) setSubmitting(false);
     }
   }
+  const effectiveClassNames = {
+    ...services.form.classNames,
+    ...propsClassNames,
+  };
+  const effectiveStyles = {
+    ...services.form.styles,
+    ...propsStyles,
+  };
+
   return (
     <form
       ref={node}
-      className={`auto-root auto-form ${className}`}
+      className={[
+        "auto-root auto-form",
+        className,
+        effectiveClassNames.form,
+        effectiveClassNames.root,
+      ]
+        .filter(Boolean)
+        .join(" ")}
       data-label-position={labelPosition}
       data-label-align={labelAlign}
       data-label-width={
@@ -304,6 +330,8 @@ export function AutoForm<T extends object>({
             : typeof labelWidth === "number"
               ? `${labelWidth}px`
               : labelWidth,
+          ...effectiveStyles.form,
+          ...effectiveStyles.root,
           ...style,
         } as React.CSSProperties
       }
@@ -314,10 +342,13 @@ export function AutoForm<T extends object>({
       }}
     >
       <div
-        className="auto-form-grid"
+        className={["auto-form-grid", effectiveClassNames.grid]
+          .filter(Boolean)
+          .join(" ")}
         style={
           {
             "--auto-columns": columns,
+            ...effectiveStyles.grid,
           } as React.CSSProperties
         }
       >
@@ -326,61 +357,139 @@ export function AutoForm<T extends object>({
             return null;
           const name = f.name;
           const fieldId = `${id}-${name ?? i}`;
-          const label = f.lang
-            ? services.t(f.lang, f.label)
-            : (f.label ?? name);
-          const structural = !name;
+          const structural = isDisplayItem(f);
+          const hasHelp =
+            !structural && f.tip != null && f.tip !== false && f.tip !== "";
+          const helpId = hasHelp ? `${fieldId}-help` : undefined;
+          const fLabel = "label" in f ? f.label : undefined;
+          const label =
+            !structural && "lang" in f && f.lang
+              ? services.t(f.lang, fLabel)
+              : (fLabel ?? name);
+          const fieldClassNames = f.classNames;
+          const fieldStyles = f.styles;
+
+          const rootClass = [
+            "auto-field",
+            f.className,
+            effectiveClassNames.root,
+            fieldClassNames?.root,
+          ]
+            .filter(Boolean)
+            .join(" ");
+
+          const rootStyle = {
+            gridColumn: f.lineBreak
+              ? "1 / -1"
+              : `span ${Math.min(f.span ?? 1, columns)}`,
+            ...effectiveStyles.root,
+            ...fieldStyles?.root,
+            ...f.style,
+          };
+
+          const labelClass =
+            [effectiveClassNames.label, fieldClassNames?.label]
+              .filter(Boolean)
+              .join(" ") || undefined;
+
+          const labelStyle = {
+            ...effectiveStyles.label,
+            ...fieldStyles?.label,
+          };
+
+          const controlClass = [
+            "auto-field-control",
+            effectiveClassNames.control,
+            fieldClassNames?.control,
+          ]
+            .filter(Boolean)
+            .join(" ");
+
+          const controlStyle = {
+            ...effectiveStyles.control,
+            ...fieldStyles?.control,
+          };
+
+          const errorClass = [
+            "auto-error",
+            effectiveClassNames.error,
+            fieldClassNames?.error,
+          ]
+            .filter(Boolean)
+            .join(" ");
+
+          const errorStyle = {
+            ...effectiveStyles.error,
+            ...fieldStyles?.error,
+          };
+
           return (
-            <div
+            <AutoTip
               key={name ?? i}
-              data-field={name}
-              data-testid={name ? racTestId("field", name) : undefined}
-              className={`auto-field ${f.className ?? ""}`}
-              style={{
-                gridColumn: f.lineBreak
-                  ? "1 / -1"
-                  : `span ${Math.min(f.span ?? 1, columns)}`,
-                ...f.style,
-              }}
+              content={hasHelp ? f.tip : undefined}
+              tipComponent={f.tipComponent ?? tipComponent}
             >
-              {!structural && (
-                <label htmlFor={fieldId}>
-                  {label}
-                  {f.required && <span aria-hidden="true"> *</span>}
-                </label>
-              )}
-              <div className="auto-field-control">
-                <FormField
-                  resetEpoch={resetEpoch}
-                  onUploadPending={trackUpload}
-                  field={f}
-                  context={{
-                    id: fieldId,
-                    value: name ? values[name] : undefined,
-                    values,
-                    onChange: (v) => name && update(name, v),
-                    disabled:
-                      disabled ||
-                      submitting ||
-                      resolve(f.disabled, values, false),
-                    error: name ? errors[name] : undefined,
-                  }}
-                  readOnly={readOnly}
-                />
-                {name && errors[name] && (
-                  <span
-                    className="auto-error"
-                    id={`${fieldId}-error`}
-                    role="alert"
+              <div
+                data-field={name}
+                data-testid={name ? racTestId("field", name) : undefined}
+                className={rootClass}
+                style={rootStyle}
+              >
+                {!structural && (
+                  <label
+                    htmlFor={fieldId}
+                    className={labelClass}
+                    style={labelStyle}
                   >
-                    {errors[name]}
-                  </span>
+                    {label}
+                    {f.required && <span aria-hidden="true"> *</span>}
+                    {hasHelp && (
+                      <span className="auto-tip-marker" aria-hidden="true">
+                        {" "}
+                        ⓘ
+                      </span>
+                    )}
+                  </label>
                 )}
-                {f.tip && !structural && (
-                  <small className="auto-muted">{f.tip}</small>
-                )}
+                <div className={controlClass} style={controlStyle}>
+                  <FormField
+                    resetEpoch={resetEpoch}
+                    onUploadPending={trackUpload}
+                    field={f}
+                    classNames={effectiveClassNames}
+                    styles={effectiveStyles}
+                    context={{
+                      id: fieldId,
+                      value: name ? values[name] : undefined,
+                      values,
+                      onChange: (v) => name && update(name, v),
+                      disabled:
+                        disabled ||
+                        submitting ||
+                        resolve(f.disabled, values, false),
+                      error: name ? errors[name] : undefined,
+                      describedBy: helpId,
+                    }}
+                    readOnly={readOnly}
+                  />
+                  {hasHelp && (
+                    <span id={helpId} hidden>
+                      {f.tip}
+                    </span>
+                  )}
+                  {name && errors[name] && (
+                    <span
+                      className={errorClass}
+                      style={errorStyle}
+                      id={`${fieldId}-error`}
+                      role="alert"
+                    >
+                      {errors[name]}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
+            </AutoTip>
           );
         })}
       </div>
@@ -391,19 +500,32 @@ export function AutoForm<T extends object>({
         </p>
       )}
       {actions && !readOnly && (
-        <div className="auto-actions auto-form-actions">
+        <div
+          className={[
+            "auto-actions auto-form-actions",
+            effectiveClassNames.actions,
+          ]
+            .filter(Boolean)
+            .join(" ")}
+          style={effectiveStyles.actions}
+        >
           <button
-            className="auto-primary"
+            className={["auto-primary", effectiveClassNames.submit]
+              .filter(Boolean)
+              .join(" ")}
             type="submit"
             data-testid="rac-submit"
             disabled={disabled || submitting || pendingUploads.size > 0}
+            style={effectiveStyles.submit}
           >
             {submitting ? tr("Submitting…") : (submitLabel ?? tr("Submit"))}
           </button>
           <button
             type="button"
+            className={effectiveClassNames.reset}
             data-testid="rac-reset"
             disabled={disabled || submitting}
+            style={effectiveStyles.reset}
             onClick={() => reset()}
           >
             {resetLabel ?? tr("Reset")}

@@ -16,6 +16,8 @@ Reiter. Verschachtelte Reiter sind ein weiteres `AutoTabs` aus `children`. Für 
 | `onRefresh` | Wenn gesetzt, gibt es eine Aktualisieren-Schaltfläche. **Nicht gefangen.** |
 | `disabled` | Bleibt sichtbar und ist nicht wählbar. Die Standardauswahl überspringt deaktivierte Reiter. |
 
+`route` und `value` dürfen nicht gleichzeitig an `AutoTabs` übergeben werden. Bei gemeinsamer Verwendung hat `route` Vorrang; im Entwicklungsmodus erscheint `RAC-TABS-ROUTE-VALUE`. Entfernen Sie `value`, wenn `AutoNavigation` die Auswahl steuert.
+
 ## Voraussetzungen
 
 `style.css` einmal importieren (`RAC-CSS-MISSING` in der Entwicklung). `AutoConfigProvider` ist optional.

@@ -1,3 +1,4 @@
+import { openComponent } from "./helpers/navigation";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 async function setGlobalLayout(page: Page, layout: "stacked" | "inline") {
@@ -64,7 +65,7 @@ test("form can switch label position and density while keeping errors aligned wi
   await page.setViewportSize({ width: 1440, height: 1050 });
   await page.goto("/");
   await setGlobalLayout(page, "stacked");
-  await page.getByRole("button", { name: /AutoForm/ }).click();
+  await openComponent(page, "AutoForm");
   const field = page.locator('[data-field="name"]');
   const before = await field.boundingBox();
   await page.getByLabel("Form label position").selectOption("left");
@@ -108,7 +109,7 @@ test("global layout switches table search, forms and dialog fields without clear
     page.getByRole("dialog").locator('[data-field="name"]'),
   );
   await page.getByRole("button", { name: "Cancel", exact: true }).click();
-  await page.getByRole("button", { name: /AutoForm/ }).click();
+  await openComponent(page, "AutoForm");
   const formField = page.locator('[data-field="name"]');
   await labelBesideControl(formField);
   await setGlobalLayout(page, "stacked");
@@ -118,7 +119,7 @@ test("global layout switches table search, forms and dialog fields without clear
   );
   await page.getByLabel("Form label position").selectOption("left");
   await labelBesideControl(formField);
-  await page.getByRole("button", { name: /AutoSearch/ }).click();
+  await openComponent(page, "AutoSearch");
   const searchField = page.locator('[data-field="name"]');
   const searchLabel = await searchField.locator(":scope > label").boundingBox();
   expect(searchLabel!.y + searchLabel!.height).toBeLessThanOrEqual(
@@ -195,7 +196,7 @@ test("label alignment keeps labels before controls and preserves values and focu
     "right",
   );
   await page.getByRole("button", { name: "Cancel", exact: true }).click();
-  await page.getByRole("button", { name: /AutoForm/ }).click();
+  await openComponent(page, "AutoForm");
   const field = page.locator('[data-field="name"]').first();
   await alignedLabel(field, "right");
   await page.getByLabel("Form label alignment").selectOption("left");
@@ -256,7 +257,7 @@ test("global size and density options update tabs, tables and forms across pages
   expect(largeTabBox!.height).toBeGreaterThan(smallTabBox!.height);
 
   // Navigate to AutoTabs page and check local override
-  await page.getByRole("button", { name: /AutoTabs/ }).click();
+  await openComponent(page, "AutoTabs");
   const demoTabs = page.locator(".card > .auto-tabs");
   await expect(demoTabs).toHaveAttribute("data-size", "large");
   await page.getByLabel("Local tab size").selectOption("small");
@@ -284,7 +285,7 @@ test("adaptive label width supports auto mode and manual override in search pane
   expect(statusBox!.width).toBeLessThan(nameBox!.width);
 
   // 2. In AutoForm, column controls vertically align
-  await page.getByRole("button", { name: /AutoForm/ }).click();
+  await openComponent(page, "AutoForm");
   const form = page.locator(".card form.auto-form").first();
   await expect(form).toHaveAttribute("data-label-width", "auto");
 

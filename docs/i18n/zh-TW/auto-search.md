@@ -30,7 +30,7 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `fields` | 與 AutoForm 相同的 `Field<T>`。`more: true` 的欄位在展開「更多」之前隱藏。隱藏欄位不進入查詢。 |
 | `onSearch(query, values)` | 必填。**throw 或 reject：內部表單捕獲它，值保留，顯示 `error.message`。不會因此重置。** |
 | `onChange` | 編輯和重置都會觸發。即時搜尋時，它發生在 `onSearch` 之前。 |
-| `mode` | 預設 `"manual"`：點搜尋才查。`"instant"` 每次修改也查。 |
+| `mode` | 預設 `"instant"`：修改條件、提交或重設時搜尋。設為 `"manual"` 可僅在提交或重設時搜尋。 |
 | `value`、`defaultValue` | 受控和重置規則與 AutoForm 相同。 |
 | `columns` | 預設 `3`。 |
 | `sortTags` | 你自己的按鈕。`onRemove` 不捕獲。 |

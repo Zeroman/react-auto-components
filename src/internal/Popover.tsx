@@ -1,3 +1,4 @@
+import { AutoTip, type TipConfig } from "../components/AutoTip";
 import {
   autoUpdate,
   flip,
@@ -25,7 +26,8 @@ import {
 import { useAutoConfig } from "../core/AutoConfigProvider";
 import "./popover.css";
 
-interface PopoverProps {
+interface PopoverProps extends TipConfig {
+  tip?: ReactNode;
   children: ReactElement<
     HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean }
   >;
@@ -37,6 +39,8 @@ interface PopoverProps {
 /** Internal positioning primitive for menu flyouts and table filters. */
 export function Popover({
   children,
+  tip,
+  tipComponent,
   content,
   placement = "bottom",
   open: controlled,
@@ -83,10 +87,12 @@ export function Popover({
   const triggerRef = useMergeRefs([refs.setReference, children.props.ref]);
   return (
     <>
-      {cloneElement(children, {
-        ...interactions.getReferenceProps(children.props),
-        ref: triggerRef,
-      })}
+      <AutoTip content={tip} tipComponent={tipComponent}>
+        {cloneElement(children, {
+          ...interactions.getReferenceProps(children.props),
+          ref: triggerRef,
+        })}
+      </AutoTip>
       {open && (
         <FloatingPortal>
           <FloatingFocusManager context={context} modal={false} returnFocus>

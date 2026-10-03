@@ -33,6 +33,8 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `size`、`density` | 覆蓋 provider。標籤先讀 `config.tabs`，再讀全域性的 size 和 density。 |
 | `disabled` | 標籤仍可見，但不能選。預設選中會跳過停用標籤。 |
 
+請勿同時向 `AutoTabs` 傳入 `route` 與 `value`。若同時提供，`route` 優先，開發模式會顯示 `RAC-TABS-ROUTE-VALUE` 警告。由 `AutoNavigation` 管理選擇時，請省略 `value`。
+
 某一項如果有 `children`，就用巢狀標籤代替 `content`。`defaultActive` 是巢狀層的非受控 id。
 
 ## 前置條件

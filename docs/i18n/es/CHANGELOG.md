@@ -4,6 +4,12 @@
 
 ## Sin publicar
 
+- Se añade `AutoNavigation`. Los componentes montados se registran en un árbol de rutas. `goto` admite rutas relativas, comprobaciones de acceso y una señal de cancelación. Solo las ubicaciones confirmadas se sincronizan con el historial hash, del navegador o en memoria. `AutoMenu` y `AutoTabs` aceptan `route` y siguen al hijo activo.
+- Se añaden `AutoTip` y `DefaultTip`. Las ayudas de campos, columnas, menús y pestañas flotan. Los tipos de presentación `tip` y `append` siguen en línea. Gana el componente del elemento, luego el del componente propietario, después `config.form`, `config.table`, `config.tabs` o `config.menu`, y al final `config.tipComponent`.
+- `mode` de `AutoSearch` pasa a ser `"instant"` por defecto. Los campos ocultos y los que no superan `canAccess` permanecen en los valores y se omiten de la consulta. Las opciones de búsqueda van en `search`; las props `match` de nivel superior siguen funcionando.
+- `toolbarActions` de `AutoTable` muestra u oculta Actualizar, Ajustes, Exportar y JSON. `handle.refresh()` y `handle.export()` siguen disponibles. Las etiquetas de orden aparecen cuando hay dos o más columnas ordenadas.
+- Los formularios aceptan ranuras `classNames` y `styles`, un elemento `divider` y `virtual-select`.
+
 ## 0.1.3 - 2026-10-02
 
 - El texto de interfaz integrado pasa a inglés por defecto, y esa cadena es la clave de `config.t`. Pasa `t` para otros idiomas. Las claves chinas anteriores, como `提交` y `刷新`, ya no son el valor por defecto.

@@ -1,3 +1,4 @@
+import type { TipConfig } from "./tip";
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { safeStorage } from "./config";
 import type { ColumnRegistry, SourceLoader } from "./registry";
@@ -12,15 +13,15 @@ import type {
   TableDensity,
   Values,
 } from "./types";
-export interface TableGlobalConfig {
+export interface TableGlobalConfig extends TipConfig {
   density?: TableDensity;
   size?: ComponentSize;
 }
-export interface TabsGlobalConfig {
+export interface TabsGlobalConfig extends TipConfig {
   density?: ComponentDensity;
   size?: ComponentSize;
 }
-export interface MenuGlobalConfig {
+export interface MenuGlobalConfig extends TipConfig {
   density?: ComponentDensity;
   size?: ComponentSize;
 }
@@ -33,7 +34,7 @@ export interface MenuGlobalConfig {
  * Two apps on one origin that both leave `"auto"` share table settings and dialog drafts. Set a distinct namespace per app.
  * This provider does not mount dialogs. `useAutoDialog()` still needs `AutoDialogProvider`.
  */
-export interface AutoServices {
+export interface AutoServices extends TipConfig {
   /**
    * Storage prefix. Default `"auto"`.
    * Change it when more than one app on the same origin uses tables or dialog drafts.
@@ -44,7 +45,7 @@ export interface AutoServices {
   table?: TableGlobalConfig;
   tabs?: TabsGlobalConfig;
   menu?: MenuGlobalConfig;
-  form: AutoFormLayout;
+  form: AutoFormLayout & TipConfig;
   t: (key: string, fallback?: string) => string;
   canAccess: (access: Access) => boolean;
   storage: StorageAdapter;
@@ -65,7 +66,7 @@ export interface AutoServices {
    */
   sources: Record<string, SourceLoader>;
 }
-const defaultServices: AutoServices = {
+export const defaultServices: AutoServices = {
   namespace: "auto",
   size: "medium",
   density: "comfortable",

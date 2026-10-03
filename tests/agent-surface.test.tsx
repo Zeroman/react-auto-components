@@ -62,7 +62,7 @@ test("column, row action, and source registries stand in for functions", async (
 test("an unknown source shows the repair and does not crash", async () => {
   resetDevChecks();
   const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
-  render(
+  const view = render(
     <AutoTable
       id="missing"
       source="missing"
@@ -74,6 +74,17 @@ test("an unknown source shows the repair and does not crash", async () => {
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "RAC-TABLE-SOURCE",
   );
-  expect(warn).toHaveBeenCalled();
+  expect(warn).toHaveBeenCalledTimes(1);
+  view.rerender(
+    <AutoTable
+      id="missing"
+      source="missing"
+      rowKey="id"
+      title="Again"
+      columns={[{ key: "id", label: "Id" }]}
+      virtual={false}
+    />,
+  );
+  expect(warn).toHaveBeenCalledTimes(1);
   warn.mockRestore();
 });

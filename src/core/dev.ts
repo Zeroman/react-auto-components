@@ -11,11 +11,13 @@ interface WarnField {
   component?: string;
   defaultValue?: unknown;
   match?: string;
+  search?: { match?: string };
 }
 
 const CHOICE = new Set<ChoiceFieldType>([
   "select",
   "select-v2",
+  "virtual-select",
   "radio",
   "checkbox",
   "cascader",
@@ -85,7 +87,8 @@ export function warnFields(
         'Store [start, end]. dateValue "string" uses YYYY-MM-DD; "timestamp" uses epoch milliseconds. Null is an open end.',
       );
     }
-    if (field.match === "between" && sample !== undefined && !isPair(sample)) {
+    const match = field.search?.match ?? field.match;
+    if (match === "between" && sample !== undefined && !isPair(sample)) {
       devWarn(
         component,
         "RAC-FIELD-BETWEEN",

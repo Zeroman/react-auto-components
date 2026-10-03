@@ -1,3 +1,4 @@
+import type { TipConfig } from "../AutoTip";
 import type { AutoSearchProps } from "../AutoSearch";
 import type { CSSProperties, ReactNode, Ref } from "react";
 import type {
@@ -36,12 +37,22 @@ export type DataSource<T> = (
 ) => Promise<{ rows: T[]; total: number }>;
 /** `"page"` is the current page. `"filtered"` is every local match, or every remote page when exporting. `"selected"` is the selection. */
 export type RowScope = "page" | "filtered" | "selected";
+
+/** Which built-in toolbar buttons stay visible. Omitted keys stay on. */
+export interface TableToolbarActions {
+  refresh?: boolean;
+  settings?: boolean;
+  export?: boolean;
+  json?: boolean;
+}
 /**
  * One column. `key` must be a field of `T`.
  * `type` only affects formatting (`date`, `percentage`, …). It is not a form field type.
  * Omit `columns` and the table uses the keys of the first row, skipping keys that start with `_auto_`.
  */
-export interface AutoColumn<T extends object> extends Access {
+export interface AutoColumn<T extends object> extends Access, TipConfig {
+  /** Floating column help; sorting and filtering remain separate actions. */
+  tip?: ReactNode;
   key: FieldName<T>;
   label?: string;
   header?: ReactNode;
@@ -68,6 +79,11 @@ export interface AutoColumn<T extends object> extends Access {
   summary?: boolean | ((rows: readonly T[]) => ReactNode);
   merge?: boolean;
   copyable?: boolean;
+  /**
+   * Custom form field definition used when AutoTable generates its add/edit dialog from columns.
+   * Set `false` to exclude this column from the add/edit form (e.g. read-only IDs).
+   */
+  formField?: Partial<Field<T>> | false;
 }
 /**
  * A row menu action. `onClick` rejection is caught and shown in the table status for about 2.5s.
@@ -102,7 +118,7 @@ export interface AutoTableHandle<T> {
  * `id` is required: settings are stored at `${namespace}:table:${id}`. An empty id warns in dev (`RAC-TABLE-ID`).
  * `rowKey` must be unique per loaded row. Duplicates warn in dev (`RAC-TABLE-ROWID`).
  */
-export interface TableBaseProps<T extends object> {
+export interface TableBaseProps<T extends object> extends TipConfig {
   /** Stable id. Becomes the localStorage / settings key together with `namespace`. */
   id: string;
   columns?: readonly AutoColumn<T>[];
@@ -127,12 +143,14 @@ export interface TableBaseProps<T extends object> {
   searchFields?: readonly Field<T>[];
   searchLayout?: Pick<
     AutoSearchProps<T>,
+    | "mode"
     | "columns"
     | "labelPosition"
     | "labelAlign"
     | "labelWidth"
     | "density"
     | "size"
+    | "tipComponent"
   >;
   formFields?: readonly Field<T>[];
   onAdd?: (values: T) => void | Promise<void>;
@@ -143,6 +161,15 @@ export interface TableBaseProps<T extends object> {
   expandAll?: boolean;
   onSelectionChange?: (rows: T[]) => void;
   toolbar?: ReactNode;
+  /**
+   * Built-in refresh, settings, export, and JSON buttons. Default all on.
+   * `false` hides the four buttons. An object hides only the buttons set to `false`.
+   * `handle.refresh()` and `handle.export()` stay available either way.
+   * The JSON label is the translated string `"JSON"`.
+   */
+  toolbarActions?: boolean | TableToolbarActions;
+  /** Multi-column sort tags (2+ fields) share the title row by default; "separate" places them below the toolbar. */
+  sortTagsLayout?: "inline" | "separate";
   rowActions?: readonly RowAction<T>[];
   rowClassName?: (row: T) => string;
   rowStyle?: (row: T) => CSSProperties;

@@ -1,11 +1,6 @@
 import { devWarn, racMessage } from "../../core/errors";
 import type { ColumnRegistry, SourceLoader } from "../../core/registry";
-import type {
-  AutoColumn,
-  AutoTableProps,
-  DataSource,
-  RowAction,
-} from "./types";
+import type { AutoColumn, DataSource, RowAction } from "./types";
 
 /** Copy registry functions onto a column. A function already on the column wins. */
 export function resolveColumn<T extends object>(
@@ -34,23 +29,34 @@ export function resolveColumn<T extends object>(
   };
 }
 
+export function missingSource(source: string) {
+  const problem = `source "${source}" is not registered.`;
+  const fix = `Add config.sources["${source}"] on AutoConfigProvider, or pass dataSource.`;
+  return {
+    problem,
+    fix,
+    reject: () =>
+      Promise.reject(
+        new Error(racMessage("AutoTable", "RAC-TABLE-SOURCE", problem, fix)),
+      ),
+  };
+}
+
 /** `data` wins, then `dataSource`, then `config.sources[source]`. */
 export function resolveDataSource<T extends object>(
-  props: AutoTableProps<T>,
+  owner: {
+    local?: boolean;
+    dataSource?: DataSource<T>;
+    source?: string;
+  },
   sources: Record<string, SourceLoader>,
 ): DataSource<T> | undefined {
-  if ("data" in props && props.data) return;
-  if ("dataSource" in props && props.dataSource) return props.dataSource;
-  if (!("source" in props) || !props.source) return;
-  const registered = sources[props.source] as DataSource<T> | undefined;
+  if (owner.local) return;
+  if (owner.dataSource) return owner.dataSource;
+  if (!owner.source) return;
+  const registered = sources[owner.source] as DataSource<T> | undefined;
   if (registered) return registered;
-  const problem = `source "${props.source}" is not registered.`;
-  const fix = `Add config.sources["${props.source}"] on AutoConfigProvider, or pass dataSource.`;
-  devWarn("AutoTable", "RAC-TABLE-SOURCE", problem, fix);
-  return () =>
-    Promise.reject(
-      new Error(racMessage("AutoTable", "RAC-TABLE-SOURCE", problem, fix)),
-    );
+  return missingSource(owner.source).reject;
 }
 
 /** `onClick` wins. Otherwise call `config.rowActions[action]`. */

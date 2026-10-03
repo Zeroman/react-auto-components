@@ -1,23 +1,20 @@
+import { openComponent } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 
 test.use({ locale: "en-US" });
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
-  await page
-    .getByRole("navigation")
-    .getByRole("button", { name: "AutoChat", exact: true })
-    .click();
+  await openComponent(page, "AutoChat");
 });
 
-test("menu follows AutoTabs and the demo renders all six formats", async ({
+test("menu follows AutoMenu and the demo renders all six formats", async ({
   page,
 }) => {
   const names = await page
-    .getByRole("navigation")
-    .getByRole("button")
+    .locator("aside > .auto-menu > .auto-menu-list > li > button")
     .allTextContents();
   expect(names.findIndex((name) => name.includes("AutoChat"))).toBe(
-    names.findIndex((name) => name.includes("AutoTabs")) + 1,
+    names.findIndex((name) => name.includes("AutoMenu")) + 1,
   );
   for (const format of [
     "markdown",
@@ -93,9 +90,7 @@ test("10000 and 50000 variable-height messages keep DOM bounded and support jump
   test.setTimeout(60000);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page
-    .getByRole("button", { name: "Large history", exact: true })
-    .click();
+  await page.getByRole("tab", { name: "Large history", exact: true }).click();
   for (const count of [10000, 50000]) {
     if (count !== 10000) {
       await page
@@ -139,9 +134,7 @@ test("large history preserves a paused viewport on append and supports streamed 
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page
-    .getByRole("button", { name: "Large history", exact: true })
-    .click();
+  await page.getByRole("tab", { name: "Large history", exact: true }).click();
   const log = page.getByRole("log");
   await page
     .getByRole("button", { name: "Jump to first", exact: true })
@@ -208,9 +201,7 @@ test("mobile format controls and large-data toolbar stay inside the viewport", a
     .getByRole("button", { name: "Insert example", exact: true })
     .click();
   await expect(page.getByTestId("chat-task-card")).toBeVisible();
-  await page
-    .getByRole("button", { name: "Large history", exact: true })
-    .click();
+  await page.getByRole("tab", { name: "Large history", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Jump to latest", exact: true }),
   ).toBeInViewport();

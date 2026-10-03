@@ -116,3 +116,9 @@ Fix: letters, digits, underscore, and dots only. Rename the column or map it bef
 `useAutoDialog()` ran outside `AutoDialogProvider`.
 
 Fix: wrap that tree in `<AutoDialogProvider>`. `AutoConfigProvider` does not provide dialogs and is optional. The declarative `<AutoDialog open>` does not use this hook.
+
+## RAC-TABS-ROUTE-VALUE
+
+Both `route` and `value` were supplied to `AutoTabs`.
+
+Fix: omit `value` when using `route`-driven navigation; `AutoNavigation` owns the active tab selection.

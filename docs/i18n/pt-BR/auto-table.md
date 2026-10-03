@@ -19,6 +19,7 @@ Tabela local ou remota. Passe exatamente um de `data`, `dataSource` ou `source`;
 | `component` | Se o `component` de uma coluna não estiver registrado em `config.columns` do `AutoConfigProvider`, o modo de desenvolvimento avisa com `RAC-COLUMN-COMPONENT` e a célula mantém o formato padrão. Registre a chave ou defina `render`, `format` ou `sort` na coluna. As funções da coluna têm prioridade. |
 | `source` | `source` é uma chave de `config.sources` no `AutoConfigProvider`. Uma chave desconhecida mostra `RAC-TABLE-SOURCE` com um botão para tentar novamente. Registre a chave ou use `data` / `dataSource`. Forneça exatamente uma das três opções. |
 | `exportXlsx` | Só é necessário para xlsx. Se faltar, `RAC-TABLE-XLSX`. CSV e JSON são internos. |
+| `toolbarActions` | Atualizar, configurações, exportar e JSON. Os quatro aparecem por padrão. `false` os oculta. Um objeto oculta só os botões em `false`. `handle.refresh()` e `handle.export()` continuam disponíveis. O rótulo JSON é o texto traduzido `"JSON"`. |
 
 `handle.export` resolve mesmo se o status mostrar um erro; não relança. `"filtered"` remoto percorre todas as páginas. Uma página vazia antes da última lança `RAC-TABLE-EXPORT-PAGE` e não baixa um arquivo parcial.
 

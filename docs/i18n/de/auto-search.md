@@ -11,7 +11,7 @@ Suchformular. Es zeichnet ein `AutoForm` und gibt einen `QueryNode` plus die Wer
 | Prop | Verhalten |
 | --- | --- |
 | `onSearch(query, values)` | Pflicht. **Werfen oder ablehnen: das innere Formular fängt es, Werte bleiben, `error.message` wird gezeigt. Kein Reset.** |
-| `mode` | Standard `"manual"` (Schaltfläche). `"instant"` sucht auch bei jeder Änderung. |
+| `mode` | Standard `"instant"`: sucht bei Änderungen, Absenden und Zurücksetzen. `"manual"` sucht nur beim Absenden oder Zurücksetzen. |
 | `columns` | Standard `3`. |
 | `more: true` | Versteckt das Feld, bis „Mehr“ geöffnet wird. Versteckte Felder fehlen in der Abfrage. |
 

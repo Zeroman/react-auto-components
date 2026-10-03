@@ -108,3 +108,7 @@ Docs: https://github.com/Zeroman/react-auto-components/blob/main/docs/errors.md#
 `AutoDialogProvider` 밖에서 `useAutoDialog()`를 호출했습니다.
 
 수정: 그 트리를 `<AutoDialogProvider>`로 감쌉니다. `AutoConfigProvider`는 대화 상자를 제공하지 않으며 선택입니다. 선언적 `<AutoDialog open>`은 이 훅을 쓰지 않습니다.
+
+## RAC-TABS-ROUTE-VALUE
+
+`AutoTabs`에 `route`와 `value`를 동시에 전달하지 마세요. 둘 다 지정하면 `route`가 우선하며 개발 모드에서 `RAC-TABS-ROUTE-VALUE` 경고가 표시됩니다. `AutoNavigation`이 선택을 관리할 때는 `value`를 생략하세요.

@@ -4,6 +4,12 @@
 
 ## 미출시
 
+- `AutoNavigation`을 추가합니다. 마운트된 컴포넌트가 경로 트리에 등록됩니다. `goto`는 상대 경로, 접근 확인, 중단 시그널을 지원합니다. 확정된 위치만 hash, browser, memory history에 동기화됩니다. `AutoMenu`와 `AutoTabs`는 `route`를 받아 현재 자식을 따릅니다.
+- `AutoTip`과 `DefaultTip`을 추가합니다. 필드, 열, 메뉴, 탭의 도움말은 떠 있는 층으로 표시됩니다. 표시 유형 `tip`과 `append`는 인라인으로 남습니다. 항목 자신의 컴포넌트, 소유 컴포넌트, `config.form` / `config.table` / `config.tabs` / `config.menu`, 그다음 `config.tipComponent` 순입니다.
+- `AutoSearch`의 `mode` 기본값은 `"instant"`입니다. 숨은 필드와 `canAccess`를 통과하지 못한 필드는 값 객체에 남고 쿼리에서는 빠집니다. 검색 옵션은 `search`에 둡니다. 기존의 최상위 `match`도 동작합니다.
+- `AutoTable`의 `toolbarActions`가 새로고침, 설정, 내보내기, JSON 버튼을 켜거나 끕니다. `handle.refresh()`와 `handle.export()`는 그대로 사용할 수 있습니다. 정렬이 두 개 이상일 때만 정렬 태그를 표시합니다.
+- 폼은 `classNames`와 `styles` 슬롯, `divider` 표시 항목, `virtual-select`를 받습니다.
+
 ## 0.1.3 - 2026-10-02
 
 - 기본 UI 문구는 영어이며, 그 문자열이 `config.t` 키입니다. 다른 언어는 `t`를 넘깁니다. 이전 중국어 키(`提交`, `刷新` 등)는 더 이상 기본값이 아닙니다.

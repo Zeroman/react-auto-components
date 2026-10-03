@@ -16,6 +16,8 @@
 | `onRefresh` | 있으면 그 탭에 새로 고침 단추. **잡지 않습니다.** |
 | `disabled` | 보이지만 선택할 수 없습니다. 기본 선택은 비활성 탭을 건너뜁니다. |
 
+`AutoTabs`에 `route`와 `value`를 동시에 전달하지 마세요. 둘 다 지정하면 `route`가 우선하며 개발 모드에서 `RAC-TABS-ROUTE-VALUE` 경고가 표시됩니다. `AutoNavigation`이 선택을 관리할 때는 `value`를 생략하세요.
+
 ## 전제
 
 `style.css`를 한 번(개발 시 `RAC-CSS-MISSING`). `AutoConfigProvider`는 선택입니다.

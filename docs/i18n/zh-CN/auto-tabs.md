@@ -4,6 +4,24 @@
 
 标签页。嵌套标签是另一组由 `children` 喂给的 `AutoTabs`，不是菜单。侧栏用 [AutoMenu](auto-menu.md)。
 
+
+每个 tab 可设置 `tip: ReactNode`，悬停或聚焦时显示浮层，不改变布局。`tipComponent` 可通过 AutoTabs 或单个 tab 传入，嵌套分组继承父组件配置。
+
+优先级为：单项／字段／列参数 → 所属组件参数 → Provider 的组件默认配置（`config.tabs`、`config.form`、`config.table` 或 `config.menu`）→ 全局 `AutoConfigProvider.config.tipComponent` → 内置 `DefaultTip`。自定义组件接收 `{ content, children, placement }`（`AutoTipProps`），需保留触发元素的事件、ref 和无障碍属性。`AutoTip` 与 `DefaultTip` 均已导出；默认实现通过 portal 显示，支持 Escape 关闭，触发元素位置不变。
+
+
+```tsx
+import { AutoConfigProvider, AutoTabs, DefaultTip, type AutoTipProps } from "@zeroman.yang/react-auto-components";
+
+function AppTip(props: AutoTipProps) {
+  return <DefaultTip {...props} placement="bottom" />;
+}
+
+<AutoConfigProvider config={{ tipComponent: AppTip }}>
+  <AutoTabs items={[{ id: "mock", label: "Mock", tip: "Runs in the browser" }]} />
+</AutoConfigProvider>
+```
+
 ## 用法
 
 ```tsx
@@ -23,7 +41,8 @@ import "@zeroman.yang/react-auto-components/style.css";
 | 属性 | 行为 |
 | --- | --- |
 | `items` | 每个标签要有稳定的 `id`。`hidden`（布尔或函数）以及 `canAccess` 不通过的标签会被去掉。 |
-| `value` | 受控路径，从根开始的 id 列表。嵌套选择是 `["parent", "child"]`。 |
+| `route` | 可选 `AutoRouteConfig`（`{ name?: string, defaultChild?: string }`）。直接接入 [AutoNavigation](auto-navigation.md) 组件导航树；选中项由路由状态驱动，点击标签调用 `goto()`。 |
+| `value` | 受控路径，从根开始的 id 列表。嵌套选择是 `["parent", "child"]`。与 `route` 互斥（`RAC-TABS-ROUTE-VALUE`）。 |
 | `defaultValue` | 非受控的初始路径。 |
 | `onChange(path, item)` | **不捕获。** 抛错时由 React 报告。受控模式下，你还没提交的路径保持上次的值。 |
 | `mode` | 默认 `"horizontal"`。`"vertical"` 把标签竖排。 |
@@ -37,6 +56,8 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `lazy` | 默认 `false`。`true` 在第一次打开时才挂载面板。 |
 
 某一项如果有 `children`，就用嵌套标签代替 `content`。`defaultActive` 是嵌套层的非受控 id。
+
+当提供 `route` 时，由 `AutoNavigation` 全权接管当前选中的标签。使用 `route` 时应省略 `value`；若两者同时传入，`route` 优先并打印开发警告 `RAC-TABS-ROUTE-VALUE`。
 
 ## 动态标签
 

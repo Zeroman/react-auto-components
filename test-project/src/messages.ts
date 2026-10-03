@@ -2,6 +2,47 @@
 // Keep {0} placeholder indexes unchanged.
 const messages: Record<string, Record<string, string>> = {
   "zh-CN": {
+    "Component Tree Navigation Demo": "组件树导航演示",
+    "Component Tree Navigation": "组件树导航",
+    "Navigation Tree:": "导航树：",
+    "Structural path": "结构路径",
+    "Active child": "激活子项",
+    "Parameters": "参数",
+    "Loading data for projectId": "正在加载项目数据 projectId",
+    "Data loaded successfully for projectId": "数据加载成功 projectId",
+    "Request cancelled by navigation transition (AbortSignal).": "请求已被导航转场中止 (AbortSignal)。",
+    "Navigation Result": "导航结果",
+    "Test Unknown Route": "测试未知路径",
+    "Role": "角色",
+    "Click to toggle": "点击切换",
+    "Param": "参数",
+    "Async Request Status": "异步请求状态",
+    "Admin Audit View": "管理员审计视图",
+    "Access granted for role 'admin'.": "已授予角色 'admin' 访问权限。",
+    "Details (Deep Params)": "详情（深度参数）",
+    "Admin Audit (Restricted)": "管理审计（权限受控）",
+    "Enter Admin Audit (Restricted)": "进入管理审计（受控）",
+    "Global:": "全局：",
+    "Deep:": "深度：",
+    "Relative:": "相对：",
+    "Tree Demo Node": "组件树节点",
+    "Set Param": "设置参数",
+    "(empty)": "（空）",
+    Ready: "就绪",
+    none: "无",
+    "Navigation Tree & History": "组件树与历史同步",
+    "AutoNav": "组件导航",
+    "Manual Search": "手动搜索",
+    "Cross-field & Multi-select": "跨字段与多选",
+    Keyword: "关键词",
+    "Edit criteria, then click Search to apply them.":
+      "编辑条件后，点击“搜索”应用。",
+    "Search project name, owner or region together, and combine multiple statuses.":
+      "同时搜索项目名、负责人或地区，并组合多个状态筛选。",
+    "Results update as you type or select a value. Reset restores all results.":
+      "输入或选择后立即更新结果，重置可恢复全部结果。",
+    "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
+      "模拟服务端：排序、筛选和分页在浏览器中异步处理，无需后端服务。",
     "Toggle fullscreen": "切换全屏",
     "Close dialog": "关闭弹窗",
     Reset: "重置",
@@ -35,6 +76,7 @@ const messages: Record<string, Record<string, string>> = {
     Settings: "设置",
     "Exporting…": "导出中…",
     Export: "导出",
+    JSON: "JSON",
     Retry: "重试",
     "Failed to save configuration: ": "配置保存失败：",
     "Retry save": "重试保存",
@@ -464,6 +506,17 @@ const messages: Record<string, Record<string, string>> = {
     "View on GitHub": "在 GitHub 查看",
   },
   en: {
+    "Manual Search": "Manual Search",
+    "Cross-field & Multi-select": "Cross-field & Multi-select",
+    Keyword: "Keyword",
+    "Edit criteria, then click Search to apply them.":
+      "Edit criteria, then click Search to apply them.",
+    "Search project name, owner or region together, and combine multiple statuses.":
+      "Search project name, owner or region together, and combine multiple statuses.",
+    "Results update as you type or select a value. Reset restores all results.":
+      "Results update as you type or select a value. Reset restores all results.",
+    "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
+      "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.",
     "Toggle fullscreen": "Toggle fullscreen",
     "Close dialog": "Close dialog",
     Reset: "Reset",
@@ -499,6 +552,7 @@ const messages: Record<string, Record<string, string>> = {
     Settings: "Settings",
     "Exporting…": "Exporting…",
     Export: "Export",
+    JSON: "JSON",
     Retry: "Retry",
     "Failed to save configuration: ": "Failed to save configuration: ",
     "Retry save": "Retry save",
@@ -944,6 +998,17 @@ const messages: Record<string, Record<string, string>> = {
     "View on GitHub": "View on GitHub",
   },
   "zh-TW": {
+    "Manual Search": "手動搜尋",
+    "Cross-field & Multi-select": "跨欄位與多選",
+    Keyword: "關鍵字",
+    "Edit criteria, then click Search to apply them.":
+      "編輯條件後，點選「搜尋」套用。",
+    "Search project name, owner or region together, and combine multiple statuses.":
+      "同時搜尋專案名稱、負責人或地區，並組合多個狀態篩選。",
+    "Results update as you type or select a value. Reset restores all results.":
+      "輸入或選擇後立即更新結果，重設可恢復全部結果。",
+    "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
+      "模擬伺服器：排序、篩選和分頁在瀏覽器中非同步處理，無需後端服務。",
     "Toggle fullscreen": "切換全螢幕",
     "Close dialog": "關閉彈窗",
     Reset: "重設",
@@ -977,6 +1042,7 @@ const messages: Record<string, Record<string, string>> = {
     Settings: "設定",
     "Exporting…": "匯出中…",
     Export: "匯出",
+    JSON: "JSON",
     Retry: "重試",
     "Failed to save configuration: ": "設定儲存失敗：",
     "Retry save": "重試儲存",
@@ -1406,6 +1472,17 @@ const messages: Record<string, Record<string, string>> = {
     "View on GitHub": "在 GitHub 檢視",
   },
   ja: {
+    "Manual Search": "手動検索",
+    "Cross-field & Multi-select": "複数項目・複数選択",
+    Keyword: "キーワード",
+    "Edit criteria, then click Search to apply them.":
+      "条件を編集して「検索」をクリックします。",
+    "Search project name, owner or region together, and combine multiple statuses.":
+      "プロジェクト名、担当者、地域を横断検索し、複数のステータスを組み合わせます。",
+    "Results update as you type or select a value. Reset restores all results.":
+      "入力や選択に応じて結果を更新します。リセットですべての結果を表示します。",
+    "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
+      "模擬サーバー：並べ替え、絞り込み、ページ分割はブラウザー内で非同期に処理されます。バックエンドは不要です。",
     "Toggle fullscreen": "全画面に切り替え",
     "Close dialog": "ダイアログを閉じる",
     Reset: "リセット",
@@ -1441,6 +1518,7 @@ const messages: Record<string, Record<string, string>> = {
     Settings: "設定",
     "Exporting…": "エクスポート中…",
     Export: "エクスポート",
+    JSON: "JSON",
     Retry: "再試行",
     "Failed to save configuration: ": "設定の保存に失敗しました：",
     "Retry save": "保存を再試行",
@@ -1884,6 +1962,17 @@ const messages: Record<string, Record<string, string>> = {
     "View on GitHub": "GitHub で見る",
   },
   ko: {
+    "Manual Search": "수동 검색",
+    "Cross-field & Multi-select": "여러 필드 및 다중 선택",
+    Keyword: "키워드",
+    "Edit criteria, then click Search to apply them.":
+      "조건을 수정한 다음 검색을 클릭하여 적용합니다.",
+    "Search project name, owner or region together, and combine multiple statuses.":
+      "프로젝트 이름, 담당자, 지역을 함께 검색하고 여러 상태를 조합합니다.",
+    "Results update as you type or select a value. Reset restores all results.":
+      "입력하거나 선택하면 결과가 갱신됩니다. 초기화하면 전체 결과가 표시됩니다.",
+    "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
+      "모의 서버: 정렬, 필터링, 페이지 처리를 브라우저에서 비동기로 수행합니다. 백엔드가 필요하지 않습니다.",
     "Toggle fullscreen": "전체 화면 전환",
     "Close dialog": "팝업 닫기",
     Reset: "초기화",
@@ -1919,6 +2008,7 @@ const messages: Record<string, Record<string, string>> = {
     Settings: "설정",
     "Exporting…": "내보내는 중…",
     Export: "내보내기",
+    JSON: "JSON",
     Retry: "다시 시도",
     "Failed to save configuration: ": "구성 저장 실패: ",
     "Retry save": "저장 다시 시도",
@@ -2359,6 +2449,17 @@ const messages: Record<string, Record<string, string>> = {
     "View on GitHub": "GitHub에서 보기",
   },
   es: {
+    "Manual Search": "Búsqueda manual",
+    "Cross-field & Multi-select": "Varios campos y selección múltiple",
+    Keyword: "Palabra clave",
+    "Edit criteria, then click Search to apply them.":
+      "Edita los criterios y pulsa Buscar para aplicarlos.",
+    "Search project name, owner or region together, and combine multiple statuses.":
+      "Busca por proyecto, responsable o región y combina varios estados.",
+    "Results update as you type or select a value. Reset restores all results.":
+      "Los resultados se actualizan al escribir o seleccionar. Restablecer muestra todos los resultados.",
+    "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
+      "Servidor simulado: la ordenación, los filtros y la paginación se procesan de forma asíncrona en el navegador. No requiere backend.",
     "Toggle fullscreen": "Cambiar a pantalla completa",
     "Close dialog": "Cerrar ventana emergente",
     Reset: "Restablecer",
@@ -2394,6 +2495,7 @@ const messages: Record<string, Record<string, string>> = {
     Settings: "Configuración",
     "Exporting…": "Exportando…",
     Export: "Exportar",
+    JSON: "JSON",
     Retry: "Reintentar",
     "Failed to save configuration: ": "Error al guardar la configuración: ",
     "Retry save": "Reintentar guardado",
@@ -2847,6 +2949,17 @@ const messages: Record<string, Record<string, string>> = {
     "View on GitHub": "Ver en GitHub",
   },
   fr: {
+    "Manual Search": "Recherche manuelle",
+    "Cross-field & Multi-select": "Plusieurs champs et choix multiples",
+    Keyword: "Mot-clé",
+    "Edit criteria, then click Search to apply them.":
+      "Modifiez les critères, puis cliquez sur Rechercher.",
+    "Search project name, owner or region together, and combine multiple statuses.":
+      "Recherchez par projet, responsable ou région et combinez plusieurs statuts.",
+    "Results update as you type or select a value. Reset restores all results.":
+      "Les résultats changent à chaque saisie ou sélection. Réinitialiser affiche tous les résultats.",
+    "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
+      "Serveur simulé : le tri, le filtrage et la pagination sont traités de façon asynchrone dans le navigateur. Aucun backend requis.",
     "Toggle fullscreen": "Basculer en plein écran",
     "Close dialog": "Fermer la fenêtre contextuelle",
     Reset: "Réinitialiser",
@@ -2882,6 +2995,7 @@ const messages: Record<string, Record<string, string>> = {
     Settings: "Paramètres",
     "Exporting…": "Exportation…",
     Export: "Exporter",
+    JSON: "JSON",
     Retry: "Réessayer",
     "Failed to save configuration: ":
       "Échec de l'enregistrement de la configuration : ",
@@ -3333,6 +3447,17 @@ const messages: Record<string, Record<string, string>> = {
     "View on GitHub": "Voir sur GitHub",
   },
   de: {
+    "Manual Search": "Manuelle Suche",
+    "Cross-field & Multi-select": "Mehrere Felder und Mehrfachauswahl",
+    Keyword: "Suchbegriff",
+    "Edit criteria, then click Search to apply them.":
+      "Kriterien bearbeiten und mit Suchen anwenden.",
+    "Search project name, owner or region together, and combine multiple statuses.":
+      "Projektname, Verantwortliche oder Region durchsuchen und mehrere Status kombinieren.",
+    "Results update as you type or select a value. Reset restores all results.":
+      "Ergebnisse werden bei Eingabe oder Auswahl aktualisiert. Zurücksetzen zeigt alle Ergebnisse.",
+    "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
+      "Simulierter Server: Sortierung, Filterung und Seitennavigation erfolgen asynchron im Browser. Kein Backend erforderlich.",
     "Toggle fullscreen": "Vollbild umschalten",
     "Close dialog": "Dialog schließen",
     Reset: "Zurücksetzen",
@@ -3368,6 +3493,7 @@ const messages: Record<string, Record<string, string>> = {
     Settings: "Einstellungen",
     "Exporting…": "Wird exportiert…",
     Export: "Exportieren",
+    JSON: "JSON",
     Retry: "Wiederholen",
     "Failed to save configuration: ":
       "Speichern der Konfiguration fehlgeschlagen:",
@@ -3824,6 +3950,17 @@ const messages: Record<string, Record<string, string>> = {
     "View on GitHub": "Auf GitHub ansehen",
   },
   "pt-BR": {
+    "Manual Search": "Busca manual",
+    "Cross-field & Multi-select": "Vários campos e seleção múltipla",
+    Keyword: "Palavra-chave",
+    "Edit criteria, then click Search to apply them.":
+      "Edite os critérios e clique em Buscar para aplicá-los.",
+    "Search project name, owner or region together, and combine multiple statuses.":
+      "Busque por projeto, responsável ou região e combine vários status.",
+    "Results update as you type or select a value. Reset restores all results.":
+      "Os resultados mudam ao digitar ou selecionar. Redefinir restaura todos os resultados.",
+    "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
+      "Servidor simulado: ordenação, filtros e paginação são processados de forma assíncrona no navegador. Não requer backend.",
     "Toggle fullscreen": "Alternar tela cheia",
     "Close dialog": "Fechar caixa de diálogo",
     Reset: "Redefinir",
@@ -3859,6 +3996,7 @@ const messages: Record<string, Record<string, string>> = {
     Settings: "Configurações",
     "Exporting…": "Exportando…",
     Export: "Exportar",
+    JSON: "JSON",
     Retry: "Tentar novamente",
     "Failed to save configuration: ": "Falha ao salvar a configuração:",
     "Retry save": "Tentar salvar novamente",
@@ -4307,6 +4445,17 @@ const messages: Record<string, Record<string, string>> = {
     "View on GitHub": "Ver no GitHub",
   },
   ru: {
+    "Manual Search": "Ручной поиск",
+    "Cross-field & Multi-select": "Несколько полей и значений",
+    Keyword: "Ключевое слово",
+    "Edit criteria, then click Search to apply them.":
+      "Измените условия и нажмите «Поиск».",
+    "Search project name, owner or region together, and combine multiple statuses.":
+      "Ищите по названию проекта, ответственному или региону и сочетайте несколько статусов.",
+    "Results update as you type or select a value. Reset restores all results.":
+      "Результаты обновляются при вводе или выборе. Сброс возвращает все результаты.",
+    "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
+      "Имитация сервера: сортировка, фильтрация и разбиение на страницы выполняются асинхронно в браузере. Сервер не требуется.",
     "Toggle fullscreen": "Переключить полноэкранный режим",
     "Close dialog": "Закрыть модальное окно",
     Reset: "Сбросить",
@@ -4342,6 +4491,7 @@ const messages: Record<string, Record<string, string>> = {
     Settings: "Настройки",
     "Exporting…": "Экспорт…",
     Export: "Экспорт",
+    JSON: "JSON",
     Retry: "Повторить",
     "Failed to save configuration: ": "Не удалось сохранить конфигурацию: ",
     "Retry save": "Повторить сохранение",
