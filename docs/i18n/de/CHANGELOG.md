@@ -4,6 +4,8 @@
 
 ## Noch nicht veröffentlicht
 
+## 0.1.4 - 2026-10-03
+
 - `AutoNavigation` kommt hinzu. Gemountete Komponenten tragen sich in einen Pfadbaum ein. `goto` unterstützt relative Pfade, Zugriffsprüfungen und ein Abbruchsignal. Nur bestätigte Orte werden mit Hash-, Browser- oder Speicherverlauf synchronisiert. `AutoMenu` und `AutoTabs` nehmen `route` an und folgen dem aktiven Kind.
 - `AutoTip` und `DefaultTip` kommen hinzu. Hinweise an Feldern, Spalten, Menüs und Tabs schweben. Die Anzeigetypen `tip` und `append` bleiben inline. Es gilt die Komponente des Eintrags, dann die des Besitzers, dann `config.form`, `config.table`, `config.tabs` oder `config.menu`, danach `config.tipComponent`.
 - `mode` von `AutoSearch` ist standardmäßig `"instant"`. Versteckte Felder und Felder, die `canAccess` nicht bestehen, bleiben in den Werten und fehlen in der Abfrage. Suchoptionen stehen auf `search`; die bisherigen `match`-Props der obersten Ebene funktionieren weiter.

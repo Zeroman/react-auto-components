@@ -4,6 +4,8 @@
 
 ## 未リリース
 
+## 0.1.4 - 2026-10-03
+
 - `AutoNavigation` を追加。マウントされたコンポーネントがパスツリーに登録されます。`goto` は相対パス、アクセス確認、中止シグナルに対応します。確定した位置だけが hash、browser、memory の history に同期されます。`AutoMenu` と `AutoTabs` は `route` を受け取り、現在の子に従います。
 - `AutoTip` と `DefaultTip` を追加。フィールド、列、メニュー、タブのヒントはフローティング表示です。表示型の `tip` と `append` はインラインのままです。項目自身のコンポーネント、所有コンポーネント、`config.form` / `config.table` / `config.tabs` / `config.menu`、最後に `config.tipComponent` の順で決まります。
 - `AutoSearch` の `mode` の既定は `"instant"` です。非表示のフィールドと `canAccess` を通らないフィールドは値オブジェクトに残り、クエリからは除かれます。検索オプションは `search` に書きます。従来のトップレベル `match` も使えます。

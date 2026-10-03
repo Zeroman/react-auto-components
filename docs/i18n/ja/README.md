@@ -12,7 +12,7 @@ React 19 向けのスタンドアローンなスキーマ駆動コンポーネ�
 
 ## プロジェクトの状況
 
-現在のバージョンは 0.1.3 であり、API はまだ変更される可能性があります。React 19 が必要です。このパッケージは ESM および TypeScript 型宣言を提供します。組み込みのインターフェーステキストは既定で英語であり、AutoConfigProvider.config.t を通じて翻訳できます。
+現在のバージョンは 0.1.4 であり、API はまだ変更される可能性があります。React 19 が必要です。このパッケージは ESM および TypeScript 型宣言を提供します。組み込みのインターフェーステキストは既定で英語であり、AutoConfigProvider.config.t を通じて翻訳できます。
 
 `pnpm add @zeroman.yang/react-auto-components` でインストールします（npm と yarn でも同様です）。peer dependency は React 19 と react-dom 19 です。エントリでスタイルシートを一度読み込んでください: `import "@zeroman.yang/react-auto-components/style.css"`。
 

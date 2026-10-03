@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 0.1.4 - 2026-10-03
+
 - 新增 `AutoNavigation`。已挂载的组件登记到路径树上。`goto` 支持相对路径、权限检查和中止信号。只有提交后的位置会同步到 hash、browser 或 memory history。`AutoMenu` 和 `AutoTabs` 可传入 `route`，并跟随当前子节点。
 - 新增 `AutoTip` 和 `DefaultTip`。字段、列、菜单和标签的提示改为浮动层。展示类型 `tip` 和 `append` 仍是行内内容。优先级是条目自身的组件、所属组件、`config.form` / `config.table` / `config.tabs` / `config.menu`，然后是 `config.tipComponent`。
 - `AutoSearch` 的 `mode` 默认改为 `"instant"`。隐藏字段和 `canAccess` 未通过的字段仍留在值对象里，但不进入查询。搜索选项写在 `search` 上；原来的顶层 `match` 仍然可用。

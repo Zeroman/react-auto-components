@@ -4,6 +4,8 @@
 
 ## Não publicado
 
+## 0.1.4 - 2026-10-03
+
 - `AutoNavigation` foi adicionado. Componentes montados se registram em uma árvore de caminhos. `goto` aceita caminhos relativos, verificações de acesso e um sinal de cancelamento. Só locais confirmados sincronizam com o histórico hash, do navegador ou em memória. `AutoMenu` e `AutoTabs` aceitam `route` e seguem o filho ativo.
 - `AutoTip` e `DefaultTip` foram adicionados. Dicas de campos, colunas, menus e abas flutuam. Os tipos de exibição `tip` e `append` continuam em linha. Vale o componente do item, depois o do componente dono, depois `config.form`, `config.table`, `config.tabs` ou `config.menu`, e por fim `config.tipComponent`.
 - `mode` de `AutoSearch` passa a ser `"instant"` por padrão. Campos ocultos e os que falham em `canAccess` permanecem nos valores e saem da consulta. As opções de busca ficam em `search`; as props `match` de nível superior continuam funcionando.

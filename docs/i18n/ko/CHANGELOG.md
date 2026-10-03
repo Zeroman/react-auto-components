@@ -4,6 +4,8 @@
 
 ## 미출시
 
+## 0.1.4 - 2026-10-03
+
 - `AutoNavigation`을 추가합니다. 마운트된 컴포넌트가 경로 트리에 등록됩니다. `goto`는 상대 경로, 접근 확인, 중단 시그널을 지원합니다. 확정된 위치만 hash, browser, memory history에 동기화됩니다. `AutoMenu`와 `AutoTabs`는 `route`를 받아 현재 자식을 따릅니다.
 - `AutoTip`과 `DefaultTip`을 추가합니다. 필드, 열, 메뉴, 탭의 도움말은 떠 있는 층으로 표시됩니다. 표시 유형 `tip`과 `append`는 인라인으로 남습니다. 항목 자신의 컴포넌트, 소유 컴포넌트, `config.form` / `config.table` / `config.tabs` / `config.menu`, 그다음 `config.tipComponent` 순입니다.
 - `AutoSearch`의 `mode` 기본값은 `"instant"`입니다. 숨은 필드와 `canAccess`를 통과하지 못한 필드는 값 객체에 남고 쿼리에서는 빠집니다. 검색 옵션은 `search`에 둡니다. 기존의 최상위 `match`도 동작합니다.
