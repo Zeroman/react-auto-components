@@ -1,0 +1,6 @@
+{
+  "source": "en",
+  "active": ["zh-CN"],
+  "paused": ["de", "es", "fr", "ja", "ko", "pt-BR", "ru", "zh-TW"],
+  "note": "Policy: only the source (en) and active locales are maintained. Paused locales are frozen by hash in locales.snapshot.json and enforced by tests/i18n-policy.test.ts. To resume a locale: move it from paused to active, refresh its translations, then regenerate with `node scripts/snapshot-paused-i18n.mjs`."
+}

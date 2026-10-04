@@ -16,6 +16,8 @@ const documents = [
   "auto-tabs.md",
   "auto-menu.md",
   "auto-chat.md",
+  "auto-navigation.md",
+  "migration.md",
 ];
 const roots: string[] = [];
 const put = (root: string, path: string, text: string) => {
@@ -49,40 +51,38 @@ test("translated headings and fenced example structure do not cause drift", () =
   const root = fixture();
   put(
     root,
-    "docs/i18n/ja/auto-table.md",
-    "# 翻訳\n\n````md\n## Example\n```\n| A | B |\n| --- | --- |\n| 1 | 2 |\n````\n~~~md\n### Example\n~~~\n",
+    "docs/i18n/zh-CN/auto-table.md",
+    "# 翻译\n\n````md\n## Example\n```\n| A | B |\n| --- | --- |\n| 1 | 2 |\n````\n~~~md\n### Example\n~~~\n",
   );
   const result = check(root);
   expect(result.status, result.stderr).toBe(0);
-  expect(result.stdout).toContain("90 translations");
+  expect(result.stdout).toContain("12 active translations checked");
   expect(result.stderr).toBe("");
 });
 
 test("missing and extra error codes fail, including codes in examples", () => {
   const root = fixture();
   put(root, "docs/auto-table.md", "# Source\n```text\nRAC-TABLE-SOURCE\n```\n");
-  put(root, "docs/i18n/ja/auto-table.md", "# 翻訳\nRAC-TABLE-SORUCE\n");
+  put(root, "docs/i18n/zh-CN/auto-table.md", "# 翻译\nRAC-TABLE-SORUCE\n");
   const result = check(root);
   expect(result.status).toBe(1);
-  expect(result.stderr).toContain("docs/i18n/ja/auto-table.md");
+  expect(result.stderr).toContain("docs/i18n/zh-CN/auto-table.md");
   expect(result.stderr).toContain("missing error codes: RAC-TABLE-SOURCE");
   expect(result.stderr).toContain("extra error codes: RAC-TABLE-SORUCE");
 });
 
-test("missing source, translation, and entire locale cannot silently shrink coverage", () => {
+test("missing active translation fails but paused locales may be absent", () => {
   const root = fixture();
   rmSync(join(root, "docs/auto-chat.md"));
-  rmSync(join(root, "docs/i18n/ja/auto-table.md"));
+  rmSync(join(root, "docs/i18n/zh-CN"), { recursive: true });
   rmSync(join(root, "docs/i18n/de"), { recursive: true });
   const result = check(root);
   expect(result.status).toBe(1);
   expect(result.stderr).toContain("docs/auto-chat.md: missing source");
   expect(result.stderr).toContain(
-    "docs/i18n/ja/auto-table.md: missing translation",
+    "docs/i18n/zh-CN/README.md: missing translation",
   );
-  expect(result.stderr).toContain(
-    "docs/i18n/de/README.md: missing translation",
-  );
+  expect(result.stderr).not.toContain("i18n/de");
 });
 
 test("heading hierarchy and individual table row counts warn without failing", () => {
@@ -96,11 +96,13 @@ test("heading hierarchy and individual table row counts warn without failing", (
   );
   put(
     root,
-    "docs/i18n/ja/auto-table.md",
-    `# 翻訳\n### 詳細\n${table(["| 1 | 2 |", "| 3 | 4 |"])}\n\n${table(["| 5 | 6 |"])}\n`,
+    "docs/i18n/zh-CN/auto-table.md",
+    `# 翻译\n### 详情\n${table(["| 1 | 2 |", "| 3 | 4 |"])}\n\n${table(["| 5 | 6 |"])}\n`,
   );
   const result = check(root);
   expect(result.status, result.stderr).toBe(0);
-  expect(result.stderr).toContain("docs/i18n/ja/auto-table.md: heading levels");
+  expect(result.stderr).toContain(
+    "docs/i18n/zh-CN/auto-table.md: heading levels",
+  );
   expect(result.stderr).toContain("table body rows [2,1], source [1,2]");
 });

@@ -2,8 +2,13 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// Explicit coverage: deleting a translation or a whole locale must not hide drift.
-const locales = ["de", "es", "fr", "ja", "ko", "pt-BR", "ru", "zh-CN", "zh-TW"];
+// Locale policy comes from locales.config.json: active locales are checked
+// strictly; paused locales are frozen (hash-locked by tests/i18n-policy.test.ts)
+// and may be missing or stale without failing this check.
+const repo = fileURLToPath(new URL("../", import.meta.url));
+const { active, paused } = JSON.parse(
+  readFileSync(resolve(repo, "locales.config.json"), "utf8"),
+);
 const documents = [
   "README.md",
   "CHANGELOG.md",
@@ -15,8 +20,10 @@ const documents = [
   "auto-tabs.md",
   "auto-menu.md",
   "auto-chat.md",
+  "auto-navigation.md",
+  "migration.md",
 ];
-const root = process.argv[2] ?? fileURLToPath(new URL("../", import.meta.url));
+const root = process.argv[2] ?? repo;
 const errors = [];
 const warnings = [];
 
@@ -75,10 +82,12 @@ function structure(text) {
 const codes = (text) =>
   new Set(text.match(/\bRAC-[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*\b/g) ?? []);
 const difference = (a, b) => [...a].filter((value) => !b.has(value)).sort();
+
+// Deleting an active translation or a whole active locale must not hide drift.
 for (const document of documents) {
   const sourcePath = document === "README.md" ? document : `docs/${document}`;
   const source = read(sourcePath, "source");
-  for (const locale of locales) {
+  for (const locale of active) {
     const path = `docs/i18n/${locale}/${document}`;
     const translation = read(path, "translation");
     if (source === null || translation === null) continue;
@@ -106,7 +115,8 @@ for (const document of documents) {
 
 for (const warning of warnings) console.warn(`WARN ${warning}`);
 for (const error of errors) console.error(`ERROR ${error}`);
+const activeFiles = documents.length * active.length;
 console.log(
-  `Docs i18n: ${documents.length * locales.length} translations, ${errors.length} errors, ${warnings.length} structural warnings (non-blocking).`,
+  `Docs i18n: ${activeFiles} active translations checked (${active.join(", ")}), ${paused.length} locales paused (frozen), ${errors.length} errors, ${warnings.length} structural warnings (non-blocking).`,
 );
 process.exitCode = errors.length ? 1 : 0;
