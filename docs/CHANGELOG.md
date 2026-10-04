@@ -2,7 +2,14 @@
 
 **English** | [简体中文](i18n/zh-CN/CHANGELOG.md) | [繁體中文](i18n/zh-TW/CHANGELOG.md) | [日本語](i18n/ja/CHANGELOG.md) | [한국어](i18n/ko/CHANGELOG.md) | [Español](i18n/es/CHANGELOG.md) | [Français](i18n/fr/CHANGELOG.md) | [Deutsch](i18n/de/CHANGELOG.md) | [Português (Brasil)](i18n/pt-BR/CHANGELOG.md) | [Русский](i18n/ru/CHANGELOG.md)
 
-## Unreleased
+## 0.2.0 - 2026-10-04
+
+- Add `createAutoAccess`. The host owns one access store per browser tab and passes it through `config.access`. State changes refresh consumers, storage namespaces scope by user id, and identity changes remount provider descendants. `hasPerm`, `hasRole`, `hasUser`, and `hasOrg` compose with custom `canAccess` policies.
+- Add a dark color scheme. The palette follows `prefers-color-scheme` automatically; set `data-auto-theme="light"` or `"dark"` on any ancestor to force one side.
+- Add an `AutoTabs` data interface. Pass `source` as a `({ signal }) => Promise<AutoTab[]>` function or a `config.tabsSources` key instead of local `items`. Loading shows a status line, a rejection shows `error.message` with Retry, an unknown key warns `RAC-TABS-SOURCE`, and loaded items become route children.
+- Fix `equal` so arrays no longer compare equal to objects with identical numeric keys.
+- Stop the cascader on cyclic option trees and close the virtual select on an outside pointer down.
+- Unify `hidden` resolution across menus, routes, and access checks; route children declared as plain strings normalize to `{ id }` entries.
 
 ## 0.1.4 - 2026-10-03
 

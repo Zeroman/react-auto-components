@@ -2,7 +2,9 @@
 
 [English](../../CHANGELOG.md) | [简体中文](../zh-CN/CHANGELOG.md) | [繁體中文](../zh-TW/CHANGELOG.md) | **日本語** | [한국어](../ko/CHANGELOG.md) | [Español](../es/CHANGELOG.md) | [Français](../fr/CHANGELOG.md) | [Deutsch](../de/CHANGELOG.md) | [Português (Brasil)](../pt-BR/CHANGELOG.md) | [Русский](../ru/CHANGELOG.md)
 
-## 未リリース
+## 0.2.0 - 2026-10-04
+
+- This locale is paused. See docs/CHANGELOG.md (English) for the 0.2.0 notes.
 
 ## 0.1.4 - 2026-10-03
 

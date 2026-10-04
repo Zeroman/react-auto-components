@@ -2,7 +2,14 @@
 
 [English](../../CHANGELOG.md) | **简体中文** | [繁體中文](../zh-TW/CHANGELOG.md) | [日本語](../ja/CHANGELOG.md) | [한국어](../ko/CHANGELOG.md) | [Español](../es/CHANGELOG.md) | [Français](../fr/CHANGELOG.md) | [Deutsch](../de/CHANGELOG.md) | [Português (Brasil)](../pt-BR/CHANGELOG.md) | [Русский](../ru/CHANGELOG.md)
 
-## Unreleased
+## 0.2.0 - 2026-10-04
+
+- 新增 `createAutoAccess`。由宿主在每个浏览器标签页内持有独立的访问状态，并通过 `config.access` 接入。状态变化自动通知消费者，存储命名空间按用户隔离，身份变化会重挂载 Provider 子树。`hasPerm`、`hasRole`、`hasUser`、`hasOrg` 可与自定义 `canAccess` 策略组合。
+- 新增暗色主题。调色板自动跟随 `prefers-color-scheme`，在任意祖先元素（通常是 `<html>`）上设置 `data-auto-theme="light"` 或 `"dark"` 可强制指定。
+- 为 `AutoTabs` 新增数据接口。用 `({ signal }) => Promise<AutoTab[]>` 函数或 `config.tabsSources` 键代替本地 `items`。加载中显示状态行，失败显示 `error.message` 和重试按钮，未知键警告 `RAC-TABS-SOURCE`，加载完成的项会成为路由子节点。
+- 修复 `equal`：数组与键名恰为数字下标的对象不再被判等。
+- 修复级联选择在循环选项树上的死循环；虚拟选择下拉现在响应点击外部关闭。
+- 统一 `hidden` 解析：菜单、路由与访问检查一致支持函数形式；纯字符串声明的路由子节点会规范化为 `{ id }`。
 
 ## 0.1.4 - 2026-10-03
 
