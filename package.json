@@ -107,7 +107,7 @@
   "optionalDependencies": {
     "exceljs": "^4.4.0"
   },
-  "description": "Schema-driven React 19 components for forms, tables, search, dialogs, menus, tabs and chat.",
+  "description": "Schema-driven React 19 UI components (forms, tables, search, tabs, dialogs, chat, navigation) designed for AI-assisted development: typed schemas, zero-function JSON configs, error codes that name the fix.",
   "license": "MIT",
   "author": "Zeroman",
   "repository": {
