@@ -116,3 +116,9 @@ xlsx 适配器加载不到 `exceljs`。它是 `optionalDependency`，普通安�
 同时向 `AutoTabs` 传入了 `route` 和 `value`。
 
 修复：在使用 `route` 驱动的导航模式下省略 `value`；由 `AutoNavigation` 全权接管当前选中的标签页。
+
+## RAC-TABS-SOURCE
+
+`source` 不是 `AutoConfigProvider` 的 `config.tabsSources` 中的标签页数据源键。未知键会显示 `RAC-TABS-SOURCE` 和重试按钮。
+
+修复：注册该键，或改用本地 `items` 或函数；`items` 和 `source` 只能提供一个。

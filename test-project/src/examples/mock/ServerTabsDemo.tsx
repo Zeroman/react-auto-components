@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { AutoTabs } from "@zeroman.yang/react-auto-components";
+import { useCallback, useEffect, useState } from "react";
+import { AutoTabs, type AutoTab } from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../../i18n";
-import { MockDemo, mockRequest, type MockScenario } from "./MockDemo";
+import { mockRequest, type MockScenario } from "./MockDemo";
+import "./mock.css";
 
 type TabConfig = {
   id: string;
@@ -10,7 +11,6 @@ type TabConfig = {
   disabled?: boolean;
   visible: boolean;
 };
-type TabsResponse = { tabs: TabConfig[] };
 
 function loadTabs(scenario: MockScenario, signal: AbortSignal) {
   const tabs: TabConfig[] =
@@ -102,7 +102,7 @@ function TabContent({ id, count }: { id: string; count?: number }) {
     return (
       <div role="alert">
         {tr("mock.tabs.contentError")}{" "}
-        <button onClick={() => setAttempt((value) => value + 1)}>
+        <button type="button" onClick={() => setAttempt((value) => value + 1)}>
           {tr("mock.retry")}
         </button>
       </div>
@@ -120,53 +120,54 @@ function TabContent({ id, count }: { id: string; count?: number }) {
   );
 }
 
-function TabsView({
-  data,
-  selected,
-  select,
-}: {
-  data: TabsResponse;
-  selected: string;
-  select: (id: string) => void;
-}) {
-  const tr = useDemoText();
-  const visible = data.tabs.filter((tab) => tab.visible);
-  const active =
-    visible.find((tab) => tab.id === selected && !tab.disabled)?.id ??
-    visible.find((tab) => !tab.disabled)?.id ??
-    "";
-  useEffect(() => {
-    if (selected !== active) select(active);
-  }, [selected, active, select]);
-  if (!visible.length) return <p role="status">{tr("mock.tabs.empty")}</p>;
-  return (
-    <AutoTabs
-      value={active ? [active] : []}
-      onChange={(path) => select(path[0] ?? "")}
-      keepMounted={false}
-      items={visible.map((tab) => ({
-        ...tab,
-        label: tr(tab.label),
-        content:
-          tab.id === active ? (
-            <TabContent key={tab.id} id={tab.id} count={tab.badge} />
-          ) : null,
-      }))}
-    />
-  );
-}
-
 export function ServerTabsDemo() {
-  const [selected, setSelected] = useState("overview");
+  const tr = useDemoText();
+  const [scenario, setScenario] = useState<MockScenario>("normal");
+  const source = useCallback(
+    ({ signal }: { signal: AbortSignal }) => {
+      if (scenario === "error")
+        return Promise.reject(new Error(tr("mock.requestFailed")));
+      return loadTabs(scenario, signal).then((data): readonly AutoTab[] =>
+        data.tabs.map((tab) => ({
+          id: tab.id,
+          label: tr(tab.label),
+          badge: tab.badge,
+          disabled: tab.disabled,
+          hidden: !tab.visible,
+          content: <TabContent id={tab.id} count={tab.badge} />,
+        })),
+      );
+    },
+    [tr, scenario],
+  );
   return (
-    <MockDemo
-      title="mock.tabs.title"
-      description="mock.tabs.description"
-      load={loadTabs}
+    <section
+      className="card auto-root mock-demo"
+      data-testid="server-driven-demo"
     >
-      {({ data }) => (
-        <TabsView data={data} selected={selected} select={setSelected} />
-      )}
-    </MockDemo>
+      <h2>{tr("mock.tabs.title")}</h2>
+      <p className="muted">{tr("mock.tabs.description")}</p>
+      <div className="auto-actions mock-controls">
+        <label>
+          {tr("mock.response")}{" "}
+          <select
+            aria-label={tr("mock.response")}
+            value={scenario}
+            onChange={(event) =>
+              setScenario(event.target.value as MockScenario)
+            }
+          >
+            <option value="normal">{tr("mock.normal")}</option>
+            <option value="restricted">{tr("mock.restricted")}</option>
+            <option value="empty">{tr("mock.empty")}</option>
+            <option value="error">{tr("mock.error")}</option>
+          </select>
+        </label>
+        <span className="auto-badge">Mock</span>
+      </div>
+      <div className="mock-content">
+        <AutoTabs source={source} keepMounted={false} />
+      </div>
+    </section>
   );
 }

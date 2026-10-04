@@ -1,12 +1,19 @@
 import { AutoTip, type TipConfig } from "../AutoTip";
 import { useAutoText } from "../../core/i18n";
 import * as Tabs from "@radix-ui/react-tabs";
-import { useEffect, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import type { Access, ComponentDensity, ComponentSize } from "../../core/types";
-import { resolveHidden } from "../../core/config";
+import { errorMessage, resolveHidden } from "../../core/config";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
 import { useLibraryStyles } from "../../core/dev";
-import { devWarn } from "../../core/errors";
+import { devWarn, racMessage } from "../../core/errors";
+import type { TabsSource } from "../../core/registry";
 import {
   type AutoRouteConfig,
   useAutoRoute,
@@ -39,7 +46,15 @@ export interface AutoTab extends Access, TipConfig {
  * Disabled tabs are skipped when choosing the default selection. Hidden tabs and failed `canAccess` are removed.
  */
 export interface AutoTabsProps extends TipConfig {
-  items: readonly AutoTab[];
+  /** Local tab items. Pass exactly one of `items` and `source`. */
+  items?: readonly AutoTab[];
+  /**
+   * Loads items remotely: a `({ signal }) => Promise<AutoTab[]>` function or a
+   * `config.tabsSources` key. Keep a function source stable (`useCallback`) —
+   * a new identity refetches. A rejection shows `error.message` with Retry.
+   * An unknown key shows `RAC-TABS-SOURCE`.
+   */
+  source?: TabsSource | string;
   /** Optional route configuration to participate in the AutoNavigation component tree. */
   route?: AutoRouteConfig;
   /** Controlled selection path. Omit to let the tabs keep state from `defaultValue`. */
@@ -64,6 +79,7 @@ export interface AutoTabsProps extends TipConfig {
 }
 export function AutoTabs({
   items,
+  source,
   route,
   value,
   defaultValue,
@@ -81,6 +97,33 @@ export function AutoTabs({
   const services = useAutoConfig();
   useLibraryStyles();
 
+  if (items !== undefined && source !== undefined) {
+    devWarn(
+      "AutoTabs",
+      "RAC-TABS-SOURCE",
+      "Both items and source were supplied to AutoTabs.",
+      "Pass exactly one: local items, a source function, or a config.tabsSources key. items wins.",
+    );
+  }
+  const tabsSource =
+    typeof source === "function"
+      ? source
+      : source === undefined || items !== undefined
+        ? undefined
+        : (services.tabsSources[source] ??
+          (() =>
+            Promise.reject(
+              new Error(
+                racMessage(
+                  "AutoTabs",
+                  "RAC-TABS-SOURCE",
+                  `source "${source}" is not registered.`,
+                  `Add config.tabsSources["${source}"] on AutoConfigProvider, or pass items or a function.`,
+                ),
+              ),
+            )));
+  const tabs = useTabsItems(items, tabsSource);
+
   if (route && value !== undefined) {
     devWarn(
       "AutoTabs",
@@ -93,7 +136,7 @@ export function AutoTabs({
   const routeConfig = route
     ? {
         ...route,
-        children: items.map((tab) => ({
+        children: tabs.items.map((tab) => ({
           id: tab.id,
           disabled: tab.disabled,
           hidden: tab.hidden,
@@ -110,7 +153,7 @@ export function AutoTabs({
     ownDensity ?? services.tabs?.density ?? services.density ?? "comfortable";
   const tipComponent = ownTipComponent ?? services.tabs?.tipComponent;
   const size = ownSize ?? services.tabs?.size ?? services.size ?? "medium";
-  const visible = items.filter(
+  const visible = tabs.items.filter(
     (i) => !resolveHidden(i.hidden) && services.canAccess(i),
   );
   const [local, setLocal] = useState<readonly string[]>(defaultValue ?? []);
@@ -131,6 +174,21 @@ export function AutoTabs({
     if (value === undefined) setLocal(next);
     onChange?.(next, item);
   }
+  if (tabs.loading)
+    return (
+      <p className="auto-notice" role="status">
+        {tr("Loading…")}
+      </p>
+    );
+  if (tabs.error)
+    return (
+      <div className="auto-error" role="alert">
+        {tabs.error}{" "}
+        <button type="button" onClick={tabs.retry}>
+          {tr("Retry")}
+        </button>
+      </div>
+    );
   return (
     <Tabs.Root
       className={`auto-root auto-tabs auto-tabs-${mode}`}
@@ -262,6 +320,49 @@ export function AutoTabs({
       })}
     </Tabs.Root>
   );
+}
+
+function useTabsItems(
+  items: readonly AutoTab[] | undefined,
+  source: TabsSource | undefined,
+): {
+  items: readonly AutoTab[];
+  loading: boolean;
+  error: string;
+  retry: () => void;
+} {
+  const [loaded, setLoaded] = useState<readonly AutoTab[]>([]);
+  const [loading, setLoading] = useState(!!source && items === undefined);
+  const [error, setError] = useState("");
+  const [version, setVersion] = useState(0);
+  const sourceRef = useRef(source);
+  sourceRef.current = source;
+  const enabled = !!source && items === undefined;
+  useEffect(() => {
+    if (!enabled) return;
+    const controller = new AbortController();
+    setLoading(true);
+    setError("");
+    Promise.resolve()
+      .then(() => sourceRef.current!({ signal: controller.signal }))
+      .then((list) => {
+        if (!controller.signal.aborted)
+          setLoaded(Array.isArray(list) ? (list as readonly AutoTab[]) : []);
+      })
+      .catch((e: unknown) => {
+        if (!controller.signal.aborted) setError(errorMessage(e));
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    return () => controller.abort();
+  }, [enabled, version, source]);
+  return {
+    items: items ?? loaded,
+    loading: enabled && loading,
+    error: enabled ? error : "",
+    retry: useCallback(() => setVersion((v) => v + 1), []),
+  };
 }
 
 function VisitedPanel({

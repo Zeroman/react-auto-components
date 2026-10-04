@@ -41,6 +41,7 @@ import "@zeroman.yang/react-auto-components/style.css";
 | 属性 | 行为 |
 | --- | --- |
 | `items` | 每个标签要有稳定的 `id`。`hidden`（布尔或函数）以及 `canAccess` 不通过的标签会被去掉。 |
+| `source` | 远程加载标签项：`({ signal }) => Promise<AutoTab[]>` 函数，或 `config.tabsSources` 的键。加载中显示状态行； rejection 显示 `error.message` 和重试按钮；未知键显示 `RAC-TABS-SOURCE`。`items` 和 `source` 只能提供一个；配合 `route` 时，加载完成的项会成为路由子节点。 |
 | `route` | 可选 `AutoRouteConfig`（`{ name?: string, defaultChild?: string }`）。直接接入 [AutoNavigation](auto-navigation.md) 组件导航树；选中项由路由状态驱动，点击标签调用 `goto()`。 |
 | `value` | 受控路径，从根开始的 id 列表。嵌套选择是 `["parent", "child"]`。与 `route` 互斥（`RAC-TABS-ROUTE-VALUE`）。 |
 | `defaultValue` | 非受控的初始路径。 |

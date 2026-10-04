@@ -122,3 +122,9 @@ Fix: wrap that tree in `<AutoDialogProvider>`. `AutoConfigProvider` does not pro
 Both `route` and `value` were supplied to `AutoTabs`.
 
 Fix: omit `value` when using `route`-driven navigation; `AutoNavigation` owns the active tab selection.
+
+## RAC-TABS-SOURCE
+
+`AutoTabs` `source` is not in `config.tabsSources`. The tabs show this message and a retry button.
+
+Fix: add that key to `config.tabsSources`, or pass local `items` or a function. Pass only one of `items` and `source`.

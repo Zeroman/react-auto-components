@@ -41,6 +41,7 @@ import "@zeroman.yang/react-auto-components/style.css";
 | Prop | Behavior |
 | --- | --- |
 | `items` | Each tab needs a stable `id`. `hidden` (boolean or function) and a failed `canAccess` remove the tab. |
+| `source` | Loads items remotely: a `({ signal }) => Promise<AutoTab[]>` function or a `config.tabsSources` key. Loading shows a status line; a rejection shows `error.message` with Retry; an unknown key shows `RAC-TABS-SOURCE`. Pass only one of `items` and `source`; with `route`, the loaded items become route children once they arrive. |
 | `route` | Optional `AutoRouteConfig` (`{ name?: string, defaultChild?: string }`). Participates in the [AutoNavigation](auto-navigation.md) component tree; active tab is driven by route state, and clicking a tab calls `goto()`. |
 | `value` | Controlled path of ids from the root. Nested selection is `["parent", "child"]`. Mutually exclusive with `route` (`RAC-TABS-ROUTE-VALUE`). |
 | `defaultValue` | Uncontrolled initial path. |
