@@ -9,6 +9,44 @@
   --auto-danger: #bd3545;
   --auto-radius: 8px;
   --auto-font: Inter, ui-sans-serif, system-ui, sans-serif;
+  /* Derived tokens: keep both theme blocks below in sync with these values. */
+  --auto-on-accent: #fff;
+  --auto-scrim: #13271e66;
+  --auto-shadow-overlay: #0b261e40;
+  --auto-shadow-soft: #0000001f;
+}
+/* Dark theme follows the OS by default. Hosts can force either side by
+   setting data-auto-theme="dark" / "light" on any ancestor (typically <html>),
+   which wins over the media query. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-auto-theme="light"]) {
+    --auto-accent: #3cbf8f;
+    --auto-accent-soft: #17332a;
+    --auto-bg: #161d1a;
+    --auto-muted: #202a25;
+    --auto-text: #e3ebe6;
+    --auto-secondary: #9aaba1;
+    --auto-border: #2d3a34;
+    --auto-danger: #e0697a;
+    --auto-on-accent: #0c1512;
+    --auto-scrim: #060d0a99;
+    --auto-shadow-overlay: #000000cc;
+    --auto-shadow-soft: #00000080;
+  }
+}
+[data-auto-theme="dark"] {
+  --auto-accent: #3cbf8f;
+  --auto-accent-soft: #17332a;
+  --auto-bg: #161d1a;
+  --auto-muted: #202a25;
+  --auto-text: #e3ebe6;
+  --auto-secondary: #9aaba1;
+  --auto-border: #2d3a34;
+  --auto-danger: #e0697a;
+  --auto-on-accent: #0c1512;
+  --auto-scrim: #060d0a99;
+  --auto-shadow-overlay: #000000cc;
+  --auto-shadow-soft: #00000080;
 }
 .auto-root,
 .auto-overlay,
@@ -160,7 +198,7 @@
 .auto-overlay-backdrop {
   position: fixed;
   inset: 0;
-  background: #13271e66;
+  background: var(--auto-scrim);
   backdrop-filter: blur(3px);
   z-index: 1000;
 }
@@ -173,7 +211,7 @@
   background: var(--auto-bg);
   border: 1px solid var(--auto-border);
   border-radius: 12px;
-  box-shadow: 0 24px 80px #0b261e40;
+  box-shadow: 0 24px 80px var(--auto-shadow-overlay);
   z-index: 1001;
   display: flex;
   flex-direction: column;
@@ -397,7 +435,7 @@
   height: 20px;
   border-radius: 4px;
   background: var(--auto-accent);
-  color: var(--auto-on-accent, #fff);
+  color: var(--auto-on-accent);
   font-size: 16px;
   font-weight: 700;
   line-height: 1;
@@ -1161,7 +1199,7 @@
 .auto-menu [data-auto-menu-item].active .auto-menu-badge,
 .auto-menu [data-auto-menu-item][aria-current="page"] .auto-menu-badge {
   background: var(--auto-accent);
-  color: #fff;
+  color: var(--auto-on-accent);
 }
 
 .auto-menu-arrow {
@@ -1503,7 +1541,7 @@
   border-radius: 6px;
   background: var(--auto-bg);
   color: var(--auto-text);
-  box-shadow: 0 4px 16px #0000001f;
+  box-shadow: 0 4px 16px var(--auto-shadow-soft);
   font-size: 13px;
   line-height: 1.5;
 }

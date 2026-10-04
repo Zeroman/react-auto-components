@@ -5,13 +5,17 @@ import type {
   ComponentSize,
   TableDensity,
 } from "@zeroman.yang/react-auto-components";
+type StudioFormLayout = Required<
+  Omit<AutoFormLayout, "classNames" | "styles">
+>;
 export interface StudioSettings {
   size: ComponentSize;
   density: ComponentDensity;
   tableDensity: TableDensity;
   tabsDensity: ComponentDensity;
-  form: Required<AutoFormLayout>;
-  dark: boolean;
+  form: StudioFormLayout;
+  /** Light/dark are the built-in default theme; presets add popular looks. */
+  theme: "auto" | "light" | "dark" | "antd" | "github" | "material" | "bootstrap";
 }
 export const defaultStudioSettings: StudioSettings = {
   size: "medium",
@@ -25,7 +29,7 @@ export const defaultStudioSettings: StudioSettings = {
     density: "compact",
     size: "medium",
   },
-  dark: false,
+  theme: "auto",
 };
 export function GlobalSettings({
   value,
@@ -216,18 +220,26 @@ export function GlobalSettings({
           </output>
         </div>
       </div>
-      <label className="auto-actions">
-        <input
-          type="checkbox"
-          checked={value.dark}
+      <label>
+        {tr("Theme")}
+        <select
+          aria-label={tr("Demo theme")}
+          value={value.theme}
           onChange={(e) =>
             onChange({
               ...value,
-              dark: e.target.checked,
+              theme: e.target.value as StudioSettings["theme"],
             })
           }
-        />
-        {tr("Dark theme")}
+        >
+          <option value="auto">{tr("Auto (follow system)")}</option>
+          <option value="light">{tr("Light (default)")}</option>
+          <option value="dark">{tr("Dark (default)")}</option>
+          <option value="antd">{tr("Ant Design style")}</option>
+          <option value="github">{tr("GitHub style")}</option>
+          <option value="material">{tr("Material style")}</option>
+          <option value="bootstrap">{tr("Bootstrap style")}</option>
+        </select>
       </label>
       <div
         style={{
