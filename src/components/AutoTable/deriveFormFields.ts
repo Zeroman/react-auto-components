@@ -1,4 +1,4 @@
-import type { Field } from "../../core/types";
+import type { Field, Option } from "../../core/types";
 import type { AutoColumn } from "./types";
 
 /**
@@ -14,22 +14,25 @@ export function deriveFormFields<T extends object>(
         typeof c.formField === "object"
           ? (c.formField as Record<string, unknown>)
           : undefined;
+      const options =
+        (custom?.options as readonly Option[] | undefined) ?? c.options;
       const base = {
         name: c.key,
         label: c.label,
         tip: c.tip,
         tipComponent: c.tipComponent,
+        ...(options && options.length > 0 ? { options } : {}),
         ...custom,
       };
 
       if (custom?.type) {
         return base as Field<T>;
       }
-      if (c.options && c.options.length > 0) {
+      if (options && options.length > 0) {
         return {
           ...base,
           type: "select" as const,
-          options: c.options,
+          options,
         } as Field<T>;
       }
       switch (c.type) {

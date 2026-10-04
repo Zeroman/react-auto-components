@@ -63,6 +63,26 @@ import type {
   RowAction,
   TableToolbarActions,
 } from "./types";
+
+/** Default row height (px) per size × density; overridable via props.rowHeight. */
+const ROW_HEIGHTS: Record<ComponentSize, Record<TableDensity, number>> = {
+  small: {
+    compact: 26,
+    normal: 32,
+    comfortable: 40,
+  },
+  medium: {
+    compact: 30,
+    normal: 40,
+    comfortable: 52,
+  },
+  large: {
+    compact: 36,
+    normal: 48,
+    comfortable: 60,
+  },
+};
+
 export function AutoTable<T extends object>(props: AutoTableProps<T>) {
   const tr = useAutoText();
   const services = useAutoConfig();
@@ -309,27 +329,10 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
   const scroll = useRef<HTMLDivElement>(null);
   const effectiveVirtual =
     props.virtual !== false && !ordered.some((c) => c.merge);
-  const rowHeightMap: Record<ComponentSize, Record<TableDensity, number>> = {
-    small: {
-      compact: 26,
-      normal: 32,
-      comfortable: 40,
-    },
-    medium: {
-      compact: 30,
-      normal: 40,
-      comfortable: 52,
-    },
-    large: {
-      compact: 36,
-      normal: 48,
-      comfortable: 60,
-    },
-  };
   const itemHeight =
     props.rowHeight !== undefined && density === "normal"
       ? props.rowHeight
-      : (rowHeightMap[size]?.[density] ?? props.rowHeight ?? 40);
+      : (ROW_HEIGHTS[size]?.[density] ?? props.rowHeight ?? 40);
   const virtual = useVirtualizer({
     count: rows.length,
     getScrollElement: () => scroll.current,

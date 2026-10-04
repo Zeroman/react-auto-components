@@ -231,3 +231,52 @@ test("submission waits for pending uploads", async () => {
   await u.click(screen.getByRole("button", { name: "Submit" }));
   expect(submit).toHaveBeenCalledWith({ file: "uploaded" });
 });
+
+test("virtual select closes on outside click", async () => {
+  const u = userEvent.setup();
+  render(
+    <div>
+      <span data-testid="outside">Outside</span>
+      <AutoForm
+        fields={[
+          {
+            name: "option",
+            type: "virtual-select",
+            label: "Choose",
+            options: [
+              { value: "a", label: "Option A" },
+              { value: "b", label: "Option B" },
+            ],
+          },
+        ]}
+      />
+    </div>,
+  );
+  await u.click(screen.getByLabelText("Choose"));
+  expect(screen.getByRole("listbox")).toBeInTheDocument();
+  await u.click(screen.getByTestId("outside"));
+  expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+});
+
+test("cascader terminates gracefully on cyclic options", () => {
+  type CyclicOption = { value: string; label: string; children?: CyclicOption[] };
+  const nodeA: CyclicOption = { value: "a", label: "Node A" };
+  const nodeB: CyclicOption = { value: "b", label: "Node B", children: [nodeA] };
+  nodeA.children = [nodeB];
+
+  render(
+    <AutoForm
+      fields={[
+        {
+          name: "cat",
+          type: "cascader",
+          label: "Category",
+          options: [nodeA],
+          defaultValue: ["a", "b", "a"],
+        },
+      ]}
+    />,
+  );
+  expect(screen.getAllByRole("combobox").length).toBeGreaterThan(0);
+});
+

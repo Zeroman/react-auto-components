@@ -218,3 +218,34 @@ test("column formField configuration and smart type derivation in edit dialog", 
   expect(dateInput).toHaveAttribute("type", "date");
 });
 
+test("deriveFormFields retains column options when custom formField overrides type", async () => {
+  const u = userEvent.setup();
+  render(
+    <AutoTable
+      id="test-derive-custom-type"
+      rowKey="id"
+      data={[{ id: "1", role: "admin" }]}
+      onAdd={() => {}}
+      columns={[
+        {
+          key: "role",
+          label: "Role",
+          options: [
+            { value: "admin", label: "Admin" },
+            { value: "guest", label: "Guest" },
+          ],
+          formField: { type: "select", placeholder: "Choose Role" },
+        },
+      ]}
+      virtual={false}
+    />,
+  );
+
+  await u.click(screen.getByTestId("rac-add"));
+  expect(await screen.findByRole("dialog")).toBeVisible();
+  const select = screen.getByRole("combobox", { name: "Role" });
+  expect(select).toBeVisible();
+  expect(screen.getByRole("option", { name: "Admin" })).toBeVisible();
+});
+
+

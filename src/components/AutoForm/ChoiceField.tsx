@@ -1,5 +1,5 @@
 import { useAutoText } from "../../core/i18n";
-import { useRef, useState, type AriaAttributes } from "react";
+import { useEffect, useRef, useState, type AriaAttributes } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import type { Option } from "../../core/types";
 export function VirtualSelect({
@@ -25,6 +25,24 @@ export function VirtualSelect({
   const [open, setOpen] = useState(false),
     [search, setSearch] = useState("");
   const ref = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+    };
+  }, [open]);
+
   const filtered = options.filter((o) =>
     o.label.toLocaleLowerCase().includes(search.toLocaleLowerCase()),
   );
@@ -40,6 +58,7 @@ export function VirtualSelect({
       : Object.is(value, o.value);
   return (
     <div
+      ref={containerRef}
       onKeyDown={(e) => {
         if (e.key === "Escape") setOpen(false);
       }}
@@ -147,8 +166,11 @@ export function Cascader({
   const tr = useAutoText();
   const path = Array.isArray(value) ? value : [];
   const levels: (readonly Option[])[] = [];
+  const visited = new Set<readonly Option[]>();
   let current = options;
-  for (let i = 0; current.length; i++) {
+  for (let i = 0; current.length && i < 32; i++) {
+    if (visited.has(current)) break;
+    visited.add(current);
     levels.push(current);
     const next = current.find((o) => Object.is(o.value, path[i]));
     if (!next?.children) break;
