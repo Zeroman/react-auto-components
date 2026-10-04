@@ -20,7 +20,10 @@ for (const component of components) {
     await page.goto("/");
     await openComponent(page, component);
     await page
-      .getByRole("tab", { name: "Server-driven Mock", exact: true })
+      .getByRole("tab", {
+        name: component === "AutoTable" ? "Mock server" : "Server-driven Mock",
+        exact: true,
+      })
       .click();
     const demo = page.getByTestId("server-driven-demo");
     await expect(demo.getByRole("status").first()).toBeVisible();

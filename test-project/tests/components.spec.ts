@@ -161,9 +161,8 @@ for (const mode of ["horizontal", "vertical"] as const) {
 test("server mode and large table have no runtime errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page
-    .getByRole("tab", { name: "Server-side (Mock)", exact: true })
-    .click();
+  await page.getByRole("tab", { name: "Mock server", exact: true }).click();
+  await page.getByTestId("table-server-query").click();
   await expect(page.getByText("48 records")).toBeVisible();
   await page.getByRole("button", { name: "Next page" }).click();
   await expect(page.getByText("Page 2 / 5")).toBeVisible();

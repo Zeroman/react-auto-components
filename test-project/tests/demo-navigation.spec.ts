@@ -4,11 +4,11 @@ import { openComponent } from "./helpers/navigation";
 const examples = {
   AutoTable: [
     "Local Data",
-    "Server-side (Mock)",
+    "Mock server",
     "10,000 rows of data",
     "Tree & Expansion",
     "Remaining Height",
-    "Server-driven Mock",
+    "Permissions",
   ],
   AutoSearch: [
     "Instant Search",
@@ -16,11 +16,18 @@ const examples = {
     "Cross-field & Multi-select",
     "Server-side (Mock)",
     "Server-driven Mock",
+    "Permissions",
   ],
-  AutoTabs: ["Basic", "Dynamic tabs", "Access control", "Server-driven Mock"],
-  AutoForm: ["Component examples", "Server-driven Mock"],
-  AutoDialog: ["Component examples", "Server-driven Mock"],
-  AutoMenu: ["Component examples", "Server-driven Mock"],
+  AutoTabs: [
+    "Basic",
+    "Dynamic tabs",
+    "Access control",
+    "Server-driven Mock",
+    "Permissions",
+  ],
+  AutoForm: ["Project form", "Server-driven Mock", "Permissions"],
+  AutoDialog: ["Dialog flows", "Server-driven Mock", "Permissions"],
+  AutoMenu: ["Menu structure", "Server-driven Mock", "Permissions"],
   AutoChat: [
     "Conversation",
     "Large history",
@@ -29,6 +36,7 @@ const examples = {
     "Hooks",
     "Edge states",
     "Server-driven Mock",
+    "Permissions",
   ],
 };
 
@@ -77,11 +85,13 @@ for (const [component, labels] of Object.entries(examples)) {
     await openComponent(page, component);
     const tabs = page.locator(".demo-navigation").getByRole("tab");
     await expect(tabs).toHaveText(labels);
-    await openComponent(page, component, "Server-driven Mock");
+    const serverLabel =
+      component === "AutoTable" ? "Mock server" : "Server-driven Mock";
+    await openComponent(page, component, serverLabel);
     await expect(
       page
         .locator(".demo-navigation")
-        .getByRole("tab", { name: "Server-driven Mock", exact: true }),
+        .getByRole("tab", { name: serverLabel, exact: true }),
     ).toHaveAttribute("aria-selected", "true");
     await expect(
       page.getByTestId("server-driven-demo").locator(".mock-response"),
@@ -140,40 +150,52 @@ test("navigation showcase toolbar drives global goto, relative goto, params, and
 }) => {
   await page.goto("/");
 
-  const toolbar = page.getByTestId("demo-navigation-bar");
-  await expect(toolbar).toBeVisible();
+  // The debug panel is a modal dialog now: open it, trigger a goto, read the
+  // badges, close it, then assert the page behind it.
+  const debugGoto = async (testid: string) => {
+    await page.getByTestId("open-nav-debug").click();
+    const toolbar = page.getByTestId("demo-navigation-bar");
+    await expect(toolbar).toBeVisible();
+    await page.getByTestId(testid).click();
+  };
+  const closeDebug = () => page.keyboard.press("Escape");
 
   // 1. Global goto: table:large
-  await page.getByTestId("nav-goto-large").click();
+  await debugGoto("nav-goto-large");
+  await expect(page.getByTestId("nav-path-badge")).toContainText("table:large");
+  await closeDebug();
   await expect(page.locator("main")).toHaveAttribute("data-page", "table");
   await expect(
     page.locator(".demo-navigation").getByRole("tab", { name: "10,000 rows of data" }),
   ).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByTestId("nav-path-badge")).toContainText("table:large");
 
   // 2. Global goto: chat:performance
-  await page.getByTestId("nav-goto-chat-perf").click();
+  await debugGoto("nav-goto-chat-perf");
+  await expect(page.getByTestId("nav-path-badge")).toContainText("chat:performance");
+  await closeDebug();
   await expect(page.locator("main")).toHaveAttribute("data-page", "chat");
   await expect(
     page.locator(".demo-navigation").getByRole("tab", { name: "Large history" }),
   ).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByTestId("nav-path-badge")).toContainText("chat:performance");
 
   // 3. Deep search with params
-  await page.getByTestId("nav-goto-deep-search").click();
-  await expect(page.locator("main")).toHaveAttribute("data-page", "search");
+  await debugGoto("nav-goto-deep-search");
   await expect(page.getByTestId("nav-path-badge")).toContainText("search:instant");
   await expect(page.getByTestId("nav-params-badge")).toContainText("audit");
+  await closeDebug();
+  await expect(page.locator("main")).toHaveAttribute("data-page", "search");
 
   // 4. Relative goto: ./server
-  await page.getByTestId("nav-relative-server").click();
+  await debugGoto("nav-relative-server");
+  await closeDebug();
   await expect(
     page.locator(".demo-navigation").getByRole("tab", { name: "Server-driven Mock" }),
   ).toHaveAttribute("aria-selected", "true");
   await expect(page.getByTestId("server-driven-demo")).toBeVisible();
 
   // 5. Interactive Tree Demo Node with deep params and role access
-  await page.getByTestId("nav-goto-tree-demo").click();
+  await debugGoto("nav-goto-tree-demo");
+  await closeDebug();
   const demoCard = page.getByTestId("interactive-nav-demo");
   await expect(demoCard).toBeVisible();
   await expect(page.getByTestId("tree-active-child")).toHaveText("details");

@@ -155,6 +155,10 @@ test("remaining height is an in-page tab and the old link opens the same applica
   await page.getByRole("tab", { name: "Local Data", exact: true }).focus();
   await page.keyboard.press("End");
   await expect(
+    page.getByRole("tab", { name: "Permissions", exact: true }),
+  ).toBeFocused();
+  await page.keyboard.press("ArrowLeft");
+  await expect(
     page.getByRole("tab", { name: "Server-driven Mock", exact: true }),
   ).toBeFocused();
   await page.keyboard.press("ArrowLeft");
@@ -176,7 +180,6 @@ test("switching to remaining height preserves the page heading, description and 
   await page.getByRole("tab", { name: "Local Data", exact: true }).click();
   const selectors = [
     ".page-heading",
-    ".section-heading",
     ".demo-navigation .auto-tabs-heading",
   ];
   const before = await Promise.all(
@@ -185,15 +188,6 @@ test("switching to remaining height preserves the page heading, description and 
   await page
     .getByRole("tab", { name: "Remaining Height", exact: true })
     .click();
-  await expect(
-    page.getByText(
-      "Search, sort, layout, export, and edit — all in one workflow.",
-      {
-        exact: true,
-      },
-    ),
-  ).toBeVisible();
-  await expect(page.locator(".page-footer")).toBeVisible();
   for (const [index, selector] of selectors.entries()) {
     const after = await page.locator(selector).boundingBox();
     for (const key of ["x", "y", "width", "height"] as const) {

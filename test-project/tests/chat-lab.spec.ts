@@ -278,12 +278,12 @@ test("edge states retain drafts and isolate pending requests across conversation
   await expect(editor).toHaveValue("New draft");
 });
 
-test("seven tabs and new scenarios keep mobile controls and history visible", async ({
+test("eight tabs and new scenarios keep mobile controls and history visible", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await openChat(page, "Rendering");
-  await expect(page.locator('.demo-navigation [role="tab"]')).toHaveCount(7);
+  await expect(page.locator('.demo-navigation [role="tab"]')).toHaveCount(8);
   for (const tab of ["Rendering", "Message layout", "Hooks", "Edge states"]) {
     await page
       .locator(".demo-navigation")

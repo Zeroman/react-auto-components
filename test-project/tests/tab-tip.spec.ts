@@ -6,7 +6,7 @@ test("Mock help floats on the tab and switching keeps tab click positions stable
   await page.goto("/");
   const local = page.getByRole("tab", { name: "Local Data", exact: true });
   const remote = page.getByRole("tab", {
-    name: "Server-side (Mock)",
+    name: "Mock server",
     exact: true,
   });
   const before = await local.boundingBox();
@@ -16,7 +16,7 @@ test("Mock help floats on the tab and switching keeps tab click positions stable
   expect(after!.y).toBe(before!.y);
   expect(after!.x).toBe(before!.x);
   await remote.hover();
-  await expect(page.getByRole("tooltip")).toContainText("Mock server:");
+  await expect(page.getByRole("tooltip")).toContainText("One mock server");
   await page.getByRole("tooltip").hover();
   await expect(page.getByRole("tooltip")).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("tab-tip.png") });

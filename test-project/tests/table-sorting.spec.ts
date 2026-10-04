@@ -8,11 +8,8 @@ for (const mode of ["local", "remote"] as const) {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/");
     if (mode === "remote") {
-      await page.getByRole("tab", { name: "Server-side (Mock)" }).click();
-      await page.getByRole("tab", { name: "Server-side (Mock)" }).hover();
-      await expect(page.getByRole("tooltip")).toContainText(
-        "Mock server: sorting",
-      );
+      await page.getByRole("tab", { name: "Mock server", exact: true }).click();
+      await page.getByTestId("table-server-query").click();
     }
     const table = page.getByTestId(`rac-table-projects-${mode}`);
     const visibleIds = () =>

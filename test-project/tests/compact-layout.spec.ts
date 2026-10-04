@@ -141,7 +141,7 @@ test("global settings are isolated in a panel while the current example stays mo
     exact: true,
   });
   await settings.getByLabel("Global form density").selectOption("comfortable");
-  await settings.getByLabel("Dark theme").check();
+  await settings.getByLabel("Demo theme").selectOption("dark");
   await settings.getByRole("button", { name: "Close dialog" }).click();
   await expect(
     page.getByRole("tab", { name: "Remaining Height", exact: true }),
