@@ -144,6 +144,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 | AutoMenu | 侧边导航，支持图标、描述、徽标、嵌套分组、权限与可折叠图标栏 |
 | AutoChat | 调用方自定义消息渲染、可选虚拟化、流式跟随、锚定历史加载、发送/停止输入框与自定义操作 |
 
+## 前置条件
+
+样式只需引入一次：`import "@zeroman.yang/react-auto-components/style.css"`。未引入时 `--auto-text` 未定义，页面无样式，开发模式会发出 `RAC-CSS-MISSING` 警告。配色自动跟随系统的 `prefers-color-scheme`；在任意祖先元素（通常为 `<html>`）上设置 `data-auto-theme="light"` 或 `"dark"` 可强制指定明暗主题。
+
+`AutoConfigProvider` 为可选。默认配置为：命名空间 `"auto"`、尺寸 `"medium"`、密度 `"comfortable"`、顶部标签与 `localStorage`。命名空间会加在 `${namespace}:table:${id}` 和 `${namespace}:draft:${draftKey}` 前。同源下的两个应用若均使用 `"auto"` 将共享这些持久化键。
+
+`AutoDialogProvider` 是使用 `useAutoDialog()` 所必需的，并不由 `AutoConfigProvider` 隐式提供。声明式 `<AutoDialog open>` 则不需要。
+
+`exceljs` 是仅在 `@zeroman.yang/react-auto-components/xlsx` 中使用的可选依赖项。CSV 与 JSON 导出无需此依赖。缺少适配器或未安装 `exceljs` 时会报错 `RAC-TABLE-XLSX` 或 `RAC-XLSX-DEP`。
+
 表格布局、排序、筛选、导出各自支持命名方案及版本。默认 localStorage 持久化，也可注入远程适配器。JSON/CSV 内置；XLSX 使用可选的独立适配器：
 
 ```tsx

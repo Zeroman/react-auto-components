@@ -167,8 +167,8 @@ importers:
   .:
     dependencies:
       '@zeroman.yang/react-auto-components':
-        specifier: file:../artifacts/zeroman.yang-react-auto-components-0.2.0-aafe4716c4b1.tgz
-        version: file:../artifacts/zeroman.yang-react-auto-components-0.2.0-aafe4716c4b1.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: file:../artifacts/zeroman.yang-react-auto-components-0.2.0-4b74517c39d0.tgz
+        version: file:../artifacts/zeroman.yang-react-auto-components-0.2.0-4b74517c39d0.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react:
         specifier: 19.3.0
         version: 19.3.0
@@ -858,8 +858,8 @@ packages:
       oxc-transform-react:
         optional: true
 
-  '@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.2.0-aafe4716c4b1.tgz':
-    resolution: {integrity: sha512-NMlbf9Gls+d28ueKtJ5p6J0DvPH0cHj193VRZVsZH1MAArq1cBZsPtAFZCEylBVoXBPuCQAdn/UxZAMOQWe0ag==, tarball: file:../artifacts/zeroman.yang-react-auto-components-0.2.0-aafe4716c4b1.tgz}
+  '@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.2.0-4b74517c39d0.tgz':
+    resolution: {integrity: sha512-3Oj1OVZOD4ykarps1Z4xmxWwxB102bqFGqnRON9rIjv7sWXLAQaCIHeqOUOoY3Hfo1IaYlqT7vQ/Ausi9NaRpA==, tarball: file:../artifacts/zeroman.yang-react-auto-components-0.2.0-4b74517c39d0.tgz}
     version: 0.2.0
     engines: {node: '>=22.12.0'}
     peerDependencies:
@@ -2231,7 +2231,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.1
       vite: 8.3.2(@types/node@26.6.4)
 
-  '@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.2.0-aafe4716c4b1.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.2.0-4b74517c39d0.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@floating-ui/react': 0.27.20(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@radix-ui/react-context-menu': 2.3.7(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
