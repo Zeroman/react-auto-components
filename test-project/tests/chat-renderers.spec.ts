@@ -90,9 +90,6 @@ test("10000 and 50000 variable-height messages keep DOM bounded and support jump
   test.setTimeout(60000);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  // WebKit's smooth-scroll settles later; the paused-viewport contract is the
-  // same but its pixel tolerance needs the wider bound.
-  const viewportTolerance = test.info().project.name === "webkit" ? 48 : 4;
   await page.getByRole("tab", { name: "Large history", exact: true }).click();
   for (const count of [10000, 50000]) {
     if (count !== 10000) {
@@ -137,6 +134,9 @@ test("large history preserves a paused viewport on append and supports streamed 
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  // WebKit's smooth-scroll settles later; the paused-viewport contract is the
+  // same but its pixel tolerance needs the wider bound.
+  const viewportTolerance = test.info().project.name === "webkit" ? 48 : 4;
   await page.getByRole("tab", { name: "Large history", exact: true }).click();
   const log = page.getByRole("log");
   await page
