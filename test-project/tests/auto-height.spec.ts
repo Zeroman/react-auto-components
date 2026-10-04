@@ -159,10 +159,6 @@ test("remaining height is an in-page tab and the old link opens the same applica
   ).toBeFocused();
   await page.keyboard.press("ArrowLeft");
   await expect(
-    page.getByRole("tab", { name: "Server-driven Mock", exact: true }),
-  ).toBeFocused();
-  await page.keyboard.press("ArrowLeft");
-  await expect(
     page.getByRole("tab", { name: "Remaining Height", exact: true }),
   ).toBeFocused();
   await fitted(page);

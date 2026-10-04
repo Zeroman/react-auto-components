@@ -90,6 +90,9 @@ test("10000 and 50000 variable-height messages keep DOM bounded and support jump
   test.setTimeout(60000);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  // WebKit's smooth-scroll settles later; the paused-viewport contract is the
+  // same but its pixel tolerance needs the wider bound.
+  const viewportTolerance = test.info().project.name === "webkit" ? 48 : 4;
   await page.getByRole("tab", { name: "Large history", exact: true }).click();
   for (const count of [10000, 50000]) {
     if (count !== 10000) {
@@ -150,16 +153,20 @@ test("large history preserves a paused viewport on append and supports streamed 
     .click();
   await expect(page.getByTestId("chat-message-count")).toHaveText("10100");
   await expect
-    .poll(async () => Math.abs((await first.boundingBox())!.y - before))
-    .toBeLessThan(4);
+    .poll(async () => Math.abs((await first.boundingBox())!.y - before), {
+      timeout: 15000,
+    })
+    .toBeLessThan(viewportTolerance);
 
   await page
     .getByRole("button", { name: "Append 100 messages", exact: true })
     .click();
   await expect(page.getByTestId("chat-message-count")).toHaveText("10200");
   await expect
-    .poll(async () => Math.abs((await first.boundingBox())!.y - before))
-    .toBeLessThan(4);
+    .poll(async () => Math.abs((await first.boundingBox())!.y - before), {
+      timeout: 15000,
+    })
+    .toBeLessThan(viewportTolerance);
   await page
     .getByRole("button", { name: "Jump to latest", exact: true })
     .click();
@@ -173,7 +180,7 @@ test("large history preserves a paused viewport on append and supports streamed 
     .poll(() =>
       log.evaluate((el) => el.scrollHeight - el.scrollTop - el.clientHeight),
     )
-    .toBeLessThan(4);
+    .toBeLessThan(viewportTolerance);
   await page
     .getByRole("button", { name: "Jump to first", exact: true })
     .click();

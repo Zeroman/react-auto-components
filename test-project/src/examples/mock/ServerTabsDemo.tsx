@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AutoTabs, type AutoTab } from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../../i18n";
 import { mockRequest, type MockScenario } from "./MockDemo";
 import "./mock.css";
 
+type TabsResponse = { tabs: TabConfig[] };
 type TabConfig = {
   id: string;
   label: string;
@@ -123,20 +124,30 @@ function TabContent({ id, count }: { id: string; count?: number }) {
 export function ServerTabsDemo() {
   const tr = useDemoText();
   const [scenario, setScenario] = useState<MockScenario>("normal");
+  const [response, setResponse] = useState<TabsResponse | null>(null);
+  // The "error" scenario fails exactly once; the component's own retry then
+  // succeeds and the view returns to the normal scenario, like MockDemo.
+  const failedOnce = useRef(false);
   const source = useCallback(
     ({ signal }: { signal: AbortSignal }) => {
-      if (scenario === "error")
+      if (scenario !== "error") failedOnce.current = false;
+      if (scenario === "error" && !failedOnce.current) {
+        failedOnce.current = true;
+        setResponse(null);
         return Promise.reject(new Error(tr("mock.requestFailed")));
-      return loadTabs(scenario, signal).then((data): readonly AutoTab[] =>
-        data.tabs.map((tab) => ({
+      }
+      if (scenario === "error") setScenario("normal");
+      return loadTabs(scenario, signal).then((data): readonly AutoTab[] => {
+        setResponse(data);
+        return data.tabs.map((tab) => ({
           id: tab.id,
           label: tr(tab.label),
           badge: tab.badge,
           disabled: tab.disabled,
           hidden: !tab.visible,
           content: <TabContent id={tab.id} count={tab.badge} />,
-        })),
-      );
+        }));
+      });
     },
     [tr, scenario],
   );
@@ -167,6 +178,17 @@ export function ServerTabsDemo() {
       </div>
       <div className="mock-content">
         <AutoTabs source={source} keepMounted={false} />
+        {response && response.tabs.length === 0 && (
+          <p className="auto-notice" role="status">
+            {tr("mock.tabs.empty")}
+          </p>
+        )}
+        {response && (
+          <details className="mock-response">
+            <summary>{tr("mock.payload")}</summary>
+            <pre>{JSON.stringify(response, null, 2)}</pre>
+          </details>
+        )}
       </div>
     </section>
   );

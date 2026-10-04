@@ -1,9 +1,14 @@
 import { openComponent } from "./helpers/navigation";
 import { test, expect } from "@playwright/test";
 
-test.use({ permissions: ["clipboard-read", "clipboard-write"] });
+// Firefox and WebKit reject the clipboard-write permission at context
+// creation, which fails the whole file before any assertion runs. Grant the
+// permissions on Chromium only; other engines skip the copy assertions.
+test.use({ permissions: [] });
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, browserName, context }) => {
+  if (browserName === "chromium")
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/");
 });
 
@@ -28,11 +33,13 @@ test("example source dialog shows source with file tabs", async ({ page }) => {
     /.+\/test-project\/src\/examples\/AutoHeightDemo\.tsx$/,
   );
 
-  await viewer.getByRole("button", { name: "Copy code" }).click();
-  await expect(viewer.getByRole("button", { name: "Copied" })).toBeVisible();
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
-    await viewer.locator("pre code").textContent(),
-  );
+  if (test.info().project.name === "chromium") {
+    await viewer.getByRole("button", { name: "Copy code" }).click();
+    await expect(viewer.getByRole("button", { name: "Copied" })).toBeVisible();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      await viewer.locator("pre code").textContent(),
+    );
+  }
 });
 
 test("example source follows the active demo page", async ({ page }) => {
@@ -51,7 +58,7 @@ test("server-driven mode opens its integration source and includes shared schema
   page,
 }) => {
   await page
-    .getByRole("tab", { name: "Server-driven Mock", exact: true })
+    .getByRole("tab", { name: "Mock server", exact: true })
     .click();
   await page.mouse.move(0, 0);
   await page.getByRole("button", { name: "View code" }).click();
