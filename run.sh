@@ -796,6 +796,7 @@ _release_allowed_path() {
     case "$1" in
         package.json | README.md | docs/CHANGELOG.md) return 0 ;;
         docs/i18n/*/README.md | docs/i18n/*/CHANGELOG.md) return 0 ;;
+        locales.snapshot.json) return 0 ;;
         *) return 1 ;;
     esac
 }
@@ -1028,6 +1029,8 @@ USAGE
     today=$(date +%Y-%m-%d)
     _release_apply_version write "$version" "$today" || return 1
 
+    node scripts/snapshot-paused-i18n.mjs || return 1
+
     echo "运行 check:public、typecheck、lint 和 test。" >&2
     if ! pnpm check:public || ! pnpm typecheck || ! pnpm lint || ! pnpm test; then
         echo "检查失败。版本文件留在工作区，没有提交，也没有推送。" >&2
@@ -1046,7 +1049,7 @@ USAGE
         return 1
     fi
 
-    git add -- package.json README.md docs/CHANGELOG.md docs/i18n/*/README.md docs/i18n/*/CHANGELOG.md || return 1
+    git add -- package.json README.md docs/CHANGELOG.md docs/i18n/*/README.md docs/i18n/*/CHANGELOG.md locales.snapshot.json || return 1
     if ! git diff --cached --quiet; then
         git commit -m "chore(release): bump to ${version}" || return 1
     fi
