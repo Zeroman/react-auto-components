@@ -4,19 +4,19 @@
 
 Configure components through React generics, callbacks, and providers. The following table maps common application needs to the public APIs and runnable examples.
 
-| Original use case | React API | Runnable example / test |
-| --- | --- | --- |
-| Form fields and v-model | `fields: Field<T>[]`, `value/onChange`, or `defaultValue` | Form page in `test-project/src/examples/FormDemo.tsx`; `tests/form*.test.tsx` |
-| Slots and appended content | Field `render`, column `render/header`, ReactNode | Form/table pages |
-| Form instance operations | `ref.validate/reset/getValues/setValue/focus` | `tests/form.test.tsx` |
-| Search, related conditions, RSQL | `buildQuery`, `matchesQuery`, `serializeRsql` | Search page; `tests/query.test.ts` |
-| Local/remote table data | Either `data` or `dataSource(query,{signal})` | Table page; `tests/table.test.tsx` |
-| Layout/filter/sort/export presets | Independent presets in the settings dialog, invalidated separately by `versions` | Table page; `tests/table-settings.test.ts` |
-| Trees, details, summaries, merged cells | `getChildren/renderExpanded`, column `summary/merge` | Tree and expansion examples; `tests/table-advanced.test.tsx` |
-| Add, edit, delete | `formFields` and `onAdd/onEdit/onDelete` | Browser CRUD tests |
-| Imperative dialogs | `AutoDialogProvider` + `useAutoDialog().open()` | Dialog page; `tests/dialog.test.tsx` |
-| Tabs and nested tabs | `AutoTabs` items, value/onChange, keepMounted | Tabs page; `tests/tabs.test.tsx` |
-| Chat message lists and conversation UI | `AutoChat`, `messages`, `onSend`, `renderMessage` | Chat pages in `test-project/src/examples/Chat*.tsx`; `tests/chat.test.tsx` |
+| Original use case                       | React API                                                                        | Runnable example / test                                                       |
+| --------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Form fields and v-model                 | `fields: Field<T>[]`, `value/onChange`, or `defaultValue`                        | Form page in `test-project/src/examples/FormDemo.tsx`; `tests/form*.test.tsx` |
+| Slots and appended content              | Field `render`, column `render/header`, ReactNode                                | Form/table pages                                                              |
+| Form instance operations                | `ref.validate/reset/getValues/setValue/focus`                                    | `tests/form.test.tsx`                                                         |
+| Search, related conditions, RSQL        | `buildQuery`, `matchesQuery`, `serializeRsql`                                    | Search page; `tests/query.test.ts`                                            |
+| Local/remote table data                 | Either `data` or `dataSource(query,{signal})`                                    | Table page; `tests/table.test.tsx`                                            |
+| Layout/filter/sort/export presets       | Independent presets in the settings dialog, invalidated separately by `versions` | Table page; `tests/table-settings.test.ts`                                    |
+| Trees, details, summaries, merged cells | `getChildren/renderExpanded`, column `summary/merge`                             | Tree and expansion examples; `tests/table-advanced.test.tsx`                  |
+| Add, edit, delete                       | `formFields` and `onAdd/onEdit/onDelete`                                         | Browser CRUD tests                                                            |
+| Imperative dialogs                      | `AutoDialogProvider` + `useAutoDialog().open()`                                  | Dialog page; `tests/dialog.test.tsx`                                          |
+| Tabs and nested tabs                    | `AutoTabs` items, value/onChange, keepMounted                                    | Tabs page; `tests/tabs.test.tsx`                                              |
+| Chat message lists and conversation UI  | `AutoChat`, `messages`, `onSend`, `renderMessage`                                | Chat pages in `test-project/src/examples/Chat*.tsx`; `tests/chat.test.tsx`    |
 
 ## Field types
 
@@ -26,11 +26,19 @@ Configure components through React generics, callbacks, and providers. The follo
 
 ```tsx
 const fields: Field<User>[] = [
-  { name: 'name', label: 'Name', required: true },
-  { name: 'note', label: 'Note', hidden: values => !values.enabled,
-    render: ({ value, onChange, disabled }) =>
-      <textarea disabled={disabled} value={String(value ?? '')}
-        onChange={event => onChange(event.target.value)} /> },
+  { name: "name", label: "Name", required: true },
+  {
+    name: "note",
+    label: "Note",
+    hidden: (values) => !values.enabled,
+    render: ({ value, onChange, disabled }) => (
+      <textarea
+        disabled={disabled}
+        value={String(value ?? "")}
+        onChange={(event) => onChange(event.target.value)}
+      />
+    ),
+  },
 ];
 ```
 
@@ -40,12 +48,13 @@ See the exported TypeScript types for the full API. `Field<T>` binds to actual k
 
 ```tsx
 const dataSource: DataSource<User> = async (query, { signal }) => {
-  const response = await fetch('/api/users/search', {
-    method: 'POST', signal,
-    headers: { 'Content-Type': 'application/json' },
+  const response = await fetch("/api/users/search", {
+    method: "POST",
+    signal,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(query),
   });
-  if (!response.ok) throw new Error('Failed to load');
+  if (!response.ok) throw new Error("Failed to load");
   return response.json(); // { rows: User[], total: number }
 };
 ```
@@ -57,15 +66,28 @@ Page indexes start at 0. `sort` is an ordered array of fields; `filter` is a str
 A field's `upload(files, signal)` returns the field value after the application saves the files. The component displays upload failures; callers provide upload URLs, authentication, and object-storage policies.
 
 ```tsx
-<AutoConfigProvider config={{
-  namespace: 'tenant-admin',
-  canAccess: access => !access.permissions?.length || access.permissions.every(p => myPermissions.includes(p)),
-  settings: {
-    load: key => api.loadTableSettings(key),
-    save: (key, settings) => api.saveTableSettings(key, settings),
-  },
-  notify: (message, level) => showToast(message, level),
-}}>{children}</AutoConfigProvider>
+<AutoConfigProvider
+  config={{
+    namespace: "tenant-admin",
+    canAccess: (access) =>
+      !access.permissions?.length ||
+      access.permissions.every((p) => myPermissions.includes(p)),
+    settings: {
+      load: (key) => api.loadTableSettings(key),
+      save: (key, settings) => api.saveTableSettings(key, settings),
+    },
+    notify: (message, level) => showToast(message, level),
+  }}
+>
+  {children}
+</AutoConfigProvider>
 ```
 
 Local changes apply immediately; remote saves run serially, with a retry option after failures. When changing persisted settings formats, use a new table id or version to avoid loading incompatible settings.
+
+## Removed in 0.2.0
+
+- Top-level search props on fields (`match`, `ignoreCase`, `includeNull`, `searchFields`, `more`) — specify them on `field.search` (`SearchConfig`).
+- `AutoSearchPanel` / `AutoSearchPanelProps` — use `AutoSearch` / `AutoSearchProps`.
+- `hashSync` on `AutoNavigationProvider` — pass `history={createHashHistory()}`.
+- `tip` on `tip` and `append` display items — use `content`.
