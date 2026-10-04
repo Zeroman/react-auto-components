@@ -4,9 +4,6 @@
 
 搜索表单。内部渲染 `AutoForm`，同时给出 `QueryNode` 和原始值。即时输入和提交使用 [AutoForm](auto-form.md) 的字段校验规则；重置直接恢复默认筛选，不运行校验。
 
-`AutoSearchPanel` 和 `AutoSearchPanelProps` 是 `AutoSearch` 与 `AutoSearchProps` 的已弃用别名。
-
-
 字段 tip 与 AutoForm 使用同一机制；AutoSearch 将 `tipComponent` 传给内部表单。
 
 优先级为：单项／字段／列参数 → 所属组件参数 → Provider 的组件默认配置（`config.tabs`、`config.form`、`config.table` 或 `config.menu`）→ 全局 `AutoConfigProvider.config.tipComponent` → 内置 `DefaultTip`。自定义组件接收 `{ content, children, placement }`（`AutoTipProps`），需保留触发元素的事件、ref 和无障碍属性。`AutoTip` 与 `DefaultTip` 均已导出；默认实现通过 portal 显示，支持 Escape 关闭，触发元素位置不变。
@@ -20,39 +17,44 @@ import "@zeroman.yang/react-auto-components/style.css";
 <AutoSearch
   fields={[
     { name: "name", label: "名称", search: { match: "contains" } },
-    { name: "period", type: "daterange", label: "周期", search: { match: "between" } },
+    {
+      name: "period",
+      type: "daterange",
+      label: "周期",
+      search: { match: "between" },
+    },
   ]}
   onSearch={(query, values) => load(query, values)}
-/>
+/>;
 ```
 
-`type` 为 `daterange` 或 `match` 为 `"between"` 时，模型字段必须是两项元组。
+`type` 为 `daterange` 或 `search.match` 为 `"between"` 时，模型字段必须是两项元组。
 
 ## 行为与属性
 
-| 属性 | 行为 |
-| --- | --- |
-| `fields` | 与 AutoForm 相同的 `Field<T>`。搜索配置（`match`、`ignoreCase`、`includeNull`、`searchFields`、`more`）推荐通过 `search?: SearchConfig` 子对象传入（顶层平铺属性已废弃，但保留以保持向前兼容）。`more: true` 的字段在展开「更多」之前隐藏。隐藏字段不进入查询。 |
-| `onSearch(query, values)` | 必填，可返回 `void` 或 `Promise<void>`。**所有触发入口均捕获 throw/reject，保留当前值并显示 `error.message`，失败不会自动重置。** 新输入、重置或外部值变更后，旧搜索的错误不再显示。 |
-| `onChange` | 编辑和重置都会触发。即时搜索时，它发生在 `onSearch` 之前。 |
-| `mode` | 默认 `"instant"`：修改条件时先校验，通过后搜索；提交也校验，重置直接搜索默认值。设置 `"manual"` 可仅在提交或重置时搜索。 |
-| `value`、`defaultValue` | 受控和重置规则与 AutoForm 相同。 |
-| `columns` | 默认 `3`。 |
-| `sortTags` | 你自己的按钮。`onRemove` 不捕获。 |
-| `classNames`、`styles` | 插槽样式覆盖：`classNames?: AutoSearchClassNames`（`root`、`form`、`actions`、`search`、`reset`、`moreToggle`）与 `styles?: AutoSearchStyles`。 |
-| 标签属性 | 与 AutoForm 相同。传入的布局优先于 provider。 |
+| 属性                      | 行为                                                                                                                                                                                                            |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fields`                  | 与 AutoForm 相同的 `Field<T>`。搜索配置（`match`、`ignoreCase`、`includeNull`、`searchFields`、`more`）通过 `search?: SearchConfig` 子对象传入。`more: true` 的字段在展开「更多」之前隐藏。隐藏字段不进入查询。 |
+| `onSearch(query, values)` | 必填，可返回 `void` 或 `Promise<void>`。**所有触发入口均捕获 throw/reject，保留当前值并显示 `error.message`，失败不会自动重置。** 新输入、重置或外部值变更后，旧搜索的错误不再显示。                            |
+| `onChange`                | 编辑和重置都会触发。即时搜索时，它发生在 `onSearch` 之前。                                                                                                                                                      |
+| `mode`                    | 默认 `"instant"`：修改条件时先校验，通过后搜索；提交也校验，重置直接搜索默认值。设置 `"manual"` 可仅在提交或重置时搜索。                                                                                        |
+| `value`、`defaultValue`   | 受控和重置规则与 AutoForm 相同。                                                                                                                                                                                |
+| `columns`                 | 默认 `3`。                                                                                                                                                                                                      |
+| `sortTags`                | 你自己的按钮。`onRemove` 不捕获。                                                                                                                                                                               |
+| `classNames`、`styles`    | 插槽样式覆盖：`classNames?: AutoSearchClassNames`（`root`、`form`、`actions`、`search`、`reset`、`moreToggle`）与 `styles?: AutoSearchStyles`。                                                                 |
+| 标签属性                  | 与 AutoForm 相同。传入的布局优先于 provider。                                                                                                                                                                   |
 
 ## 查询值
 
-| `match` | 值 |
-| --- | --- |
-| 省略 | `"eq"`；值是数组时为 `"in"`。 |
-| `"contains"` | 子串。`ignoreCase: true` 忽略大小写。 |
-| `"between"` | `[from, to]`。标量会警告 `RAC-FIELD-BETWEEN`，并且匹配不到行。 |
-| `"isNull"` | 匹配 null 或 undefined。输入的值被忽略。 |
-| 空值 | `undefined`、`null`、`""` 和空数组会被省略，`"isNull"` 除外。 |
+| `match`      | 值                                                             |
+| ------------ | -------------------------------------------------------------- |
+| 省略         | `"eq"`；值是数组时为 `"in"`。                                  |
+| `"contains"` | 子串。`ignoreCase: true` 忽略大小写。                          |
+| `"between"`  | `[from, to]`。标量会警告 `RAC-FIELD-BETWEEN`，并且匹配不到行。 |
+| `"isNull"`   | 匹配 null 或 undefined。输入的值被忽略。                       |
+| 空值         | `undefined`、`null`、`""` 和空数组会被省略，`"isNull"` 除外。  |
 
-`includeNull: true` 会再 OR 一个 `isNull`。`searchFields` 把同一次比较 OR 到这些行字段上，而不是只用 `name`。建议将这些搜索控制项归并到 `field.search = { match, ignoreCase, includeNull, searchFields, more }`。
+`includeNull: true` 会再 OR 一个 `isNull`。`searchFields` 把同一次比较 OR 到这些行字段上，而不是只用 `name`。这些选项位于 `field.search = { match, ignoreCase, includeNull, searchFields, more }`；旧的顶层写法已在 0.2.0 移除。
 
 即时校验包含可见、有权限、未禁用字段的 `required` 和同步／异步 `rules`；只有最新且通过校验的输入才会发出查询。已经发出的请求不会自动取消，调用方仍负责结果顺序或取消请求。
 

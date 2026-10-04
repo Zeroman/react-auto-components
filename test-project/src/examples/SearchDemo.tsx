@@ -84,9 +84,11 @@ function SearchExample({ example }: { example: SearchExampleKind }) {
     {
       name: "name",
       label: tr("Keyword"),
-      match: "contains",
-      ignoreCase: true,
-      searchFields: ["name", "owner", "region"],
+      search: {
+        match: "contains",
+        ignoreCase: true,
+        searchFields: ["name", "owner", "region"],
+      },
     },
     {
       name: "status",

@@ -14,10 +14,9 @@ test("Field assignment errors name the broken prop and the fix", () => {
 type Model = { status: string; created: string; amount: number; period: [string, string] };
 const selectMissing: Field<Model> = { name: "status", type: "select" };
 const rangeScalar: Field<Model> = { name: "created", type: "daterange", defaultValue: "2020-01-01" };
-const betweenScalar: Field<Model> = { name: "amount", match: "between" };
 const rangeOk: Field<Model> = { name: "period", type: "daterange", defaultValue: ["2020-01-01", "2020-01-02"] };
 const selectOk: Field<Model> = { name: "status", type: "select", options: [{ value: "a", label: "A" }] };
-void selectMissing; void rangeScalar; void betweenScalar; void rangeOk; void selectOk;
+void selectMissing; void rangeScalar; void rangeOk; void selectOk;
 `,
   );
   let output = "";
@@ -52,8 +51,6 @@ void selectMissing; void rangeScalar; void betweenScalar; void rangeOk; void sel
   expect(output).toContain("ChoiceField");
   expect(output).toContain("RAC-FIELD-RANGE");
   expect(output).toContain("two-item tuple [start, end]");
-  expect(output).toContain("RAC-FIELD-BETWEEN");
-  expect(output).toContain("two-item tuple [from, to]");
   expect(output).not.toContain("type: string");
   expect(output.split("\n").length).toBeLessThan(40);
 });

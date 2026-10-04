@@ -27,10 +27,6 @@ export const emptyQuery: QueryNode = {
 export interface SearchField {
   name?: string;
   search?: SearchConfig;
-  match?: MatchOperator;
-  ignoreCase?: boolean;
-  includeNull?: boolean;
-  searchFields?: readonly string[];
 }
 export function buildQuery(
   values: object,
@@ -41,10 +37,10 @@ export function buildQuery(
     if (!f.name) continue;
     const v = (values as Record<string, unknown>)[f.name];
     const s = f.search;
-    const match = s?.match ?? f.match;
-    const ignoreCase = s?.ignoreCase ?? f.ignoreCase;
-    const includeNull = s?.includeNull ?? f.includeNull;
-    const searchFields = s?.searchFields ?? f.searchFields;
+    const match = s?.match;
+    const ignoreCase = s?.ignoreCase;
+    const includeNull = s?.includeNull;
+    const searchFields = s?.searchFields;
     if (
       match !== "isNull" &&
       (v === undefined ||
@@ -62,27 +58,25 @@ export function buildQuery(
         "Store [from, to] on this field. A scalar is ignored by matchesQuery and still serializes badly.",
       );
     }
-    const conditions: QueryNode[] = (searchFields ?? [f.name]).map(
-      (field) => {
-        const node: QueryNode = {
-          kind: "condition",
-          field,
-          operator,
-          value: v,
-          ignoreCase,
-        };
-        return includeNull
-          ? {
-              kind: "group",
-              operator: "or",
-              children: [
-                node,
-                { kind: "condition", field, operator: "isNull", value: null },
-              ],
-            }
-          : node;
-      },
-    );
+    const conditions: QueryNode[] = (searchFields ?? [f.name]).map((field) => {
+      const node: QueryNode = {
+        kind: "condition",
+        field,
+        operator,
+        value: v,
+        ignoreCase,
+      };
+      return includeNull
+        ? {
+            kind: "group",
+            operator: "or",
+            children: [
+              node,
+              { kind: "condition", field, operator: "isNull", value: null },
+            ],
+          }
+        : node;
+    });
     children.push(
       conditions.length === 1
         ? conditions[0]

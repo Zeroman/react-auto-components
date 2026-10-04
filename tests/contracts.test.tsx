@@ -120,6 +120,6 @@ test("useAutoDialog outside the provider names the fix", () => {
 
 test("match between warns when the value is a scalar", () => {
   const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-  buildQuery({ amount: 5 }, [{ name: "amount", match: "between" }]);
+  buildQuery({ amount: 5 }, [{ name: "amount", search: { match: "between" } }]);
   expect(warn.mock.calls.flat().join("\n")).toContain("RAC-FIELD-BETWEEN");
 });

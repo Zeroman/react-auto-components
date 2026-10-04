@@ -176,12 +176,7 @@ export type FieldType = ValueFieldType | DisplayItemType;
 
 /** Widgets that render an empty control when `options` is missing. `options` is required. */
 export type ChoiceFieldType =
-  | "select"
-  | "select-v2"
-  | "virtual-select"
-  | "radio"
-  | "checkbox"
-  | "cascader";
+  "select" | "select-v2" | "virtual-select" | "radio" | "checkbox" | "cascader";
 
 /** Value is a two-item `[start, end]`. A scalar string or number is rejected. */
 export type DateRangeFieldType = "daterange" | "datetimerange";
@@ -319,24 +314,6 @@ export interface FieldShared<
    * Search-specific configuration when used in AutoSearch or table search panels.
    */
   search?: SearchConfig;
-  /**
-   * Search comparison. See {@link MatchOperator}.
-   * `"between"` requires `T[name]` to be a two-item tuple.
-   * @deprecated Use `search.match` instead.
-   */
-  match?: MatchOperator;
-  /** Case-fold string comparisons. Only affects `"contains"` and `"eq"` style matches. @deprecated Use `search.ignoreCase` instead. */
-  ignoreCase?: boolean;
-  /** Also match rows where the field is null or undefined (`OR` with `isNull`). @deprecated Use `search.includeNull` instead. */
-  includeNull?: boolean;
-  /**
-   * Query these row keys instead of `name`, OR-ed together.
-   * Example: one "keyword" input searching `first` and `last`.
-   * @deprecated Use `search.searchFields` instead.
-   */
-  searchFields?: readonly string[];
-  /** Search panels hide this field behind "More" until the user expands them. @deprecated Use `search.more` instead. */
-  more?: boolean;
 }
 
 /** Text input. This is the default when `type` is omitted. `autocomplete` shows `options` as suggestions, not a closed list. */
@@ -548,8 +525,9 @@ export interface TipItem extends DisplayItemBase {
   label?: string;
 }
 
-export interface ButtonItem<T extends object = Record<string, unknown>>
-  extends DisplayItemBase {
+export interface ButtonItem<
+  T extends object = Record<string, unknown>,
+> extends DisplayItemBase {
   type: "button";
   label: string;
   disabled?: Dynamic<boolean, T>;
@@ -571,11 +549,7 @@ export interface DividerItem extends DisplayItemBase {
  * Non-data display item union.
  */
 export type DisplayItem<T extends object = Record<string, unknown>> =
-  | TitleItem
-  | TipItem
-  | ButtonItem<T>
-  | AppendItem
-  | DividerItem;
+  TitleItem | TipItem | ButtonItem<T> | AppendItem | DividerItem;
 
 /**
  * Data-bearing form field for model `T`.

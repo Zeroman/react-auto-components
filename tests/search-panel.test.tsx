@@ -9,7 +9,7 @@ test("manual searches only on submit and reset once", async () => {
   render(
     <AutoSearch
       mode="manual"
-      fields={[{ name: "name", label: "Name", match: "contains" }]}
+      fields={[{ name: "name", label: "Name", search: { match: "contains" } }]}
       onSearch={onSearch}
     />,
   );
@@ -26,7 +26,7 @@ test("searches immediately by default for text and choice changes, and reset emi
   render(
     <AutoSearch
       fields={[
-        { name: "name", label: "Name", match: "contains" },
+        { name: "name", label: "Name", search: { match: "contains" } },
         {
           name: "status",
           label: "Status",
@@ -98,7 +98,7 @@ for (const mode of ["instant", "manual"] as const) {
         }>
           mode={mode}
           fields={[
-            { name: "name", label: "Name", match: "contains" },
+            { name: "name", label: "Name", search: { match: "contains" } },
             {
               name: "secret",
               label: "Secret",
@@ -109,7 +109,7 @@ for (const mode of ["instant", "manual"] as const) {
               name: "budget",
               label: "Budget",
               permissions: ["budget:read"],
-              match: "isNull",
+              search: { match: "isNull" },
             },
             {
               name: "hidden",

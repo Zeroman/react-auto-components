@@ -213,7 +213,7 @@ function createDemoData(
     {
       name: "name",
       label: tr("Project Name"),
-      match: "contains",
+      search: { match: "contains" },
       placeholder: tr("Search projects…"),
     },
     {
@@ -229,7 +229,7 @@ function createDemoData(
       name: "region",
       label: tr("Region"),
       type: "select",
-      more: true,
+      search: { more: true },
       options: ["Shanghai", "Hangzhou", "Shenzhen"].map((value) => ({
         value,
         label: tr(value),

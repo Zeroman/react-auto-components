@@ -66,8 +66,9 @@ export function mapSearchFields(
           name: field.name,
           type: "input",
           label: tr(field.label),
-          match: field.match,
-          ignoreCase: true,
+          search: field.match
+            ? { match: field.match, ignoreCase: true }
+            : undefined,
         },
   );
 }

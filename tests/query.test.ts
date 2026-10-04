@@ -14,11 +14,13 @@ test("linked fields OR, fields AND, case and inclusive ranges", () => {
   const q = buildQuery({ term: "AL", amount: [1, 3] }, [
     {
       name: "term",
-      match: "contains",
-      ignoreCase: true,
-      searchFields: ["first", "last"],
+      search: {
+        match: "contains",
+        ignoreCase: true,
+        searchFields: ["first", "last"],
+      },
     },
-    { name: "amount", match: "between" },
+    { name: "amount", search: { match: "between" } },
   ]);
   expect(matchesQuery({ first: "Bob", last: "Allen", amount: 3 }, q)).toBe(
     true,
@@ -29,7 +31,7 @@ test("null and quoted RSQL", () => {
   expect(
     matchesQuery(
       { x: null },
-      buildQuery({ x: null }, [{ name: "x", match: "isNull" }]),
+      buildQuery({ x: null }, [{ name: "x", search: { match: "isNull" } }]),
     ),
   ).toBe(true);
   expect(
@@ -54,9 +56,7 @@ test("search sub-object configuration builds valid query node", () => {
     },
     {
       name: "range",
-      search: {
-        match: "between",
-      },
+      search: { match: "between" },
     },
   ]);
   expect(
@@ -69,4 +69,3 @@ test("search sub-object configuration builds valid query node", () => {
     matchesQuery({ title: "test", description: "foo", range: 25 }, q),
   ).toBe(false);
 });
-

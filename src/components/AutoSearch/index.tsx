@@ -160,7 +160,7 @@ export function AutoSearch<T extends object>({
     if (mode === "instant" && !resetting.current) void send(v, true);
   };
   const isFieldMore = (f: Field<T>): boolean =>
-    ("search" in f && !!f.search?.more) || ("more" in f && !!f.more);
+    "search" in f && !!f.search?.more;
 
   return (
     <section
@@ -273,9 +273,3 @@ export function AutoSearch<T extends object>({
     </section>
   );
 }
-
-/** @deprecated Use {@link AutoSearchProps}. */
-export type AutoSearchPanelProps<T extends object> = AutoSearchProps<T>;
-
-/** @deprecated Use {@link AutoSearch}. */
-export const AutoSearchPanel: typeof AutoSearch = AutoSearch;

@@ -68,9 +68,11 @@ test("buildQuery output serializes to RSQL end to end", () => {
   const q = buildQuery({ term: "al", region: ["Shanghai", "Hangzhou"] }, [
     {
       name: "term",
-      match: "contains",
-      ignoreCase: true,
-      searchFields: ["name", "owner"],
+      search: {
+        match: "contains",
+        ignoreCase: true,
+        searchFields: ["name", "owner"],
+      },
     },
     { name: "region" },
   ]);

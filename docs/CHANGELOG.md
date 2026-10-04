@@ -10,6 +10,7 @@
 - Fix `equal` so arrays no longer compare equal to objects with identical numeric keys.
 - Stop the cascader on cyclic option trees and close the virtual select on an outside pointer down.
 - Unify `hidden` resolution across menus, routes, and access checks; route children declared as plain strings normalize to `{ id }` entries.
+- Remove the deprecated top-level search props (`match`, `ignoreCase`, `includeNull`, `searchFields`, `more`) and the `AutoSearchPanel` alias. Specify them on `field.search` and use `AutoSearch`.
 
 ## 0.1.4 - 2026-10-03
 

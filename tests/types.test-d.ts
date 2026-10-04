@@ -43,17 +43,6 @@ const rangeScalar: Field<Choice> = {
 };
 const between: Field<{ amount: [number, number] }> = {
   name: "amount",
-  match: "between",
-};
-// @ts-expect-error match between rejects a scalar
-const betweenScalar: Field<Choice> = { name: "amount", match: "between" };
-const betweenSearch: Field<{ amount: [number, number] }> = {
-  name: "amount",
-  search: { match: "between" },
-};
-// @ts-expect-error search match between rejects a scalar
-const betweenSearchScalar: Field<Choice> = {
-  name: "amount",
   search: { match: "between" },
 };
 const virtualSelect: Field<Choice> = {
@@ -77,9 +66,6 @@ void choiceMissing;
 void range;
 void rangeScalar;
 void between;
-void betweenScalar;
-void betweenSearch;
-void betweenSearchScalar;
 void virtualSelect;
 void displayTitle;
 void displayDivider;

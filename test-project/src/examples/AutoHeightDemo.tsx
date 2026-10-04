@@ -87,7 +87,7 @@ export function AutoHeightDemo() {
           {
             name: "owner",
             label: tr("Owner"),
-            more: true,
+            search: { more: true },
           },
         ]}
         pageSize={100}
