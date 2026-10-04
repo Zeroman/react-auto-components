@@ -6,7 +6,7 @@ import {
   RoutePathContext,
 } from "./AutoNavigationContext";
 import { createAutoNavigation } from "./createAutoNavigation";
-import { createHashHistory, syncHistory } from "./history";
+import { syncHistory } from "./history";
 import type { AutoNavigation, AutoNavigationProviderProps } from "./types";
 
 export function AutoNavigationProvider({
@@ -14,7 +14,6 @@ export function AutoNavigationProvider({
   initialPath,
   initialParams,
   history,
-  hashSync = false,
   children,
 }: AutoNavigationProviderProps) {
   const config = useAutoConfig();
@@ -35,13 +34,12 @@ export function AutoNavigationProvider({
     }
   }, [navigation, config.canAccess]);
 
-  // History sync (pluggable history adapter or legacy hashSync)
+  // History sync (pluggable history adapter)
   useEffect(() => {
-    const adapter = history ?? (hashSync ? createHashHistory() : undefined);
-    if (adapter) {
-      return syncHistory(navigation, adapter);
+    if (history) {
+      return syncHistory(navigation, history);
     }
-  }, [navigation, history, hashSync]);
+  }, [navigation, history]);
 
   // Clean up internally created instance on unmount (with StrictMode replay support)
   useEffect(() => {

@@ -490,13 +490,12 @@ const nav = createAutoNavigation({
 
 管理导航实例生命周期的 React 上下文 Provider。
 
-| 属性            | 类型                          | 说明                                                                             |
-| --------------- | ----------------------------- | -------------------------------------------------------------------------------- |
-| `navigation`    | `AutoNavigation`              | 可选，外部创建好的导航实例。                                                     |
-| `initialPath`   | `string \| readonly string[]` | 未提供 `navigation` 时的初始路径。                                               |
-| `history`       | `AutoHistoryAdapter`          | 可选适配器；省略时不进行历史同步。                                               |
-| `initialParams` | `Record<string, string>`      | 未提供 `navigation` 时的初始参数。                                               |
-| `hashSync`      | `boolean`                     | 已弃用的 hash 同步简写，默认 `false`；建议使用 `history={createHashHistory()}`。 |
+| 属性            | 类型                          | 说明                               |
+| --------------- | ----------------------------- | ---------------------------------- |
+| `navigation`    | `AutoNavigation`              | 可选，外部创建好的导航实例。       |
+| `initialPath`   | `string \| readonly string[]` | 未提供 `navigation` 时的初始路径。 |
+| `history`       | `AutoHistoryAdapter`          | 可选适配器；省略时不进行历史同步。 |
+| `initialParams` | `Record<string, string>`      | 未提供 `navigation` 时的初始参数。 |
 
 ### `useAutoRoute(config)`
 

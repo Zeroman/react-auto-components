@@ -489,13 +489,12 @@ const nav = createAutoNavigation({
 
 React context provider managing navigation lifecycle. Pass the adapter returned by any framework hook above to `history`. Configure permissions through `AutoConfigProvider.config.canAccess`; externally created navigation instances also retain their factory permission checker.
 
-| Prop            | Type                          | Description                                                                                |
-| --------------- | ----------------------------- | ------------------------------------------------------------------------------------------ |
-| `navigation`    | `AutoNavigation`              | Optional pre-created navigation instance.                                                  |
-| `initialPath`   | `string \| readonly string[]` | Initial path if `navigation` is omitted.                                                   |
-| `history`       | `AutoHistoryAdapter`          | Optional adapter. Omit it to disable history synchronization.                              |
-| `initialParams` | `Record<string, string>`      | Initial parameters if `navigation` is omitted.                                             |
-| `hashSync`      | `boolean`                     | Deprecated hash adapter shortcut, default `false`. Prefer `history={createHashHistory()}`. |
+| Prop            | Type                          | Description                                                   |
+| --------------- | ----------------------------- | ------------------------------------------------------------- |
+| `navigation`    | `AutoNavigation`              | Optional pre-created navigation instance.                     |
+| `initialPath`   | `string \| readonly string[]` | Initial path if `navigation` is omitted.                      |
+| `history`       | `AutoHistoryAdapter`          | Optional adapter. Omit it to disable history synchronization. |
+| `initialParams` | `Record<string, string>`      | Initial parameters if `navigation` is omitted.                |
 
 ### `useAutoRoute(config)`
 

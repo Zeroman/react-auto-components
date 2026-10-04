@@ -227,7 +227,5 @@ export interface AutoNavigationProviderProps {
   initialParams?: Record<string, string>;
   /** Pluggable history adapter for URL or memory synchronization. */
   history?: AutoHistoryAdapter;
-  /** @deprecated Use `history={createHashHistory()}` instead. */
-  hashSync?: boolean;
   children: ReactNode;
 }

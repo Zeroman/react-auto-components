@@ -11,6 +11,8 @@
 - 修复级联选择在循环选项树上的死循环；虚拟选择下拉现在响应点击外部关闭。
 - 统一 `hidden` 解析：菜单、路由与访问检查一致支持函数形式；纯字符串声明的路由子节点会规范化为 `{ id }`。
 - 移除已废弃的顶层搜索属性（`match`、`ignoreCase`、`includeNull`、`searchFields`、`more`）与 `AutoSearchPanel` 别名。请在 `field.search` 上指定，并使用 `AutoSearch`。
+- 移除 `AutoNavigationProvider` 上已废弃的 `hashSync` 属性；请传 `history={createHashHistory()}`。移除 `tip`／`append` 展示项上已废弃的 `tip` 属性；请使用 `content`。
+- README 新增 i18n 集成文档：通过 `config.t` 桥接 react-i18next、各组件标签覆盖，以及 `Field.lang` 键。
 
 ## 0.1.4 - 2026-10-03
 

@@ -93,8 +93,8 @@ test("field help floats separately from its label and display fields remain cont
     <AutoForm
       fields={[
         { name: "name", label: "Name", tip: "Field help" },
-        { type: "tip", tip: "Visible notice" },
-        { type: "append", tip: <strong>Extra content</strong> },
+        { type: "tip", content: "Visible notice" },
+        { type: "append", content: <strong>Extra content</strong> },
       ]}
       actions={false}
     />,

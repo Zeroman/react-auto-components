@@ -109,27 +109,39 @@ export function FormField<T extends object>({
     return (
       <span
         id={id}
-        className={["auto-muted", field.classNames?.control, classNames?.control].filter(Boolean).join(" ")}
+        className={[
+          "auto-muted",
+          field.classNames?.control,
+          classNames?.control,
+        ]
+          .filter(Boolean)
+          .join(" ")}
         style={{ ...styles?.control, ...field.styles?.control }}
       >
-        {field.content ?? field.tip ?? field.label}
+        {field.content ?? field.label}
       </span>
     );
   if (type === "append")
     return (
       <div
         id={id}
-        className={[field.classNames?.control, classNames?.control].filter(Boolean).join(" ") || undefined}
+        className={
+          [field.classNames?.control, classNames?.control]
+            .filter(Boolean)
+            .join(" ") || undefined
+        }
         style={{ ...styles?.control, ...field.styles?.control }}
       >
-        {field.content ?? field.tip}
+        {field.content}
       </div>
     );
   if (type === "divider")
     return (
       <hr
         id={id}
-        className={["auto-divider", field.classNames?.root, classNames?.root].filter(Boolean).join(" ")}
+        className={["auto-divider", field.classNames?.root, classNames?.root]
+          .filter(Boolean)
+          .join(" ")}
         style={{ ...styles?.root, ...field.styles?.root }}
       />
     );
@@ -139,7 +151,11 @@ export function FormField<T extends object>({
         id={id}
         type="button"
         disabled={disabled}
-        className={[classNames?.input, field.classNames?.input].filter(Boolean).join(" ") || undefined}
+        className={
+          [classNames?.input, field.classNames?.input]
+            .filter(Boolean)
+            .join(" ") || undefined
+        }
         style={hasInputStyle ? inputStyle : undefined}
         onClick={() => field.onAction?.(values)}
       >

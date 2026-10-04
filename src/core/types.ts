@@ -520,8 +520,6 @@ export interface TipItem extends DisplayItemBase {
   type: "tip";
   /** Body content of the tip item. */
   content?: ReactNode;
-  /** @deprecated Use `content` instead */
-  tip?: ReactNode;
   label?: string;
 }
 
@@ -537,8 +535,6 @@ export interface ButtonItem<
 export interface AppendItem extends DisplayItemBase {
   type: "append";
   content?: ReactNode;
-  /** @deprecated Use `content` instead */
-  tip?: ReactNode;
 }
 
 export interface DividerItem extends DisplayItemBase {
