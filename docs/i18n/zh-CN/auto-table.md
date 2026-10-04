@@ -31,6 +31,86 @@ import "@zeroman.yang/react-auto-components/style.css";
 
 `exportXlsx` 来自 `@zeroman.yang/react-auto-components/xlsx`，不是主入口。`exceljs` 是可选依赖，缺失时为 `RAC-XLSX-DEP`。
 
+## JSON 驱动的表格（零函数属性）
+
+把这一节当作 `zm_api` 这类 JSON 生产方服务的接入模板：宿主一次性注册可执行行为，表格描述只包含 JSON。下面的端点只是示例宿主 API，不是库内置端点。
+
+把这份描述保存为 `orders.table.json`：
+
+```json
+{
+  "id": "orders",
+  "rowKey": "id",
+  "source": "orders.list",
+  "pageSize": 10,
+  "columns": [
+    { "key": "id", "label": "Id" },
+    { "key": "customer", "label": "Customer" },
+    { "key": "paid", "label": "Paid", "component": "paid-label" }
+  ],
+  "searchFields": [
+    { "name": "customer", "label": "Customer", "type": "input", "match": "contains" }
+  ],
+  "rowActions": [
+    { "id": "inspect", "label": "Inspect order", "action": "orders.inspect" }
+  ]
+}
+```
+
+在 React 宿主里注册这些键，然后把描述原样传入：
+
+```tsx
+import {
+  AutoConfigProvider,
+  AutoTable,
+  type AutoServices,
+  type AutoTableProps,
+} from "@zeroman.yang/react-auto-components";
+import descriptionJson from "./orders.table.json";
+import "@zeroman.yang/react-auto-components/style.css";
+
+type Order = { id: string; customer: string; paid: boolean };
+const description = descriptionJson as AutoTableProps<Order>;
+
+const config = {
+  namespace: "orders-app",
+  sources: {
+    "orders.list": async (query, { signal }) => {
+      const response = await fetch("/api/orders/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(query),
+        signal,
+      });
+      if (!response.ok) throw new Error(`Load orders failed: ${response.status}`);
+      return (await response.json()) as { rows: Order[]; total: number };
+    },
+  },
+  columns: {
+    "paid-label": { format: (value) => (value ? "Paid" : "Unpaid") },
+  },
+  rowActions: {
+    "orders.inspect": (row) => {
+      window.alert(`Order ${(row as Order).id}`);
+    },
+  },
+} satisfies Partial<AutoServices>;
+
+export default function OrdersPage() {
+  return (
+    <AutoConfigProvider config={config}>
+      <AutoTable<Order> {...description} />
+    </AutoConfigProvider>
+  );
+}
+```
+
+宿主端点收到 `{ pageIndex, pageSize, sort, filter }`（`pageIndex` 从零开始；`filter` 是[查询 AST](auto-search.md)）。它必须先做筛选与排序再分页，并返回例如 `{ "rows": [{ "id": "o-1", "customer": "Ada", "paid": true }], "total": 1 }`。`total` 是筛选后的总数。搜索或翻页会再次调用注册的 source；请求被拒绝时表格会显示错误并带重试。右键行可选择 **Inspect order**。
+
+所有函数都在 `config` 中；表格描述里不出现任何函数。`source`、列 `component` 与行 `action` 指向宿主注册。自定义表单/搜索组件同样可以用 `Field.component` 搭配 `config.fields`。这些注册表并不取代内置的 CRUD 回调（`onAdd`、`onEdit`、`onDelete`）；自定义工作流请使用注册的行操作。上文中的类型断言描述的是约定好的数据契约，不是运行时校验：请在宿主边界对外部提供的描述与响应做校验。
+
+AI/浏览器验证下的隔离渲染，见[确定性测试配方](../../llms.txt#deterministic-testing)。
+
 ## 行为与属性
 
 | 属性 | 行为 |

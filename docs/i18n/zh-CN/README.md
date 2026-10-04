@@ -137,10 +137,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 | 组件 | 主要能力 |
 | --- | --- |
 | AutoForm | 多种原生字段、虚拟选项、级联、上传适配、自定义渲染、联动、动态显隐、异步规则、受控状态、失败保留输入 |
-| AutoSearch | 基本/更多条件、手动/即时查询、重置、排序标签、统一查询 AST 与 RSQL 序列化 |
+| AutoSearch | 基本/更多条件、手动/即时查询、重置、排序标签、统一查询 AST、RSQL 序列化与 `search.*` 配置 |
 | AutoTable | 本地/远程数据、多列排序、列筛选、分页、稳定选择、虚拟化、树形/详情展开、汇总、合并单元格、CRUD、右键菜单、复制 |
 | AutoDialog | 声明式/命令式、隔离的 Provider、草稿、关闭拦截、焦点管理、拖动、全屏、异步提交 |
-| AutoTabs | 横向/纵向、嵌套、权限、禁用、保留面板状态、刷新 |
+| AutoTabs | 横向/纵向、嵌套、权限、禁用、保留面板状态、刷新，以及异步 `source`（`config.tabsSources`）的加载/错误/重试状态 |
 | AutoMenu | 侧边导航，支持图标、描述、徽标、嵌套分组、权限与可折叠图标栏 |
 | AutoChat | 调用方自定义消息渲染、可选虚拟化、流式跟随、锚定历史加载、发送/停止输入框与自定义操作 |
 

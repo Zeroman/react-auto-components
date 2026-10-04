@@ -49,6 +49,7 @@ export function Conversation() {
 | `disabled`, `composer` | 禁用内置编辑器，或在使用外部编辑器时隐藏（`composer={false}`）。 |
 | `conversationKey` | 切换会话时重置本地草稿、进行中 UI 与滚动。受控值与取消仍由宿主管理。 |
 | `header`, `footer`, `empty`, `composerExtra` | React 内容插槽。 |
+| `messageLayout` | `"role"`（默认）按角色对齐；`"left"` 或 `"right"` 把所有角色对齐到一侧；`"full"` 让每条消息占满可用宽度。虚拟与普通历史均可用。 |
 | `size`, `density` | 覆盖全局 `AutoConfigProvider` 设置。 |
 | `labels` | 覆盖内置英文文案。Provider 也会翻译 `chat.send`、`chat.latest` 等 `chat.*` 键。 |
 | `onSendError`, `onLoadError` | 接收原始错误用于应用日志；内部错误详情不会自动展示。 |
@@ -80,3 +81,9 @@ import remarkGfm from "remark-gfm";
   )}
 />
 ```
+
+## 交互测试页
+
+演示包含六个页面：会话、大历史、渲染、消息布局、Hooks 与边界状态。渲染页覆盖混合内容、长 token、宽代码与表格、嵌套 Markdown、Unicode/RTL、动态图片/折叠高度、部分流式 Markdown 以及不安全标记。消息布局页在可选头像与虚拟化下对比所有角色。
+
+Hooks 页在有限的事件日志里记录真实的 `onValueChange`、`onSend`、`onSendError`、`onStop`、`onLoadOlder`、`onLoadError`、消息操作与命令式句柄调用。边界状态页提供空数据、只读、禁用、受控、进行中与发送失败等场景，并提供手动 resolve/reject 控件，可在请求挂起时切换会话以检查草稿隔离。这些模拟只使用本地数据。

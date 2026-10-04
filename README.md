@@ -162,10 +162,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 | Component       | Capabilities                                                                                                                                                                                                     |
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | AutoForm        | Native field types, virtualized options, cascading selection, upload adapters, custom rendering, dependent fields, conditional visibility, async validation, controlled state, input preservation after failures |
-| AutoSearch | Basic/advanced conditions, manual/instant search, reset, sort tags, a shared query AST, and RSQL serialization                                                                                                   |
+| AutoSearch | Basic/advanced conditions, manual/instant search, reset, sort tags, a shared query AST with RSQL serialization and `search.*` config                                                                            |
 | AutoTable       | Local/remote data, multi-column sorting, column filters, pagination, stable selection, virtualization, tree/detail expansion, summaries, merged cells, CRUD, context menus, and copy                             |
 | AutoDialog      | Declarative/imperative APIs, isolated providers, drafts, close guards, focus management, dragging, fullscreen, and async submission                                                                              |
-| AutoTabs        | Horizontal/vertical layouts, nesting, permissions, disabled tabs, preserved panel state, and refresh                                                                                                        |
+| AutoTabs        | Horizontal/vertical layouts, nesting, permissions, disabled tabs, preserved panel state, refresh, and an async `source` (`config.tabsSources`) with loading, error and retry states                          |
 | AutoMenu        | Sidebar navigation with icons, descriptions, badges, nested groups, permissions, and a collapsible icon rail                                                                                                     |
 | AutoChat | Caller-owned message rendering, optional virtualization, streaming follow, anchored history loading, send/stop composer, and custom actions. [Behavior](docs/auto-chat.md) |
 
