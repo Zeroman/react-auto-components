@@ -76,16 +76,25 @@ export function racDevtoolsPlugin(): Plugin {
         );
       }, timeoutMs);
       pending.set(id, { resolve, reject, timer });
-      // Target the tab that last heartbeated. Broadcasting would let stale or
-      // reloading tabs win the race and answer commands that were not theirs.
-      const data = { id, cmd, payload };
-      if (typeof activeClient?.send === "function")
-        activeClient.send({ type: "custom", event: "rac:cmd", data });
-      else server.ws.send("rac:cmd", data);
+      // Target the page that loaded most recently (its ready event). Stale
+      // tabs ignore commands addressed to another clientId.
+      const target = activeClientId
+        ? clients.get(activeClientId)
+        : undefined;
+      // eslint-disable-next-line no-console
+      console.log(`[rac-dbg] send cmd=${cmd} activeId=${activeClientId ?? "-"} target=${!!target}`);
+      const data = { id, cmd, target: activeClientId, payload };
+      if (typeof target?.send === "function")
+        target.send({ type: "custom", event: "rac:cmd", data });
+      else
+        reject(
+          new Error(`devtools command "${cmd}" has no live page to target yet.`),
+        );
     });
   }
 
-  let activeClient: { send?: (data: unknown) => void } | undefined;
+  let activeClientId: string | undefined;
+  const clients = new Map<string, { send?: (data: unknown) => void }>();
   let shotBrowser: import("@playwright/test").Browser | undefined;
   let shotPage: import("@playwright/test").Page | undefined;
   let shotHeadless: boolean | undefined;
@@ -206,21 +215,69 @@ export function racDevtoolsPlugin(): Plugin {
         on?: (
           event: string,
           listener: (
-            socket: { on?: (event: string, listener: (raw: unknown) => void) => void },
+            socket: {
+              on?: (event: string, listener: (raw: unknown) => void) => void;
+              send?: (data: string) => void;
+            },
             client: HotClient,
           ) => void,
         ) => void;
       };
       if (typeof hot.on === "function") {
+        // The newest connection wins and stays targeted. Heartbeat-based
+        // tracking would flip back to a dying tab during the overlap window
+        // between two test pages.
         hot.on("connection", (socket, client) => {
+          // vite 8's connection `client` carries no send; target tabs through
+          // the raw socket with the full custom-event envelope instead.
+          const outlet = {
+            send: (data: unknown) =>
+              socket.send?.(
+                JSON.stringify({ type: "custom", event: "rac:cmd", data }),
+              ),
+          };
           socket.on?.("message", (raw: unknown) => {
             try {
-              const msg = JSON.parse(String(raw)) as { event?: string };
-              if (msg?.event === "rac:event" || msg?.event === "rac:result")
-                activeClient = client;
+              const msg = JSON.parse(String(raw)) as {
+                event?: string;
+                data?: {
+                  clientId?: string;
+                  kind?: string;
+                  id?: string;
+                  ok?: boolean;
+                  error?: string;
+                };
+              };
+              const clientId = msg?.data?.clientId;
+              if (clientId) clients.set(clientId, outlet);
+              if (msg?.event === "rac:event" && msg.data?.kind === "ready")
+                activeClientId = clientId;
+              if (msg?.event === "rac:result") {
+                lastSeen = Date.now();
+                const result = msg.data as {
+                  id?: string;
+                  ok?: boolean;
+                  data?: unknown;
+                  error?: string;
+                };
+                const entry = result?.id
+                  ? pending.get(result.id)
+                  : undefined;
+                if (entry) {
+                  clearTimeout(entry.timer);
+                  pending.delete(result.id!);
+                  if (result.ok) entry.resolve(result.data);
+                  else
+                    entry.reject(new Error(result.error ?? "command failed"));
+                }
+              }
             } catch {
               /* non-json frames are vite internals */
             }
+          });
+          socket.on?.("close", () => {
+            for (const [id, c] of clients)
+              if (c === outlet) clients.delete(id);
           });
         });
       }
@@ -232,23 +289,6 @@ export function racDevtoolsPlugin(): Plugin {
         }
         recordEvent(payload ?? {});
       });
-      server.ws.on(
-        "rac:result",
-        (payload: {
-          id?: string;
-          ok?: boolean;
-          data?: unknown;
-          error?: string;
-        }) => {
-          lastSeen = Date.now();
-          const entry = payload?.id ? pending.get(payload.id) : undefined;
-          if (!entry) return;
-          clearTimeout(entry.timer);
-          pending.delete(payload.id!);
-          if (payload.ok) entry.resolve(payload.data);
-          else entry.reject(new Error(payload.error ?? "command failed"));
-        },
-      );
 
       server.middlewares.use(
         async (req: IncomingMessage, res: ServerResponse, next: () => void) => {

@@ -15,12 +15,14 @@ test("devtools bridge reports health and live state", async ({
   await expect
     .poll(() => connected(request), { timeout: 30000 })
     .toBe(true);
-  const state = (await (await request.get("/__rac/state")).json()) as {
-    path: string[];
-    pathString: string;
-  };
-  expect(state.path[0]).toBe("table");
-  expect(state.pathString).toBe("table:local");
+  await expect(async () => {
+    const state = (await (await request.get("/__rac/state")).json()) as {
+      path: string[];
+      pathString: string;
+    };
+    expect(state.path?.[0]).toBe("table");
+    expect(state.pathString).toBe("table:local");
+  }).toPass({ timeout: 30000 });
 });
 
 test("devtools goto drives the visible page", async ({ page, request }) => {
@@ -63,10 +65,18 @@ test("devtools cmd eval/dom inspect the live page and console relays", async ({
     expect(response.ok(), String(body.error ?? "relay rejected")).toBeTruthy();
     return body;
   };
-  const evaluated = (await command("eval", { code: "location.hash" })) as {
-    value: string;
-  };
-  expect(evaluated.value).toBe("#/table:local");
+  await expect(async () => {
+    const evaluated = (await command("eval", {
+      code: "location.hash",
+    })) as { value?: string };
+    expect(evaluated.value).toBe("#/table:local");
+  }).toPass({ timeout: 30000 });
+  await expect(async () => {
+    const reEvaluated = (await command("eval", {
+      code: "location.hash",
+    })) as { value: string };
+    expect(reEvaluated.value).toBe("#/table:local");
+  }).toPass({ timeout: 30000 });
   await expect(async () => {
     const dom = (await command("dom", {
       testid: "rac-table-projects-local",

@@ -11,21 +11,26 @@ declare global {
  * Browser side of the rac-devtools bridge. Only imported in dev (see main.tsx).
  * Relays CLI commands to the navigation engine, drives the DOM, and pushes
  * state, console, and error events back over the vite HMR websocket.
+ *
+ * Every page load gets its own clientId. Commands carry the target clientId of
+ * the most recently loaded page, so stale or reloading tabs silently ignore
+ * commands that were not addressed to them.
  */
 if (import.meta.hot) {
   const hot = import.meta.hot;
+  const clientId = crypto.randomUUID();
   let attached: Nav | undefined;
 
   const send = (payload: Record<string, unknown>) =>
-    hot.send("rac:event", payload);
+    hot.send("rac:event", { clientId, ...payload });
 
   const attach = () => {
     const nav = globalThis.__racNav;
     if (!nav || attached === nav) return !!attached;
     attached = nav;
     nav.subscribe(() => send({ kind: "state", ...nav.getState() }));
-    send({ kind: "ready", ...nav.getState() });
-    setInterval(() => send({ kind: "ping" }), 2000);
+    send({ kind: "ready" });
+    setInterval(() => send({ kind: "ping", clientId }), 2000);
     return true;
   };
 
@@ -66,7 +71,10 @@ if (import.meta.hot) {
     },
     fill({ testid, value }) {
       const el = find(String(testid)) as
-        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
+        | HTMLInputElement
+        | HTMLTextAreaElement
+        | HTMLSelectElement
+        | null;
       if (!el) return { filled: false };
       if (el instanceof HTMLSelectElement) {
         el.value = String(value);
@@ -117,12 +125,27 @@ if (import.meta.hot) {
 
   hot.on(
     "rac:cmd",
-    async (message: {
-      id?: string;
-      cmd?: string;
-      payload?: { target?: string; params?: Record<string, string | null> };
-    }) => {
-      const { id, cmd, payload } = message ?? {};
+    async (message: unknown) => {
+      // vite 8 hands the full custom-event envelope to raw-socket sends; the
+      // wrapper path delivers the data directly. Accept both shapes.
+      const envelope = (message ?? {}) as {
+        id?: string;
+        cmd?: string;
+        target?: string;
+        payload?: { target?: string; params?: Record<string, string | null> };
+        data?: {
+          id?: string;
+          cmd?: string;
+          target?: string;
+          payload?: { target?: string; params?: Record<string, string | null> };
+        };
+      };
+      const id = envelope.id ?? envelope.data?.id;
+      const cmd = envelope.cmd ?? envelope.data?.cmd;
+      const target = envelope.target ?? envelope.data?.target;
+      const payload =
+        envelope.payload ?? envelope.data?.payload;
+      if (target && target !== clientId) return; // addressed to another page
       try {
         const nav = globalThis.__racNav;
         if (!nav) throw new Error("navigation engine not mounted yet");
