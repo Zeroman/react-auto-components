@@ -158,6 +158,19 @@ export function AutoTabs({
   );
   const [local, setLocal] = useState<readonly string[]>(defaultValue ?? []);
   const path = value ?? local;
+  // Reconcile a removed selection: when the uncontrolled selection points at a
+  // tab that is gone, hidden, disabled or inaccessible, drop it so the default
+  // fallback picks the first available tab instead of resurrecting it later.
+  useEffect(() => {
+    if (route || value !== undefined) return;
+    if (
+      local.length &&
+      !visible.some((i) => i.id === local[0] && !i.disabled)
+    ) {
+      const fallback = visible.find((i) => !i.disabled);
+      setLocal(fallback ? [fallback.id] : []);
+    }
+  }, [route, value, local, visible]);
   const selected = route
     ? (visible.find((i) => i.id === routeContext.activeChild && !i.disabled) ??
       visible.find((i) => i.id === route.defaultChild && !i.disabled) ??
