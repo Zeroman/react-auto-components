@@ -43,6 +43,7 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `sortTags`                | Buttons you own. `onRemove` is not caught.                                                                                                                                                                                                                              |
 | `classNames`, `styles`    | Slot-based styling: `classNames?: AutoSearchClassNames` (`root`, `form`, `actions`, `search`, `reset`, `moreToggle`) and `styles?: AutoSearchStyles`.                                                                                                                   |
 | Label props               | Same as AutoForm. Passed layout wins over the provider.                                                                                                                                                                                                                 |
+| `searchLabel`, `resetLabel` | Replace the built-in action labels. Defaults are localized via `config.t`.                                                                                                                                                                                              |
 
 ## Query values
 

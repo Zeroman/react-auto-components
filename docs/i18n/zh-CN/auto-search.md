@@ -43,6 +43,7 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `sortTags`                | 你自己的按钮。`onRemove` 不捕获。                                                                                                                                                                               |
 | `classNames`、`styles`    | 插槽样式覆盖：`classNames?: AutoSearchClassNames`（`root`、`form`、`actions`、`search`、`reset`、`moreToggle`）与 `styles?: AutoSearchStyles`。                                                                 |
 | 标签属性                  | 与 AutoForm 相同。传入的布局优先于 provider。                                                                                                                                                                   |
+| `searchLabel`、`resetLabel` | 替换内置的操作按钮文本。默认文本通过 `config.t` 国际化。                                                                                                                                                        |
 
 ## 查询值
 

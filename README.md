@@ -121,7 +121,41 @@ export function App() {
 
 Fields, columns, and refs use generics: invalid field names or default values produce compile-time errors. The provider supports namespaces, permissions, field-label translation, custom fields, notifications, and persistence adapters. Built-in labels, validation messages, and accessibility text use AutoConfigProvider.config.t; explicit component labels take precedence.
 
-The t callback receives a message key and a fallback. Preserve numbered placeholders such as {0} and {1} in translated built-in messages; the components substitute their values after translation.
+### Internationalization (i18n)
+
+Built-in interface text defaults to English. Component strings pass through `AutoConfigProvider.config.t(key, fallback)`. Explicit component-level label props (e.g. `confirmLabel`, `submitLabel`, `labels`) take precedence over `config.t`.
+
+The `t` callback receives a message key and a fallback. Preserve numbered placeholders such as `{0}` and `{1}` in translated built-in messages; components substitute their values after translation.
+
+#### Integration with react-i18next
+
+Pass a bridge function to `config.t`:
+
+```tsx
+import { useTranslation } from "react-i18next";
+import { AutoConfigProvider } from "@zeroman.yang/react-auto-components";
+
+export function AppProvider({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
+  return (
+    <AutoConfigProvider
+      config={{
+        t: (key, fallback) => t(key, { defaultValue: fallback ?? key }),
+      }}
+    >
+      {children}
+    </AutoConfigProvider>
+  );
+}
+```
+
+#### Component label overrides
+
+- **`AutoDialog`**: `confirmLabel="Save"`, `cancelLabel="Discard"`
+- **`AutoForm`**: `submitLabel="Submit"`, `resetLabel="Reset"`
+- **`AutoSearch`**: `searchLabel="Query"`, `resetLabel="Clear"`
+- **`AutoChat`**: `labels={{ send: "Send", stop: "Stop", conversation: "Chat" }}`
+- **`Field<T>`**: `lang="user.name"` translates `label` via `config.t("user.name", field.label)`
 
 ## Components
 

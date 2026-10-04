@@ -55,6 +55,7 @@ function EditButton() {
 | `draftKey` | Persists the draft at `${namespace}:draft:${draftKey}` until a successful submit removes it. Omit it and nothing is stored. |
 | `showReset` | Shows the form reset control. |
 | `hideFooter` | Hides the default confirm / cancel row. Use `footer` to draw your own. |
+| `confirmLabel`, `cancelLabel` | Replace the built-in action labels. The defaults are translated through `config.t`. |
 | `draggable` | Drag the header. Ignored while fullscreen. |
 | `width` | Pixels. Default `560`. |
 | `fullscreen` | Initial fullscreen. The header button toggles it. |

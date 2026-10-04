@@ -96,7 +96,41 @@ export function App() {
 
 字段、列与 ref 使用泛型；类型错误的字段名或默认值会在编译期报错。Provider 提供命名空间、权限、字段翻译、自定义字段、通知和持久化适配。 内置标签、校验消息和无障碍文本使用 AutoConfigProvider.config.t；显式指定的组件标签优先。
 
-t 回调接收一个消息键和一个回退文本。在翻译内置消息时，请保留诸如 {0} 和 {1} 的编号占位符；组件会在翻译后替换这些占位符的值。
+### 国际化 (i18n)
+
+内置界面文本默认为英文。所有内置文案均通过 `AutoConfigProvider.config.t(key, fallback)` 派发。组件级显式传入的标签属性（如 `confirmLabel`、`submitLabel`、`labels`）优先级高于 `config.t`。
+
+`t` 回调接收一个消息键和一个回退文本。在翻译内置消息时，请保留诸如 `{0}` 和 `{1}` 的编号占位符；组件会在翻译后替换这些占位符的值。
+
+#### 配合 react-i18next 使用
+
+向 `config.t` 传入桥接函数即可无缝接入：
+
+```tsx
+import { useTranslation } from "react-i18next";
+import { AutoConfigProvider } from "@zeroman.yang/react-auto-components";
+
+export function AppProvider({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
+  return (
+    <AutoConfigProvider
+      config={{
+        t: (key, fallback) => t(key, { defaultValue: fallback ?? key }),
+      }}
+    >
+      {children}
+    </AutoConfigProvider>
+  );
+}
+```
+
+#### 组件级文案覆盖
+
+- **`AutoDialog`**：`confirmLabel="保存"`, `cancelLabel="取消"`
+- **`AutoForm`**：`submitLabel="提交"`, `resetLabel="重置"`
+- **`AutoSearch`**：`searchLabel="查询"`, `resetLabel="重置"`
+- **`AutoChat`**：`labels={{ send: "发送", stop: "停止", conversation: "会话" }}`
+- **`Field<T>`**：`lang="user.name"` 通过 `config.t("user.name", field.label)` 翻译字段标签
 
 ## 组件
 

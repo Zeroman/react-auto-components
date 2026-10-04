@@ -55,6 +55,7 @@ function EditButton() {
 | `draftKey` | 草稿存在 `${namespace}:draft:${draftKey}`，成功提交后删除。不传则不存储。 |
 | `showReset` | 显示表单重置。 |
 | `hideFooter` | 隐藏默认的确认/取消。用 `footer` 自己画。 |
+| `confirmLabel`, `cancelLabel` | 替换内置的操作按钮文本。默认文本通过 `config.t` 翻译。 |
 | `draggable` | 拖标题栏。全屏时忽略。 |
 | `width` | 像素。默认 `560`。 |
 | `fullscreen` | 初始全屏。标题栏按钮可切换。 |
