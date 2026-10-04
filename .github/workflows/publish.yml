@@ -17,7 +17,7 @@ jobs:
   publish:
     if: github.repository == 'Zeroman/react-auto-components'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -39,10 +39,12 @@ jobs:
           fi
       - run: pnpm check:public
       - run: pnpm typecheck
+      - run: pnpm lint
       - run: pnpm test
       - run: pnpm prepare:test-project
       - run: pnpm --dir test-project build
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm exec playwright install --with-deps
+      # Release gate: full matrix (chromium + firefox + webkit).
       - run: pnpm test:e2e
       - name: Upload browser failure artifacts
         if: failure()

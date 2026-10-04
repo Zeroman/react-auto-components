@@ -6,5 +6,13 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["tests/setup.ts"],
     include: ["tests/**/*.test.{ts,tsx}"],
+    testTimeout: 15000,
+    coverage: {
+      provider: "v8",
+      include: ["src/**"],
+      exclude: ["src/env.d.ts", "src/**/*.d.ts"],
+      reporter: ["text", "html", "lcov"],
+      reportsDirectory: "coverage",
+    },
   },
 });

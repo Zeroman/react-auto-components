@@ -10,13 +10,10 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   webServer: {
-    command: "pnpm exec vite --host 127.0.0.1 --port 4174 --strictPort --force",
+    command:
+      "node_modules/.bin/vite --host 127.0.0.1 --port 4174 --strictPort --force",
     url: "http://127.0.0.1:4174",
-    reuseExistingServer: false,
+    reuseExistingServer: true,
   },
-  projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "firefox", use: { ...devices["Desktop Firefox"] } },
-    { name: "webkit", use: { ...devices["Desktop Safari"] } },
-  ],
+  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 });

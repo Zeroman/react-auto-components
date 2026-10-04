@@ -1028,8 +1028,8 @@ USAGE
     today=$(date +%Y-%m-%d)
     _release_apply_version write "$version" "$today" || return 1
 
-    echo "运行 check:public、typecheck 和 test。" >&2
-    if ! pnpm check:public || ! pnpm typecheck || ! pnpm test; then
+    echo "运行 check:public、typecheck、lint 和 test。" >&2
+    if ! pnpm check:public || ! pnpm typecheck || ! pnpm lint || ! pnpm test; then
         echo "检查失败。版本文件留在工作区，没有提交，也没有推送。" >&2
         return 1
     fi

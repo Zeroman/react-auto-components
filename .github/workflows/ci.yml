@@ -27,11 +27,13 @@ jobs:
       - run: pnpm check:public
       - run: pnpm check:docs
       - run: pnpm typecheck
+      - run: pnpm lint
       - run: pnpm test
       - run: pnpm prepare:test-project
       - run: pnpm --dir test-project build
       - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test:e2e
+      # PRs gate on Chromium for speed; tags (Publish workflow) run all engines.
+      - run: pnpm test:e2e --project=chromium
       - name: Upload browser failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4

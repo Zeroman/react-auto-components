@@ -1,0 +1,2 @@
+# See pnpmfile.cjs: typescript-eslint resolves TypeScript 6 beside `tsc` 7.
+pnpmfile: pnpmfile.cjs
