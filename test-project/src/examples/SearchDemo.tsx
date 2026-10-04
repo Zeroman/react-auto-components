@@ -8,13 +8,14 @@ import {
 } from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../i18n";
 import { useDemoData, makeProjects, createSource, type Project } from "../data";
+import { remoteSource } from "../remoteSource";
 
 export type SearchExampleKind = "instant" | "manual" | "advanced" | "remote";
 
 export function SearchDemo({ example }: { example: SearchExampleKind }) {
   const tr = useDemoText();
   return (
-    <section className="card">
+    <section className="card search-demo">
       <h2>{tr("Composable Search Criteria")}</h2>
       <SearchExample key={example} example={example} />
     </section>
@@ -34,7 +35,11 @@ function SearchExample({ example }: { example: SearchExampleKind }) {
       })),
     [tr],
   );
-  const source = useMemo(() => createSource(sampleProjects), [sampleProjects]);
+  const source = useMemo(
+    () =>
+      example === "remote" ? remoteSource() : createSource(sampleProjects),
+    [example, sampleProjects],
+  );
   const [remote, setRemote] = useState<{
     rows: Project[];
     total: number;
@@ -110,7 +115,7 @@ function SearchExample({ example }: { example: SearchExampleKind }) {
   const hits = example === "remote" ? remote.rows : matched;
   const count = example === "remote" ? remote.total : matched.length;
   return (
-    <div data-testid={`search-example-${example}`}>
+    <div className="search-example" data-testid={`search-example-${example}`}>
       <p className="muted">
         {tr(
           example === "manual"
@@ -118,7 +123,7 @@ function SearchExample({ example }: { example: SearchExampleKind }) {
             : example === "advanced"
               ? "Search project name, owner or region together, and combine multiple statuses."
               : example === "remote"
-                ? "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required."
+                ? "Mock server: sorting, filtering and pagination run against a local HTTP mock; the RSQL string rides the request and is echoed back untouched."
                 : "Results update as you type or select a value. Reset restores all results.",
         )}
       </p>
@@ -142,13 +147,7 @@ function SearchExample({ example }: { example: SearchExampleKind }) {
         </pre>
       </div>
 
-      <div
-        style={{
-          marginTop: 24,
-          borderTop: "1px solid var(--auto-border)",
-          paddingTop: 18,
-        }}
-      >
+      <div className="search-matches">
         <div className="section-heading">
           <div>
             <h3>{tr("Real-time matches ({0} items)", [count])}</h3>
