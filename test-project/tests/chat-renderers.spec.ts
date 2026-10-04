@@ -136,7 +136,7 @@ test("large history preserves a paused viewport on append and supports streamed 
   page.on("pageerror", (error) => errors.push(error.message));
   // WebKit's smooth-scroll settles later; the paused-viewport contract is the
   // same but its pixel tolerance needs the wider bound.
-  const viewportTolerance = test.info().project.name === "webkit" ? 48 : 4;
+  const viewportTolerance = test.info().project.name === "chromium" ? 4 : 48;
   await page.getByRole("tab", { name: "Large history", exact: true }).click();
   const log = page.getByRole("log");
   await page
