@@ -5,6 +5,7 @@ import {
   pathsEqual,
   resolveRelativePath,
 } from "./path";
+import { resolveHidden } from "../config";
 import type {
   Access,
   AutoGotoOptions,
@@ -132,9 +133,7 @@ export function createAutoNavigation(
     node?: AutoNavigationNodeRegistration,
   ): { ok: boolean; reason?: "disabled" | "hidden" | "forbidden" } {
     if (item.disabled) return { ok: false, reason: "disabled" };
-    const isHidden =
-      typeof item.hidden === "function" ? item.hidden() : item.hidden;
-    if (isHidden) return { ok: false, reason: "hidden" };
+    if (resolveHidden(item.hidden)) return { ok: false, reason: "hidden" };
     if (node?.canAccess && !node.canAccess(item))
       return { ok: false, reason: "forbidden" };
     if (!canAccessFn(item)) return { ok: false, reason: "forbidden" };
@@ -162,7 +161,8 @@ export function createAutoNavigation(
     if (node.getChildren) {
       return node.getChildren();
     }
-    return (node as any).children ?? [];
+    const raw = node.children ?? [];
+    return raw.map((c) => (typeof c === "string" ? { id: c } : c));
   }
 
   function failTransition(

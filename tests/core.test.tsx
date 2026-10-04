@@ -1,6 +1,7 @@
 import { expect, test } from "vitest";
 import {
   defaults,
+  equal,
   normalizeOptions,
   resolveHidden,
   safeStorage,
@@ -42,3 +43,11 @@ test("resolveHidden handles boolean and function values", () => {
   expect(resolveHidden((x: number) => x > 5, 10)).toBe(true);
   expect(resolveHidden((x: number) => x > 5, 2)).toBe(false);
 });
+test("equal distinguishes arrays from objects with identical numeric keys", () => {
+  expect(equal(["a"], { "0": "a" })).toBe(false);
+  expect(equal(["a"], ["a"])).toBe(true);
+  expect(equal({ a: 1 }, { a: 1 })).toBe(true);
+  expect(equal(new Date(1000), new Date(1000))).toBe(true);
+  expect(equal(new Date(1000), new Date(2000))).toBe(false);
+});
+

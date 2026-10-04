@@ -335,7 +335,6 @@ function findTargetPath(
   return best;
 }
 
-const isHidden = resolveHidden;
 
 /**
  * A menu is one route level: groups only organize entries, so every leaf is a
@@ -361,7 +360,7 @@ function routeChildren(
       hidden:
         parentHidden === undefined
           ? item.hidden
-          : () => isHidden(parentHidden) || isHidden(item.hidden),
+          : () => resolveHidden(parentHidden) || resolveHidden(item.hidden),
       roles: roles.length ? roles : undefined,
       permissions: permissions.length ? permissions : undefined,
       target: item.target,

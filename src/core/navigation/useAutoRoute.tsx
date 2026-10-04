@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { useAutoConfig } from "../AutoConfigProvider";
+import { resolveHidden } from "../config";
 import { isSubpath, joinPath, resolveRelativePath } from "./path";
 import {
   RouteActiveContext,
@@ -54,12 +55,10 @@ export function AutoRouteScope({
 }
 
 function routeSignature(config: AutoRouteConfig): string {
-  const flag = (hidden: AutoRouteConfig["hidden"]) =>
-    typeof hidden === "function" ? hidden() : !!hidden;
   return JSON.stringify([
     config.defaultChild,
     !!config.disabled,
-    flag(config.hidden),
+    resolveHidden(config.hidden),
     config.roles,
     config.permissions,
     (config.children ?? []).map((child) =>
@@ -68,7 +67,7 @@ function routeSignature(config: AutoRouteConfig): string {
         : [
             child.id,
             !!child.disabled,
-            flag(child.hidden),
+            resolveHidden(child.hidden),
             child.roles,
             child.permissions,
             child.target,
@@ -101,10 +100,11 @@ export function useAutoRoute(config?: AutoRouteConfig): AutoRouteContextValue {
   );
 
   // Structural nodePath from parent context and config.name (independent of selection)
+  const configName = config?.name;
   const nodePath = useMemo(() => {
-    if (!config?.name) return contextParentPath;
-    return [...contextParentPath, config.name];
-  }, [config?.name, contextParentPath]);
+    if (!configName) return contextParentPath;
+    return [...contextParentPath, configName];
+  }, [configName, contextParentPath]);
 
   const parentPath = contextParentPath;
   const routePath = nodePath;

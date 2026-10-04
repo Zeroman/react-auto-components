@@ -88,6 +88,7 @@ export function equal(a: unknown, b: unknown): boolean {
   if (a instanceof Date && b instanceof Date)
     return a.getTime() === b.getTime();
   if (!a || !b || typeof a !== "object" || typeof b !== "object") return false;
+  if (Array.isArray(a) !== Array.isArray(b)) return false;
   const ak = Object.keys(a);
   const bk = Object.keys(b);
   return (
