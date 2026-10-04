@@ -76,10 +76,16 @@ export function racDevtoolsPlugin(): Plugin {
         );
       }, timeoutMs);
       pending.set(id, { resolve, reject, timer });
-      server.ws.send("rac:cmd", { id, cmd, payload });
+      // Target the tab that last heartbeated. Broadcasting would let stale or
+      // reloading tabs win the race and answer commands that were not theirs.
+      const data = { id, cmd, payload };
+      if (typeof activeClient?.send === "function")
+        activeClient.send({ type: "custom", event: "rac:cmd", data });
+      else server.ws.send("rac:cmd", data);
     });
   }
 
+  let activeClient: { send?: (data: unknown) => void } | undefined;
   let shotBrowser: import("@playwright/test").Browser | undefined;
   let shotPage: import("@playwright/test").Page | undefined;
   let shotHeadless: boolean | undefined;
@@ -193,6 +199,31 @@ export function racDevtoolsPlugin(): Plugin {
     name: "rac-devtools",
     configureServer(devServer) {
       server = devServer;
+      // Track the newest live tab: every heartbeat refreshes the active client
+      // so targeted commands never land on stale or reloading pages.
+      type HotClient = { send?: (data: unknown) => void };
+      const hot = server.hot as unknown as {
+        on?: (
+          event: string,
+          listener: (
+            socket: { on?: (event: string, listener: (raw: unknown) => void) => void },
+            client: HotClient,
+          ) => void,
+        ) => void;
+      };
+      if (typeof hot.on === "function") {
+        hot.on("connection", (socket, client) => {
+          socket.on?.("message", (raw: unknown) => {
+            try {
+              const msg = JSON.parse(String(raw)) as { event?: string };
+              if (msg?.event === "rac:event" || msg?.event === "rac:result")
+                activeClient = client;
+            } catch {
+              /* non-json frames are vite internals */
+            }
+          });
+        });
+      }
       server.ws.on("rac:event", (payload: Record<string, unknown>) => {
         lastSeen = Date.now();
         if (payload?.kind === "ping") return;
