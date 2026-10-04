@@ -776,7 +776,7 @@ _release_bump_patch() {
     local version="$1"
     local major minor patch
     if [[ ! "$version" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-        echo "版本不是 x.y.z: ${version}" >&2
+        echo "Version is not x.y.z: ${version}" >&2
         return 1
     fi
     major="${BASH_REMATCH[1]}"
@@ -808,7 +808,7 @@ _release_reject_other_changes() {
         path="${line:3}"
         path="${path#* -> }"
         if ! _release_allowed_path "$path"; then
-            echo "工作区有发版以外的改动: ${path}" >&2
+            echo "Working tree has changes outside the release set: ${path}" >&2
             return 1
         fi
     done < <(git status --porcelain=v1)
@@ -927,7 +927,7 @@ _release_registry_has_version() {
     local version="$1"
     local versions_json status
     if ! versions_json=$(npm view @zeroman.yang/react-auto-components versions --json --registry=https://registry.npmjs.org/); then
-        echo "无法读取 npm 上已有的版本。" >&2
+        echo "Cannot read the versions already published on npm." >&2
         return 1
     fi
     node -e '
@@ -940,30 +940,30 @@ if (parsed.includes(version)) process.exit(3);
 ' "$version" <<<"$versions_json"
     status=$?
     if [[ "$status" -eq 3 ]]; then
-        echo "npm 上已经有 ${version}。" >&2
+        echo "${version} is already published on npm." >&2
         return 1
     fi
     if [[ "$status" -ne 0 ]]; then
-        echo "无法解析 npm 版本列表。" >&2
+        echo "Cannot parse the npm version list." >&2
         return 1
     fi
 }
 
-cmd_release() { # rel -> 无参数时补丁号加 1，推送 main 和 tag。
+cmd_release() { # rel -> bumps the patch version when no argument is given, pushes main and the tag.
     local version="$1"
     local current smaller origin branch today answer
 
     if [[ "$version" == "-h" || "$version" == "--help" ]]; then
         cat >&2 << 'USAGE'
-用法: ./run.sh release [version]
-不带参数时，把 package.json 的补丁号加 1，例如 0.1.2 会变成 0.1.3。
-./run.sh release 0.2.0 可以指定版本。
+Usage: ./run.sh release [version]
+Without an argument the patch version of package.json is bumped, e.g. 0.1.2 becomes 0.1.3.
+./run.sh release 0.2.0 sets the version explicitly.
 
-先在每个 CHANGELOG 的未发布小节写下本次说明。
-脚本会把该小节改成版本标题，更新 package.json 和各语言 README，
-提交并推送 main，再推送 tag v<version>。
-GitHub Actions 测试通过后才会 npm publish。
-不要使用 0.1.0、0.1.1、0.1.2。
+First write the release notes under the unreleased heading of every CHANGELOG.
+The script turns that heading into the version heading, updates package.json and every
+language README, commits and pushes main, then pushes tag v<version>.
+npm publish runs only after the GitHub Actions tests pass.
+Never reuse 0.1.0, 0.1.1 or 0.1.2.
 USAGE
         return 0
     fi
@@ -975,20 +975,20 @@ USAGE
         while _release_version_taken "$version"; do
             version=$(_release_bump_patch "$version") || return 1
         done
-        echo "未指定版本，从 ${current} 加到 ${version}。" >&2
+        echo "No version given; bumping ${current} to ${version}." >&2
     else
         if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "版本必须是 x.y.z，例如 0.2.0。" >&2
+            echo "The version must be x.y.z, e.g. 0.2.0." >&2
             return 1
         fi
         if _release_version_taken "$version"; then
-            echo "版本 ${version} 已经在 npm 注册过，不能再次发布。" >&2
+            echo "${version} is already registered on npm and cannot be published again." >&2
             return 1
         fi
         if [[ "$version" != "$current" ]]; then
             smaller=$(printf '%s\n%s\n' "$current" "$version" | sort -V | head -1)
             if [[ "$smaller" != "$current" ]]; then
-                echo "package.json 当前是 ${current}，新版本必须更高。" >&2
+                echo "package.json is at ${current}; the new version must be higher." >&2
                 return 1
             fi
         fi
@@ -1001,27 +1001,27 @@ USAGE
     case "$origin" in
         *Zeroman/react-auto-components*) ;;
         *)
-            echo "origin 不是 Zeroman/react-auto-components: ${origin}" >&2
+            echo "origin is not Zeroman/react-auto-components: ${origin}" >&2
             return 1
             ;;
     esac
     branch=$(git branch --show-current)
     if [[ "$branch" != "main" ]]; then
-        echo "当前分支是 ${branch:-detached}，发版要在 main 上。" >&2
+        echo "Current branch is ${branch:-detached}; releases run on main." >&2
         return 1
     fi
 
     git fetch origin main --tags || return 1
     if ! git merge-base --is-ancestor origin/main HEAD; then
-        echo "本地 main 落后或偏离 origin/main。" >&2
+        echo "Local main is behind or diverged from origin/main." >&2
         return 1
     fi
     if git rev-parse -q --verify "refs/tags/v${version}" >/dev/null; then
-        echo "本地已有 tag v${version}。" >&2
+        echo "Tag v${version} already exists locally." >&2
         return 1
     fi
     if git ls-remote --tags origin "refs/tags/v${version}" | grep -q .; then
-        echo "远端已有 tag v${version}。" >&2
+        echo "Tag v${version} already exists on the remote." >&2
         return 1
     fi
     _release_registry_has_version "$version" || return 1
@@ -1031,21 +1031,33 @@ USAGE
 
     node scripts/snapshot-paused-i18n.mjs || return 1
 
-    echo "运行 check:public、typecheck、lint 和 test。" >&2
+    echo "Running check:public, typecheck, lint, test and the chromium e2e." >&2
     if ! pnpm check:public || ! pnpm typecheck || ! pnpm lint || ! pnpm test; then
-        echo "检查失败。版本文件留在工作区，没有提交，也没有推送。" >&2
+        echo "Checks failed. The version files stay in the working tree: nothing committed, nothing pushed." >&2
+        return 1
+    fi
+    if ! pnpm prepare:test-project || ! pnpm --dir test-project build; then
+        echo "Packing the consumer failed. The version files stay in the working tree: nothing committed, nothing pushed." >&2
+        return 1
+    fi
+    if ! pnpm exec playwright install chromium; then
+        echo "Installing chromium failed." >&2
+        return 1
+    fi
+    if ! pnpm test:e2e --project=chromium; then
+        echo "e2e failed. The version files stay in the working tree: nothing committed, nothing pushed." >&2
         return 1
     fi
 
-    echo "即将提交这些改动并推送 tag v${version}：" >&2
+    echo "About to commit these changes and push tag v${version}:" >&2
     git diff --stat >&2
     if [[ ! -t 0 ]]; then
-        echo "发版需要在交互终端里确认。" >&2
+        echo "Releasing needs an interactive terminal for the confirmation." >&2
         return 1
     fi
-    answer=$(select_yes_or_no "推送 main，并推送 tag v${version} 以发布到 npm。")
+    answer=$(select_yes_or_no "Push main and push tag v${version} to publish to npm.")
     if [[ "$answer" != "yes" ]]; then
-        echo "已取消，没有推送。" >&2
+        echo "Cancelled: nothing was pushed." >&2
         return 1
     fi
 
@@ -1056,7 +1068,7 @@ USAGE
     git push origin main || return 1
     git tag "v${version}" || return 1
     git push origin "v${version}" || return 1
-    echo "已推送 v${version}。GitHub Actions 的 Publish 工作流会测试并发布到 npm。"
+    echo "Pushed v${version}. The GitHub Actions Publish workflow will test and publish to npm."
 }
 
 run_main "$@"
