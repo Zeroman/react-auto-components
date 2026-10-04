@@ -1,3 +1,11 @@
+.table-server-demo > .muted {
+  margin: 12px 0 16px;
+}
+.table-server-demo [aria-pressed="true"] {
+  border-color: var(--auto-accent);
+  background: var(--auto-accent-soft);
+  color: var(--auto-accent);
+}
 .mock-demo {
   min-width: 0;
 }

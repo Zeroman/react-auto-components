@@ -344,6 +344,7 @@ main[data-page] {
   flex: 1 1 0%;
   min-height: 0;
   min-width: 0;
+  overflow: hidden;
 }
 
 .demo-navigation {
@@ -384,32 +385,43 @@ main[data-page] {
 .demo-navigation .auto-tab-list {
   overflow-x: auto;
 }
-main[data-page][data-example="server"] .demo-viewport,
-main[data-page="menu"] .demo-viewport {
-  overflow: auto;
+main[data-page][data-example="server"]:not([data-page="table"]) .mock-demo {
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
-main[data-page][data-example="server"] .mock-demo {
+main[data-page][data-example="server"]:not([data-page="table"]) .mock-demo > h2,
+main[data-page][data-example="server"]:not([data-page="table"])
+  .mock-demo
+  > .muted,
+main[data-page][data-example="server"]:not([data-page="table"])
+  .mock-demo
+  > .mock-controls,
+main[data-page][data-example="server"]:not([data-page="table"])
+  .mock-demo
+  > [role="status"],
+main[data-page][data-example="server"]:not([data-page="table"])
+  .mock-demo
+  > [role="alert"] {
   flex: 0 0 auto;
-  display: block;
-  overflow: visible;
+}
+main[data-page][data-example="server"]:not([data-page="table"]) .mock-content {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: auto;
 }
 main[data-page="tabs"][data-example="server"] .mock-demo .auto-tabs {
   display: block;
   overflow: visible;
 }
 
-/* Table page: chained min-height:0 without outer scrolling */
-main[data-page="table"] .demo-viewport {
-  overflow: hidden;
-}
-
-/* Form, search, dialog pages: internal overflow handling */
-main[data-page="form"] .demo-viewport,
-main[data-page="search"] .demo-viewport,
-main[data-page="dialog"] .demo-viewport {
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+main[data-page="dialog"] .demo-viewport > .card,
+main[data-page="menu"] .demo-viewport > .card {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: auto;
 }
 
 /* Tabs page: nested examples fill the viewport */
@@ -492,6 +504,28 @@ main[data-page="tabs"] .card > .auto-tabs > .auto-tab-content:not([hidden]) {
   min-height: 0;
   min-width: 0;
   overflow: hidden;
+}
+
+/* Mock server wraps the table. Pass the viewport height through that wrapper. */
+main[data-page="table"] .table-server-demo {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+main[data-page="table"] .table-server-demo > .auto-actions,
+main[data-page="table"] .table-server-demo > .muted,
+.table-demo > .mock-response {
+  flex: 0 0 auto;
+}
+
+main[data-page="table"] .table-server-demo > .mock-demo {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: auto;
 }
 
 .table-demo .section-heading {
@@ -655,18 +689,98 @@ main[data-page="tabs"] .card > .auto-tabs > .auto-tab-content:not([hidden]) {
   min-height: 0;
 }
 
-/* On desktop: 2 independently scrolling cards/regions while gallery fields remain reachable below */
+/* Desktop project form: the two cards fill the nested tab and scroll on their own. */
 @media (min-width: 1101px) {
-  main[data-page="form"] .demo-grid {
+  main[data-page="form"] .form-demo-tabs .demo-grid {
     grid-template-columns: 1.4fr 1fr;
-    max-height: calc(100vh - 170px);
-    min-height: 440px;
+    grid-template-rows: minmax(0, 1fr);
+    flex: 1 1 0%;
+    min-height: 0;
   }
-  main[data-page="form"] .demo-grid > .card {
-    height: 100%;
-    max-height: 100%;
+  main[data-page="form"] .form-demo-tabs .demo-grid > .card {
+    min-height: 0;
     overflow-y: auto;
   }
+}
+
+.form-demo {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.form-demo-layout {
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.form-demo-tabs {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.form-demo-tabs > .auto-tabs {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.form-demo-tabs > .auto-tabs > .auto-tabs-heading {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.form-demo-tabs .auto-tab-list {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.form-demo-tabs > .auto-tabs > .auto-tab-content:not([hidden]) {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+  padding-top: 8px;
+}
+
+main[data-page="search"] .search-demo,
+main[data-page="search"] .search-example {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+main[data-page="search"] .search-demo > h2,
+main[data-page="search"] .search-example > .muted,
+main[data-page="search"] .search-example > .auto-search,
+main[data-page="search"] .search-example > .code-card,
+main[data-page="search"] .search-example > [role="status"],
+main[data-page="search"] .search-example > [role="alert"] {
+  flex: 0 0 auto;
+}
+
+.search-matches {
+  flex: 1 1 0%;
+  min-height: 0;
+  margin-top: 16px;
+  border-top: 1px solid var(--auto-border, #dce4df);
+  padding-top: 12px;
+  overflow: auto;
 }
 
 .code-card {
@@ -1113,19 +1227,19 @@ h3 {
     justify-content: center;
   }
   .brand strong,
-  .studio .auto-menu-label,
-  .studio .auto-menu-text,
-  .studio .auto-menu-badge,
-  .studio .auto-menu-arrow,
-  .studio .auto-menu-footer,
+  .studio aside .auto-menu-label,
+  .studio aside .auto-menu-text,
+  .studio aside .auto-menu-badge,
+  .studio aside .auto-menu-arrow,
+  .studio aside .auto-menu-footer,
   .sidebar-footer {
     display: none;
   }
-  .studio .auto-menu-list {
+  .studio aside .auto-menu-list {
     margin-top: 14px;
     align-items: center;
   }
-  .studio .auto-menu [data-auto-menu-item] {
+  .studio aside .auto-menu [data-auto-menu-item] {
     padding: 0;
     width: 42px;
     height: 42px;
@@ -1514,4 +1628,179 @@ h3 {
     padding: 5px 7px;
     font-size: 11px;
   }
+}
+
+/* ============================================================
+   Theme presets (demo): light/dark come from the library
+   defaults; each preset overrides the --auto-* tokens with a
+   popular open-source look. Selected via Global settings.
+   ============================================================ */
+[data-auto-preset="antd"] {
+  --auto-accent: #1677ff;
+  --auto-accent-soft: #e6f4ff;
+  --auto-bg: #fff;
+  --auto-muted: #fafafa;
+  --auto-text: #000000e0;
+  --auto-secondary: #000000a6;
+  --auto-border: #d9d9d9;
+  --auto-danger: #ff4d4f;
+  --auto-radius: 6px;
+  --auto-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+[data-auto-preset="github"] {
+  --auto-accent: #0969da;
+  --auto-accent-soft: #ddf4ff;
+  --auto-bg: #fff;
+  --auto-muted: #f6f8fa;
+  --auto-text: #1f2328;
+  --auto-secondary: #656d76;
+  --auto-border: #d1d9e0;
+  --auto-danger: #cf222e;
+  --auto-radius: 6px;
+  --auto-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+    Helvetica, Arial, sans-serif;
+}
+[data-auto-preset="material"] {
+  --auto-accent: #6750a4;
+  --auto-accent-soft: #e8def8;
+  --auto-bg: #fff;
+  --auto-muted: #f7f2fa;
+  --auto-text: #1d1b20;
+  --auto-secondary: #49454f;
+  --auto-border: #cac4d0;
+  --auto-danger: #b3261e;
+  --auto-radius: 12px;
+  --auto-font: Roboto, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+[data-auto-preset="bootstrap"] {
+  --auto-accent: #0d6efd;
+  --auto-accent-soft: #cfe2ff;
+  --auto-bg: #fff;
+  --auto-muted: #f8f9fa;
+  --auto-text: #212529;
+  --auto-secondary: #6c757d;
+  --auto-border: #dee2e6;
+  --auto-danger: #dc3545;
+  --auto-radius: 4px;
+  --auto-font: system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Navigation debug panel lives inside its dialog now. */
+.auto-overlay .demo-navigation-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+.demo-navigation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Permissions stay inside the viewport. Nested tabs scroll their own panel. */
+main[data-page] .demo-viewport:has(.permissions-demo) {
+  overflow: hidden;
+}
+.permissions-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
+}
+.permissions-toolbar {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  min-width: 0;
+}
+.permissions-toolbar h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.permissions-toolbar .auto-actions {
+  align-items: center;
+}
+.permissions-toolbar [data-testid="access-status"] {
+  margin: 0;
+}
+.permissions-identity {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+.permissions-identity .auto-form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 16px;
+}
+.permissions-tabs {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.permissions-tabs > .auto-tabs {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.permissions-tabs > .auto-tabs > .auto-tabs-heading {
+  flex: 0 0 auto;
+}
+.permissions-tabs > .auto-tabs > .auto-tab-content:not([hidden]) {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+  padding-top: 12px;
+}
+.permissions-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.permissions-rules,
+.permissions-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.permissions-rules li {
+  border: 1px solid var(--auto-border, #dce4df);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 12px;
+  line-height: 20px;
+}
+.permissions-rules li[data-on="true"] {
+  background: var(--auto-accent-soft, #e5f3ea);
+  color: var(--auto-accent, #1f7a4d);
+}
+.permissions-rules li[data-on="false"] {
+  background: var(--auto-muted, #f4f6f5);
+  color: var(--auto-secondary, #6d7a74);
+  text-decoration: line-through;
+}
+.permissions-checks {
+  gap: 8px 16px;
+  font-size: 13px;
+}
+.permissions-demo .auto-menu {
+  border: 1px solid var(--auto-border);
+  border-radius: var(--auto-radius);
+  padding: 8px;
 }

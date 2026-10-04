@@ -5,11 +5,13 @@ import { useDemoText } from "../i18n";
 import { useDemoData, makeProjects, createSource, type Project } from "../data";
 import { AutoHeightDemo } from "./AutoHeightDemo";
 import { AdvancedTableDemo } from "./AdvancedTableDemo";
+import "./mock/mock.css";
 
 export function TableDemo({ mode }: { mode: string }) {
   const tr = useDemoText();
   const { columns, fields, searchFields } = useDemoData();
   const [rows, setRows] = useState(() => makeProjects(48));
+  const [sentQuery, setSentQuery] = useState("");
   const big = useMemo(() => makeProjects(10000), []);
   const displayRows = useMemo(
     () =>
@@ -27,7 +29,16 @@ export function TableDemo({ mode }: { mode: string }) {
       })),
     [big, tr],
   );
-  const source = useMemo(() => createSource(displayRows), [displayRows]);
+  const source = useMemo(() => {
+    const load = createSource(displayRows);
+    return async (
+      query: Parameters<typeof load>[0],
+      context: Parameters<typeof load>[1],
+    ) => {
+      setSentQuery(JSON.stringify(query, null, 2));
+      return load(query, context);
+    };
+  }, [displayRows]);
   const content =
     mode === "auto-height" ? (
       <AutoHeightDemo />
@@ -114,18 +125,14 @@ export function TableDemo({ mode }: { mode: string }) {
     );
   return (
     <section className="table-demo">
-      <div className="section-heading">
-        <div>
-          <h2>{tr("Project Workbench")}</h2>
-          <p>
-            {tr(
-              "Search, sort, layout, export, and edit — all in one workflow.",
-            )}
-          </p>
-        </div>
-      </div>
       {content}
-      {mode !== "auto-height" && (
+      {mode === "remote" && (
+        <details className="mock-response" data-testid="table-query-exchange">
+          <summary>{tr("mock.table.exchange")}</summary>
+          <pre>{sentQuery}</pre>
+        </details>
+      )}
+      {mode !== "auto-height" && mode !== "remote" && (
         <div className="hint">
           <span>✦</span>
           {tr(
