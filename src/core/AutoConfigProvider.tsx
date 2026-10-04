@@ -1,7 +1,14 @@
 import type { TipConfig } from "./tip";
-import { createContext, useContext, useMemo, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
+import type { AutoAccessStore } from "./access";
 import { safeStorage } from "./config";
-import type { ColumnRegistry, SourceLoader } from "./registry";
+import type { ColumnRegistry, SourceLoader, TabsSource } from "./registry";
 import type {
   Access,
   AutoFormLayout,
@@ -47,6 +54,9 @@ export interface AutoServices extends TipConfig {
   menu?: MenuGlobalConfig;
   form: AutoFormLayout & TipConfig;
   t: (key: string, fallback?: string) => string;
+  /** Externally writable access state. Updates automatically refresh all consumers. */
+  access?: AutoAccessStore;
+  /** Custom policy overrides the access store's built-in roles/permissions check. */
   canAccess: (access: Access) => boolean;
   storage: StorageAdapter;
   settings?: SettingsAdapter;
@@ -65,6 +75,11 @@ export interface AutoServices extends TipConfig {
    * The registered function must return rows of that table's model.
    */
   sources: Record<string, SourceLoader>;
+  /**
+   * Remote tab list loaders, keyed for `AutoTabs` `source`.
+   * The registered function must return tab items.
+   */
+  tabsSources: Record<string, TabsSource>;
 }
 export const defaultServices: AutoServices = {
   namespace: "auto",
@@ -82,8 +97,13 @@ export const defaultServices: AutoServices = {
   columns: {},
   rowActions: {},
   sources: {},
+  tabsSources: {},
 };
 const Context = createContext(defaultServices);
+// Keep the unscoped namespace separate so nested providers do not suffix it twice.
+const NamespaceContext = createContext(defaultServices.namespace);
+const noSubscription = () => () => {};
+const noSnapshot = () => undefined;
 export function AutoConfigProvider({
   config,
   children,
@@ -92,14 +112,35 @@ export function AutoConfigProvider({
   children: ReactNode;
 }) {
   const parent = useContext(Context);
+  const parentNamespace = useContext(NamespaceContext);
+  const baseNamespace = config?.namespace ?? parentNamespace;
+  const access = config?.access ?? parent.access;
+  const accessState = useSyncExternalStore(
+    access?.subscribe ?? noSubscription,
+    access?.getState ?? noSnapshot,
+    access?.getState ?? noSnapshot,
+  );
+  const identity = access
+    ? JSON.stringify(accessState?.userId ?? null)
+    : undefined;
   const value = useMemo(
     () => ({
       ...parent,
       ...config,
+      access,
+      namespace: access ? `${baseNamespace}:user:${identity}` : baseNamespace,
+      // A new function on each snapshot also prompts route reconciliation.
+      // Preserve inherited/custom policies unless this provider owns a store.
+      canAccess: (requirement: Access) =>
+        (
+          config?.canAccess ??
+          (config?.access ? access!.canAccess : parent.canAccess)
+        )(requirement),
       fields: { ...parent.fields, ...config?.fields },
       columns: { ...parent.columns, ...config?.columns },
       rowActions: { ...parent.rowActions, ...config?.rowActions },
       sources: { ...parent.sources, ...config?.sources },
+      tabsSources: { ...parent.tabsSources, ...config?.tabsSources },
       form: { ...parent.form, ...config?.form },
       table: config?.table
         ? { ...parent.table, ...config.table }
@@ -107,9 +148,15 @@ export function AutoConfigProvider({
       tabs: config?.tabs ? { ...parent.tabs, ...config.tabs } : parent.tabs,
       menu: config?.menu ? { ...parent.menu, ...config.menu } : parent.menu,
     }),
-    [parent, config],
+    [parent, config, access, accessState, baseNamespace, identity],
   );
-  return <Context value={value}>{children}</Context>;
+  return (
+    <NamespaceContext value={baseNamespace}>
+      <Context key={identity} value={value}>
+        {children}
+      </Context>
+    </NamespaceContext>
+  );
 }
 export function useAutoConfig() {
   return useContext(Context);

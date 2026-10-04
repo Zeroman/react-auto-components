@@ -1,39 +1,162 @@
 /** Shared by the sidebar and page tabs so their destinations stay in sync. */
-export const demoExamples: Record<
-  string,
-  readonly (readonly [string, string])[]
-> = {
+export interface DemoExample {
+  id: string;
+  label: string;
+  /** Tooltip shown on the page tab; English source doubles as the i18n key. */
+  tip?: string;
+}
+
+/** Schema mock owned by one component. Not appended to menus that omit it. */
+const serverSchema: DemoExample = {
+  id: "server",
+  label: "mock.entry",
+  tip: "The page renders from a server JSON schema.",
+};
+
+function permissions(page: string): DemoExample {
+  return {
+    id: "permissions",
+    label: "Permissions",
+    tip: `permissions.${page}.tip`,
+  };
+}
+
+export const demoExamples: Record<string, readonly DemoExample[]> = {
   table: [
-    ["local", "Local Data"],
-    ["remote", "Server-side"],
-    ["large", "10,000 rows of data"],
-    ["advanced", "Tree & Expansion"],
-    ["auto-height", "Remaining Height"],
+    {
+      id: "local",
+      label: "Local Data",
+      tip: "Add, edit, delete and select rows entirely in local state — no server required.",
+    },
+    {
+      id: "server",
+      label: "Mock server",
+      tip: "One mock server. Choose whether it only runs the query, or also sends the columns, search fields, and edit permission.",
+    },
+    {
+      id: "large",
+      label: "10,000 rows of data",
+      tip: "10,000 rows stay smooth through row virtualization; scroll and sort without jank.",
+    },
+    {
+      id: "advanced",
+      label: "Tree & Expansion",
+      tip: "Tree hierarchy, expandable detail rows and merged cells in one table.",
+    },
+    {
+      id: "auto-height",
+      label: "Remaining Height",
+      tip: "The table fills the viewport height left over by the page layout.",
+    },
+    permissions("table"),
+  ],
+  form: [
+    {
+      id: "component",
+      label: "form.own",
+      tip: "form.own.tip",
+    },
+    serverSchema,
+    permissions("form"),
   ],
   search: [
-    ["instant", "Instant Search"],
-    ["manual", "Manual Search"],
-    ["advanced", "Cross-field & Multi-select"],
-    ["remote", "Server-side"],
+    {
+      id: "instant",
+      label: "Instant Search",
+      tip: "Results update as you type or select a value. Reset restores all results.",
+    },
+    {
+      id: "manual",
+      label: "Manual Search",
+      tip: "Edit criteria, then click Search to apply them.",
+    },
+    {
+      id: "advanced",
+      label: "Cross-field & Multi-select",
+      tip: "Search project name, owner or region together, and combine multiple statuses.",
+    },
+    {
+      id: "remote",
+      label: "Server-side",
+      tip: "The query AST is serialized to RSQL and sent to a mock source for server-side filtering.",
+    },
+    serverSchema,
+    permissions("search"),
+  ],
+  dialog: [
+    {
+      id: "component",
+      label: "dialog.own",
+      tip: "dialog.own.tip",
+    },
+    serverSchema,
+    permissions("dialog"),
   ],
   tabs: [
-    ["basic", "Basic"],
-    ["dynamic", "Dynamic tabs"],
-    ["access", "Access control"],
+    {
+      id: "basic",
+      label: "Basic",
+      tip: "Horizontal and vertical tab layouts with preserved panel state.",
+    },
+    {
+      id: "dynamic",
+      label: "Dynamic tabs",
+      tip: "Open, close and reorder tabs at runtime, workspace style.",
+    },
+    {
+      id: "access",
+      label: "Access control",
+      tip: "Tabs filtered by roles and permissions through AutoConfigProvider.canAccess.",
+    },
+    serverSchema,
+    permissions("tabs"),
+  ],
+  menu: [
+    {
+      id: "component",
+      label: "menu.own",
+      tip: "menu.own.tip",
+    },
+    serverSchema,
+    permissions("menu"),
   ],
   chat: [
-    ["conversation", "Conversation"],
-    ["performance", "Large history"],
-    ["rendering", "Rendering"],
-    ["layouts", "Message layout"],
-    ["hooks", "Hooks"],
-    ["edges", "Edge states"],
+    {
+      id: "conversation",
+      label: "Conversation",
+      tip: "Streaming replies, stop, retry and anchored history loading.",
+    },
+    {
+      id: "performance",
+      label: "Large history",
+      tip: "Tens of thousands of variable-height messages stay responsive via virtualization.",
+    },
+    {
+      id: "rendering",
+      label: "Rendering",
+      tip: "Caller-owned message renderers: markdown, cards and custom actions.",
+    },
+    {
+      id: "layouts",
+      label: "Message layout",
+      tip: "Avatars, grouping, alignment and spacing variants for message lists.",
+    },
+    {
+      id: "hooks",
+      label: "Hooks",
+      tip: "Compose chat behavior through hooks with your own message pipeline.",
+    },
+    {
+      id: "edges",
+      label: "Edge states",
+      tip: "Empty, loading, error and offline states with retry actions.",
+    },
+    serverSchema,
+    permissions("chat"),
   ],
 };
 
-export function examplesFor(page: string) {
-  return [
-    ...(demoExamples[page] ?? [["component", "mock.examples"]]),
-    ["server", "mock.entry"],
-  ] as readonly (readonly [string, string])[];
+/** Examples listed under one sidebar menu. Unknown pages get none. */
+export function examplesFor(page: string): readonly DemoExample[] {
+  return demoExamples[page] ?? [];
 }

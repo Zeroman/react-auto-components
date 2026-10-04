@@ -5,6 +5,7 @@ export * from "./core/errors";
 export * from "./core/config";
 export * from "./core/query";
 export * from "./core/AutoConfigProvider";
+export * from "./core/access";
 export * from "./core/navigation";
 import "./styles/base.css";
 export * from "./components/AutoForm";

@@ -7,7 +7,9 @@ import {
   type TableQuery,
 } from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../../i18n";
+import { TableDemo } from "../TableDemo";
 import { MockDemo, mockRequest, type MockScenario } from "./MockDemo";
+import "./mock.css";
 import {
   mapSearchFields,
   projectFields,
@@ -48,6 +50,36 @@ const loadTable = (scenario: MockScenario, signal: AbortSignal) =>
     { signal },
   );
 export function ServerTableDemo() {
+  const tr = useDemoText();
+  const [job, setJob] = useState<"query" | "schema">("schema");
+  return (
+    <div className="table-server-demo" data-testid="table-server-demo">
+      <div className="auto-actions" role="group" aria-label={tr("mock.table.job")}>
+        <button
+          type="button"
+          aria-pressed={job === "query"}
+          data-testid="table-server-query"
+          onClick={() => setJob("query")}
+        >
+          {tr("mock.table.query")}
+        </button>
+        <button
+          type="button"
+          aria-pressed={job === "schema"}
+          data-testid="table-server-schema"
+          onClick={() => setJob("schema")}
+        >
+          {tr("mock.table.schema")}
+        </button>
+      </div>
+      <p className="muted">
+        {tr(job === "query" ? "mock.table.queryHelp" : "mock.table.schemaHelp")}
+      </p>
+      {job === "query" ? <TableDemo mode="remote" /> : <SchemaTable />}
+    </div>
+  );
+}
+function SchemaTable() {
   return (
     <MockDemo
       title="mock.table.title"

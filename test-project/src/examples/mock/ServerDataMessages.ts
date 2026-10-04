@@ -10,6 +10,13 @@ const messages: Record<string, Record<string, string>> = {
     "mock.table.saved":
       "The server accepted your changes. The table has requested a fresh page.",
     "mock.table.exchange": "Table request → page response",
+    "mock.table.job": "What the mock server owns",
+    "mock.table.query": "Run the query",
+    "mock.table.schema": "Send the table",
+    "mock.table.queryHelp":
+      "The columns are written in this page. Sorting, filtering, and paging ask the mock server, which returns one page. The request is below the table.",
+    "mock.table.schemaHelp":
+      "The mock server sends the columns, search fields, page size, and whether editing is allowed. Each query then asks it for one page. Switch the response to see a restricted, empty, or failed payload.",
     "mock.search.title": "Search fields and results from the server",
     "mock.search.description":
       "The server supplies field schemas, choices, defaults and a dataset. Each search sends a query to the async browser mock; only the latest response is displayed.",
@@ -47,6 +54,13 @@ const messages: Record<string, Record<string, string>> = {
       "服务端仅授予进行中项目的只读权限，响应不含预算数据和编辑操作。",
     "mock.table.saved": "服务端已接受修改，表格已重新请求当前页。",
     "mock.table.exchange": "表格请求 → 分页响应",
+    "mock.table.job": "模拟服务负责什么",
+    "mock.table.query": "只执行查询",
+    "mock.table.schema": "下发表格",
+    "mock.table.queryHelp":
+      "列写在这个页面里。排序、筛选和翻页都向模拟服务要一页数据，表格下方是发出的请求。",
+    "mock.table.schemaHelp":
+      "模拟服务下发列、搜索字段、每页条数，以及能不能编辑。之后每次查询再向它要一页。可以切换受限、空数据和失败的响应。",
     "mock.search.title": "服务端返回搜索字段和结果",
     "mock.search.description":
       "服务端提供字段结构、选项、默认值和数据集。每次搜索异步发送查询到浏览器模拟服务，仅显示最后一次请求的响应。",

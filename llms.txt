@@ -33,8 +33,9 @@ Canonical zero-function-props example (provider registration + pure JSON + sourc
 - `AutoColumn.component` looks up `config.columns[key]` for `render`, `format`, `sort`, and `exportFormat`. A function on the column wins. An unknown key warns `RAC-COLUMN-COMPONENT` and the cell uses the default format.
 - `RowAction.action` looks up `config.rowActions[key]` when `onClick` is omitted. `onClick` wins. Neither one warns `RAC-ROW-ACTION` when the item is chosen, and the status shows the message.
 - `AutoTable source` looks up `config.sources[key]`. Pass exactly one of `data`, `dataSource`, or `source`. An unknown key warns `RAC-TABLE-SOURCE` and the table shows that message with retry.
+- `AutoTabs source` looks up `config.tabsSources[key]`, or takes a `({ signal }) => Promise<AutoTab[]>` function. Pass only one of `items` and `source`. An unknown key shows `RAC-TABS-SOURCE` with retry.
 
-`config.fields`, `config.columns`, `config.rowActions`, and `config.sources` merge from nested providers. Later keys win.
+`config.fields`, `config.columns`, `config.rowActions`, `config.sources`, and `config.tabsSources` merge from nested providers. Later keys win.
 
 ## Playwright
 
@@ -68,3 +69,10 @@ const storage = { get: (key: string) => values.get(key), set: (key: string, valu
 ```
 
 A browser reload discards this map. Tests that intentionally verify persistence across reloads should keep the default storage and use a fresh browser context per test. `useAutoTabsWorkspace` has separate storage; set its `storage: false` for isolated workspace tests.
+
+
+## Externally maintained access
+
+`createAutoAccess(initial?)` creates an app-owned store with `getState`, `subscribe`, `setState`, `replaceState`, `reset`, `hasPerm`, `hasRole`, `hasUser`, `hasOrg`, and `canAccess`. State is `{ userId: string | null, roles: readonly string[], permissions: readonly string[], orgIds: readonly string[] }`. Connect with `AutoConfigProvider config={{access}}`; consumers refresh on external updates. Custom `canAccess` overrides the store's all-declared-roles-and-permissions policy. No transport or persistence of grants is built in.
+
+`setState` merges, but changing userId clears omitted grants; `replaceState` clears all omitted fields. User changes remount Provider descendants and scope built-in storage namespace by userId. Grant-only changes preserve edits. The host cancels/rejects stale identity requests and resets stores outside the Provider. One access store per browser tab allows different users concurrently. Never broadcast a browser-wide current-user snapshot; host API requests must carry the tab-specific authenticated session. A shared login cookie alone is insufficient for independent server identities. Demo keeps only its mock user selector in sessionStorage (including signed-out state), with same-browser two-tab tests for identity, permission and logout isolation. Demo mock requests are under `test-project/src/examples/mock/access.ts`.

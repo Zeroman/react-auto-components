@@ -119,6 +119,33 @@ import { exportXlsx } from '@zeroman.yang/react-auto-components/xlsx';
 
 ExcelJS 在首次使用适配器时动态加载，不进入库的主入口。纯 CSV/JSON 用户可安装时省略 optional dependencies。
 
+## 外部权限状态
+
+在每个浏览器标签页内部通过 `createAutoAccess()` 创建独立状态，并传入 `config.access`。不同标签页可以同时登录不同用户，不设置整个浏览器共用的“当前用户”。登录、接口请求和实时更新由外部业务负责；组件库只保存快照并通知使用者。
+
+```tsx
+import { createAutoAccess, AutoConfigProvider } from "@zeroman.yang/react-auto-components";
+
+export const access = createAutoAccess();
+// 每个应用创建一次；SSR 时每个请求独立创建。
+<AutoConfigProvider config={{ namespace: "my-app", access }}>
+  <App />
+</AutoConfigProvider>;
+
+// 外部业务在取得或更新身份数据后调用。
+access.replaceState({ userId: "alice", roles: ["editor"], permissions: ["project:read"], orgIds: ["north"] });
+access.setState({ permissions: ["project:read", "project:edit"] });
+access.reset(); // 退出登录：清空身份及全部授权。
+```
+
+状态提供 `hasPerm(code)`、`hasRole(role)`、`hasUser(userId)` 和 `hasOrg(orgId)`。`getState()` 返回引用稳定的只读快照；非 React 代码可用 `subscribe(listener)` 订阅。React 组件通过 `useAutoConfig().access` 读取，Provider 会自动通知更新。
+
+`setState` 合并补丁，传入的数组整体替换；修改 `userId` 时同时清除未提供的旧授权。`replaceState` 总会清空省略字段，切换用户推荐使用它。角色不会隐式授予权限。内置 `canAccess` 要求声明的角色与权限**全部满足**，没有访问要求的字段仍为公开。自定义 `config.canAccess` 优先，可组合四个判断函数。现有组件配置仍使用 `roles`／`permissions`；用户、组织条件由业务通过判断函数组合。
+
+`userId` 变化时，Provider 重新挂载子树，清除其中表单、弹窗及组件的内存状态。内置设置和草稿使用 `${namespace}:user:${JSON.stringify(userId)}` 作为持久化命名空间；切回原用户只恢复该用户保存的数据。同一用户的授权变化保留当前编辑。用户相关组件应放在 Provider 下；外部持有的状态、导航实例和请求仍由业务清理或取消。身份请求使用 AbortSignal／请求序号，防止旧用户的迟到响应覆盖新用户。每个 Chrome 标签页有自己的状态；A 页替换身份或退出不会替换 B 页的用户，也不会让 B 退出。不要通过 localStorage 广播一份“当前用户”覆盖所有标签页。外部请求必须绑定本标签页的真实登录会话；仅靠同一域共享的一份登录 Cookie 无法表示两个独立用户，前端权限状态也不会改变服务端鉴权身份。
+
+未配置 `config.access` 时，原有 `canAccess` 行为与存储键保持不变。Demo 的 **Permissions／权限** 页包含首次 mock 加载、角色与权限独立变化、用户切换、迟到响应取消和失败重试。mock 接口位于 `test-project/src/examples/mock/access.ts`，不进入组件库。Demo 只在 sessionStorage 保存本页选中的 mock 用户，因此刷新会保留该页身份（包括退出状态）；“新标签页登录”链接传入一次性的演示用户选择，不是鉴权凭据。双页面测试使用同一浏览器上下文，在共享 Cookie／localStorage 的情况下验证用户、权限更新和退出彼此独立。
+
 ## 验证
 
 ```sh

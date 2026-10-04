@@ -101,10 +101,11 @@ function RecordDialog({ data }: { data: DialogConfig }) {
       if (!controller.signal.aborted) setSaving(false);
     }
   }
-  const fields = data.fields.map((field) => ({
-    ...field,
-    label: tr(field.label ?? ""),
-  }));
+  const fields = data.fields.map((field) =>
+    "label" in field && typeof field.label === "string"
+      ? { ...field, label: tr(field.label) }
+      : field,
+  );
   if (!data.recordId) return <p role="status">{tr("mock.dialog.empty")}</p>;
   return (
     <>

@@ -22,6 +22,8 @@ const rawSources = import.meta.glob<string>(
     "./examples/DynamicTabsDemo.tsx",
     "./examples/TabsStateDemo.tsx",
     "./examples/MenuDemo.tsx",
+    "./examples/PermissionsDemo.tsx",
+    "./examples/mock/access.ts",
     "./examples/NavigationDemo.tsx",
     "./examples/ServerDrivenDemo.tsx",
     "./examples/mock/MockDemo.tsx",
@@ -71,6 +73,8 @@ for (const [page, name] of Object.entries({
     ...exampleFiles[page],
     `mock/Server${name}Demo.tsx`,
     "mock/MockDemo.tsx",
+    "PermissionsDemo.tsx",
+    "mock/access.ts",
   ];
 }
 
@@ -82,6 +86,7 @@ type CodeViewerProps = {
   page: string;
   title: string;
   serverDriven?: boolean;
+  permissions?: boolean;
 };
 
 export function CodeViewer({
@@ -90,13 +95,16 @@ export function CodeViewer({
   page,
   title,
   serverDriven = false,
+  permissions = false,
 }: CodeViewerProps) {
   const tr = useDemoText();
   const files = exampleFiles[page] ?? [];
   const defaultName =
-    (serverDriven
-      ? files.find((name) => name.startsWith("mock/Server"))
-      : files[0]) ?? "";
+    (permissions
+      ? "PermissionsDemo.tsx"
+      : serverDriven
+        ? files.find((name) => name.startsWith("mock/Server"))
+        : files[0]) ?? "";
   const [activeName, setActiveName] = useState(defaultName);
   const [copied, setCopied] = useState(false);
   const currentName = files.includes(activeName)

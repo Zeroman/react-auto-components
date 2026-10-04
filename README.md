@@ -139,7 +139,7 @@ Behavior contracts, including what a thrown callback does: [AutoForm](docs/auto-
 
 ## Preconditions
 
-Import the stylesheet once: `import "@zeroman.yang/react-auto-components/style.css"`. Without it, `--auto-text` is unset and the page is unstyled. Development mode warns `RAC-CSS-MISSING`.
+Import the stylesheet once: `import "@zeroman.yang/react-auto-components/style.css"`. Without it, `--auto-text` is unset and the page is unstyled. Development mode warns `RAC-CSS-MISSING`. The palette follows `prefers-color-scheme` automatically; set `data-auto-theme="light"` or `"dark"` on any ancestor (typically `<html>`) to force one side.
 
 `AutoConfigProvider` is optional. Defaults are namespace `"auto"`, size `"medium"`, density `"comfortable"`, top labels, and `localStorage`. The namespace is prefixed onto `${namespace}:table:${id}` and `${namespace}:draft:${draftKey}`. Two apps on one origin that both keep `"auto"` share those keys.
 
@@ -155,6 +155,33 @@ import { exportXlsx } from "@zeroman.yang/react-auto-components/xlsx";
 ```
 
 ExcelJS loads dynamically when the adapter is first used and is excluded from the library's main entry. Applications that only use CSV/JSON can omit optional dependencies during installation.
+
+## External access state
+
+Create a `createAutoAccess()` store inside each browser tab and pass it through `config.access`. Tabs can stay logged in as different users simultaneously; there is no browser-wide current-user singleton. The host owns login, API requests and realtime updates; the library only stores the snapshot and notifies consumers.
+
+```tsx
+import { createAutoAccess, AutoConfigProvider } from "@zeroman.yang/react-auto-components";
+
+export const access = createAutoAccess();
+// Once per app; create a separate instance per SSR request.
+<AutoConfigProvider config={{ namespace: "my-app", access }}>
+  <App />
+</AutoConfigProvider>;
+
+// The external application calls these after loading or updating identity data.
+access.replaceState({ userId: "alice", roles: ["editor"], permissions: ["project:read"], orgIds: ["north"] });
+access.setState({ permissions: ["project:read", "project:edit"] });
+access.reset(); // Logout: clear identity and every grant.
+```
+
+The store exposes `hasPerm(code)`, `hasRole(role)`, `hasUser(userId)` and `hasOrg(orgId)`. `getState()` returns a stable, immutable snapshot; `subscribe(listener)` supports non-React consumers. React consumers can read `useAutoConfig().access`; provider updates refresh them automatically.
+
+`setState` merges a patch, replacing supplied arrays. Changing `userId` also clears omitted grants. `replaceState` always clears omitted fields and is the preferred account-switch API. Roles do not implicitly grant permissions. The built-in `canAccess` requires **every** declared role and permission; fields with no requirements remain public. A custom `config.canAccess` overrides that policy and can use all four helpers. The existing schema still uses `roles`/`permissions`; use the helpers for caller-owned user/organization conditions.
+
+When `userId` changes, the provider remounts its descendants, clearing their in-memory forms, dialogs and component state. Built-in persisted settings and drafts use `${namespace}:user:${JSON.stringify(userId)}` as their namespace; switching back restores only that account's saved data. Updating grants for the same user keeps current edits. Put user-owned components below this provider; host-owned stores, navigation instances and requests outside it must be cleared/cancelled by the host. Protect pending identity loads with an AbortSignal/request generation so an old user's response cannot replace the new user. Each Chrome tab has its own store: replacing or resetting tab A does not replace or log out tab B. Do not broadcast a single current-user snapshot through localStorage. The host must bind each tab's API requests to that tab's authenticated session; one shared login cookie alone cannot represent two independent users. Frontend access state does not change the server's authentication context.
+
+Without `config.access`, existing `canAccess` behavior and storage keys stay unchanged. The Demo's **Permissions** tab includes initial mock loading, independent role/permission changes, account switching, delayed-response cancellation and retry. Its mock API lives in `test-project/src/examples/mock/access.ts`, outside the library. The Demo stores only the selected mock user in sessionStorage, so refreshing a tab keeps its own identity (including logout). Links open another user in a new tab using a one-time demo-only user selector; it is not an authentication credential. Two-page tests use the same browser context, sharing cookies/localStorage while verifying independent users, grants and logout.
 
 ## Verification
 

@@ -43,6 +43,8 @@ const messages: Record<string, Record<string, string>> = {
       "输入或选择后立即更新结果，重置可恢复全部结果。",
     "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
       "模拟服务端：排序、筛选和分页在浏览器中异步处理，无需后端服务。",
+    "One mock server. Choose whether it only runs the query, or also sends the columns, search fields, and edit permission.":
+      "同一个模拟服务。可以选择只执行查询，或同时下发列、搜索字段和编辑权限。",
     "Toggle fullscreen": "切换全屏",
     "Close dialog": "关闭弹窗",
     Reset: "重置",
@@ -201,6 +203,7 @@ const messages: Record<string, Record<string, string>> = {
       "搜索、排序、布局、导出与编辑，保持在同一工作流中。",
     "Local Data": "本地数据",
     "Server-side": "服务端",
+    "Mock server": "模拟服务",
     "10,000 rows of data": "万行数据",
     "Tree & Expansion": "树形与展开",
     "Remaining Height": "剩余高度",
@@ -504,6 +507,70 @@ const messages: Record<string, Record<string, string>> = {
     "Example source": "示例源码",
     "Copy code": "复制代码",
     "View on GitHub": "在 GitHub 查看",
+    "Add, edit, delete and select rows entirely in local state — no server required.":
+      "新增、编辑、删除与选择行全部在本地状态中完成，无需服务端。",
+    "10,000 rows stay smooth through row virtualization; scroll and sort without jank.":
+      "行虚拟化让 10,000 行数据保持流畅，滚动与排序不卡顿。",
+    "Tree hierarchy, expandable detail rows and merged cells in one table.":
+      "树形层级、可展开详情行与合并单元格集于一张表格。",
+    "The table fills the viewport height left over by the page layout.":
+      "表格填满页面布局剩余的视口高度。",
+    "The query AST is serialized to RSQL and sent to a mock source for server-side filtering.":
+      "查询 AST 被序列化为 RSQL 并发送到模拟数据源，实现服务端过滤。",
+    "Horizontal and vertical tab layouts with preserved panel state.":
+      "水平与垂直标签页布局，面板状态得以保留。",
+    "Open, close and reorder tabs at runtime, workspace style.":
+      "运行时打开、关闭并重排标签页，工作区风格。",
+    "Tabs filtered by roles and permissions through AutoConfigProvider.canAccess.":
+      "通过 AutoConfigProvider.canAccess 按角色与权限过滤标签页。",
+    "Streaming replies, stop, retry and anchored history loading.":
+      "流式回复、停止、重试与锚定历史加载。",
+    "Tens of thousands of variable-height messages stay responsive via virtualization.":
+      "数万条可变高度消息通过虚拟化保持响应迅速。",
+    "Caller-owned message renderers: markdown, cards and custom actions.":
+      "由调用方掌握的消息渲染器：Markdown、卡片与自定义操作。",
+    "Avatars, grouping, alignment and spacing variants for message lists.":
+      "消息列表的头像、分组、对齐与间距变体。",
+    "Compose chat behavior through hooks with your own message pipeline.":
+      "通过 hooks 组合聊天行为，接入你自己的消息管道。",
+    "Empty, loading, error and offline states with retry actions.":
+      "空态、加载、错误与离线状态，均带重试操作。",
+    "The whole page is driven by a server schema: fields, columns and actions arrive as JSON.":
+      "整个页面由服务端 schema 驱动：字段、列与操作以 JSON 下发。",
+    "Switch the active role and watch menus, tabs and actions appear or disappear.":
+      "切换当前角色，观察菜单、标签页与操作的显示与隐藏。",
+    "Debug nav": "调试导航",
+    Theme: "主题",
+    "Demo theme": "演示主题",
+    "Auto (follow system)": "自动（跟随系统）",
+    "Light (default)": "浅色（默认）",
+    "Dark (default)": "深色（默认）",
+    "Ant Design style": "Ant Design 风格",
+    "GitHub style": "GitHub 风格",
+    "Material style": "Material 风格",
+    "Bootstrap style": "Bootstrap 风格",
+    "Permissions in action": "权限实战",
+    "One canAccess callback drives menus, tabs and row actions. Toggle the role to see the same tree change.":
+      "一个 canAccess 回调同时驱动菜单、标签页与行操作。切换角色即可看到同一棵树的变化。",
+    "Menu items": "菜单项",
+    Navigation: "导航",
+    Home: "首页",
+    Reports: "报表",
+    "roles: admin": "角色：admin",
+    Audit: "审计",
+    Profile: "个人资料",
+    "Reports is visible because the admin role is granted.":
+      "Reports 可见，因为已授予 admin 角色。",
+    "Reports is hidden: the guest role is not listed in roles.":
+      "Reports 已隐藏：guest 角色未列入 roles。",
+    "Audit renders: canAccess receives permissions: [audit:read].":
+      "Audit 会渲染：canAccess 收到 permissions: [audit:read]。",
+    "Audit is skipped: the guest role lacks audit:read.":
+      "Audit 被跳过：guest 角色缺少 audit:read。",
+    "Row actions": "行操作",
+    "Edit and Delete are enabled for admin.": "admin 角色下可用编辑和删除。",
+    "Guest is read-only: row actions are disabled.": "访客只读：行操作被禁用。",
+    Task: "任务",
   },
   en: {
     "Manual Search": "Manual Search",
@@ -517,6 +584,8 @@ const messages: Record<string, Record<string, string>> = {
       "Results update as you type or select a value. Reset restores all results.",
     "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
       "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.",
+    "One mock server. Choose whether it only runs the query, or also sends the columns, search fields, and edit permission.":
+      "One mock server. Choose whether it only runs the query, or also sends the columns, search fields, and edit permission.",
     "Toggle fullscreen": "Toggle fullscreen",
     "Close dialog": "Close dialog",
     Reset: "Reset",
@@ -678,6 +747,7 @@ const messages: Record<string, Record<string, string>> = {
       "Search, sort, layout, export, and edit — all in one workflow.",
     "Local Data": "Local Data",
     "Server-side": "Server-side",
+    "Mock server": "Mock server",
     "10,000 rows of data": "10,000 rows of data",
     "Tree & Expansion": "Tree & Expansion",
     "Remaining Height": "Remaining Height",
@@ -1009,6 +1079,8 @@ const messages: Record<string, Record<string, string>> = {
       "輸入或選擇後立即更新結果，重設可恢復全部結果。",
     "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
       "模擬伺服器：排序、篩選和分頁在瀏覽器中非同步處理，無需後端服務。",
+    "One mock server. Choose whether it only runs the query, or also sends the columns, search fields, and edit permission.":
+      "同一個模擬服務。可以選擇只執行查詢，或同時下發欄、搜尋欄位和編輯權限。",
     "Toggle fullscreen": "切換全螢幕",
     "Close dialog": "關閉彈窗",
     Reset: "重設",
@@ -1167,6 +1239,7 @@ const messages: Record<string, Record<string, string>> = {
       "搜尋、排序、版面配置、匯出與編輯，保持在同一工作流程中。",
     "Local Data": "本機資料",
     "Server-side": "伺服器端",
+    "Mock server": "模擬服務",
     "10,000 rows of data": "萬筆資料",
     "Tree & Expansion": "樹狀與展開",
     "Remaining Height": "剩餘高度",
@@ -1470,6 +1543,70 @@ const messages: Record<string, Record<string, string>> = {
     "Example source": "範例原始碼",
     "Copy code": "複製原始碼",
     "View on GitHub": "在 GitHub 檢視",
+    "Add, edit, delete and select rows entirely in local state — no server required.":
+      "新增、編輯、刪除與選取列全部在本機狀態中完成，無需伺服器。",
+    "10,000 rows stay smooth through row virtualization; scroll and sort without jank.":
+      "透過列虛擬化讓 10,000 列資料保持流暢，捲動與排序不卡頓。",
+    "Tree hierarchy, expandable detail rows and merged cells in one table.":
+      "樹狀階層、可展開詳細列與合併儲存格集於一張表格。",
+    "The table fills the viewport height left over by the page layout.":
+      "表格填滿頁面版面配置剩餘的視窗高度。",
+    "The query AST is serialized to RSQL and sent to a mock source for server-side filtering.":
+      "查詢 AST 會被序列化為 RSQL 並傳送至模擬資料來源，實現伺服器端篩選。",
+    "Horizontal and vertical tab layouts with preserved panel state.":
+      "水平與垂直分頁版面配置，面板狀態得以保留。",
+    "Open, close and reorder tabs at runtime, workspace style.":
+      "在執行時開啟、關閉並重排分頁，工作區風格。",
+    "Tabs filtered by roles and permissions through AutoConfigProvider.canAccess.":
+      "透過 AutoConfigProvider.canAccess 依角色與權限過濾分頁。",
+    "Streaming replies, stop, retry and anchored history loading.":
+      "串流回覆、停止、重試與錨定歷史載入。",
+    "Tens of thousands of variable-height messages stay responsive via virtualization.":
+      "數萬則可變高度訊息透過虛擬化保持靈敏回應。",
+    "Caller-owned message renderers: markdown, cards and custom actions.":
+      "由呼叫端掌握的訊息渲染器：Markdown、卡片與自訂操作。",
+    "Avatars, grouping, alignment and spacing variants for message lists.":
+      "訊息列表的頭像、分組、對齊與間距變體。",
+    "Compose chat behavior through hooks with your own message pipeline.":
+      "透過 hooks 組合聊天行為，接入你自己的訊息管線。",
+    "Empty, loading, error and offline states with retry actions.":
+      "空狀態、載入、錯誤與離線狀態，皆附重試操作。",
+    "The whole page is driven by a server schema: fields, columns and actions arrive as JSON.":
+      "整個頁面由伺服器 schema 驅動：欄位、欄與操作以 JSON 傳入。",
+    "Switch the active role and watch menus, tabs and actions appear or disappear.":
+      "切換目前角色，觀察選單、分頁與操作的出現與消失。",
+    "Debug nav": "除錯導覽",
+    Theme: "主題",
+    "Demo theme": "示範主題",
+    "Auto (follow system)": "自動（跟隨系統）",
+    "Light (default)": "淺色（預設）",
+    "Dark (default)": "深色（預設）",
+    "Ant Design style": "Ant Design 風格",
+    "GitHub style": "GitHub 風格",
+    "Material style": "Material 風格",
+    "Bootstrap style": "Bootstrap 風格",
+    "Permissions in action": "權限實戰",
+    "One canAccess callback drives menus, tabs and row actions. Toggle the role to see the same tree change.":
+      "一個 canAccess 回呼同時驅動選單、分頁與列操作。切換角色即可看到同一棵樹的變化。",
+    "Menu items": "選單項目",
+    Navigation: "導覽",
+    Home: "首頁",
+    Reports: "報表",
+    "roles: admin": "角色：admin",
+    Audit: "稽核",
+    Profile: "個人資料",
+    "Reports is visible because the admin role is granted.":
+      "Reports 可見，因為已授予 admin 角色。",
+    "Reports is hidden: the guest role is not listed in roles.":
+      "Reports 已隱藏：guest 角色未列入 roles。",
+    "Audit renders: canAccess receives permissions: [audit:read].":
+      "Audit 會渲染：canAccess 收到 permissions: [audit:read]。",
+    "Audit is skipped: the guest role lacks audit:read.":
+      "Audit 被跳過：guest 角色缺少 audit:read。",
+    "Row actions": "列操作",
+    "Edit and Delete are enabled for admin.": "admin 角色下可使用編輯與刪除。",
+    "Guest is read-only: row actions are disabled.": "訪客唯讀：列操作已停用。",
+    Task: "任務",
   },
   ja: {
     "Manual Search": "手動検索",
@@ -1483,6 +1620,8 @@ const messages: Record<string, Record<string, string>> = {
       "入力や選択に応じて結果を更新します。リセットですべての結果を表示します。",
     "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
       "模擬サーバー：並べ替え、絞り込み、ページ分割はブラウザー内で非同期に処理されます。バックエンドは不要です。",
+    "One mock server. Choose whether it only runs the query, or also sends the columns, search fields, and edit permission.":
+      "一つのモックサーバーです。クエリだけを実行するか、列・検索項目・編集権限も送るかを選べます。",
     "Toggle fullscreen": "全画面に切り替え",
     "Close dialog": "ダイアログを閉じる",
     Reset: "リセット",
@@ -1644,6 +1783,7 @@ const messages: Record<string, Record<string, string>> = {
       "検索、並べ替え、レイアウト、エクスポート、編集を同じワークフローの中で。",
     "Local Data": "ローカルデータ",
     "Server-side": "サーバーサイド",
+    "Mock server": "モックサーバー",
     "10,000 rows of data": "万行データ",
     "Tree & Expansion": "ツリーと展開",
     "Remaining Height": "残り高さ",
@@ -1960,6 +2100,70 @@ const messages: Record<string, Record<string, string>> = {
     "Example source": "サンプルのソースコード",
     "Copy code": "コードをコピー",
     "View on GitHub": "GitHub で見る",
+    "Add, edit, delete and select rows entirely in local state — no server required.":
+      "行の追加・編集・削除・選択をすべてローカル状態だけで完結できます。サーバーは不要です。",
+    "10,000 rows stay smooth through row virtualization; scroll and sort without jank.":
+      "行の仮想化により 10,000 行でもスムーズ。スクロールやソートでカクつきません。",
+    "Tree hierarchy, expandable detail rows and merged cells in one table.":
+      "ツリー階層、展開可能な詳細行、結合セルを 1 つのテーブルで。",
+    "The table fills the viewport height left over by the page layout.":
+      "テーブルがページレイアウトの残りのビューポート高さを埋めます。",
+    "The query AST is serialized to RSQL and sent to a mock source for server-side filtering.":
+      "クエリ AST は RSQL にシリアライズされ、モックソースに送られてサーバーサイドフィルタリングが行われます。",
+    "Horizontal and vertical tab layouts with preserved panel state.":
+      "水平・垂直両方のタブレイアウト。パネルの状態は保持されます。",
+    "Open, close and reorder tabs at runtime, workspace style.":
+      "実行時にタブを開き・閉じ・並べ替えます。ワークスペース風です。",
+    "Tabs filtered by roles and permissions through AutoConfigProvider.canAccess.":
+      "AutoConfigProvider.canAccess によるロールと権限でタブをフィルタリング。",
+    "Streaming replies, stop, retry and anchored history loading.":
+      "ストリーミング返信、停止、再試行、アンカー付き履歴の読み込み。",
+    "Tens of thousands of variable-height messages stay responsive via virtualization.":
+      "数万件の可変高さメッセージも仮想化で軽快に応答します。",
+    "Caller-owned message renderers: markdown, cards and custom actions.":
+      "呼び出し側が所有するメッセージレンダラー：Markdown、カード、カスタムアクション。",
+    "Avatars, grouping, alignment and spacing variants for message lists.":
+      "メッセージリストのアバター、グループ化、整列、間隔のバリエーション。",
+    "Compose chat behavior through hooks with your own message pipeline.":
+      "フックでチャットの動作を組み立て、独自のメッセージパイプラインを接続します。",
+    "Empty, loading, error and offline states with retry actions.":
+      "空・読み込み中・エラー・オフラインの各状態に再試行アクションを用意。",
+    "The whole page is driven by a server schema: fields, columns and actions arrive as JSON.":
+      "ページ全体がサーバースキーマで駆動されます。フィールド、列、アクションは JSON で届きます。",
+    "Switch the active role and watch menus, tabs and actions appear or disappear.":
+      "アクティブなロールを切り替えると、メニュー・タブ・アクションの出現が変化します。",
+    "Debug nav": "デバッグナビ",
+    Theme: "テーマ",
+    "Demo theme": "デモのテーマ",
+    "Auto (follow system)": "自動（システムに従う）",
+    "Light (default)": "ライト（既定）",
+    "Dark (default)": "ダーク（既定）",
+    "Ant Design style": "Ant Design 風",
+    "GitHub style": "GitHub 風",
+    "Material style": "Material 風",
+    "Bootstrap style": "Bootstrap 風",
+    "Permissions in action": "権限の実演",
+    "One canAccess callback drives menus, tabs and row actions. Toggle the role to see the same tree change.":
+      "1 つの canAccess コールバックがメニュー、タブ、行アクションを制御します。ロールを切り替えると同じツリーの変化が確認できます。",
+    "Menu items": "メニュー項目",
+    Navigation: "ナビゲーション",
+    Home: "ホーム",
+    Reports: "レポート",
+    "roles: admin": "ロール: admin",
+    Audit: "監査",
+    Profile: "プロフィール",
+    "Reports is visible because the admin role is granted.":
+      "Reports は表示されます。admin ロールが付与されているためです。",
+    "Reports is hidden: the guest role is not listed in roles.":
+      "Reports は非表示です。guest ロールは roles に含まれていません。",
+    "Audit renders: canAccess receives permissions: [audit:read].":
+      "Audit は描画されます。canAccess は permissions: [audit:read] を受け取ります。",
+    "Audit is skipped: the guest role lacks audit:read.":
+      "Audit はスキップされます。guest ロールには audit:read がありません。",
+    "Row actions": "行アクション",
+    "Edit and Delete are enabled for admin.": "admin では編集と削除が有効です。",
+    "Guest is read-only: row actions are disabled.": "guest は読み取り専用で、行アクションは無効です。",
+    Task: "タスク",
   },
   ko: {
     "Manual Search": "수동 검색",
@@ -1973,6 +2177,8 @@ const messages: Record<string, Record<string, string>> = {
       "입력하거나 선택하면 결과가 갱신됩니다. 초기화하면 전체 결과가 표시됩니다.",
     "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
       "모의 서버: 정렬, 필터링, 페이지 처리를 브라우저에서 비동기로 수행합니다. 백엔드가 필요하지 않습니다.",
+    "One mock server. Choose whether it only runs the query, or also sends the columns, search fields, and edit permission.":
+      "하나의 모의 서버입니다. 쿼리만 실행할지, 열과 검색 필드와 편집 권한까지 보낼지 선택합니다.",
     "Toggle fullscreen": "전체 화면 전환",
     "Close dialog": "팝업 닫기",
     Reset: "초기화",
@@ -2134,6 +2340,7 @@ const messages: Record<string, Record<string, string>> = {
       "검색, 정렬, 레이아웃, 내보내기, 편집을 하나의 워크플로에서 유지합니다.",
     "Local Data": "로컬 데이터",
     "Server-side": "서버 측",
+    "Mock server": "모의 서버",
     "10,000 rows of data": "만 건 데이터",
     "Tree & Expansion": "트리 및 펼치기",
     "Remaining Height": "남은 높이",
@@ -2447,6 +2654,70 @@ const messages: Record<string, Record<string, string>> = {
     "Example source": "예제 소스 코드",
     "Copy code": "코드 복사",
     "View on GitHub": "GitHub에서 보기",
+    "Add, edit, delete and select rows entirely in local state — no server required.":
+      "행 추가·편집·삭제·선택이 모두 로컬 상태에서만 이루어집니다. 서버가 필요 없습니다.",
+    "10,000 rows stay smooth through row virtualization; scroll and sort without jank.":
+      "행 가상화로 10,000행도 부드럽게 유지됩니다. 스크롤과 정렬에 끊김이 없습니다.",
+    "Tree hierarchy, expandable detail rows and merged cells in one table.":
+      "트리 계층, 확장 가능한 상세 행, 병합 셀을 한 테이블에서 확인할 수 있습니다.",
+    "The table fills the viewport height left over by the page layout.":
+      "테이블이 페이지 레이아웃이 남긴 뷰포트 높이를 채웁니다.",
+    "The query AST is serialized to RSQL and sent to a mock source for server-side filtering.":
+      "쿼리 AST는 RSQL로 직렬화되어 모의 소스로 전송되어 서버 측 필터링을 수행합니다.",
+    "Horizontal and vertical tab layouts with preserved panel state.":
+      "가로·세로 탭 레이아웃에서 패널 상태가 유지됩니다.",
+    "Open, close and reorder tabs at runtime, workspace style.":
+      "실행 중에 탭을 열고, 닫고, 다시 정렬합니다. 워크스페이스 스타일입니다.",
+    "Tabs filtered by roles and permissions through AutoConfigProvider.canAccess.":
+      "AutoConfigProvider.canAccess로 역할과 권한에 따라 탭을 필터링합니다.",
+    "Streaming replies, stop, retry and anchored history loading.":
+      "스트리밍 응답, 중지, 재시도, 앵커 기반 기록 로딩.",
+    "Tens of thousands of variable-height messages stay responsive via virtualization.":
+      "수만 건의 가변 높이 메시지도 가상화로 빠르게 반응합니다.",
+    "Caller-owned message renderers: markdown, cards and custom actions.":
+      "호출자 소유의 메시지 렌더러: 마크다운, 카드, 사용자 지정 액션.",
+    "Avatars, grouping, alignment and spacing variants for message lists.":
+      "메시지 목록의 아바타, 그룹화, 정렬, 간격 변형.",
+    "Compose chat behavior through hooks with your own message pipeline.":
+      "훅으로 채팅 동작을 조합하고 자체 메시지 파이프라인을 연결합니다.",
+    "Empty, loading, error and offline states with retry actions.":
+      "빈 상태, 로딩, 오류, 오프라인 상태에 재시도 액션이 함께 제공됩니다.",
+    "The whole page is driven by a server schema: fields, columns and actions arrive as JSON.":
+      "페이지 전체가 서버 스키마로 구동됩니다. 필드, 열, 액션이 JSON으로 전달됩니다.",
+    "Switch the active role and watch menus, tabs and actions appear or disappear.":
+      "활성 역할을 전환하면 메뉴, 탭, 액션이 나타나거나 사라지는 것을 볼 수 있습니다.",
+    "Debug nav": "디버그 내비게이션",
+    Theme: "테마",
+    "Demo theme": "데모 테마",
+    "Auto (follow system)": "자동(시스템 따르기)",
+    "Light (default)": "라이트(기본)",
+    "Dark (default)": "다크(기본)",
+    "Ant Design style": "Ant Design 스타일",
+    "GitHub style": "GitHub 스타일",
+    "Material style": "Material 스타일",
+    "Bootstrap style": "Bootstrap 스타일",
+    "Permissions in action": "권한 실습",
+    "One canAccess callback drives menus, tabs and row actions. Toggle the role to see the same tree change.":
+      "하나의 canAccess 콜백이 메뉴, 탭, 행 액션을 모두 제어합니다. 역할을 전환하면 같은 트리가 변하는 것을 확인할 수 있습니다.",
+    "Menu items": "메뉴 항목",
+    Navigation: "내비게이션",
+    Home: "홈",
+    Reports: "보고서",
+    "roles: admin": "역할: admin",
+    Audit: "감사",
+    Profile: "프로필",
+    "Reports is visible because the admin role is granted.":
+      "Reports는 표시됩니다. admin 역할이 부여되었기 때문입니다.",
+    "Reports is hidden: the guest role is not listed in roles.":
+      "Reports는 숨겨집니다. guest 역할이 roles에 없기 때문입니다.",
+    "Audit renders: canAccess receives permissions: [audit:read].":
+      "Audit는 렌더링됩니다. canAccess가 permissions: [audit:read]를 받습니다.",
+    "Audit is skipped: the guest role lacks audit:read.":
+      "Audit는 건너뜁니다. guest 역할에는 audit:read가 없습니다.",
+    "Row actions": "행 액션",
+    "Edit and Delete are enabled for admin.": "admin에서는 편집과 삭제를 사용할 수 있습니다.",
+    "Guest is read-only: row actions are disabled.": "guest는 읽기 전용이며 행 액션이 비활성화됩니다.",
+    Task: "작업",
   },
   es: {
     "Manual Search": "Búsqueda manual",
@@ -2460,6 +2731,8 @@ const messages: Record<string, Record<string, string>> = {
       "Los resultados se actualizan al escribir o seleccionar. Restablecer muestra todos los resultados.",
     "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
       "Servidor simulado: la ordenación, los filtros y la paginación se procesan de forma asíncrona en el navegador. No requiere backend.",
+    "One mock server. Choose whether it only runs the query, or also sends the columns, search fields, and edit permission.":
+      "Un solo servidor simulado. Elige si solo ejecuta la consulta o si también envía columnas, campos de búsqueda y el permiso de edición.",
     "Toggle fullscreen": "Cambiar a pantalla completa",
     "Close dialog": "Cerrar ventana emergente",
     Reset: "Restablecer",
@@ -2623,6 +2896,7 @@ const messages: Record<string, Record<string, string>> = {
       "Búsqueda, ordenación, diseño, exportación y edición, todo en el mismo flujo de trabajo.",
     "Local Data": "Datos locales",
     "Server-side": "Servidor",
+    "Mock server": "Servidor simulado",
     "10,000 rows of data": "Datos de diez mil filas",
     "Tree & Expansion": "Árbol y expansión",
     "Remaining Height": "Altura restante",
@@ -2947,6 +3221,70 @@ const messages: Record<string, Record<string, string>> = {
     "Example source": "Código de ejemplo",
     "Copy code": "Copiar código",
     "View on GitHub": "Ver en GitHub",
+    "Add, edit, delete and select rows entirely in local state — no server required.":
+      "Añadir, editar, eliminar y seleccionar filas solo con estado local; sin servidor.",
+    "10,000 rows stay smooth through row virtualization; scroll and sort without jank.":
+      "10 000 filas siguen fluidas gracias a la virtualización de filas; desplaza y ordena sin tirones.",
+    "Tree hierarchy, expandable detail rows and merged cells in one table.":
+      "Jerarquía en árbol, filas de detalle expandibles y celdas combinadas en una sola tabla.",
+    "The table fills the viewport height left over by the page layout.":
+      "La tabla ocupa la altura del viewport que deja libre el diseño de la página.",
+    "The query AST is serialized to RSQL and sent to a mock source for server-side filtering.":
+      "El AST de consulta se serializa a RSQL y se envía a una fuente simulada para filtrar en el servidor.",
+    "Horizontal and vertical tab layouts with preserved panel state.":
+      "Distribuciones de pestañas horizontales y verticales con estado de panel preservado.",
+    "Open, close and reorder tabs at runtime, workspace style.":
+      "Abre, cierra y reordena pestañas en tiempo de ejecución, al estilo de un espacio de trabajo.",
+    "Tabs filtered by roles and permissions through AutoConfigProvider.canAccess.":
+      "Pestañas filtradas por roles y permisos mediante AutoConfigProvider.canAccess.",
+    "Streaming replies, stop, retry and anchored history loading.":
+      "Respuestas en streaming, detener, reintentar y carga de historial anclada.",
+    "Tens of thousands of variable-height messages stay responsive via virtualization.":
+      "Decenas de miles de mensajes de altura variable se mantienen ágiles gracias a la virtualización.",
+    "Caller-owned message renderers: markdown, cards and custom actions.":
+      "Renderizadores de mensajes propiedad del llamador: markdown, tarjetas y acciones personalizadas.",
+    "Avatars, grouping, alignment and spacing variants for message lists.":
+      "Avatares, agrupación, alineación y variantes de espaciado para listas de mensajes.",
+    "Compose chat behavior through hooks with your own message pipeline.":
+      "Compón el comportamiento del chat con hooks y tu propia canalización de mensajes.",
+    "Empty, loading, error and offline states with retry actions.":
+      "Estados vacío, de carga, de error y sin conexión, con acciones de reintento.",
+    "The whole page is driven by a server schema: fields, columns and actions arrive as JSON.":
+      "Toda la página se rige por un esquema del servidor: campos, columnas y acciones llegan como JSON.",
+    "Switch the active role and watch menus, tabs and actions appear or disappear.":
+      "Cambia el rol activo y observa cómo aparecen o desaparecen menús, pestañas y acciones.",
+    "Debug nav": "Depurar navegación",
+    Theme: "Tema",
+    "Demo theme": "Tema de la demo",
+    "Auto (follow system)": "Automático (según el sistema)",
+    "Light (default)": "Claro (predeterminado)",
+    "Dark (default)": "Oscuro (predeterminado)",
+    "Ant Design style": "Estilo Ant Design",
+    "GitHub style": "Estilo GitHub",
+    "Material style": "Estilo Material",
+    "Bootstrap style": "Estilo Bootstrap",
+    "Permissions in action": "Permisos en acción",
+    "One canAccess callback drives menus, tabs and row actions. Toggle the role to see the same tree change.":
+      "Una sola callback canAccess gobierna menús, pestañas y acciones de fila. Cambia el rol para ver cambiar el mismo árbol.",
+    "Menu items": "Elementos del menú",
+    Navigation: "Navegación",
+    Home: "Inicio",
+    Reports: "Informes",
+    "roles: admin": "roles: admin",
+    Audit: "Auditoría",
+    Profile: "Perfil",
+    "Reports is visible because the admin role is granted.":
+      "Reports es visible porque el rol admin está concedido.",
+    "Reports is hidden: the guest role is not listed in roles.":
+      "Reports está oculto: el rol guest no figura en roles.",
+    "Audit renders: canAccess receives permissions: [audit:read].":
+      "Audit se muestra: canAccess recibe permissions: [audit:read].",
+    "Audit is skipped: the guest role lacks audit:read.":
+      "Audit se omite: al rol guest le falta audit:read.",
+    "Row actions": "Acciones de fila",
+    "Edit and Delete are enabled for admin.": "Editar y Eliminar están activados para admin.",
+    "Guest is read-only: row actions are disabled.": "guest es de solo lectura: las acciones de fila están desactivadas.",
+    Task: "Tarea",
   },
   fr: {
     "Manual Search": "Recherche manuelle",
@@ -2960,6 +3298,8 @@ const messages: Record<string, Record<string, string>> = {
       "Les résultats changent à chaque saisie ou sélection. Réinitialiser affiche tous les résultats.",
     "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
       "Serveur simulé : le tri, le filtrage et la pagination sont traités de façon asynchrone dans le navigateur. Aucun backend requis.",
+    "One mock server. Choose whether it only runs the query, or also sends the columns, search fields, and edit permission.":
+      "Un seul serveur simulé. Choisissez s'il exécute seulement la requête, ou s'il envoie aussi les colonnes, les champs de recherche et le droit de modification.",
     "Toggle fullscreen": "Basculer en plein écran",
     "Close dialog": "Fermer la fenêtre contextuelle",
     Reset: "Réinitialiser",
@@ -3123,6 +3463,7 @@ const messages: Record<string, Record<string, string>> = {
       "Recherche, tri, mise en page, export et édition, dans un même flux de travail.",
     "Local Data": "Données locales",
     "Server-side": "Serveur",
+    "Mock server": "Serveur simulé",
     "10,000 rows of data": "Données de dizaines de milliers de lignes",
     "Tree & Expansion": "Arborescence et développement",
     "Remaining Height": "Hauteur restante",
@@ -3445,6 +3786,70 @@ const messages: Record<string, Record<string, string>> = {
     "Example source": "Code de l'exemple",
     "Copy code": "Copier le code",
     "View on GitHub": "Voir sur GitHub",
+    "Add, edit, delete and select rows entirely in local state — no server required.":
+      "Ajouter, modifier, supprimer et sélectionner des lignes uniquement en état local ; aucun serveur requis.",
+    "10,000 rows stay smooth through row virtualization; scroll and sort without jank.":
+      "10 000 lignes restent fluides grâce à la virtualisation des lignes ; défilez et triez sans à-coups.",
+    "Tree hierarchy, expandable detail rows and merged cells in one table.":
+      "Hiérarchie arborescente, lignes de détail dépliables et cellules fusionnées dans un seul tableau.",
+    "The table fills the viewport height left over by the page layout.":
+      "Le tableau occupe la hauteur de viewport laissée libre par la mise en page.",
+    "The query AST is serialized to RSQL and sent to a mock source for server-side filtering.":
+      "L'AST de requête est sérialisé en RSQL et envoyé à une source simulée pour un filtrage côté serveur.",
+    "Horizontal and vertical tab layouts with preserved panel state.":
+      "Dispositions d'onglets horizontales et verticales avec état des panneaux préservé.",
+    "Open, close and reorder tabs at runtime, workspace style.":
+      "Ouvrez, fermez et réordonnez les onglets à l'exécution, façon espace de travail.",
+    "Tabs filtered by roles and permissions through AutoConfigProvider.canAccess.":
+      "Onglets filtrés par rôles et permissions via AutoConfigProvider.canAccess.",
+    "Streaming replies, stop, retry and anchored history loading.":
+      "Réponses en streaming, arrêt, nouvelle tentative et chargement d'historique ancré.",
+    "Tens of thousands of variable-height messages stay responsive via virtualization.":
+      "Des dizaines de milliers de messages de hauteur variable restent réactifs grâce à la virtualisation.",
+    "Caller-owned message renderers: markdown, cards and custom actions.":
+      "Renderers de messages détenus par l'appelant : markdown, cartes et actions personnalisées.",
+    "Avatars, grouping, alignment and spacing variants for message lists.":
+      "Avatars, regroupement, alignement et variantes d'espacement pour les listes de messages.",
+    "Compose chat behavior through hooks with your own message pipeline.":
+      "Composez le comportement du chat par des hooks avec votre propre pipeline de messages.",
+    "Empty, loading, error and offline states with retry actions.":
+      "États vide, chargement, erreur et hors ligne, avec actions de nouvelle tentative.",
+    "The whole page is driven by a server schema: fields, columns and actions arrive as JSON.":
+      "Toute la page est pilotée par un schéma serveur : champs, colonnes et actions arrivent en JSON.",
+    "Switch the active role and watch menus, tabs and actions appear or disappear.":
+      "Changez le rôle actif et voyez menus, onglets et actions apparaître ou disparaître.",
+    "Debug nav": "Déboguer la navigation",
+    Theme: "Thème",
+    "Demo theme": "Thème de la démo",
+    "Auto (follow system)": "Automatique (suivre le système)",
+    "Light (default)": "Clair (par défaut)",
+    "Dark (default)": "Sombre (par défaut)",
+    "Ant Design style": "Style Ant Design",
+    "GitHub style": "Style GitHub",
+    "Material style": "Style Material",
+    "Bootstrap style": "Style Bootstrap",
+    "Permissions in action": "Les permissions en action",
+    "One canAccess callback drives menus, tabs and row actions. Toggle the role to see the same tree change.":
+      "Un seul callback canAccess pilote menus, onglets et actions de ligne. Basculez le rôle pour voir le même arbre changer.",
+    "Menu items": "Éléments de menu",
+    Navigation: "Navigation",
+    Home: "Accueil",
+    Reports: "Rapports",
+    "roles: admin": "rôles : admin",
+    Audit: "Audit",
+    Profile: "Profil",
+    "Reports is visible because the admin role is granted.":
+      "Reports est visible car le rôle admin est accordé.",
+    "Reports is hidden: the guest role is not listed in roles.":
+      "Reports est masqué : le rôle guest n'est pas listé dans roles.",
+    "Audit renders: canAccess receives permissions: [audit:read].":
+      "Audit s'affiche : canAccess reçoit permissions : [audit:read].",
+    "Audit is skipped: the guest role lacks audit:read.":
+      "Audit est ignoré : le rôle guest ne possède pas audit:read.",
+    "Row actions": "Actions de ligne",
+    "Edit and Delete are enabled for admin.": "Modifier et Supprimer sont activés pour admin.",
+    "Guest is read-only: row actions are disabled.": "guest est en lecture seule : les actions de ligne sont désactivées.",
+    Task: "Tâche",
   },
   de: {
     "Manual Search": "Manuelle Suche",
@@ -3458,6 +3863,8 @@ const messages: Record<string, Record<string, string>> = {
       "Ergebnisse werden bei Eingabe oder Auswahl aktualisiert. Zurücksetzen zeigt alle Ergebnisse.",
     "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
       "Simulierter Server: Sortierung, Filterung und Seitennavigation erfolgen asynchron im Browser. Kein Backend erforderlich.",
+    "One mock server. Choose whether it only runs the query, or also sends the columns, search fields, and edit permission.":
+      "Ein simulierter Server. Wählen Sie, ob er nur die Abfrage ausführt oder auch Spalten, Suchfelder und die Bearbeitungsberechtigung sendet.",
     "Toggle fullscreen": "Vollbild umschalten",
     "Close dialog": "Dialog schließen",
     Reset: "Zurücksetzen",
@@ -3621,6 +4028,7 @@ const messages: Record<string, Record<string, string>> = {
       "Suchen, Sortieren, Layout, Export und Bearbeiten – alles in einem Workflow.",
     "Local Data": "Lokale Daten",
     "Server-side": "Serverseitig",
+    "Mock server": "Simulierter Server",
     "10,000 rows of data": "Zehntausende Zeilen Daten",
     "Tree & Expansion": "Baumstruktur und Aufklappen",
     "Remaining Height": "Verbleibende Höhe",
@@ -3948,6 +4356,70 @@ const messages: Record<string, Record<string, string>> = {
     "Example source": "Beispielquellcode",
     "Copy code": "Code kopieren",
     "View on GitHub": "Auf GitHub ansehen",
+    "Add, edit, delete and select rows entirely in local state — no server required.":
+      "Zeilen hinzufügen, bearbeiten, löschen und auswählen – komplett im lokalen Status, ganz ohne Server.",
+    "10,000 rows stay smooth through row virtualization; scroll and sort without jank.":
+      "10.000 Zeilen bleiben durch Zeilen-Virtualisierung flüssig; Scrollen und Sortieren ohne Ruckeln.",
+    "Tree hierarchy, expandable detail rows and merged cells in one table.":
+      "Baumhierarchie, ausklappbare Detailzeilen und verbundene Zellen in einer Tabelle.",
+    "The table fills the viewport height left over by the page layout.":
+      "Die Tabelle füllt die vom Seitenlayout übrig gebliebene Viewport-Höhe aus.",
+    "The query AST is serialized to RSQL and sent to a mock source for server-side filtering.":
+      "Der Abfrage-AST wird zu RSQL serialisiert und für serverseitige Filterung an eine Mock-Quelle gesendet.",
+    "Horizontal and vertical tab layouts with preserved panel state.":
+      "Horizontale und vertikale Tab-Layouts mit erhaltenem Panel-Zustand.",
+    "Open, close and reorder tabs at runtime, workspace style.":
+      "Tabs zur Laufzeit öffnen, schließen und neu anordnen – im Workspace-Stil.",
+    "Tabs filtered by roles and permissions through AutoConfigProvider.canAccess.":
+      "Tabs werden über AutoConfigProvider.canAccess nach Rollen und Berechtigungen gefiltert.",
+    "Streaming replies, stop, retry and anchored history loading.":
+      "Streaming-Antworten, Stopp, Wiederholung und verankertes Nachladen des Verlaufs.",
+    "Tens of thousands of variable-height messages stay responsive via virtualization.":
+      "Zehntausende Nachrichten variabler Höhe bleiben durch Virtualisierung reaktionsschnell.",
+    "Caller-owned message renderers: markdown, cards and custom actions.":
+      "Dem Aufrufer gehörende Nachrichten-Renderer: Markdown, Karten und eigene Aktionen.",
+    "Avatars, grouping, alignment and spacing variants for message lists.":
+      "Avatare, Gruppierung, Ausrichtung und Abstände als Varianten für Nachrichtenlisten.",
+    "Compose chat behavior through hooks with your own message pipeline.":
+      "Chat-Verhalten über Hooks komponieren – mit Ihrer eigenen Nachrichten-Pipeline.",
+    "Empty, loading, error and offline states with retry actions.":
+      "Leere-, Lade-, Fehler- und Offline-Zustände mit Wiederholungsaktionen.",
+    "The whole page is driven by a server schema: fields, columns and actions arrive as JSON.":
+      "Die ganze Seite wird von einem Server-Schema gesteuert: Felder, Spalten und Aktionen kommen als JSON.",
+    "Switch the active role and watch menus, tabs and actions appear or disappear.":
+      "Wechseln Sie die aktive Rolle und beobachten Sie, wie Menüs, Tabs und Aktionen erscheinen oder verschwinden.",
+    "Debug nav": "Navigation debuggen",
+    Theme: "Design",
+    "Demo theme": "Demo-Design",
+    "Auto (follow system)": "Automatisch (wie System)",
+    "Light (default)": "Hell (Standard)",
+    "Dark (default)": "Dunkel (Standard)",
+    "Ant Design style": "Ant-Design-Stil",
+    "GitHub style": "GitHub-Stil",
+    "Material style": "Material-Stil",
+    "Bootstrap style": "Bootstrap-Stil",
+    "Permissions in action": "Berechtigungen in Aktion",
+    "One canAccess callback drives menus, tabs and row actions. Toggle the role to see the same tree change.":
+      "Ein einziger canAccess-Callback steuert Menüs, Tabs und Zeilenaktionen. Schalten Sie die Rolle um, um denselben Baum ändern zu sehen.",
+    "Menu items": "Menüpunkte",
+    Navigation: "Navigation",
+    Home: "Startseite",
+    Reports: "Berichte",
+    "roles: admin": "Rollen: admin",
+    Audit: "Audit",
+    Profile: "Profil",
+    "Reports is visible because the admin role is granted.":
+      "Reports ist sichtbar, weil die Rolle admin gewährt ist.",
+    "Reports is hidden: the guest role is not listed in roles.":
+      "Reports ist ausgeblendet: Die Rolle guest ist nicht in roles enthalten.",
+    "Audit renders: canAccess receives permissions: [audit:read].":
+      "Audit wird gerendert: canAccess erhält permissions: [audit:read].",
+    "Audit is skipped: the guest role lacks audit:read.":
+      "Audit wird übersprungen: Der Rolle guest fehlt audit:read.",
+    "Row actions": "Zeilenaktionen",
+    "Edit and Delete are enabled for admin.": "Bearbeiten und Löschen sind für admin aktiviert.",
+    "Guest is read-only: row actions are disabled.": "guest ist schreibgeschützt: Zeilenaktionen sind deaktiviert.",
+    Task: "Aufgabe",
   },
   "pt-BR": {
     "Manual Search": "Busca manual",
@@ -3961,6 +4433,8 @@ const messages: Record<string, Record<string, string>> = {
       "Os resultados mudam ao digitar ou selecionar. Redefinir restaura todos os resultados.",
     "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
       "Servidor simulado: ordenação, filtros e paginação são processados de forma assíncrona no navegador. Não requer backend.",
+    "One mock server. Choose whether it only runs the query, or also sends the columns, search fields, and edit permission.":
+      "Um único servidor simulado. Escolha se ele só executa a consulta ou se também envia colunas, campos de busca e a permissão de edição.",
     "Toggle fullscreen": "Alternar tela cheia",
     "Close dialog": "Fechar caixa de diálogo",
     Reset: "Redefinir",
@@ -4123,6 +4597,7 @@ const messages: Record<string, Record<string, string>> = {
       "Pesquise, ordene, ajuste o layout, exporte e edite mantendo tudo no mesmo fluxo de trabalho.",
     "Local Data": "Dados locais",
     "Server-side": "Servidor",
+    "Mock server": "Servidor simulado",
     "10,000 rows of data": "Dados com dez mil linhas",
     "Tree & Expansion": "Árvore e expansão",
     "Remaining Height": "Altura restante",
@@ -4443,6 +4918,70 @@ const messages: Record<string, Record<string, string>> = {
     "Example source": "Código de exemplo",
     "Copy code": "Copiar código",
     "View on GitHub": "Ver no GitHub",
+    "Add, edit, delete and select rows entirely in local state — no server required.":
+      "Adicione, edite, exclua e selecione linhas inteiramente no estado local — sem servidor.",
+    "10,000 rows stay smooth through row virtualization; scroll and sort without jank.":
+      "10.000 linhas continuam fluidas com virtualização de linhas; role e ordene sem travamentos.",
+    "Tree hierarchy, expandable detail rows and merged cells in one table.":
+      "Hierarquia em árvore, linhas de detalhe expansíveis e células mescladas em uma só tabela.",
+    "The table fills the viewport height left over by the page layout.":
+      "A tabela preenche a altura do viewport deixada pelo layout da página.",
+    "The query AST is serialized to RSQL and sent to a mock source for server-side filtering.":
+      "A AST da consulta é serializada em RSQL e enviada a uma fonte simulada para filtragem no servidor.",
+    "Horizontal and vertical tab layouts with preserved panel state.":
+      "Layouts de abas horizontais e verticais com estado dos painéis preservado.",
+    "Open, close and reorder tabs at runtime, workspace style.":
+      "Abra, feche e reordene abas em tempo de execução, estilo espaço de trabalho.",
+    "Tabs filtered by roles and permissions through AutoConfigProvider.canAccess.":
+      "Abas filtradas por papéis e permissões via AutoConfigProvider.canAccess.",
+    "Streaming replies, stop, retry and anchored history loading.":
+      "Respostas em streaming, parar, repetir e carregamento de histórico ancorado.",
+    "Tens of thousands of variable-height messages stay responsive via virtualization.":
+      "Dezenas de milhares de mensagens com altura variável continuam responsivas via virtualização.",
+    "Caller-owned message renderers: markdown, cards and custom actions.":
+      "Renderizadores de mensagem pertencentes ao chamador: markdown, cartões e ações personalizadas.",
+    "Avatars, grouping, alignment and spacing variants for message lists.":
+      "Avatares, agrupamento, alinhamento e variações de espaçamento para listas de mensagens.",
+    "Compose chat behavior through hooks with your own message pipeline.":
+      "Componha o comportamento do chat com hooks e o seu próprio pipeline de mensagens.",
+    "Empty, loading, error and offline states with retry actions.":
+      "Estados vazio, carregando, erro e offline com ações de repetição.",
+    "The whole page is driven by a server schema: fields, columns and actions arrive as JSON.":
+      "A página inteira é orientada por um esquema do servidor: campos, colunas e ações chegam como JSON.",
+    "Switch the active role and watch menus, tabs and actions appear or disappear.":
+      "Alterne o papel ativo e veja menus, abas e ações aparecerem ou desaparecerem.",
+    "Debug nav": "Depurar navegação",
+    Theme: "Tema",
+    "Demo theme": "Tema da demo",
+    "Auto (follow system)": "Automático (seguir o sistema)",
+    "Light (default)": "Claro (padrão)",
+    "Dark (default)": "Escuro (padrão)",
+    "Ant Design style": "Estilo Ant Design",
+    "GitHub style": "Estilo GitHub",
+    "Material style": "Estilo Material",
+    "Bootstrap style": "Estilo Bootstrap",
+    "Permissions in action": "Permissões em ação",
+    "One canAccess callback drives menus, tabs and row actions. Toggle the role to see the same tree change.":
+      "Um único callback canAccess controla menus, abas e ações de linha. Alterne o papel para ver a mesma árvore mudar.",
+    "Menu items": "Itens do menu",
+    Navigation: "Navegação",
+    Home: "Início",
+    Reports: "Relatórios",
+    "roles: admin": "papéis: admin",
+    Audit: "Auditoria",
+    Profile: "Perfil",
+    "Reports is visible because the admin role is granted.":
+      "Reports fica visível porque o papel admin foi concedido.",
+    "Reports is hidden: the guest role is not listed in roles.":
+      "Reports fica oculto: o papel guest não está listado em roles.",
+    "Audit renders: canAccess receives permissions: [audit:read].":
+      "Audit é renderizado: canAccess recebe permissions: [audit:read].",
+    "Audit is skipped: the guest role lacks audit:read.":
+      "Audit é ignorado: ao papel guest falta audit:read.",
+    "Row actions": "Ações de linha",
+    "Edit and Delete are enabled for admin.": "Editar e Excluir estão habilitados para admin.",
+    "Guest is read-only: row actions are disabled.": "guest é somente leitura: as ações de linha estão desabilitadas.",
+    Task: "Tarefa",
   },
   ru: {
     "Manual Search": "Ручной поиск",
@@ -4456,6 +4995,8 @@ const messages: Record<string, Record<string, string>> = {
       "Результаты обновляются при вводе или выборе. Сброс возвращает все результаты.",
     "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.":
       "Имитация сервера: сортировка, фильтрация и разбиение на страницы выполняются асинхронно в браузере. Сервер не требуется.",
+    "One mock server. Choose whether it only runs the query, or also sends the columns, search fields, and edit permission.":
+      "Один имитированный сервер. Выберите, выполняет ли он только запрос или также присылает столбцы, поля поиска и право редактирования.",
     "Toggle fullscreen": "Переключить полноэкранный режим",
     "Close dialog": "Закрыть модальное окно",
     Reset: "Сбросить",
@@ -4618,6 +5159,7 @@ const messages: Record<string, Record<string, string>> = {
       "Поиск, сортировка, макет, экспорт и редактирование — всё в одном рабочем процессе.",
     "Local Data": "Локальные данные",
     "Server-side": "Сервер",
+    "Mock server": "Имитация сервера",
     "10,000 rows of data": "Десятки тысяч строк",
     "Tree & Expansion": "Деревья и развёртывание",
     "Remaining Height": "Оставшаяся высота",
@@ -4943,6 +5485,70 @@ const messages: Record<string, Record<string, string>> = {
     "Example source": "Исходный код примера",
     "Copy code": "Копировать код",
     "View on GitHub": "Открыть на GitHub",
+    "Add, edit, delete and select rows entirely in local state — no server required.":
+      "Добавление, изменение, удаление и выбор строк полностью в локальном состоянии — сервер не нужен.",
+    "10,000 rows stay smooth through row virtualization; scroll and sort without jank.":
+      "10 000 строк остаются плавными благодаря виртуализации строк; прокрутка и сортировка без подтормаживаний.",
+    "Tree hierarchy, expandable detail rows and merged cells in one table.":
+      "Древовидная иерархия, раскрываемые строки деталей и объединённые ячейки в одной таблице.",
+    "The table fills the viewport height left over by the page layout.":
+      "Таблица занимает высоту вьюпорта, оставшуюся от макета страницы.",
+    "The query AST is serialized to RSQL and sent to a mock source for server-side filtering.":
+      "AST-запрос сериализуется в RSQL и отправляется в мок-источник для фильтрации на стороне сервера.",
+    "Horizontal and vertical tab layouts with preserved panel state.":
+      "Горизонтальная и вертикальная компоновки вкладок с сохранением состояния панелей.",
+    "Open, close and reorder tabs at runtime, workspace style.":
+      "Открывайте, закрывайте и меняйте порядок вкладок во время работы — в стиле рабочего пространства.",
+    "Tabs filtered by roles and permissions through AutoConfigProvider.canAccess.":
+      "Вкладки фильтруются по ролям и правам через AutoConfigProvider.canAccess.",
+    "Streaming replies, stop, retry and anchored history loading.":
+      "Потоковые ответы, остановка, повтор и загрузка истории с привязкой.",
+    "Tens of thousands of variable-height messages stay responsive via virtualization.":
+      "Десятки тысяч сообщений переменной высоты остаются отзывчивыми благодаря виртуализации.",
+    "Caller-owned message renderers: markdown, cards and custom actions.":
+      "Отрисовщики сообщений, принадлежащие вызывающему коду: markdown, карточки и настраиваемые действия.",
+    "Avatars, grouping, alignment and spacing variants for message lists.":
+      "Аватары, группировка, выравнивание и варианты отступов для списков сообщений.",
+    "Compose chat behavior through hooks with your own message pipeline.":
+      "Соберите поведение чата из хуков с собственным конвейером сообщений.",
+    "Empty, loading, error and offline states with retry actions.":
+      "Состояния пусто, загрузка, ошибка и офлайн с действиями повтора.",
+    "The whole page is driven by a server schema: fields, columns and actions arrive as JSON.":
+      "Вся страница управляется серверной схемой: поля, столбцы и действия приходят как JSON.",
+    "Switch the active role and watch menus, tabs and actions appear or disappear.":
+      "Переключите активную роль и наблюдайте, как меню, вкладки и действия появляются или исчезают.",
+    "Debug nav": "Отладка навигации",
+    Theme: "Тема",
+    "Demo theme": "Тема демо",
+    "Auto (follow system)": "Автоматически (как в системе)",
+    "Light (default)": "Светлая (по умолчанию)",
+    "Dark (default)": "Тёмная (по умолчанию)",
+    "Ant Design style": "Стиль Ant Design",
+    "GitHub style": "Стиль GitHub",
+    "Material style": "Стиль Material",
+    "Bootstrap style": "Стиль Bootstrap",
+    "Permissions in action": "Права в действии",
+    "One canAccess callback drives menus, tabs and row actions. Toggle the role to see the same tree change.":
+      "Один колбэк canAccess управляет меню, вкладками и действиями строк. Переключите роль и увидите, как меняется то же дерево.",
+    "Menu items": "Пункты меню",
+    Navigation: "Навигация",
+    Home: "Главная",
+    Reports: "Отчёты",
+    "roles: admin": "роли: admin",
+    Audit: "Аудит",
+    Profile: "Профиль",
+    "Reports is visible because the admin role is granted.":
+      "Reports виден, потому что роль admin предоставлена.",
+    "Reports is hidden: the guest role is not listed in roles.":
+      "Reports скрыт: роль guest не указана в roles.",
+    "Audit renders: canAccess receives permissions: [audit:read].":
+      "Audit отрисовывается: canAccess получает permissions: [audit:read].",
+    "Audit is skipped: the guest role lacks audit:read.":
+      "Audit пропускается: у роли guest нет audit:read.",
+    "Row actions": "Действия строк",
+    "Edit and Delete are enabled for admin.": "Изменить и Удалить доступны для admin.",
+    "Guest is read-only: row actions are disabled.": "guest доступен только для чтения: действия строк отключены.",
+    Task: "Задача",
   },
 };
 

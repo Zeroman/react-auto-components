@@ -29,3 +29,11 @@ export type SourceLoader = (
   query: SourceQuery,
   context: { signal: AbortSignal },
 ) => Promise<{ rows: object[]; total: number }>;
+
+/**
+ * Tab list loader registered on `config.tabsSources`.
+ * Resolve the tab items; reject to show `error.message` and a retry button.
+ */
+export type TabsSource = (context: {
+  signal: AbortSignal;
+}) => Promise<readonly object[]>;

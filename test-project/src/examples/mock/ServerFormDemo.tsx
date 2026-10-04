@@ -49,20 +49,27 @@ function ProfileForm({ data }: { data: Response }) {
   const [failNext, setFailNext] = useState(false);
   const request = useRef<AbortController | null>(null);
   useEffect(() => () => request.current?.abort(), []);
-  const fields = data.fields.map((field) => ({
-    ...field,
-    label: tr(field.label ?? ""),
-    ...("type" in field &&
-    field.type === "select" &&
-    Array.isArray(field.options)
-      ? {
-          options: field.options.map((option) => ({
-            ...option,
-            label: tr(option.label),
-          })),
-        }
-      : {}),
-  })) as Field<Profile>[];
+  const fields = data.fields.map((field) => {
+    const labeled =
+      "label" in field && typeof field.label === "string"
+        ? { ...field, label: tr(field.label) }
+        : field;
+    if (
+      "type" in labeled &&
+      labeled.type === "select" &&
+      "options" in labeled &&
+      Array.isArray(labeled.options)
+    ) {
+      return {
+        ...labeled,
+        options: labeled.options.map((option) => ({
+          ...option,
+          label: tr(option.label),
+        })),
+      };
+    }
+    return labeled;
+  }) as Field<Profile>[];
   async function save(draft: Profile) {
     request.current?.abort();
     const controller = new AbortController();

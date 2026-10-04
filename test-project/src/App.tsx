@@ -1,5 +1,12 @@
 import { useMediaQuery } from "./useMediaQuery";
-import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { useDemoText, useDemoLanguage, LanguagePicker } from "./i18n";
 import { GlobalSettings, defaultStudioSettings } from "./GlobalSettings";
 import {
@@ -20,7 +27,24 @@ import { SearchDemo, type SearchExampleKind } from "./examples/SearchDemo";
 import { DialogDemo } from "./examples/DialogDemo";
 import { TabsDemo } from "./examples/TabsDemo";
 import { MenuDemo } from "./examples/MenuDemo";
-import { ServerDrivenDemo } from "./examples/ServerDrivenDemo";
+import { ServerTableDemo } from "./examples/mock/ServerTableDemo";
+import { ServerFormDemo } from "./examples/mock/ServerFormDemo";
+import { ServerSearchDemo } from "./examples/mock/ServerSearchDemo";
+import { ServerDialogDemo } from "./examples/mock/ServerDialogDemo";
+import { ServerTabsDemo } from "./examples/mock/ServerTabsDemo";
+import { ServerMenuDemo } from "./examples/mock/ServerMenuDemo";
+import { ServerChatDemo } from "./examples/mock/ServerChatDemo";
+import {
+  ChatPermissionsDemo,
+  DialogPermissionsDemo,
+  FormPermissionsDemo,
+  MenuPermissionsDemo,
+  PermissionsDemo,
+  SearchPermissionsDemo,
+  TabsPermissionsDemo,
+  type PermissionsControls,
+} from "./examples/PermissionsDemo";
+import { useDemoAccess } from "./examples/mock/access";
 import { NavigationDemo } from "./examples/NavigationDemo";
 const ChatDemo = lazy(() =>
   import("./examples/ChatDemo").then((module) => ({
@@ -119,6 +143,83 @@ const treeIcon = (
   </NavIcon>
 );
 
+function asSearchExample(example: string): SearchExampleKind {
+  if (
+    example === "instant" ||
+    example === "manual" ||
+    example === "advanced" ||
+    example === "remote"
+  ) {
+    return example;
+  }
+  return "instant";
+}
+
+function PageExample({
+  page,
+  example,
+  role,
+  onToggleRole,
+  permissions,
+}: {
+  page: string;
+  example: string;
+  role: string;
+  onToggleRole: () => void;
+  permissions: PermissionsControls;
+}) {
+  const tr = useDemoText();
+  if (page === "tree-demo") {
+    return <NavigationDemo role={role} onToggleRole={onToggleRole} />;
+  }
+  if (page === "table") {
+    if (example === "permissions") return <PermissionsDemo {...permissions} />;
+    if (example === "server") return <ServerTableDemo />;
+    return <TableDemo mode={example} />;
+  }
+  if (page === "form") {
+    if (example === "permissions")
+      return <FormPermissionsDemo {...permissions} />;
+    if (example === "server") return <ServerFormDemo />;
+    return <FormDemo />;
+  }
+  if (page === "search") {
+    if (example === "permissions")
+      return <SearchPermissionsDemo {...permissions} />;
+    if (example === "server") return <ServerSearchDemo />;
+    return <SearchDemo example={asSearchExample(example)} />;
+  }
+  if (page === "dialog") {
+    if (example === "permissions")
+      return <DialogPermissionsDemo {...permissions} />;
+    if (example === "server") return <ServerDialogDemo />;
+    return <DialogDemo />;
+  }
+  if (page === "menu") {
+    if (example === "permissions")
+      return <MenuPermissionsDemo {...permissions} />;
+    if (example === "server") return <ServerMenuDemo />;
+    return <MenuDemo />;
+  }
+  if (page === "chat") {
+    if (example === "permissions")
+      return <ChatPermissionsDemo {...permissions} />;
+    if (example === "server") return <ServerChatDemo />;
+    return (
+      <Suspense fallback={<div role="status">{tr("chat.loading")}</div>}>
+        <ChatDemo mode={example} />
+      </Suspense>
+    );
+  }
+  if (page === "tabs") {
+    if (example === "permissions")
+      return <TabsPermissionsDemo {...permissions} />;
+    if (example === "server") return <ServerTabsDemo />;
+    return <TabsDemo example={example} />;
+  }
+  return null;
+}
+
 const pages: ReadonlyArray<readonly [string, ReactNode, string, string]> = [
   ["table", tableIcon, "AutoTable", "Smart table"],
   ["form", formIcon, "AutoForm", "Dynamic form"],
@@ -135,41 +236,76 @@ function AppContent() {
   const { translate } = useDemoLanguage();
   const narrowMenu = useMediaQuery("(max-width: 700px)");
   const nav = useAutoNavigation();
-  const [role, setRole] = useState<string>("admin");
+  globalThis.__racNav = nav;
+  const {
+    access,
+    status: accessStatus,
+    reload: reloadAccess,
+    switchUser,
+  } = useDemoAccess();
+  const accessState = useSyncExternalStore(
+    access.subscribe,
+    access.getState,
+    access.getState,
+  );
+  const role = accessState.roles[0] ?? "guest";
+  const toggleRole = () =>
+    access.setState({ roles: [access.hasRole("admin") ? "guest" : "admin"] });
   const [settings, setSettings] = useState(defaultStudioSettings);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [codeOpen, setCodeOpen] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
 
   // Top-level route declaration for known pages
   useAutoRoute({
     children: [
-      ...pages.map(([id]) => ({
-        id,
-        defaultChild: examplesFor(id)[0][0],
-      })),
+      ...pages.flatMap(([id]) => {
+        const first = examplesFor(id)[0];
+        return first ? [{ id, defaultChild: first.id }] : [];
+      }),
       { id: "tree-demo", defaultChild: "details" },
     ],
     defaultChild: "table",
   });
 
   const page = nav.path[0] || "table";
-  const example = nav.path[1] || examplesFor(page)?.[0]?.[0] || "local";
+  const examples = examplesFor(page);
+  const example = nav.path[1] || examples[0]?.id || "local";
   const serverExample = example === "server";
+  const permissions: PermissionsControls = {
+    status: accessStatus,
+    reload: reloadAccess,
+    switchUser,
+    role,
+    onToggleRole: toggleRole,
+  };
 
   const exampleLabel = (id: string, label: string) =>
     id === "remote" ? `${tr(label)} (Mock)` : tr(label);
   const fillHeight = true;
 
+  // Light/dark are the built-in default theme; presets layer a popular
+  // open-source look on top by overriding the --auto-* tokens.
+  const systemDark = useMediaQuery("(prefers-color-scheme: dark)");
+  const dark =
+    settings.theme === "dark" || (settings.theme === "auto" && systemDark);
   useEffect(() => {
-    document.documentElement.classList.toggle("studio-dark", settings.dark);
-  }, [settings.dark]);
+    const root = document.documentElement;
+    root.classList.toggle("studio-dark", dark);
+    const isBase = ["auto", "light", "dark"].includes(settings.theme);
+    if (settings.theme === "auto") root.removeAttribute("data-auto-theme");
+    else
+      root.setAttribute("data-auto-theme", isBase ? settings.theme : "light");
+    if (isBase) root.removeAttribute("data-auto-preset");
+    else root.setAttribute("data-auto-preset", settings.theme);
+  }, [dark, settings.theme]);
 
   return (
     <AutoConfigProvider
       config={{
         namespace: "auto-studio",
         t: translate,
-        canAccess: (access) => (access.roles ? access.roles.includes(role) : true),
+        access,
         size: settings.size,
         density: settings.density,
         table: {
@@ -185,7 +321,7 @@ function AppContent() {
     >
       <AutoDialogProvider>
         <div
-          className={`studio ${settings.dark ? "studio-dark" : ""} ${fillHeight ? "studio-fill" : ""}`}
+          className={`studio ${dark ? "studio-dark" : ""} ${fillHeight ? "studio-fill" : ""}`}
           data-size={settings.size}
         >
           <aside>
@@ -204,15 +340,6 @@ function AppContent() {
                   </strong>
                 </a>
               }
-              footer={
-                <div className="sidebar-footer">
-                  <span className="online-dot" />
-                  React 19.3 · TanStack 9
-                  <small>
-                    {tr("Standalone Component Test Project / v0.1.0")}
-                  </small>
-                </div>
-              }
               items={[
                 ...pages.map(([id, icon, name, label]) => {
                   if (id === "tree-demo") {
@@ -229,13 +356,11 @@ function AppContent() {
                     label: name,
                     icon,
                     description: tr(label),
-                    children: examplesFor(id).map(
-                      ([exampleId, exampleTitle]) => ({
-                        id: `${id}/${exampleId}`,
-                        label: exampleLabel(exampleId, exampleTitle),
-                        target: `${id}:${exampleId}`,
-                      }),
-                    ),
+                    children: examplesFor(id).map((child) => ({
+                      id: `${id}/${child.id}`,
+                      label: exampleLabel(child.id, child.label),
+                      target: `${id}:${child.id}`,
+                    })),
                   };
                 }),
                 {
@@ -252,55 +377,17 @@ function AppContent() {
           </aside>
           <div className="studio-main">
             <header className="topbar">
-              <span>
-                {tr("Component Lab")}{" "}
-                <span className="breadcrumb">
-                  / {pages.find((p) => p[0] === page)?.[2] ?? page}
-                </span>
+              <span className="breadcrumb">
+                {pages.find((p) => p[0] === page)?.[2] ?? page}
               </span>
               <div className="auto-actions">
                 <LanguagePicker />
-                <span
-                  className="version-pill"
-                  title={tr("Global Component Size")}
-                >
-                  {tr("Size:  {0}", [
-                    settings.size === "small"
-                      ? tr("Small (S)")
-                      : settings.size === "large"
-                        ? tr("Large (L)")
-                        : tr("Medium (M)"),
-                  ])}
-                </span>
-                <span
-                  className="version-pill"
-                  title={tr("Global Table Density")}
-                >
-                  {tr("Table:  {0}", [
-                    settings.tableDensity === "compact"
-                      ? tr("Compact")
-                      : settings.tableDensity === "comfortable"
-                        ? tr("Comfortable")
-                        : tr("Standard"),
-                  ])}
-                </span>
-                <span
-                  className="version-pill"
-                  title={tr("Global Tabs Density")}
-                >
-                  {tr("Tabs: {0}", [
-                    settings.tabsDensity === "compact"
-                      ? tr("Compact")
-                      : tr("Comfortable"),
-                  ])}
-                </span>
                 <button
                   onClick={() => setSettingsOpen(true)}
                   aria-label={tr("Open Global Settings")}
                 >
                   <SettingsIcon />
                 </button>
-                <span className="avatar">AS</span>
               </div>
             </header>
             <main
@@ -309,34 +396,83 @@ function AppContent() {
             >
               <div className="page-heading">
                 <h1>{tr(pages.find((p) => p[0] === page)?.[3] ?? page)}</h1>
-                <button
-                  type="button"
-                  className="code-button"
-                  onClick={() => setCodeOpen(true)}
-                >
-                  <span aria-hidden="true">{"</>"}</span>
-                  {tr("View code")}
-                </button>
+                <div className="auto-actions">
+                  <button
+                    type="button"
+                    className="code-button"
+                    data-testid="open-nav-debug"
+                    onClick={() => setNavOpen(true)}
+                  >
+                    {treeIcon}
+                    {tr("Debug nav")}
+                  </button>
+                  <button
+                    type="button"
+                    className="code-button"
+                    onClick={() => setCodeOpen(true)}
+                  >
+                    <span aria-hidden="true">{"</>"}</span>
+                    {tr("View code")}
+                  </button>
+                </div>
               </div>
 
-              {/* Component Navigation Showcase toolbar */}
-              <div
-                className="demo-navigation-bar"
-                data-testid="demo-navigation-bar"
-              >
-                <span style={{ fontWeight: 600 }}>{tr("Navigation Tree:")}</span>
-                <span className="version-pill" data-testid="nav-path-badge">
-                  path: <strong>{nav.path.join(":") || "/"}</strong>
+              {examples.length > 0 && (
+                <div className="demo-navigation">
+                  <AutoTabs
+                    route={{ name: page, defaultChild: examples[0].id }}
+                    keepMounted={false}
+                    items={examples.map((child) => ({
+                      id: child.id,
+                      label: exampleLabel(child.id, child.label),
+                      tip: child.tip ? tr(child.tip) : undefined,
+                    }))}
+                  />
+                </div>
+              )}
+              <div className="demo-viewport">
+                <PageExample
+                  page={page}
+                  example={example}
+                  role={role}
+                  onToggleRole={toggleRole}
+                  permissions={permissions}
+                />
+              </div>
+            </main>
+          </div>
+        </div>
+        <AutoDialog
+          open={settingsOpen}
+          onOpenChange={setSettingsOpen}
+          title={tr("Global settings")}
+          width={500}
+          hideFooter
+          content={<GlobalSettings value={settings} onChange={setSettings} />}
+        />
+        <AutoDialog
+          open={navOpen}
+          onOpenChange={setNavOpen}
+          title={tr("Navigation Tree")}
+          width={560}
+          hideFooter
+          content={
+            <div
+              className="demo-navigation-bar"
+              data-testid="demo-navigation-bar"
+            >
+              <span className="version-pill" data-testid="nav-path-badge">
+                path: <strong>{nav.path.join(":") || "/"}</strong>
+              </span>
+              {Object.keys(nav.params).length > 0 && (
+                <span className="version-pill" data-testid="nav-params-badge">
+                  params: <strong>{JSON.stringify(nav.params)}</strong>
                 </span>
-                {Object.keys(nav.params).length > 0 && (
-                  <span className="version-pill" data-testid="nav-params-badge">
-                    params: <strong>{JSON.stringify(nav.params)}</strong>
-                  </span>
-                )}
+              )}
+              <div className="demo-navigation-actions">
                 <button
                   type="button"
                   className="code-button"
-                  style={{ height: "22px", padding: "0 6px", fontSize: "11px" }}
                   data-testid="nav-goto-large"
                   onClick={() => nav.goto("table:large")}
                 >
@@ -345,7 +481,6 @@ function AppContent() {
                 <button
                   type="button"
                   className="code-button"
-                  style={{ height: "22px", padding: "0 6px", fontSize: "11px" }}
                   data-testid="nav-goto-chat-perf"
                   onClick={() => nav.goto("chat:performance")}
                 >
@@ -354,7 +489,6 @@ function AppContent() {
                 <button
                   type="button"
                   className="code-button"
-                  style={{ height: "22px", padding: "0 6px", fontSize: "11px" }}
                   data-testid="nav-goto-deep-search"
                   onClick={() =>
                     nav.goto("search:instant", {
@@ -367,7 +501,6 @@ function AppContent() {
                 <button
                   type="button"
                   className="code-button"
-                  style={{ height: "22px", padding: "0 6px", fontSize: "11px" }}
                   data-testid="nav-relative-server"
                   onClick={() => nav.goto("./server", { basePath: [page] })}
                 >
@@ -376,7 +509,6 @@ function AppContent() {
                 <button
                   type="button"
                   className="code-button"
-                  style={{ height: "22px", padding: "0 6px", fontSize: "11px" }}
                   data-testid="nav-goto-tree-demo"
                   onClick={() =>
                     nav.goto("tree-demo:details", {
@@ -389,84 +521,19 @@ function AppContent() {
                 <button
                   type="button"
                   className="code-button"
-                  style={{ height: "22px", padding: "0 6px", fontSize: "11px" }}
                   data-testid="nav-toggle-role"
-                  onClick={() =>
-                    setRole((r) => (r === "admin" ? "guest" : "admin"))
-                  }
+                  onClick={toggleRole}
                 >
                   {tr("Role")}: <strong>{role}</strong>
                 </button>
               </div>
-
-              {page !== "tree-demo" && (
-                <div className="demo-navigation">
-                  <AutoTabs
-                    route={{ name: page, defaultChild: examplesFor(page)[0][0] }}
-                    keepMounted={false}
-                    items={examplesFor(page).map(([id, label]) => ({
-                      id,
-                      label: exampleLabel(id, label),
-                      tip:
-                        page === "table" && id === "remote"
-                          ? tr(
-                              "Mock server: sorting, filtering and pagination run asynchronously in the browser. No backend required.",
-                            )
-                          : undefined,
-                    }))}
-                  />
-                </div>
-              )}
-              <div className="demo-viewport">
-                {page === "tree-demo" ? (
-                  <NavigationDemo
-                    role={role}
-                    onToggleRole={() => setRole((r) => (r === "admin" ? "guest" : "admin"))}
-                  />
-                ) : serverExample ? (
-                  <ServerDrivenDemo component={page} />
-                ) : page === "menu" ? (
-                  <MenuDemo />
-                ) : page === "table" ? (
-                  <TableDemo mode={example} />
-                ) : page === "form" ? (
-                  <FormDemo />
-                ) : page === "search" ? (
-                  <SearchDemo example={example as SearchExampleKind} />
-                ) : page === "dialog" ? (
-                  <DialogDemo />
-                ) : page === "chat" ? (
-                  <Suspense
-                    fallback={<div role="status">{tr("chat.loading")}</div>}
-                  >
-                    <ChatDemo mode={example} />
-                  </Suspense>
-                ) : (
-                  <TabsDemo example={example} />
-                )}
-              </div>
-              <footer className="page-footer">
-                <span>Auto Studio — Build with clarity.</span>
-                <span>
-                  {tr(
-                    "Tested against npm build artifacts · No source path aliases",
-                  )}
-                </span>
-              </footer>
-            </main>
-          </div>
-        </div>
-        <AutoDialog
-          open={settingsOpen}
-          onOpenChange={setSettingsOpen}
-          title={tr("Global settings")}
-          width={500}
-          hideFooter
-          content={<GlobalSettings value={settings} onChange={setSettings} />}
+            </div>
+          }
         />
         <CodeViewer
           open={codeOpen}
           serverDriven={serverExample}
+          permissions={example === "permissions"}
           onOpenChange={setCodeOpen}
           page={page}
           title={tr(pages.find((p) => p[0] === page)?.[3] ?? "")}
