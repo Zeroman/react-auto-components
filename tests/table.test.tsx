@@ -733,7 +733,25 @@ test("empty result on source change only shows empty state when response settles
   expect(await screen.findByText("No data")).toBeVisible();
   expect(screen.queryByText("Alpha 1")).toBeNull();
 });
-test("searchInline mounts the search panel inside the toolbar row", () => {
+test("the record count lives in the pagination footer", () => {
+  const { container } = render(
+    <AutoTable
+      id="count-footer"
+      data={data}
+      rowKey="id"
+      virtual={false}
+      columns={[{ key: "name", label: "Name" }]}
+    />,
+  );
+  const footer = container.querySelector(".auto-pagination");
+  expect(footer?.textContent).toContain("3 records");
+  expect(footer?.textContent).toContain("Page 1 / 1");
+  expect(container.querySelector(".auto-toolbar")?.textContent).not.toContain(
+    "3 records",
+  );
+});
+
+test("searchInline drops the toolbar title and renders the panel in the toolbar", () => {
   const fields = [
     {
       name: "name",
@@ -741,25 +759,9 @@ test("searchInline mounts the search panel inside the toolbar row", () => {
       search: { match: "contains" as const },
     },
   ] as const;
-  const { container, unmount } = render(
+  const { container } = render(
     <AutoTable
       id="search-panel"
-      data={data}
-      rowKey="id"
-      virtual={false}
-      columns={[{ key: "name", label: "Name" }]}
-      searchFields={[...fields]}
-    />,
-  );
-  const toolbar = container.querySelector(".auto-toolbar");
-  expect(toolbar?.getAttribute("data-search-inline")).toBeNull();
-  expect(toolbar?.querySelector(".auto-search")).toBeNull();
-  expect(container.querySelector(".auto-root > .auto-search")).not.toBeNull();
-  unmount();
-
-  render(
-    <AutoTable
-      id="search-inline"
       data={data}
       rowKey="id"
       virtual={false}
@@ -768,38 +770,24 @@ test("searchInline mounts the search panel inside the toolbar row", () => {
       searchInline
     />,
   );
-  const inlineToolbar = container.querySelector(".auto-toolbar");
-  expect(inlineToolbar?.getAttribute("data-search-inline")).not.toBeNull();
-  expect(
-    inlineToolbar?.querySelector(".auto-search"),
-  ).not.toBeNull();
+  const toolbar = container.querySelector(".auto-toolbar");
+  expect(toolbar?.getAttribute("data-search-inline")).not.toBeNull();
+  expect(toolbar?.querySelector(".auto-search")).not.toBeNull();
+  expect(toolbar?.querySelector("strong")).toBeNull();
   expect(container.querySelector(".auto-root > .auto-search")).toBeNull();
-});
-test("showRecordCount hides the toolbar record count", () => {
-  const first = render(
+
+  const { container: classic } = render(
     <AutoTable
-      id="record-count"
+      id="search-classic"
       data={data}
       rowKey="id"
       virtual={false}
       columns={[{ key: "name", label: "Name" }]}
+      searchFields={[...fields]}
     />,
   );
-  expect(
-    first.container.querySelector(".auto-toolbar")?.textContent,
-  ).toContain("3 records");
-  first.unmount();
-  const second = render(
-    <AutoTable
-      id="record-count-hidden"
-      data={data}
-      rowKey="id"
-      virtual={false}
-      columns={[{ key: "name", label: "Name" }]}
-      showRecordCount={false}
-    />,
-  );
-  expect(
-    second.container.querySelector(".auto-toolbar")?.textContent,
-  ).not.toContain("records");
+  expect(classic.querySelector(".auto-toolbar")?.getAttribute(
+    "data-search-inline",
+  )).toBeNull();
+  expect(classic.querySelector(".auto-root > .auto-search")).not.toBeNull();
 });

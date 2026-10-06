@@ -165,7 +165,6 @@ export function TableDemo({ mode }: { mode: string }) {
             </span>
           )
         }
-        showRecordCount={mode !== "compact"}
         actions={
           <button type="button" onClick={() => alert(tr("Import sample data"))}>
             {tr("Import")}
