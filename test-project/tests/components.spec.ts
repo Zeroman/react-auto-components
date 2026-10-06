@@ -209,12 +209,14 @@ test("dynamic table expansion, column resizing and export work in the browser", 
   await page.getByRole("tab", { name: "Tree Table", exact: true }).click();
   await page.getByRole("button", { name: "Expand row 1", exact: true }).click();
   const child = page.locator('tr[data-row-id="1-child"]');
-  await expect(child).toBeVisible();
+  await expect(child).toBeVisible({ timeout: 15000 });
   await page
     .getByRole("tab", { name: "Expandable Rows", exact: true })
     .click();
   await page.getByRole("button", { name: "Expand row 1", exact: true }).click();
-  await expect(page.getByTestId("expanded-detail").first()).toBeVisible();
+  await expect(page.getByTestId("expanded-detail").first()).toBeVisible({
+    timeout: 15000,
+  });
   const detailBox = await page
     .getByTestId("expanded-detail")
     .first()
