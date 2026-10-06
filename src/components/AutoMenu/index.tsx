@@ -335,7 +335,6 @@ function findTargetPath(
   return best;
 }
 
-
 /**
  * A menu is one route level: groups only organize entries, so every leaf is a
  * direct child segment and inherits its ancestors' disabled, hidden, and access rules.
