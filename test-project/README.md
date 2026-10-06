@@ -19,7 +19,7 @@ Browser tests in `tests/components.spec.ts` cover CRUD, field validation and fai
 
 The remaining-height demo is in the **AutoTable → Remaining height** tab. The legacy URL `http://127.0.0.1:4173/?demo=auto-height` opens the same page and selects that tab. The example can switch Flex/Grid, add/remove content above the table, show/hide the table, and change pagination and row counts. `tests/auto-height.spec.ts` measures browser boundaries and scroll-area height to verify remaining-space layout, dynamic resizing, virtualization recovery, and fixed-height compatibility.
 
-Browser tests start a fresh Vite server on port 4174 instead of reusing the development demo on port 4173. When the packed tarball changes, the repackaging script purges the stale Vite dep-optimizer cache and restarts running demo servers once so they serve the new package; unchanged repacks leave running servers untouched.
+Browser tests start a fresh Vite server on port 4174 instead of reusing the development demo on port 4173. The root demo (`pnpm dev`, port 5173) serves the library from source, so library edits hot-reload instantly and repacks never disturb it. When the packed tarball changes, the repack script purges the stale Vite dep-optimizer cache; restart `pnpm --dir test-project dev` before verifying a fresh pack from the artifact.
 
 Global settings are separate from the example content and implemented in `src/GlobalSettings.tsx`. Open the panel from the sidebar or the top-right control. The current example remains mounted while changing layout, density, label width, or theme.
 
