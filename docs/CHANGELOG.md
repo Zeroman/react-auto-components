@@ -2,6 +2,14 @@
 
 **English** | [简体中文](i18n/zh-CN/CHANGELOG.md) | [繁體中文](i18n/zh-TW/CHANGELOG.md) | [日本語](i18n/ja/CHANGELOG.md) | [한국어](i18n/ko/CHANGELOG.md) | [Español](i18n/es/CHANGELOG.md) | [Français](i18n/fr/CHANGELOG.md) | [Deutsch](i18n/de/CHANGELOG.md) | [Português (Brasil)](i18n/pt-BR/CHANGELOG.md) | [Русский](i18n/ru/CHANGELOG.md)
 
+## Unreleased
+
+- `AutoTable` switches data sources in place. Changing the `dataSource` function or the resolved `source` starts a fresh request without remounting: current rows stay visible under `aria-busy` with a progress bar, `pageIndex` resets to 0, and selection clears. The `dataSource` identity is a reactive signal — wrap it in `useCallback`; an inline function re-requests on every render and dev mode warns once.
+- `AutoTable` keeps the caller's initial controlled `query.pageIndex` on mount. Resetting the page to 0 applies only to source changes, never to mounting.
+- `AutoTable` reworks the toolbar: Refresh, Settings, Export, and JSON render as compact icon buttons; `toolbarActions.mode` picks `"icon"`, `"text"`, or `"both"`, and `toolbarActions.extra` appends custom tools. Selection moves to a dedicated bar configured by `batchActions` and `renderSelectionBar`. The title row gains `headerExtra` on the left and `actions` on the right.
+- `AutoTable` accepts `title` as `ReactNode`, and column headers drag to reorder through `reorderableColumns` (per column `reorderable: false`); the order persists in layout settings.
+- `AutoTabs` scrolls horizontal rows that overflow: edge scroll buttons appear, the active tab scrolls into view, and `data-overflow` reflects the state. The new `actions` prop mounts aligned buttons on the right of the tab bar next to `extra`.
+
 ## 0.2.0 - 2026-10-04
 
 - Add `createAutoAccess`. The host owns one access store per browser tab and passes it through `config.access`. State changes refresh consumers, storage namespaces scope by user id, and identity changes remount provider descendants. `hasPerm`, `hasRole`, `hasUser`, and `hasOrg` compose with custom `canAccess` policies.
