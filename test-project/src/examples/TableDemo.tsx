@@ -51,7 +51,7 @@ export function TableDemo({ mode }: { mode: string }) {
       <AutoTable<Project>
         key={mode}
         id={`projects-${mode}`}
-        title={tr("All Projects")}
+        title={mode === "compact" ? undefined : tr("All Projects")}
         {...(mode === "remote"
           ? {
               dataSource: source,

@@ -214,6 +214,8 @@ const messages: Record<string, Record<string, string>> = {
     "RSQL query": "RSQL 查询",
     "Mock server": "模拟服务",
     "Massive data": "海量数据",
+    "Compact page: no title, search fields share the toolbar line.":
+      "紧凑页面：无标题，搜索字段与工具栏同一行。",
     "Tree Table": "树形表格",
     "Copy tab name": "复制标签名称",
     "Archive tab": "归档标签页",
@@ -799,6 +801,8 @@ const messages: Record<string, Record<string, string>> = {
     "RSQL query": "RSQL query",
     "Mock server": "Mock server",
     "Massive data": "Massive data",
+    "Compact page: no title, search fields share the toolbar line.":
+      "Compact page: no title, search fields share the toolbar line.",
     "Copy tab name": "Copy tab name",
     "Archive tab": "Archive tab",
     "Archived {0}": "Archived {0}",
