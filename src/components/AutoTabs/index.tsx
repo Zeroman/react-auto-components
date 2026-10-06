@@ -73,6 +73,9 @@ export interface AutoTabsProps extends TipConfig {
   lazy?: boolean;
   /** Requests removal; the owner must update `items`. Nested groups report the full path. */
   onClose?: (path: readonly string[], item: AutoTab) => void;
+  /** Primary or custom actions placed on the right side of the tabs bar. */
+  actions?: ReactNode;
+  /** Custom extra content placed on the right side of the tabs bar. */
   extra?: ReactNode;
   size?: ComponentSize;
   density?: ComponentDensity;
@@ -88,6 +91,7 @@ export function AutoTabs({
   keepMounted = true,
   lazy = false,
   onClose,
+  actions,
   extra,
   tipComponent: ownTipComponent,
   size: ownSize,
@@ -187,6 +191,87 @@ export function AutoTabs({
     if (value === undefined) setLocal(next);
     onChange?.(next, item);
   }
+  const navRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const [overflowed, setOverflowed] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const checkScroll = useCallback(() => {
+    const nav = navRef.current;
+    const list = listRef.current;
+    if (!nav || !list || mode !== "horizontal") {
+      setOverflowed(false);
+      setCanScrollLeft(false);
+      setCanScrollRight(false);
+      return;
+    }
+    const hasOverflow = list.scrollWidth > nav.clientWidth + 1;
+    setOverflowed(hasOverflow);
+    if (hasOverflow) {
+      setCanScrollLeft(list.scrollLeft > 1);
+      setCanScrollRight(
+        list.scrollLeft + list.clientWidth < list.scrollWidth - 1,
+      );
+    } else {
+      setCanScrollLeft(false);
+      setCanScrollRight(false);
+    }
+  }, [mode]);
+
+  useEffect(() => {
+    if (mode !== "horizontal") return;
+    const nav = navRef.current;
+    const list = listRef.current;
+    if (!nav || !list) return;
+    checkScroll();
+    let ro: ResizeObserver | undefined;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(() => {
+        checkScroll();
+      });
+      ro.observe(nav);
+      ro.observe(list);
+    }
+    window.addEventListener("resize", checkScroll);
+    return () => {
+      window.removeEventListener("resize", checkScroll);
+      ro?.disconnect();
+    };
+  }, [checkScroll, mode, visible.length]);
+
+  useEffect(() => {
+    checkScroll();
+  }, [checkScroll, current, visible]);
+
+  useEffect(() => {
+    if (!listRef.current || mode !== "horizontal") return;
+    const activeEl = listRef.current.querySelector<HTMLElement>(
+      '[role="tab"][data-state="active"]',
+    );
+    if (!activeEl) return;
+    const list = listRef.current;
+    const listRect = list.getBoundingClientRect();
+    const activeRect = activeEl.getBoundingClientRect();
+    if (activeRect.left < listRect.left || activeRect.right > listRect.right) {
+      activeEl.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "nearest",
+      });
+    }
+  }, [current, mode]);
+
+  function handleScroll(direction: "left" | "right") {
+    const list = listRef.current;
+    if (!list) return;
+    const delta = list.clientWidth * 0.75;
+    list.scrollBy({
+      left: direction === "left" ? -delta : delta,
+      behavior: "smooth",
+    });
+  }
+
   if (tabs.loading)
     return (
       <p className="auto-notice" role="status">
@@ -215,51 +300,111 @@ export function AutoTabs({
       orientation={mode === "horizontal" ? "horizontal" : "vertical"}
     >
       <div className="auto-tabs-heading">
-        <Tabs.List aria-label={tr("Tabs")} className="auto-tab-list">
-          {visible.map((i) => (
-            <div key={i.id} className="auto-tab-entry">
-              <AutoTip
-                content={i.tip}
-                tipComponent={i.tipComponent ?? tipComponent}
-              >
-                <Tabs.Trigger
-                  value={i.id}
-                  disabled={i.disabled}
-                  onKeyDown={(event) => {
-                    if (
-                      event.key === "Delete" &&
-                      i.closable &&
-                      onClose &&
-                      !i.disabled
-                    ) {
-                      event.preventDefault();
-                      onClose([i.id], i);
-                    }
-                  }}
+        <div ref={navRef} className="auto-tabs-nav" data-overflow={overflowed}>
+          {overflowed && (
+            <button
+              type="button"
+              className="auto-tabs-scroll-btn auto-tabs-scroll-prev"
+              disabled={!canScrollLeft}
+              aria-label={tr("Scroll tabs left")}
+              onClick={() => handleScroll("left")}
+            >
+              <span className="auto-icon" aria-hidden="true">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  {i.icon}
-                  {i.label}
-                  {i.badge != null && (
-                    <span className="auto-tab-badge">{i.badge}</span>
-                  )}
-                  {i.loading ? " …" : ""}
-                </Tabs.Trigger>
-              </AutoTip>
-              {i.closable && onClose && (
-                <button
-                  type="button"
-                  className="auto-tab-close"
-                  aria-label={tr("Close {0}", [i.label])}
-                  disabled={i.disabled}
-                  onClick={() => onClose([i.id], i)}
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </span>
+            </button>
+          )}
+          <Tabs.List
+            ref={listRef}
+            aria-label={tr("Tabs")}
+            className="auto-tab-list"
+            onScroll={checkScroll}
+          >
+            {visible.map((i) => (
+              <div key={i.id} className="auto-tab-entry">
+                <AutoTip
+                  content={i.tip}
+                  tipComponent={i.tipComponent ?? tipComponent}
                 >
-                  ×
-                </button>
-              )}
-            </div>
-          ))}
-        </Tabs.List>
-        {extra}
+                  <Tabs.Trigger
+                    value={i.id}
+                    disabled={i.disabled}
+                    onKeyDown={(event) => {
+                      if (
+                        event.key === "Delete" &&
+                        i.closable &&
+                        onClose &&
+                        !i.disabled
+                      ) {
+                        event.preventDefault();
+                        onClose([i.id], i);
+                      }
+                    }}
+                  >
+                    {i.icon}
+                    {i.label}
+                    {i.badge != null && (
+                      <span className="auto-tab-badge">{i.badge}</span>
+                    )}
+                    {i.loading ? " …" : ""}
+                  </Tabs.Trigger>
+                </AutoTip>
+                {i.closable && onClose && (
+                  <button
+                    type="button"
+                    className="auto-tab-close"
+                    aria-label={tr("Close {0}", [i.label])}
+                    disabled={i.disabled}
+                    onClick={() => onClose([i.id], i)}
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            ))}
+          </Tabs.List>
+          {overflowed && (
+            <button
+              type="button"
+              className="auto-tabs-scroll-btn auto-tabs-scroll-next"
+              disabled={!canScrollRight}
+              aria-label={tr("Scroll tabs right")}
+              onClick={() => handleScroll("right")}
+            >
+              <span className="auto-icon" aria-hidden="true">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </span>
+            </button>
+          )}
+        </div>
+        {(actions != null || extra != null) && (
+          <div className="auto-tabs-extra auto-actions">
+            {actions}
+            {extra}
+          </div>
+        )}
       </div>
       {visible.map((i) => {
         const isCurrent = i.id === current;

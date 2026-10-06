@@ -55,8 +55,12 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `closable` | With `onClose`, the tab shows a close button. Delete on the focused tab requests the same close. |
 | `onClose(path, item)` | Asks the owner to remove the tab. **Not caught.** Nested groups pass the full path. The owner updates `items`. |
 | `lazy` | Default `false`. `true` mounts a panel on its first visit. |
+| `actions` | Primary or custom actions placed on the right side of the tab bar. |
+| `extra` | Custom extra content placed on the right side of the tab bar. |
 
 A nested `children` list replaces `content` for that tab. `defaultActive` is the nested uncontrolled id.
+
+When horizontal tabs overflow the container width, smooth scroll buttons appear at both ends. Buttons disable automatically at the boundaries, scrollbars are hidden, and switching the active tab automatically scrolls it into view.
 
 When `route` is provided, `AutoNavigation` drives the selected tab. Omit `value` when using `route`; if both are supplied, `route` takes precedence and `RAC-TABS-ROUTE-VALUE` is warned in development.
 

@@ -55,8 +55,12 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `closable` | 分组提供了 `onClose` 时显示关闭按钮。焦点在该标签上时，Delete 也会请求关闭。 |
 | `onClose(path, item)` | 请调用方移除这个标签。**不捕获。** 嵌套组上报完整路径。调用方自己更新 `items`。 |
 | `lazy` | 默认 `false`。`true` 在第一次打开时才挂载面板。 |
+| `actions` | 标签栏右侧的操作按钮区域。 |
+| `extra` | 标签栏右侧的自定义扩展内容。 |
 
 某一项如果有 `children`，就用嵌套标签代替 `content`。`defaultActive` 是嵌套层的非受控 id。
+
+当水平标签栏超出容器宽度时，两端会自动出现平滑滚动按钮。滚动到达两端边界时按钮自动禁用，原生滚动条保持隐藏，切换选中项时会自动平滑滚动确保激活项可见。
 
 当提供 `route` 时，由 `AutoNavigation` 全权接管当前选中的标签。使用 `route` 时应省略 `value`；若两者同时传入，`route` 优先并打印开发警告 `RAC-TABS-ROUTE-VALUE`。
 
