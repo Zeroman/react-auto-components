@@ -4,7 +4,7 @@
 
 ## Unreleased
 
-- `AutoTable` gains `searchInline`: render the search fields on the toolbar line — fields left, actions and tools right — instead of a separate search panel. `showRecordCount: false` hides the record count for compact pages.
+- `AutoTable` gains `searchInline`: a single-line toolbar where the search fields lead and actions and tools sit right — the title is omitted and the record count lives in the pagination footer. The record count moved out of the toolbar into the pagination bar for every table.
 
 ## 0.3.1 - 2026-10-06
 
