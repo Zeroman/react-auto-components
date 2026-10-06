@@ -16,6 +16,11 @@ export default defineConfig(({ command }) => ({
   ...(command === "serve"
     ? {
         resolve: {
+          // Dedupe is mandatory with the source alias: library files resolve
+          // `react` from the repository root while the demo app resolves it
+          // from test-project/node_modules — two React copies crash with
+          // "Invalid hook call". Dedupe pins every import to one instance.
+          dedupe: ["react", "react-dom"],
           alias: [
             {
               find: "@zeroman.yang/react-auto-components/style.css",
