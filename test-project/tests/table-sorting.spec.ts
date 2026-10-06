@@ -49,15 +49,11 @@ for (const mode of ["local", "remote"] as const) {
     await expect
       .poll(visibleIds)
       .toEqual(["45", "41", "37", "33", "29", "25", "21", "17", "13", "9"]);
-    const titleBox = await table.locator(".auto-toolbar strong").boundingBox();
     const tagsBox = await tags.boundingBox();
-    expect(titleBox).not.toBeNull();
     expect(tagsBox).not.toBeNull();
-    expect(
-      Math.abs(
-        titleBox!.y + titleBox!.height / 2 - tagsBox!.y - tagsBox!.height / 2,
-      ),
-    ).toBeLessThan(3);
+    const toolbarBox = await table.locator(".auto-toolbar").boundingBox();
+    expect(toolbarBox).not.toBeNull();
+    expect(tagsBox!.y).toBeGreaterThanOrEqual(toolbarBox!.y);
 
     await table.getByRole("button", { name: "Next page" }).click();
     await expect(

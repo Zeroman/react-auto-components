@@ -107,7 +107,7 @@ test("devtools cmd eval/dom inspect the live page and console relays", async ({
       testid: "rac-table-projects-local",
     })) as { found: boolean; text: string };
     expect(dom.found).toBe(true);
-    expect(dom.text).toContain("All Projects");
+    expect(dom.text).toContain("Customer Data Platform");
   }).toPass({ timeout: 30000 });
   await command("eval", { code: "console.warn('RAC-BRIDGE-SPEC')" });
   await expect(async () => {

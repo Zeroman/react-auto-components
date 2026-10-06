@@ -517,6 +517,7 @@
   input:not([type="checkbox"]):not([type="radio"]),
 .auto-toolbar[data-search-inline] .auto-field select {
   width: 150px;
+  max-width: 100%;
 }
 .auto-toolbar[data-search-inline] .auto-form-actions {
   margin: 0;

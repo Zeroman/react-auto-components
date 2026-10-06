@@ -80,7 +80,7 @@ test("auto height responds to more search fields and toolbar wrapping", async ({
   const wideToolbar = await page
     .locator(".auto-toolbar")
     .evaluate((el) => el.clientHeight);
-  await page.setViewportSize({ width: 375, height: 1300 });
+  await page.setViewportSize({ width: 280, height: 1300 });
   await fitted(page);
   expect(
     await page.locator(".auto-toolbar").evaluate((el) => el.clientHeight),
