@@ -1,3 +1,7 @@
+"use no memo";
+// The virtualizer instance is mutable TanStack state; memoizing its calls
+// (React Compiler) returns stale window measurements — the paused-viewport
+// drift in the large-history e2e. Opt the file out.
 import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   useCallback,

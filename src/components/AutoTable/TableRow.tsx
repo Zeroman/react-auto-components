@@ -1,3 +1,8 @@
+"use no memo";
+// TanStack Table row objects are mutable: `getIsExpanded()` reads live state
+// while the row reference stays stable. React Compiler memoizes those calls
+// and serves stale results — an expanded row then renders its toggle but not
+// its detail panel (see the e2e expansion race). Opt the file out.
 import { Fragment, type CSSProperties, type ReactNode } from "react";
 import type { Row } from "@tanstack/react-table";
 import { racTestId } from "../../core/testid";
