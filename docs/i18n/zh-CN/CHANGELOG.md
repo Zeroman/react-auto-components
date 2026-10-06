@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 0.3.1 - 2026-10-06
+
 - `AutoTable` 展开行稳定渲染详情面板。行渲染退出 React Compiler 的自动 memo 化——此前它缓存了 TanStack 可变的 `getIsExpanded()` 调用，较慢的机器上可能出现"展开图标已切换、详情面板缺失"。
 - `AutoChat` 大历史在追加消息时保持暂停视口锚定。消息虚拟化同样退出该 memo 化——此前高负载下前置插入的锚点可能落偏一行。
 

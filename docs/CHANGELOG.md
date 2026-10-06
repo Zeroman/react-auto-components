@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 0.3.1 - 2026-10-06
+
 - `AutoTable` expanded rows render their detail panels reliably. Row rendering opts out of React Compiler memoization, which cached the mutable TanStack `getIsExpanded()` call and could show an expanded toggle without its detail panel on slower machines.
 - `AutoChat` large histories keep the paused viewport anchored on prepend. The message virtualizer opts out of the same memoization, which could settle the prepend anchor a row off under load.
 
