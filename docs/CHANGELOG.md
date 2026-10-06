@@ -4,11 +4,14 @@
 
 ## Unreleased
 
+## 0.3.0 - 2026-10-06
+
 - `AutoTable` switches data sources in place. Changing the `dataSource` function or the resolved `source` starts a fresh request without remounting: current rows stay visible under `aria-busy` with a progress bar, `pageIndex` resets to 0, and selection clears. The `dataSource` identity is a reactive signal — wrap it in `useCallback`; an inline function re-requests on every render and dev mode warns once.
 - `AutoTable` keeps the caller's initial controlled `query.pageIndex` on mount. Resetting the page to 0 applies only to source changes, never to mounting.
 - `AutoTable` reworks the toolbar: Refresh, Settings, Export, and JSON render as compact icon buttons; `toolbarActions.mode` picks `"icon"`, `"text"`, or `"both"`, and `toolbarActions.extra` appends custom tools. Selection moves to a dedicated bar configured by `batchActions` and `renderSelectionBar`. The title row gains `headerExtra` on the left and `actions` on the right.
 - `AutoTable` accepts `title` as `ReactNode`, and column headers drag to reorder through `reorderableColumns` (per column `reorderable: false`); the order persists in layout settings.
 - `AutoTabs` scrolls horizontal rows that overflow: edge scroll buttons appear, the active tab scrolls into view, and `data-overflow` reflects the state. The new `actions` prop mounts aligned buttons on the right of the tab bar next to `extra`.
+- `AutoTabs` opens a per-tab right-click menu through `tabActions`; entries support `icon`, `danger`, `separator`, `disabled`, and `hidden`, mirroring table row actions.
 
 ## 0.2.0 - 2026-10-04
 

@@ -57,6 +57,7 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `lazy` | 默认 `false`。`true` 在第一次打开时才挂载面板。 |
 | `actions` | 标签栏右侧的操作按钮区域。 |
 | `extra` | 标签栏右侧的自定义扩展内容。 |
+| `tabActions` | 标签页右键菜单动作集合。菜单项支持 `icon` 图标、`danger` 危险色、`separator` 分隔线、`disabled` 与 `hidden`，与表格行操作一致。省略则不启用右键菜单。 |
 
 某一项如果有 `children`，就用嵌套标签代替 `content`。`defaultActive` 是嵌套层的非受控 id。
 

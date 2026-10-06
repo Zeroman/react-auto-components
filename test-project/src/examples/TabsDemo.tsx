@@ -78,6 +78,22 @@ export function TabsDemo({ example }: { example: string }) {
                     {tr("Keep mounted / persistent state")}
                   </span>
                 }
+                tabActions={[
+                  {
+                    id: "copy",
+                    label: tr("Copy tab name"),
+                    onClick: (tab) =>
+                      navigator.clipboard?.writeText(String(tab.label)),
+                  },
+                  {
+                    id: "archive",
+                    label: tr("Archive tab"),
+                    danger: true,
+                    separator: true,
+                    onClick: (tab) =>
+                      alert(tr("Archived {0}", [String(tab.label)])),
+                  },
+                ]}
                 items={[
                   {
                     id: "overview",

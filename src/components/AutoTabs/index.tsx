@@ -1,4 +1,5 @@
 import { AutoTip, type TipConfig } from "../AutoTip";
+import { ActionContextMenu } from "../../internal/ActionContextMenu";
 import { useAutoText } from "../../core/i18n";
 import * as Tabs from "@radix-ui/react-tabs";
 import {
@@ -39,6 +40,20 @@ export interface AutoTab extends Access, TipConfig {
   /** Shows a close button when the group also supplies `onClose`. */
   closable?: boolean;
 }
+/** Right-click action shown in a tab's context menu. Mirrors table `RowAction` items. */
+export interface TabAction {
+  id: string;
+  label: string;
+  /** Optional icon rendered before the label. */
+  icon?: ReactNode;
+  /** Styles the entry as destructive. */
+  danger?: boolean;
+  /** Renders a separator line before this entry. */
+  separator?: boolean;
+  hidden?: (tab: AutoTab) => boolean;
+  disabled?: (tab: AutoTab) => boolean;
+  onClick?: (tab: AutoTab) => void;
+}
 /**
  * Tab list. `value` is the path of selected ids from the root, so nested tabs are `["parent", "child"]`.
  * `mode` defaults to `"horizontal"`. `keepMounted` defaults to `true` (hidden panels stay mounted; `false` unmounts them).
@@ -73,6 +88,8 @@ export interface AutoTabsProps extends TipConfig {
   lazy?: boolean;
   /** Requests removal; the owner must update `items`. Nested groups report the full path. */
   onClose?: (path: readonly string[], item: AutoTab) => void;
+  /** Right-click actions for each tab. Omit to disable the context menu. */
+  tabActions?: readonly TabAction[];
   /** Primary or custom actions placed on the right side of the tabs bar. */
   actions?: ReactNode;
   /** Custom extra content placed on the right side of the tabs bar. */
@@ -93,6 +110,7 @@ export function AutoTabs({
   onClose,
   actions,
   extra,
+  tabActions,
   tipComponent: ownTipComponent,
   size: ownSize,
   density: ownDensity,
@@ -332,46 +350,53 @@ export function AutoTabs({
             onScroll={checkScroll}
           >
             {visible.map((i) => (
-              <div key={i.id} className="auto-tab-entry">
-                <AutoTip
-                  content={i.tip}
-                  tipComponent={i.tipComponent ?? tipComponent}
-                >
-                  <Tabs.Trigger
-                    value={i.id}
-                    disabled={i.disabled}
-                    onKeyDown={(event) => {
-                      if (
-                        event.key === "Delete" &&
-                        i.closable &&
-                        onClose &&
-                        !i.disabled
-                      ) {
-                        event.preventDefault();
-                        onClose([i.id], i);
-                      }
-                    }}
+              <ActionContextMenu
+                key={i.id}
+                actions={tabActions}
+                item={i}
+                onSelect={(action, tab) => action.onClick?.(tab)}
+              >
+                <div className="auto-tab-entry">
+                  <AutoTip
+                    content={i.tip}
+                    tipComponent={i.tipComponent ?? tipComponent}
                   >
-                    {i.icon}
-                    {i.label}
-                    {i.badge != null && (
-                      <span className="auto-tab-badge">{i.badge}</span>
-                    )}
-                    {i.loading ? " …" : ""}
-                  </Tabs.Trigger>
-                </AutoTip>
-                {i.closable && onClose && (
-                  <button
-                    type="button"
-                    className="auto-tab-close"
-                    aria-label={tr("Close {0}", [i.label])}
-                    disabled={i.disabled}
-                    onClick={() => onClose([i.id], i)}
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
+                    <Tabs.Trigger
+                      value={i.id}
+                      disabled={i.disabled}
+                      onKeyDown={(event) => {
+                        if (
+                          event.key === "Delete" &&
+                          i.closable &&
+                          onClose &&
+                          !i.disabled
+                        ) {
+                          event.preventDefault();
+                          onClose([i.id], i);
+                        }
+                      }}
+                    >
+                      {i.icon}
+                      {i.label}
+                      {i.badge != null && (
+                        <span className="auto-tab-badge">{i.badge}</span>
+                      )}
+                      {i.loading ? " …" : ""}
+                    </Tabs.Trigger>
+                  </AutoTip>
+                  {i.closable && onClose && (
+                    <button
+                      type="button"
+                      className="auto-tab-close"
+                      aria-label={tr("Close {0}", [i.label])}
+                      disabled={i.disabled}
+                      onClick={() => onClose([i.id], i)}
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              </ActionContextMenu>
             ))}
           </Tabs.List>
           {overflowed && (

@@ -4,11 +4,14 @@
 
 ## Unreleased
 
+## 0.3.0 - 2026-10-06
+
 - `AutoTable` 原地切换数据源。更换 `dataSource` 函数或解析后的 `source` 会直接发起新请求而无需重挂载：请求期间保留当前行并显示 `aria-busy` 与进度条，`pageIndex` 重置为 0，选择被清空。`dataSource` 的函数身份是响应式信号——请用 `useCallback` 包裹；内联函数会在每次渲染时重新请求，开发模式会警告一次。
 - `AutoTable` 挂载时保留调用方受控 `query.pageIndex` 的初始值。页码归零仅发生在数据源变化时，与挂载无关。
 - `AutoTable` 重做工具栏：刷新、设置、导出与 JSON 渲染为紧凑图标按钮；`toolbarActions.mode` 可选 `"icon"`、`"text"` 或 `"both"`，`toolbarActions.extra` 追加自定义工具。选择操作移入独立的选择栏，由 `batchActions` 与 `renderSelectionBar` 配置。标题行左侧新增 `headerExtra`，右侧新增 `actions`。
 - `AutoTable` 的 `title` 接受 `ReactNode`，列头支持拖拽排序（`reorderableColumns`，单列 `reorderable: false`）；顺序保存在布局设置中。
 - `AutoTabs` 水平标签行溢出时可滚动：两侧出现滚动按钮，激活标签自动滚入视野，`data-overflow` 反映状态。新增 `actions` 属性，在标签栏右侧挂载与 `extra` 对齐的按钮。
+- `AutoTabs` 新增 `tabActions`：右键标签页打开菜单；菜单项支持 `icon`、`danger`、`separator`、`disabled`、`hidden`，与表格行操作一致。
 
 ## 0.2.0 - 2026-10-04
 

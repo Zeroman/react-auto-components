@@ -216,3 +216,44 @@ test("renders actions and extra in auto-tabs-extra container", async () => {
 
   expect(screen.getByTestId("extra-status")).toHaveTextContent("Online");
 });
+test("tab right-click menu lists actions and reports the tab", async () => {
+  const u = userEvent.setup();
+  const copy = vi.fn();
+  const archive = vi.fn();
+  render(
+    <AutoTabs
+      items={[
+        { id: "a", label: "Alpha", content: "A" },
+        { id: "b", label: "Beta", content: "B" },
+      ]}
+      tabActions={[
+        { id: "copy", label: "Copy tab name", onClick: copy },
+        {
+          id: "hidden",
+          label: "Never shown",
+          hidden: () => true,
+          onClick: vi.fn(),
+        },
+        {
+          id: "archive",
+          label: "Archive tab",
+          danger: true,
+          separator: true,
+          disabled: (tab) => tab.id === "b",
+          onClick: archive,
+        },
+      ]}
+    />,
+  );
+  await fireEvent.contextMenu(screen.getByRole("tab", { name: "Alpha" }));
+  expect(await screen.findByRole("menu")).toBeVisible();
+  expect(
+    screen.getByRole("menuitem", { name: "Copy tab name" }),
+  ).toBeVisible();
+  expect(screen.queryByRole("menuitem", { name: "Never shown" })).toBeNull();
+  await u.click(screen.getByRole("menuitem", { name: "Archive tab" }));
+  expect(archive).toHaveBeenCalledWith(
+    expect.objectContaining({ id: "a", label: "Alpha" }),
+  );
+  expect(copy).not.toHaveBeenCalled();
+});

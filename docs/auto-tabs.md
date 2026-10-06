@@ -57,6 +57,7 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `lazy` | Default `false`. `true` mounts a panel on its first visit. |
 | `actions` | Primary or custom actions placed on the right side of the tab bar. |
 | `extra` | Custom extra content placed on the right side of the tab bar. |
+| `tabActions` | Right-click actions for each tab. Entries support `icon`, `danger`, `separator`, `disabled`, and `hidden`, mirroring table row actions. Omit to disable the menu. |
 
 A nested `children` list replaces `content` for that tab. `defaultActive` is the nested uncontrolled id.
 
