@@ -21,8 +21,18 @@ import "@zeroman.yang/react-auto-components/style.css";
 <AutoTable
   id="orders"
   rowKey="id"
+  title="Orders"
+  headerExtra={<span className="auto-muted">Realtime sync</span>}
   data={rows}
   columns={[{ key: "id", label: "Id" }]}
+  actions={<button type="button">Import</button>}
+  batchActions={(selected) => (
+    <button type="button" onClick={() => archive(selected)}>
+      Archive ({selected.length})
+    </button>
+  )}
+  onAdd={(values) => createOrder(values)}
+  onDelete={(selected) => deleteOrders(selected)}
   exportXlsx={exportXlsx}
 />
 ```
@@ -127,13 +137,29 @@ For isolated renders during AI/browser verification, see the [deterministic test
 | `searchFields` | Renders `AutoSearch`. Its `onSearch` updates the table filter. |
 | `formFields` | Schema for the add/edit dialog. If omitted, fields are inferred from `columns`. Column `formField: false` excludes the column; `formField: { ... }` overrides field properties (e.g. `type`, `options`, `rules`). Columns with `options` become `select`, `date`/`datetime`/`percentage`/`progress` map to matching field types, and `number` becomes `integer`. |
 | `onAdd`, `onEdit`, `onDelete` | Called from the dialog after validation. **Reject or throw: the dialog stays open and shows `error.message`. Rows do not change unless your handler already changed them.** |
-| `rowActions` | **`onClick` rejection is caught and shown in the status line for about 2.5s.** The row stays. `action` is a `config.rowActions` key used when `onClick` is omitted. Neither one warns `RAC-ROW-ACTION` and the status shows the message. |
+| `rowActions` | Context menu actions on row right-click. **`onClick` rejection is caught and shown in the status line for about 2.5s.** The row stays. `action` is a `config.rowActions` key used when `onClick` is omitted. Neither one warns `RAC-ROW-ACTION` and the status shows the message. Items support `icon`, `danger`, `separator`, `disabled`, and `hidden`. |
 | `component` on a column | Key in `config.columns` for `render`, `format`, `sort`, and `exportFormat`. A function on the column wins. An unknown key warns `RAC-COLUMN-COMPONENT` and the cell uses the default format. |
 | `source` | Key in `config.sources`. Pass exactly one of `data`, `dataSource`, or `source`. An unknown key warns `RAC-TABLE-SOURCE` and the table shows that message with retry. |
 | `exportXlsx` | Required only for xlsx. Missing adapter throws `RAC-TABLE-XLSX` and the status shows the translated adapter sentence. CSV and JSON are built in. |
 | `versions` | Bump a layout, sort, filter, or export version to drop that saved preset. |
 | `summaryValues` | Server totals for the filtered result, keyed by column. |
-| `toolbarActions` | Refresh, settings, export, and JSON. Default all shown. `false` hides the four buttons. An object hides only the buttons set to `false`. `handle.refresh()` and `handle.export()` stay available. The JSON label is the translated string `"JSON"`. |
+| `actions` | Primary or custom business actions rendered in the right header toolbar before system tools. |
+| `batchActions` | `(selectedRows: T[]) => ReactNode`. Custom batch action buttons displayed in the dynamic selection bar when rows are selected. `onDelete` renders `Delete selected` here. |
+| `headerExtra` | Extra content adjacent to title and record count in the left header toolbar. |
+| `reorderableColumns` | Default `true`. Enable dragging column headers directly to reorder columns. Column `reorderable: false` disables reordering for a specific column. Reordering persists to saved layout settings. |
+| `toolbarActions` | Refresh, settings, export, and JSON. Default all shown in compact icon mode (`mode: "icon"`). Set `mode: "text"` or `"both"` to customize button appearance. `false` hides the four buttons. An object hides only the buttons set to `false`. `extra` appends custom tools. `handle.refresh()` and `handle.export()` stay available. |
+
+### Data source stability and in-place switching
+
+When switching data sources (`source` or `dataSource` changes), `AutoTable` switches sources **in place** rather than unmounting or recreating the component:
+- **Row retention (SWR)**: Previous rows stay visible with an indeterminate loading progress bar and `aria-busy="true"` on the table body to prevent jarring layout shifts or white flashes during in-flight requests.
+- **Page reset**: `pageIndex` automatically resets to `0` because pagination belongs to the previous request's dataset size.
+- **Selection clear**: Row selections from the previous dataset are cleared.
+- **Empty state timing**: The table only transitions to the empty state (`props.empty` or "No data") after the new request settles with zero rows.
+
+**Stability contract**: `dataSource` function identity is a reactive signal. If you pass an inline arrow function (`<AutoTable dataSource={(q) => fetch(q)} />`), every parent render will trigger a re-fetch. Always stabilize `dataSource` with `useCallback` or module-level declaration, or pass a static `source="name"` with `AutoConfigProvider`.
+
+**Local data exception**: In local controlled mode (`<AutoTable data={rows} />`), row data is managed entirely in caller state. If caller clears state (`setRows([])`) before fetching, `AutoTable` receives an empty array directly. To benefit from smooth in-place SWR transitions, migrate to `dataSource` or `source`.
 
 ## Export and settings
 

@@ -11,6 +11,7 @@ export function useTableData<T extends object>(
     total: 0,
   });
   const [settledQuery, setSettledQuery] = useState<string | null>(null);
+  const [settledSource, setSettledSource] = useState<unknown>(null);
   const [loading, setLoading] = useState(false),
     [error, setError] = useState(""),
     [version, setVersion] = useState(0);
@@ -31,6 +32,9 @@ export function useTableData<T extends object>(
         if (!c.signal.aborted) {
           setRemote(result);
           setSettledQuery(queryKey);
+          // The wrapper stores the source itself; passing `source` directly
+          // would make React call it as a state updater.
+          setSettledSource(() => source);
         }
       })
       .catch((e) => {
@@ -40,9 +44,11 @@ export function useTableData<T extends object>(
         if (!c.signal.aborted) setLoading(false);
       });
     return () => c.abort();
-  }, [queryKey, version, enabled]);
+  }, [queryKey, version, enabled, source]);
   return {
-    resolved: data !== undefined || settledQuery === queryKey,
+    resolved:
+      data !== undefined ||
+      (settledSource === source && settledQuery === queryKey),
     rows: data ?? remote.rows,
     total: data?.length ?? remote.total,
     loading,

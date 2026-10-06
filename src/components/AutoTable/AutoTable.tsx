@@ -13,6 +13,7 @@ import {
   useState,
   type CSSProperties,
   type MouseEvent as ReactMouseEvent,
+  type ReactNode,
 } from "react";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
 import { emptyQuery, matchesQuery, type QueryNode } from "../../core/query";
@@ -48,6 +49,7 @@ import { useTableExport } from "./useTableExport";
 import { TableRow } from "./TableRow";
 import { TablePagination } from "./TablePagination";
 import { TableDialogs } from "./TableDialogs";
+import { ExportIcon, JsonIcon, RefreshIcon, SettingsIcon } from "./icons";
 import {
   RowContextMenu,
   showToolbarAction,
@@ -134,6 +136,49 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     [json, setJson] = useState(false),
     [contextRow, setContextRow] = useState<T | null>(null),
     [message, setMessage] = useState("");
+  const sourceIdentity = sourceName ?? dataSource;
+  const prevSourceRef = useRef(sourceIdentity);
+  const sourceChanged = sourceIdentity !== prevSourceRef.current;
+  if (sourceChanged) {
+    prevSourceRef.current = sourceIdentity;
+    if (localQuery.pageIndex !== 0) {
+      setLocalQuery((q) => ({ ...q, pageIndex: 0 }));
+    }
+    if (Object.keys(selected).length > 0) {
+      setSelected({});
+    }
+  }
+  const lastResetIdentityRef = useRef(sourceIdentity);
+  useEffect(() => {
+    // Effects also run on mount; the caller's initial controlled query is
+    // legitimate there (e.g. a deep link to page 3). Reset only on a real
+    // source identity change, never on mount.
+    if (lastResetIdentityRef.current === sourceIdentity) return;
+    lastResetIdentityRef.current = sourceIdentity;
+    if (props.query !== undefined && props.query.pageIndex !== 0) {
+      props.onQueryChange?.({ ...props.query, pageIndex: 0 });
+    }
+  }, [sourceIdentity]);
+  const rendersWithNewFn = useRef(0);
+  const warnedUnstableRef = useRef(false);
+  const prevFn = useRef(dataSource);
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
+    if (!sourceName && typeof dataSource === "function") {
+      if (prevFn.current && prevFn.current !== dataSource) {
+        rendersWithNewFn.current += 1;
+        if (rendersWithNewFn.current >= 2 && !warnedUnstableRef.current) {
+          warnedUnstableRef.current = true;
+          console.warn(
+            `[AutoTable] The "dataSource" prop changed reference across consecutive renders. ` +
+              `If this is an inline function, it triggers an in-place fetch on every render. ` +
+              `Fix: wrap dataSource in useCallback or pass a stable function reference.`,
+          );
+        }
+      }
+      prevFn.current = dataSource;
+    }
+  });
   useEffect(() => {
     if (!message) return;
     const timer = setTimeout(() => setMessage(""), 2500);
@@ -186,11 +231,18 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
   const density =
     props.density ??
     (layout.density === "inherit" ? globalDensity : layout.density);
-  const query = props.query ?? {
-    ...localQuery,
-    sort: active(settings.sort),
-    filter: active(settings.filter),
-  };
+  const baseQuery = props.query ?? localQuery;
+  const query = useMemo(() => {
+    const raw = {
+      ...baseQuery,
+      sort: active(settings.sort),
+      filter: active(settings.filter),
+    };
+    if (sourceChanged && raw.pageIndex !== 0) {
+      return { ...raw, pageIndex: 0 };
+    }
+    return raw;
+  }, [baseQuery, settings.sort, settings.filter, sourceChanged]);
   function changeQuery(patch: Partial<TableQuery>) {
     const next = {
       ...query,
@@ -376,7 +428,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     scopeRows,
     columns,
     settings,
-    title,
+    title: typeof title === "string" ? title : id,
     exportXlsx: props.exportXlsx,
     setMessage,
   });
@@ -521,7 +573,36 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
       event.preventDefault();
       return;
     }
+    const hasVisibleAction = props.rowActions?.some(
+      (action) => !action.hidden?.(row),
+    );
+    if (!hasVisibleAction) {
+      event.preventDefault();
+      return;
+    }
     setContextRow(row);
+  }
+  const toolsMode =
+    (typeof toolbarActions === "object" && toolbarActions?.mode) || "icon";
+  function renderTool(icon: ReactNode, label: string) {
+    if (toolsMode === "text") return label;
+    if (toolsMode === "both")
+      return (
+        <>
+          <span className="auto-icon" aria-hidden="true">
+            {icon}
+          </span>
+          <span>{label}</span>
+        </>
+      );
+    return (
+      <>
+        <span className="auto-icon" aria-hidden="true">
+          {icon}
+        </span>
+        <span className="auto-sr-only">{label}</span>
+      </>
+    );
   }
   return (
     <section
@@ -530,7 +611,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
       data-virtual={effectiveVirtual}
       data-size={size}
       data-density={density}
-      aria-label={title ?? id}
+      aria-label={typeof title === "string" ? title : id}
       data-testid={racTestId("table", id)}
     >
       {props.searchFields && (
@@ -548,83 +629,151 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
         />
       )}
       <div className="auto-toolbar">
-        <div className="auto-actions">
+        <div className="auto-toolbar-left auto-actions">
           {title && <strong>{title}</strong>}
           <span className="auto-muted">
             {tr("{0} records", [total.toLocaleString()])}
           </span>
-          {selectedRows.length > 0 && (
-            <span className="auto-badge">
-              {tr("{0} selected", [selectedRows.length])}
-            </span>
-          )}
+          {props.headerExtra}
           {sortTagsLayout === "inline" && sortTags}
-          {props.toolbar}
         </div>
-        <div className="auto-actions">
-          {props.onAdd && (
-            <button
-              type="button"
-              className="auto-primary"
-              data-testid="rac-add"
-              onClick={() =>
-                setEdit({
-                  kind: "add",
-                })
-              }
-            >
-              {tr("Add")}
-            </button>
+        <div className="auto-toolbar-right">
+          {(props.actions || props.toolbar || props.onAdd) && (
+            <div className="auto-actions auto-business-actions">
+              {props.actions}
+              {props.toolbar}
+              {props.onAdd && (
+                <button
+                  type="button"
+                  className="auto-primary"
+                  data-testid="rac-add"
+                  onClick={() =>
+                    setEdit({
+                      kind: "add",
+                    })
+                  }
+                >
+                  {tr("Add")}
+                </button>
+              )}
+            </div>
           )}
-          {props.onDelete && selectedRows.length > 0 && (
-            <button
-              type="button"
-              data-testid="rac-delete-selected"
-              onClick={() => setDeleting(selectedRows)}
-            >
-              {tr("Delete selected")}
-            </button>
-          )}
-          {showToolbarAction(toolbarActions, "refresh") && (
-            <button
-              type="button"
-              data-testid="rac-refresh"
-              onClick={source.refresh}
-              disabled={source.loading}
-            >
-              {tr("Refresh")}
-            </button>
-          )}
-          {showToolbarAction(toolbarActions, "settings") && (
-            <button
-              type="button"
-              data-testid="rac-settings"
-              onClick={() => setDraft(structuredClone(settings))}
-            >
-              {tr("Settings")}
-            </button>
-          )}
-          {showToolbarAction(toolbarActions, "export") && (
-            <button
-              type="button"
-              data-testid="rac-export"
-              disabled={exporting}
-              onClick={() => void doExport(active(settings.export).format)}
-            >
-              {exporting ? tr("Exporting…") : tr("Export")}
-            </button>
-          )}
-          {showToolbarAction(toolbarActions, "json") && (
-            <button
-              type="button"
-              onClick={() => setJson(!json)}
-              aria-pressed={json}
-            >
-              {tr("JSON")}
-            </button>
+          {(props.actions || props.toolbar || props.onAdd) &&
+            (showToolbarAction(toolbarActions, "refresh") ||
+              showToolbarAction(toolbarActions, "settings") ||
+              showToolbarAction(toolbarActions, "export") ||
+              showToolbarAction(toolbarActions, "json") ||
+              (typeof toolbarActions === "object" &&
+                Boolean(toolbarActions?.extra))) && (
+              <div className="auto-toolbar-divider" aria-hidden="true" />
+            )}
+          {(showToolbarAction(toolbarActions, "refresh") ||
+            showToolbarAction(toolbarActions, "settings") ||
+            showToolbarAction(toolbarActions, "export") ||
+            showToolbarAction(toolbarActions, "json") ||
+            (typeof toolbarActions === "object" &&
+              Boolean(toolbarActions?.extra))) && (
+            <div className="auto-actions auto-tools">
+              {showToolbarAction(toolbarActions, "refresh") && (
+                <button
+                  type="button"
+                  className="auto-tool-btn"
+                  data-testid="rac-refresh"
+                  aria-label={tr("Refresh")}
+                  title={tr("Refresh")}
+                  onClick={source.refresh}
+                  disabled={source.loading}
+                >
+                  {renderTool(
+                    <RefreshIcon
+                      className={source.loading ? "auto-spin" : undefined}
+                    />,
+                    tr("Refresh"),
+                  )}
+                </button>
+              )}
+              {showToolbarAction(toolbarActions, "settings") && (
+                <button
+                  type="button"
+                  className="auto-tool-btn"
+                  data-testid="rac-settings"
+                  aria-label={tr("Settings")}
+                  title={tr("Settings")}
+                  onClick={() => setDraft(structuredClone(settings))}
+                >
+                  {renderTool(<SettingsIcon />, tr("Settings"))}
+                </button>
+              )}
+              {showToolbarAction(toolbarActions, "export") && (
+                <button
+                  type="button"
+                  className="auto-tool-btn"
+                  data-testid="rac-export"
+                  aria-label={exporting ? tr("Exporting…") : tr("Export")}
+                  title={exporting ? tr("Exporting…") : tr("Export")}
+                  disabled={exporting}
+                  onClick={() => void doExport(active(settings.export).format)}
+                >
+                  {renderTool(
+                    <ExportIcon />,
+                    exporting ? tr("Exporting…") : tr("Export"),
+                  )}
+                </button>
+              )}
+              {showToolbarAction(toolbarActions, "json") && (
+                <button
+                  type="button"
+                  className="auto-tool-btn"
+                  aria-label={tr("JSON")}
+                  title={tr("JSON")}
+                  onClick={() => setJson(!json)}
+                  aria-pressed={json}
+                >
+                  {renderTool(<JsonIcon />, tr("JSON"))}
+                </button>
+              )}
+              {typeof toolbarActions === "object" && toolbarActions?.extra}
+            </div>
           )}
         </div>
       </div>
+      {selectedRows.length > 0 &&
+        props.renderSelectionBar !== false &&
+        (props.renderSelectionBar ? (
+          props.renderSelectionBar(selectedRows, () => setSelected({}))
+        ) : (
+          <div
+            className="auto-selection-bar"
+            role="region"
+            aria-label={tr("Selection actions")}
+          >
+            <div className="auto-selection-info">
+              <span className="auto-badge">
+                {tr("{0} selected", [selectedRows.length])}
+              </span>
+              <button
+                type="button"
+                className="auto-selection-clear"
+                onClick={() => setSelected({})}
+              >
+                {tr("Clear selection")}
+              </button>
+            </div>
+            <div className="auto-actions auto-selection-actions">
+              {props.batchActions?.(selectedRows)}
+              {props.onDelete && (
+                <button
+                  type="button"
+                  className="auto-danger"
+                  data-testid="rac-delete-selected"
+                  onClick={() => setDeleting(selectedRows)}
+                >
+                  {tr("Delete selected")}
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
       {sortTagsLayout === "separate" && sortTags}
       {source.error && (
         <div role="alert" className="auto-error">
@@ -671,175 +820,208 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
           <pre>{JSON.stringify(scopeRows("page"), null, 2)}</pre>
         </div>
       ) : (
-        <div
-          ref={scroll}
-          className="auto-table-scroll"
-          style={{
-            height: height === "auto" ? undefined : height,
-            overflow: "auto",
-          }}
-          aria-busy={source.loading}
-        >
-          <RowContextMenu
-            actions={props.rowActions}
-            row={contextRow}
-            onOpenChange={(open) => {
-              if (!open) setContextRow(null);
+        <>
+          <div
+            className="auto-table-progress"
+            data-loading={source.loading ? "true" : "false"}
+            aria-hidden="true"
+          />
+          <div
+            ref={scroll}
+            className="auto-table-scroll"
+            style={{
+              height: height === "auto" ? undefined : height,
+              overflow: "auto",
             }}
-            onSelect={(action, row) => {
-              void Promise.resolve()
-                .then(() => resolveRowAction(action, services.rowActions)(row))
-                .catch((error) => setMessage(tr(errorMessage(error))));
-            }}
+            aria-busy={source.loading}
           >
-            <table
-              onContextMenu={props.rowActions?.length ? openRowMenu : undefined}
-              style={{
-                minWidth: ordered.reduce((n, c) => n + width(c), 44),
-                width: "100%",
-                tableLayout: "fixed",
+            <RowContextMenu
+              actions={props.rowActions}
+              row={contextRow}
+              onOpenChange={(open) => {
+                if (!open) setContextRow(null);
+              }}
+              onSelect={(action, row) => {
+                void Promise.resolve()
+                  .then(() =>
+                    resolveRowAction(action, services.rowActions)(row),
+                  )
+                  .catch((error) => setMessage(tr(errorMessage(error))));
               }}
             >
-              <TableHeader
-                tipComponent={tipComponent}
-                columns={ordered}
-                rows={source.rows}
-                sort={query.sort}
-                filter={query.filter}
-                style={cellStyle}
-                hasActions={!!(props.onEdit || props.onDelete)}
-                allSelected={
-                  rows.length > 0 && rows.every((r) => selected[r.id])
+              <table
+                onContextMenu={
+                  props.rowActions?.length ? openRowMenu : undefined
                 }
-                indeterminate={
-                  rows.length > 0 &&
-                  rows.some((r) => selected[r.id]) &&
-                  !rows.every((r) => selected[r.id])
-                }
-                onSelectAll={(checked) => {
-                  const next = {
-                    ...selected,
-                  };
-                  rows.forEach((r) => {
-                    if (checked) next[r.id] = true;
-                    else delete next[r.id];
-                  });
-                  changeSelection(next);
+                style={{
+                  minWidth: ordered.reduce((n, c) => n + width(c), 44),
+                  width: "100%",
+                  tableLayout: "fixed",
                 }}
-                onSort={(sort) =>
-                  changeQuery({
-                    sort,
-                    pageIndex: 0,
-                  })
-                }
-                onFilter={(filter) =>
-                  changeQuery({
-                    filter,
-                    pageIndex: 0,
-                  })
-                }
-                onResize={(key, width) =>
-                  saveSettings({
-                    ...settings,
-                    layout: replaceActive(settings.layout, {
-                      ...layout,
-                      widths: {
-                        ...layout.widths,
-                        [key]: width,
-                      },
-                    }),
-                  })
-                }
-              />
+              >
+                <TableHeader
+                  tipComponent={tipComponent}
+                  columns={ordered}
+                  rows={source.rows}
+                  sort={query.sort}
+                  filter={query.filter}
+                  style={cellStyle}
+                  hasActions={!!(props.onEdit || props.onDelete)}
+                  allSelected={
+                    rows.length > 0 && rows.every((r) => selected[r.id])
+                  }
+                  indeterminate={
+                    rows.length > 0 &&
+                    rows.some((r) => selected[r.id]) &&
+                    !rows.every((r) => selected[r.id])
+                  }
+                  onSelectAll={(checked) => {
+                    const next = {
+                      ...selected,
+                    };
+                    rows.forEach((r) => {
+                      if (checked) next[r.id] = true;
+                      else delete next[r.id];
+                    });
+                    changeSelection(next);
+                  }}
+                  onSort={(sort) =>
+                    changeQuery({
+                      sort,
+                      pageIndex: 0,
+                    })
+                  }
+                  onFilter={(filter) =>
+                    changeQuery({
+                      filter,
+                      pageIndex: 0,
+                    })
+                  }
+                  onResize={(key, width) =>
+                    saveSettings({
+                      ...settings,
+                      layout: replaceActive(settings.layout, {
+                        ...layout,
+                        widths: {
+                          ...layout.widths,
+                          [key]: width,
+                        },
+                      }),
+                    })
+                  }
+                  reorderable={props.reorderableColumns ?? true}
+                  onReorder={(fromKey, toKey, position) => {
+                    if (fromKey === toKey) return;
+                    const baseOrder = [...new Set([...layout.order, ...keys])];
+                    const fromIndex = baseOrder.indexOf(fromKey);
+                    if (fromIndex < 0) return;
+                    baseOrder.splice(fromIndex, 1);
+                    const toIndex = baseOrder.indexOf(toKey);
+                    if (toIndex < 0) return;
+                    const insertIndex =
+                      position === "after" ? toIndex + 1 : toIndex;
+                    baseOrder.splice(insertIndex, 0, fromKey);
+                    saveSettings({
+                      ...settings,
+                      layout: replaceActive(settings.layout, {
+                        ...layout,
+                        order: baseOrder,
+                      }),
+                    });
+                  }}
+                />
 
-              <tbody>
-                {effectiveVirtual &&
-                  renderRows[0]?.virtual &&
-                  renderRows[0].virtual.start > 0 && (
+                <tbody>
+                  {effectiveVirtual &&
+                    renderRows[0]?.virtual &&
+                    renderRows[0].virtual.start > 0 && (
+                      <tr aria-hidden="true">
+                        <td
+                          colSpan={colCount}
+                          style={{
+                            height: renderRows[0].virtual.start,
+                            padding: 0,
+                            border: 0,
+                          }}
+                        />
+                      </tr>
+                    )}
+                  {renderRows.map(({ row, index }) => (
+                    <TableRow
+                      key={row.id}
+                      row={row}
+                      index={index}
+                      rows={rows}
+                      ordered={ordered}
+                      current={current}
+                      setCurrent={setCurrent}
+                      selected={!!selected[row.id]}
+                      effectiveVirtual={effectiveVirtual}
+                      renderExpanded={props.renderExpanded}
+                      rowClassName={props.rowClassName}
+                      rowStyle={props.rowStyle}
+                      itemHeight={itemHeight}
+                      measureRef={virtual.measureElement}
+                      cellStyle={cellStyle}
+                      formatted={formatted}
+                      rowLoading={props.rowLoading}
+                      onEdit={
+                        props.onEdit
+                          ? (row) => setEdit({ kind: "edit", row })
+                          : undefined
+                      }
+                      onDelete={
+                        props.onDelete ? (row) => setDeleting([row]) : undefined
+                      }
+                      colCount={colCount}
+                      setMessage={setMessage}
+                      tr={tr}
+                    />
+                  ))}
+                  {effectiveVirtual && renderRows.length > 0 && (
                     <tr aria-hidden="true">
                       <td
                         colSpan={colCount}
                         style={{
-                          height: renderRows[0].virtual.start,
+                          height: Math.max(
+                            0,
+                            virtual.getTotalSize() -
+                              (renderRows.at(-1)?.virtual?.end ?? 0),
+                          ),
                           padding: 0,
                           border: 0,
                         }}
                       />
                     </tr>
                   )}
-                {renderRows.map(({ row, index }) => (
-                  <TableRow
-                    key={row.id}
-                    row={row}
-                    index={index}
-                    rows={rows}
-                    ordered={ordered}
-                    current={current}
-                    setCurrent={setCurrent}
-                    selected={!!selected[row.id]}
-                    effectiveVirtual={effectiveVirtual}
-                    renderExpanded={props.renderExpanded}
-                    rowClassName={props.rowClassName}
-                    rowStyle={props.rowStyle}
-                    itemHeight={itemHeight}
-                    measureRef={virtual.measureElement}
-                    cellStyle={cellStyle}
-                    formatted={formatted}
-                    rowLoading={props.rowLoading}
-                    onEdit={
-                      props.onEdit
-                        ? (row) => setEdit({ kind: "edit", row })
-                        : undefined
-                    }
-                    onDelete={
-                      props.onDelete ? (row) => setDeleting([row]) : undefined
-                    }
-                    colCount={colCount}
-                    setMessage={setMessage}
-                    tr={tr}
-                  />
-                ))}
-                {effectiveVirtual && renderRows.length > 0 && (
-                  <tr aria-hidden="true">
-                    <td
-                      colSpan={colCount}
-                      style={{
-                        height: Math.max(
-                          0,
-                          virtual.getTotalSize() -
-                            (renderRows.at(-1)?.virtual?.end ?? 0),
-                        ),
-                        padding: 0,
-                        border: 0,
-                      }}
-                    />
-                  </tr>
-                )}
-                {!rows.length && (
-                  <tr>
-                    <td colSpan={colCount} className="auto-empty">
-                      {props.empty ??
-                        (source.loading ? tr("Loading…") : tr("No data"))}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-              {ordered.some((c) => c.summary) && (
-                <tfoot>
-                  <tr>
-                    <td className="auto-table-cell-selection">{tr("Total")}</td>
-                    {ordered.map((c) => (
-                      <td key={c.key} style={cellStyle(c)}>
-                        {summaryContent(c)}
+                  {!rows.length && (
+                    <tr>
+                      <td colSpan={colCount} className="auto-empty">
+                        {props.empty ??
+                          (source.loading ? tr("Loading…") : tr("No data"))}
                       </td>
-                    ))}
-                    {(props.onEdit || props.onDelete) && <td />}
-                  </tr>
-                </tfoot>
-              )}
-            </table>
-          </RowContextMenu>
-        </div>
+                    </tr>
+                  )}
+                </tbody>
+                {ordered.some((c) => c.summary) && (
+                  <tfoot>
+                    <tr>
+                      <td className="auto-table-cell-selection">
+                        {tr("Total")}
+                      </td>
+                      {ordered.map((c) => (
+                        <td key={c.key} style={cellStyle(c)}>
+                          {summaryContent(c)}
+                        </td>
+                      ))}
+                      {(props.onEdit || props.onDelete) && <td />}
+                    </tr>
+                  </tfoot>
+                )}
+              </table>
+            </RowContextMenu>
+          </div>
+        </>
       )}
       {pagination && (
         <TablePagination

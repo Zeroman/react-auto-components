@@ -120,6 +120,8 @@ export function TableHeader<T extends object>({
   allSelected,
   indeterminate,
   onSelectAll,
+  onReorder,
+  reorderable = true,
 }: TipConfig & {
   columns: readonly AutoColumn<T>[];
   rows: readonly T[];
@@ -128,6 +130,12 @@ export function TableHeader<T extends object>({
   onSort: (sort: TableSort[]) => void;
   onFilter: (query: QueryNode) => void;
   onResize: (key: string, width: number) => void;
+  onReorder?: (
+    fromKey: string,
+    toKey: string,
+    position: "before" | "after",
+  ) => void;
+  reorderable?: boolean;
   style: (column: AutoColumn<T>) => CSSProperties;
   hasActions: boolean;
   allSelected: boolean;
@@ -136,6 +144,11 @@ export function TableHeader<T extends object>({
 }) {
   const tr = useAutoText();
   const checkRef = useRef<HTMLInputElement>(null);
+  const [draggingKey, setDraggingKey] = useState<string | null>(null);
+  const [dragOverKey, setDragOverKey] = useState<string | null>(null);
+  const [dropPosition, setDropPosition] = useState<"before" | "after">(
+    "before",
+  );
   useEffect(() => {
     if (checkRef.current) {
       checkRef.current.indeterminate = !allSelected && !!indeterminate;
@@ -167,16 +180,115 @@ export function TableHeader<T extends object>({
           const isFiltered = filterChildren.some(
             (node) => node.kind === "condition" && node.field === c.key,
           );
+          const isDraggable = Boolean(reorderable && c.reorderable !== false);
+          const isDragging = draggingKey === c.key;
+          const isDropTarget = dragOverKey === c.key && draggingKey !== c.key;
           return (
             <th
               key={c.key}
               style={style(c)}
+              className={
+                [
+                  isDraggable ? "auto-th-draggable" : undefined,
+                  isDragging ? "auto-th-dragging" : undefined,
+                  isDropTarget
+                    ? dropPosition === "before"
+                      ? "auto-drop-before"
+                      : "auto-drop-after"
+                    : undefined,
+                ]
+                  .filter(Boolean)
+                  .join(" ") || undefined
+              }
               aria-sort={
                 activeSort
                   ? activeSort.desc
                     ? "descending"
                     : "ascending"
                   : "none"
+              }
+              draggable={isDraggable ? true : undefined}
+              onDragStart={
+                isDraggable
+                  ? (e) => {
+                      e.dataTransfer.setData("text/plain", c.key);
+                      e.dataTransfer.effectAllowed = "move";
+                      setDraggingKey(c.key);
+                    }
+                  : undefined
+              }
+              onDragOver={
+                isDraggable
+                  ? (e) => {
+                      if (!draggingKey || draggingKey === c.key) return;
+                      const draggingCol = columns.find(
+                        (col) => col.key === draggingKey,
+                      );
+                      if (
+                        draggingCol &&
+                        (draggingCol.pin ?? null) !== (c.pin ?? null)
+                      ) {
+                        return;
+                      }
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = "move";
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const pos =
+                        e.clientX < rect.left + rect.width / 2
+                          ? "before"
+                          : "after";
+                      if (dragOverKey !== c.key || dropPosition !== pos) {
+                        setDragOverKey(c.key);
+                        setDropPosition(pos);
+                      }
+                    }
+                  : undefined
+              }
+              onDragLeave={
+                isDraggable
+                  ? (e) => {
+                      if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                        if (dragOverKey === c.key) {
+                          setDragOverKey(null);
+                        }
+                      }
+                    }
+                  : undefined
+              }
+              onDrop={
+                isDraggable
+                  ? (e) => {
+                      e.preventDefault();
+                      const fromKey =
+                        e.dataTransfer.getData("text/plain") || draggingKey;
+                      if (fromKey && fromKey !== c.key && onReorder) {
+                        const draggingCol = columns.find(
+                          (col) => col.key === fromKey,
+                        );
+                        if (
+                          !draggingCol ||
+                          (draggingCol.pin ?? null) === (c.pin ?? null)
+                        ) {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const pos =
+                            e.clientX < rect.left + rect.width / 2
+                              ? "before"
+                              : "after";
+                          onReorder(fromKey, c.key, pos);
+                        }
+                      }
+                      setDraggingKey(null);
+                      setDragOverKey(null);
+                    }
+                  : undefined
+              }
+              onDragEnd={
+                isDraggable
+                  ? () => {
+                      setDraggingKey(null);
+                      setDragOverKey(null);
+                    }
+                  : undefined
               }
             >
               <div
@@ -190,6 +302,15 @@ export function TableHeader<T extends object>({
                         : "flex-start",
                 }}
               >
+                {isDraggable && (
+                  <span
+                    className="auto-drag-grip"
+                    aria-hidden="true"
+                    title={tr("Drag to reorder")}
+                  >
+                    ⋮⋮
+                  </span>
+                )}
                 {c.header ?? (
                   <button
                     className={activeSort ? "auto-sort-active" : undefined}

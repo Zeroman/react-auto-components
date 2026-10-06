@@ -21,8 +21,18 @@ import "@zeroman.yang/react-auto-components/style.css";
 <AutoTable
   id="orders"
   rowKey="id"
+  title="订单列表"
+  headerExtra={<span className="auto-muted">实时同步</span>}
   data={rows}
   columns={[{ key: "id", label: "编号" }]}
+  actions={<button type="button">导入</button>}
+  batchActions={(selected) => (
+    <button type="button" onClick={() => archive(selected)}>
+      归档所选 ({selected.length})
+    </button>
+  )}
+  onAdd={(values) => createOrder(values)}
+  onDelete={(selected) => deleteOrders(selected)}
   exportXlsx={exportXlsx}
 />
 ```
@@ -127,13 +137,29 @@ AI/浏览器验证下的隔离渲染，见[确定性测试配方](../../llms.txt
 | `searchFields` | 渲染 `AutoSearch`。它的 `onSearch` 更新表格筛选。 |
 | `formFields` | 新增/编辑弹窗的 schema。省略时，从 `columns` 自动推导表单字段。列设置 `formField: false` 可排除该列；设置 `formField: { ... }` 可覆盖字段属性（如 `type`、`options`、`rules`）。带 `options` 的列映射为 `select`，`date` / `datetime` / `percentage` / `progress` 映射为对应表单控件，`number` 映射为 `integer`。 |
 | `onAdd`、`onEdit`、`onDelete` | 校验通过后由弹窗调用。**reject 或 throw：弹窗保持打开并显示 `error.message`。除非你的处理函数已经改了数据，否则行不会变。** |
-| `rowActions` | `onClick` 拒绝会被捕获，并在状态行显示约 2.5 秒；行不会被移除。 行菜单动作缺少 `onClick`，且 `action` 不是已注册的 `config.rowActions` 键时，选择该动作会在状态行显示 `RAC-ROW-ACTION`。提供 `onClick` 或注册对应的 `action`；两者都有时 `onClick` 优先。 |
+| `rowActions` | 行右键菜单操作集合。`onClick` 拒绝会被捕获，并在状态行显示约 2.5 秒；行不会被移除。 行菜单动作缺少 `onClick`，且 `action` 不是已注册的 `config.rowActions` 键时，选择该动作会在状态行显示 `RAC-ROW-ACTION`。提供 `onClick` 或注册对应的 `action`；两者都有时 `onClick` 优先。动作项支持 `icon` 图标、`danger` 危险警示色、`separator` 分隔线、`disabled` 及 `hidden`。 |
 | `component` | 列的 `component` 未在 `AutoConfigProvider` 的 `config.columns` 中注册时，开发模式警告 `RAC-COLUMN-COMPONENT`，单元格使用默认格式。注册该键，或在列上提供 `render`、`format`、`sort`；列上的函数优先。 |
 | `source` | `source` 是 `AutoConfigProvider` 的 `config.sources` 中的数据源键。未知键会显示 `RAC-TABLE-SOURCE` 和重试按钮。注册该键，或改用 `data` / `dataSource`；三者只能提供一个。 |
 | `exportXlsx` | 只有 xlsx 需要。缺少适配器抛 `RAC-TABLE-XLSX`，状态行显示翻译后的适配器文案。CSV 和 JSON 是内置的。 |
 | `versions` | 提高 layout、sort、filter 或 export 的版本号，丢掉对应的已存方案。 |
 | `summaryValues` | 筛选结果的服务端合计，按列键索引。 |
-| `toolbarActions` | 刷新、设置、导出和 JSON。默认都显示。`false` 关掉这四个按钮。对象只关掉设为 `false` 的按钮。`handle.refresh()` 和 `handle.export()` 仍然可用。JSON 按钮文案走翻译，键是 `"JSON"`。 |
+| `actions` | 顶部右侧系统工具前的业务操作按钮区域。 |
+| `batchActions` | `(selectedRows: T[]) => ReactNode`。选中行时在动态选择条中展示的批量操作。`onDelete` 也会在此渲染“删除所选”按钮。 |
+| `headerExtra` | 顶部左侧标题和记录数旁的扩展内容。 |
+| `reorderableColumns` | 默认 `true`。允许直接拖拽表头调整列顺序。列上可设置 `reorderable: false` 单独禁用拖拽。调整后的顺序自动持久化到布局设置中。 |
+| `toolbarActions` | 刷新、设置、导出和 JSON。默认均在紧凑图标模式下展示（`mode: "icon"`）。可配置 `mode: "text"` 或 `"both"`。`false` 隐藏这四个按钮。对象只关掉设为 `false` 的按钮。`extra` 追加自定义工具。`handle.refresh()` 和 `handle.export()` 仍然可用。 |
+
+### 数据源稳定性与原地换源
+
+切换数据源（`source` 或 `dataSource` 变化）时，`AutoTable` 采用**原地发起新请求**，而非卸载或重建组件：
+- **行保留（SWR 平滑过渡）**：请求在途期间保留上一份数据行，同时呈现顶部进度条动画与 `aria-busy="true"` 变暗加载态，杜绝白屏与布局抖动；
+- **页码归零**：`pageIndex` 自动重置为 `0`，避免上一源页码在新源中产生越界空页；
+- **清理选中**：上一数据源的选中项集合自动清空；
+- **空态就绪**：只有当新源的响应实际返回空行（`rows: []`）时，才切换为 empty 空状态。
+
+**稳定性契约**：`dataSource` 函数引用是响应式信号。如果直接传内联箭头函数（`<AutoTable dataSource={(q) => fetch(q)} />`），父组件每次渲染都会触发原地重新请求。请务必使用 `useCallback` 稳定引用或声明在组件外部，或使用 `source="name"` 搭配 `AutoConfigProvider`。
+
+**本地 data 模式例外**：若使用本地受控模式（`<AutoTable data={rows} />`），数据全由调用方状态管理。若调用方在请求前自行清空状态（`setRows([])`），组件将直接接收空数组并渲染空态。若需享受无白屏原地 SWR 平滑刷新体验，请迁移至 `dataSource` 或 `source` 模式。
 
 ## 导出与设置
 

@@ -1,5 +1,5 @@
 import * as ContextMenu from "@radix-ui/react-context-menu";
-import type { CSSProperties, ReactElement } from "react";
+import { Fragment, type CSSProperties, type ReactElement } from "react";
 import type { AutoColumn, RowAction, TableToolbarActions } from "./types";
 
 /** Computes sticky column styles for pinned columns. */
@@ -69,21 +69,37 @@ export function RowContextMenu<T extends object>({
   return (
     <ContextMenu.Root onOpenChange={onOpenChange}>
       <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
-      <ContextMenu.Portal>
-        <ContextMenu.Content className="auto-popover auto-context-menu">
-          {visible.map((action) => (
-            <ContextMenu.Item
-              key={action.id}
-              disabled={row ? action.disabled?.(row) : undefined}
-              onSelect={() => {
-                if (row) onSelect(action, row);
-              }}
-            >
-              {action.label}
-            </ContextMenu.Item>
-          ))}
-        </ContextMenu.Content>
-      </ContextMenu.Portal>
+      {visible.length > 0 && (
+        <ContextMenu.Portal>
+          <ContextMenu.Content className="auto-popover auto-context-menu">
+            {visible.map((action, idx) => (
+              <Fragment key={action.id}>
+                {action.separator && idx > 0 && (
+                  <ContextMenu.Separator className="auto-context-menu-separator" />
+                )}
+                <ContextMenu.Item
+                  className={
+                    action.danger ? "auto-context-menu-danger" : undefined
+                  }
+                  disabled={row ? action.disabled?.(row) : undefined}
+                  onSelect={() => {
+                    if (row) onSelect(action, row);
+                  }}
+                >
+                  {action.icon && (
+                    <span className="auto-context-menu-icon" aria-hidden="true">
+                      {action.icon}
+                    </span>
+                  )}
+                  <span className="auto-context-menu-label">
+                    {action.label}
+                  </span>
+                </ContextMenu.Item>
+              </Fragment>
+            ))}
+          </ContextMenu.Content>
+        </ContextMenu.Portal>
+      )}
     </ContextMenu.Root>
   );
 }

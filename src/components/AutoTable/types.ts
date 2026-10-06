@@ -40,10 +40,19 @@ export type RowScope = "page" | "filtered" | "selected";
 
 /** Which built-in toolbar buttons stay visible. Omitted keys stay on. */
 export interface TableToolbarActions {
+  /**
+   * Display mode for system tools:
+   * - "icon": Compact icon-only button (default)
+   * - "text": Text-only button
+   * - "both": Icon and text
+   */
+  mode?: "icon" | "text" | "both";
   refresh?: boolean;
   settings?: boolean;
   export?: boolean;
   json?: boolean;
+  /** Custom utility icons or controls appended to the system tools group. */
+  extra?: ReactNode;
 }
 /**
  * One column. `key` must be a field of `T`.
@@ -62,6 +71,8 @@ export interface AutoColumn<T extends object> extends Access, TipConfig {
   hidden?: boolean;
   pin?: "left" | "right";
   align?: "left" | "center" | "right";
+  /** Whether this column can be reordered via drag-and-drop. Defaults to true. */
+  reorderable?: boolean;
   sortable?: boolean;
   filterable?: boolean;
   options?: readonly Option[];
@@ -92,6 +103,12 @@ export interface AutoColumn<T extends object> extends Access, TipConfig {
 export interface RowAction<T> {
   id: string;
   label: string;
+  /** Optional icon rendered before the label. */
+  icon?: ReactNode;
+  /** Whether this action represents a destructive operation (styled in danger color). */
+  danger?: boolean;
+  /** Whether to render a separator line before this item. */
+  separator?: boolean;
   hidden?: (row: T) => boolean;
   disabled?: (row: T) => boolean;
   /**
@@ -127,7 +144,10 @@ export interface TableBaseProps<T extends object> extends TipConfig {
    * Selection, expansion, and `scrollToRow` all use it.
    */
   rowKey: FieldName<T> | ((row: T) => string);
-  title?: string;
+  /** Table title displayed in the header toolbar. */
+  title?: ReactNode;
+  /** Extra content adjacent to title and record count in the left header (e.g. subtitle, description, tag). */
+  headerExtra?: ReactNode;
   /** Default `10`. */
   pageSize?: number;
   /** Default `true`. */
@@ -160,6 +180,20 @@ export interface TableBaseProps<T extends object> extends TipConfig {
   renderExpanded?: (row: T) => ReactNode;
   expandAll?: boolean;
   onSelectionChange?: (rows: T[]) => void;
+  /**
+   * Primary or custom business actions displayed on the right of the header toolbar
+   * before the system tools divider (e.g., custom action buttons, import, menus).
+   */
+  actions?: ReactNode;
+  /**
+   * Custom batch actions displayed in the selection bar when one or more rows are selected.
+   * Receives the currently selected rows.
+   */
+  batchActions?: (selectedRows: T[]) => ReactNode;
+  /** Custom selection bar render function, or false to suppress the selection bar. */
+  renderSelectionBar?:
+    ((selectedRows: T[], clearSelection: () => void) => ReactNode) | false;
+  /** Custom toolbar content placed in the business actions area. */
   toolbar?: ReactNode;
   /**
    * Built-in refresh, settings, export, and JSON buttons. Default all on.
@@ -170,6 +204,11 @@ export interface TableBaseProps<T extends object> extends TipConfig {
   toolbarActions?: boolean | TableToolbarActions;
   /** Multi-column sort tags (2+ fields) share the title row by default; "separate" places them below the toolbar. */
   sortTagsLayout?: "inline" | "separate";
+  /**
+   * Whether column headers can be dragged to reorder columns. Defaults to true.
+   * Reordering updates and saves the table layout settings.
+   */
+  reorderableColumns?: boolean;
   rowActions?: readonly RowAction<T>[];
   rowClassName?: (row: T) => string;
   rowStyle?: (row: T) => CSSProperties;
