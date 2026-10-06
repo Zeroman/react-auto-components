@@ -25,3 +25,4 @@ data/agent-runs/
 /docs/source-snapshot.json
 /docs/verification.md
 .rac-shots/
+.mimocode/

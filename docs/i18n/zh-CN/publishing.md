@@ -31,7 +31,7 @@ pnpm test:e2e
 npm pack --dry-run
 ```
 
-`prepack` 自动构建 JS、CSS 与声明；`prepublishOnly` 执行类型检查和单元测试。npm 包只包含 dist、各语言 README 与迁移指南、LICENSE 及 package.json；确认没有凭据、本地日志或测试产物。README 的其他仓库文档链接可通过 GitHub 查看。
+`prepack` 自动构建 JS、CSS 与声明；`prepublishOnly` 执行类型检查和单元测试。npm 包包含 dist、各语言 README、组件指南与错误码文档及其翻译、迁移指南、`llms.txt`、LICENSE 及 package.json——与 package.json 的 `files` 白名单完全一致；确认没有凭据、本地日志或测试产物。README 的其他仓库文档链接可通过 GitHub 查看。
 
 `test-project` 通过内容哈希 tarball 验证真实公开入口，新克隆不要直接在该目录运行 install，应先从根目录运行 `pnpm prepare:test-project`。准备命令会更新消费项目的本地依赖与 lockfile。
 

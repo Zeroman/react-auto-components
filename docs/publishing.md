@@ -31,7 +31,7 @@ pnpm test:e2e
 npm pack --dry-run
 ```
 
-`prepack` builds JavaScript, CSS, and declarations automatically; `prepublishOnly` runs type checks and unit tests. The npm package contains only dist, the README and migration-guide translations, LICENSE, and package.json. Check that credentials, local logs, and test output are excluded. Other repository documentation is linked on GitHub.
+`prepack` builds JavaScript, CSS, and declarations automatically; `prepublishOnly` runs type checks and unit tests. The npm package contains dist, the README, component-guide and error-code docs with their translations, the migration guides, `llms.txt`, LICENSE, and package.json — exactly the `files` whitelist in package.json. Check that credentials, local logs, and test output are excluded. Other repository documentation is linked on GitHub.
 
 `test-project` validates real public entry points through a content-hashed tarball. On a fresh clone, run `pnpm prepare:test-project` from the root before installing in that directory. The preparation command updates the consumer's local dependency and lockfile.
 
