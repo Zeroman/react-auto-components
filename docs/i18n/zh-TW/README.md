@@ -12,7 +12,7 @@
 
 ## 專案狀態
 
-目前版本為 0.2.0,API 仍可能變動。需要 React 19。本套件提供 ESM 與 TypeScript 型別宣告。內建介面文字預設為英文,可透過 AutoConfigProvider.config.t 進行翻譯。
+目前版本為 0.3.0,API 仍可能變動。需要 React 19。本套件提供 ESM 與 TypeScript 型別宣告。內建介面文字預設為英文,可透過 AutoConfigProvider.config.t 進行翻譯。
 
 使用 `pnpm add @zeroman.yang/react-auto-components` 安裝（npm、yarn 同樣可用）。peer dependency 為 React 19 與 react-dom 19。請在入口引入一次樣式：`import "@zeroman.yang/react-auto-components/style.css"`。
 
