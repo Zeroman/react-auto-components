@@ -4,6 +4,9 @@
 
 ## Unreleased
 
+- `AutoTable` 展开行稳定渲染详情面板。行渲染退出 React Compiler 的自动 memo 化——此前它缓存了 TanStack 可变的 `getIsExpanded()` 调用，较慢的机器上可能出现"展开图标已切换、详情面板缺失"。
+- `AutoChat` 大历史在追加消息时保持暂停视口锚定。消息虚拟化同样退出该 memo 化——此前高负载下前置插入的锚点可能落偏一行。
+
 ## 0.3.0 - 2026-10-06
 
 - `AutoTable` 原地切换数据源。更换 `dataSource` 函数或解析后的 `source` 会直接发起新请求而无需重挂载：请求期间保留当前行并显示 `aria-busy` 与进度条，`pageIndex` 重置为 0，选择被清空。`dataSource` 的函数身份是响应式信号——请用 `useCallback` 包裹；内联函数会在每次渲染时重新请求，开发模式会警告一次。

@@ -4,6 +4,9 @@
 
 ## Unreleased
 
+- `AutoTable` expanded rows render their detail panels reliably. Row rendering opts out of React Compiler memoization, which cached the mutable TanStack `getIsExpanded()` call and could show an expanded toggle without its detail panel on slower machines.
+- `AutoChat` large histories keep the paused viewport anchored on prepend. The message virtualizer opts out of the same memoization, which could settle the prepend anchor a row off under load.
+
 ## 0.3.0 - 2026-10-06
 
 - `AutoTable` switches data sources in place. Changing the `dataSource` function or the resolved `source` starts a fresh request without remounting: current rows stay visible under `aria-busy` with a progress bar, `pageIndex` resets to 0, and selection clears. The `dataSource` identity is a reactive signal — wrap it in `useCallback`; an inline function re-requests on every render and dev mode warns once.
