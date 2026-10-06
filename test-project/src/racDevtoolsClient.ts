@@ -19,6 +19,8 @@ declare global {
 if (import.meta.hot) {
   const hot = import.meta.hot;
   const clientId = crypto.randomUUID();
+  // Tests and external tools pin commands to this tab through it.
+  (globalThis as { __racClientId?: string }).__racClientId = clientId;
   let attached: Nav | undefined;
 
   const send = (payload: Record<string, unknown>) =>

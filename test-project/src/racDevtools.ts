@@ -76,14 +76,18 @@ export function racDevtoolsPlugin(): Plugin {
         );
       }, timeoutMs);
       pending.set(id, { resolve, reject, timer });
-      // Target the page that loaded most recently (its ready event). Stale
-      // tabs ignore commands addressed to another clientId.
-      const target = activeClientId ? clients.get(activeClientId) : undefined;
+      // Callers may pin a page through payload.clientId (parallel test workers
+      // each own a tab); without it fall back to the most recently ready page.
+      const wanted = (payload as { clientId?: unknown } | null)?.clientId;
+      const targetId =
+        typeof wanted === "string" && wanted ? wanted : activeClientId;
+      // Stale tabs ignore commands addressed to another clientId.
+      const target = targetId ? clients.get(targetId) : undefined;
       // eslint-disable-next-line no-console
       console.log(
-        `[rac-dbg] send cmd=${cmd} activeId=${activeClientId ?? "-"} target=${!!target}`,
+        `[rac-dbg] send cmd=${cmd} targetId=${targetId ?? "-"} live=${!!target}`,
       );
-      const data = { id, cmd, target: activeClientId, payload };
+      const data = { id, cmd, target: targetId, payload };
       if (typeof target?.send === "function")
         target.send({ type: "custom", event: "rac:cmd", data });
       else
@@ -334,7 +338,12 @@ export function racDevtoolsPlugin(): Plugin {
               return;
             }
             if (route === "state" && req.method === "GET") {
-              respondJson(res, 200, await sendCommand("state", null, 5000));
+              const clientId = url.searchParams.get("clientId") ?? undefined;
+              respondJson(
+                res,
+                200,
+                await sendCommand("state", clientId ? { clientId } : null, 5000),
+              );
               return;
             }
             if (route === "events" && req.method === "GET") {

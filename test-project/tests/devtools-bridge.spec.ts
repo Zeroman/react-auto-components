@@ -7,14 +7,37 @@ async function connected(
   return ((await response.json()) as { connected: boolean }).connected;
 }
 
+// Parallel workers each own a tab. Relay commands must stay pinned to this
+// test's tab instead of racing to whichever tab loaded most recently.
+async function pageClientId(page: import("@playwright/test").Page) {
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          () =>
+            (globalThis as { __racClientId?: string }).__racClientId ?? "",
+        ),
+      { timeout: 15000 },
+    )
+    .toBeTruthy();
+  return page.evaluate(
+    () => (globalThis as { __racClientId?: string }).__racClientId as string,
+  );
+}
+
 test("devtools bridge reports health and live state", async ({
   page,
   request,
 }) => {
   await page.goto("/");
   await expect.poll(() => connected(request), { timeout: 30000 }).toBe(true);
+  const clientId = await pageClientId(page);
   await expect(async () => {
-    const state = (await (await request.get("/__rac/state")).json()) as {
+    const state = (await (
+      await request.get(
+        `/__rac/state?clientId=${encodeURIComponent(clientId)}`,
+      )
+    ).json()) as {
       path: string[];
       pathString: string;
     };
@@ -24,14 +47,16 @@ test("devtools bridge reports health and live state", async ({
 });
 
 test("devtools goto drives the visible page", async ({ page, request }) => {
+  test.setTimeout(90000);
   await page.goto("/");
   await expect.poll(() => connected(request), { timeout: 30000 }).toBe(true);
-  // Relay commands broadcast to every connected tab; a stale or freshly
-  // reloading tab may win the race with an error, so retry (goto is
-  // idempotent) and surface the relay error text on failure.
+  const clientId = await pageClientId(page);
+  // The command is pinned to this tab's clientId. A freshly reloading tab may
+  // not have registered its bridge yet, so retry (goto is idempotent) and
+  // surface the relay error text on failure.
   const gotoOnce = async () => {
     const response = await request.post("/__rac/goto", {
-      data: { target: "search:remote" },
+      data: { target: "search:remote", clientId },
     });
     const result = (await response.json()) as {
       status?: string;
@@ -56,9 +81,10 @@ test("devtools cmd eval/dom inspect the live page and console relays", async ({
 }) => {
   await page.goto("/");
   await expect.poll(() => connected(request), { timeout: 30000 }).toBe(true);
+  const clientId = await pageClientId(page);
   const command = async (cmd: string, payload: Record<string, unknown>) => {
     const response = await request.post("/__rac/cmd", {
-      data: { cmd, payload },
+      data: { cmd, payload: { ...payload, clientId } },
     });
     const body = (await response.json()) as Record<string, unknown>;
     expect(response.ok(), String(body.error ?? "relay rejected")).toBeTruthy();
