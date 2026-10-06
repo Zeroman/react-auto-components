@@ -161,13 +161,15 @@ for (const mode of ["horizontal", "vertical"] as const) {
 test("server mode and large table have no runtime errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.getByRole("tab", { name: "Mock server", exact: true }).click();
+  await page
+    .getByRole("tab", { name: "Server-driven Mock", exact: true })
+    .click();
   await page.getByTestId("table-server-query").click();
   await expect(page.getByText("48 records")).toBeVisible();
   await page.getByRole("button", { name: "Next page" }).click();
   await expect(page.getByText("Page 2 / 5")).toBeVisible();
-  await page.getByRole("tab", { name: "10,000 rows of data" }).click();
-  await expect(page.getByText("10,000 records")).toBeVisible();
+  await page.getByRole("tab", { name: "Massive data" }).click();
+  await expect(page.getByText("100,000 records")).toBeVisible();
   expect(await page.getByRole("row").count()).toBeLessThan(40);
   expect(errors).toEqual([]);
 });
@@ -204,19 +206,22 @@ test("dynamic table expansion, column resizing and export work in the browser", 
     browserName !== "chromium",
     "expansion geometry is chromium-calibrated; firefox/webkit layout is under investigation",
   );
+  await page.getByRole("tab", { name: "Tree Table", exact: true }).click();
+  await page.getByRole("button", { name: "Expand row 1", exact: true }).click();
+  const child = page.locator('tr[data-row-id="1-child"]');
+  await expect(child).toBeVisible();
   await page
-    .getByRole("tab", { name: "Tree & Expansion", exact: true })
+    .getByRole("tab", { name: "Expandable Rows", exact: true })
     .click();
   await page.getByRole("button", { name: "Expand row 1", exact: true }).click();
   await expect(page.getByTestId("expanded-detail").first()).toBeVisible();
-  const child = page.locator('tr[data-row-id="1-child"]');
-  await expect(child).toBeVisible();
   const detailBox = await page
     .getByTestId("expanded-detail")
     .first()
     .boundingBox();
-  const childBox = await child.boundingBox();
-  expect(childBox!.y).toBeGreaterThanOrEqual(detailBox!.y + detailBox!.height);
+  const nextRow = page.locator('tr[data-row-id="2"]');
+  const nextBox = await nextRow.boundingBox();
+  expect(nextBox!.y).toBeGreaterThanOrEqual(detailBox!.y + detailBox!.height);
   await page.getByRole("tab", { name: "Local Data", exact: true }).click();
   const separator = page.getByRole("separator", {
     name: "Resize column Project Name",

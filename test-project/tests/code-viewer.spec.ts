@@ -58,7 +58,7 @@ test("server-driven mode opens its integration source and includes shared schema
   page,
 }) => {
   await page
-    .getByRole("tab", { name: "Mock server", exact: true })
+    .getByRole("tab", { name: "Server-driven Mock", exact: true })
     .click();
   await page.mouse.move(0, 0);
   await page.getByRole("button", { name: "View code" }).click();

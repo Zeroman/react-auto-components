@@ -174,10 +174,7 @@ test("switching to remaining height preserves the page heading, description and 
   page,
 }) => {
   await page.getByRole("tab", { name: "Local Data", exact: true }).click();
-  const selectors = [
-    ".page-heading",
-    ".demo-navigation .auto-tabs-heading",
-  ];
+  const selectors = [".page-heading", ".demo-navigation .auto-tabs-heading"];
   const before = await Promise.all(
     selectors.map((selector) => page.locator(selector).boundingBox()),
   );

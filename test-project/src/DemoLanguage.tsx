@@ -1,12 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   detectLocale,
   isPreference,
@@ -14,16 +6,9 @@ import {
   languageStorageKey,
   translateMessage,
   type LanguagePreference,
-  type Locale,
 } from "./locale";
+import { DemoLanguageContext, useDemoLanguage, useDemoText } from "./i18n";
 
-type DemoLanguage = {
-  locale: Locale;
-  preference: LanguagePreference;
-  setPreference: (value: LanguagePreference) => void;
-  translate: (key: string, fallback?: string) => string;
-};
-const Context = createContext<DemoLanguage | null>(null);
 const browserLanguages = () =>
   navigator.languages?.length ? navigator.languages : [navigator.language];
 
@@ -69,36 +54,16 @@ export function DemoLanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = locale;
   }, [locale]);
   const translate = useCallback(
-    (key: string, fallback?: string) => translateMessage(locale, key, fallback),
+    (key: string, fallback?: string) =>
+      translateMessage(locale, key, fallback),
     [locale],
   );
   const value = useMemo(
     () => ({ locale, preference, setPreference, translate }),
     [locale, preference, setPreference, translate],
   );
-  return <Context value={value}>{children}</Context>;
-}
-
-export function useDemoLanguage() {
-  const value = useContext(Context);
-  if (!value) throw new Error("DemoLanguageProvider is required");
-  return value;
-}
-
-export function useDemoText() {
-  const { translate } = useDemoLanguage();
-  return useCallback(
-    (key: string, values: readonly unknown[] = []) =>
-      translate(key).replace(/\{(\d+)\}/g, (token, index: string) =>
-        Number(index) < values.length
-          ? String(
-              typeof values[Number(index)] === "string"
-                ? translate(String(values[Number(index)]))
-                : values[Number(index)],
-            )
-          : token,
-      ),
-    [translate],
+  return (
+    <DemoLanguageContext value={value}>{children}</DemoLanguageContext>
   );
 }
 

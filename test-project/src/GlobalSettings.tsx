@@ -1,13 +1,12 @@
-import { useDemoText, LanguagePicker } from "./i18n";
+import { useDemoText } from "./i18n";
+import { LanguagePicker } from "./DemoLanguage";
 import type {
   AutoFormLayout,
   ComponentDensity,
   ComponentSize,
   TableDensity,
 } from "@zeroman.yang/react-auto-components";
-type StudioFormLayout = Required<
-  Omit<AutoFormLayout, "classNames" | "styles">
->;
+type StudioFormLayout = Required<Omit<AutoFormLayout, "classNames" | "styles">>;
 export interface StudioSettings {
   size: ComponentSize;
   density: ComponentDensity;
@@ -15,7 +14,8 @@ export interface StudioSettings {
   tabsDensity: ComponentDensity;
   form: StudioFormLayout;
   /** Light/dark are the built-in default theme; presets add popular looks. */
-  theme: "auto" | "light" | "dark" | "antd" | "github" | "material" | "bootstrap";
+  theme:
+    "auto" | "light" | "dark" | "antd" | "github" | "material" | "bootstrap";
 }
 export const defaultStudioSettings: StudioSettings = {
   size: "medium",

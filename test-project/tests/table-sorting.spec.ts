@@ -8,7 +8,9 @@ for (const mode of ["local", "remote"] as const) {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/");
     if (mode === "remote") {
-      await page.getByRole("tab", { name: "Mock server", exact: true }).click();
+      await page
+        .getByRole("tab", { name: "Server-driven Mock", exact: true })
+        .click();
       await page.getByTestId("table-server-query").click();
     }
     const table = page.getByTestId(`rac-table-projects-${mode}`);
@@ -100,3 +102,42 @@ for (const mode of ["local", "remote"] as const) {
       .toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]);
   });
 }
+
+test("table row context menu opens, applies polished styling, and handles click", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const table = page.getByTestId("rac-table-projects-local");
+  const firstRow = table.locator("tbody tr[data-row-id]").first();
+  await firstRow.click({ button: "right" });
+  const menu = page.locator(".auto-context-menu");
+  await expect(menu).toBeVisible();
+  const copyItem = menu.getByRole("menuitem", { name: "Copy project name" });
+  const deleteItem = menu.getByRole("menuitem", { name: "Delete" });
+  await expect(copyItem).toBeVisible();
+  await expect(deleteItem).toBeVisible();
+  await copyItem.click();
+  await expect(menu).toHaveCount(0);
+});
+
+test("table row context menu renders with correct styles in dark mode", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .locator("html")
+    .evaluate((el) => el.setAttribute("data-auto-theme", "dark"));
+  await page
+    .locator(".topbar")
+    .getByTestId("language-picker")
+    .selectOption("zh-CN");
+  const table = page.getByTestId("rac-table-projects-local");
+  const firstRow = table.locator("tbody tr[data-row-id]").first();
+  await firstRow.click({ button: "right" });
+  const menu = page.locator(".auto-context-menu");
+  await expect(menu).toBeVisible();
+  await expect(
+    menu.getByRole("menuitem", { name: "复制项目名称" }),
+  ).toBeVisible();
+  await expect(menu.getByRole("menuitem", { name: "删除" })).toBeVisible();
+});

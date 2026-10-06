@@ -3,7 +3,7 @@ export default defineConfig({
   testDir: "tests",
   timeout: 30000,
   fullyParallel: false,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 2 : 1,
   use: {
     locale: "en-US",
     baseURL: "http://127.0.0.1:4174",

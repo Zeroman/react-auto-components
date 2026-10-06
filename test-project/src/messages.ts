@@ -7,15 +7,16 @@ const messages: Record<string, Record<string, string>> = {
     "Navigation Tree:": "导航树：",
     "Structural path": "结构路径",
     "Active child": "激活子项",
-    "Parameters": "参数",
+    Parameters: "参数",
     "Loading data for projectId": "正在加载项目数据 projectId",
     "Data loaded successfully for projectId": "数据加载成功 projectId",
-    "Request cancelled by navigation transition (AbortSignal).": "请求已被导航转场中止 (AbortSignal)。",
+    "Request cancelled by navigation transition (AbortSignal).":
+      "请求已被导航转场中止 (AbortSignal)。",
     "Navigation Result": "导航结果",
     "Test Unknown Route": "测试未知路径",
-    "Role": "角色",
+    Role: "角色",
     "Click to toggle": "点击切换",
-    "Param": "参数",
+    Param: "参数",
     "Async Request Status": "异步请求状态",
     "Admin Audit View": "管理员审计视图",
     "Access granted for role 'admin'.": "已授予角色 'admin' 访问权限。",
@@ -31,7 +32,7 @@ const messages: Record<string, Record<string, string>> = {
     Ready: "就绪",
     none: "无",
     "Navigation Tree & History": "组件树与历史同步",
-    "AutoNav": "组件导航",
+    AutoNav: "组件导航",
     "Manual Search": "手动搜索",
     "Cross-field & Multi-select": "跨字段与多选",
     Keyword: "关键词",
@@ -64,6 +65,8 @@ const messages: Record<string, Record<string, string>> = {
     End: "结束",
     Start: "开始",
     "Scroll list": "滚动列表",
+    "Scroll tabs left": "向左滚动标签页",
+    "Scroll tabs right": "向右滚动标签页",
     Search: "搜索",
     "Collapse filters": "收起条件",
     "More filters": "更多条件",
@@ -72,8 +75,14 @@ const messages: Record<string, Record<string, string>> = {
     "Export complete": "导出完成",
     "{0} records": "{0} 条记录",
     "{0} selected": "已选 {0} 项",
+    "Clear selection": "清空选择",
+    "Selection actions": "选择操作",
     Add: "新增",
     "Delete selected": "删除所选",
+    Import: "导入",
+    "Archive selected": "归档所选",
+    "Import sample data": "导入示例数据",
+    "Archived {0} projects": "已归档 {0} 个项目",
     Refresh: "刷新",
     Settings: "设置",
     "Exporting…": "导出中…",
@@ -196,16 +205,17 @@ const messages: Record<string, Record<string, string>> = {
     Completed: "已完成",
     "In Progress": "进行中",
     "Copy project name": "复制项目名称",
-    "✦ Double-click a cell to copy · Shift for multi-column sort · Drag to resize columns":
-      "✦ 双击单元格复制 · Shift 多列排序 · 拖拽调整列宽",
+    "✦ Double-click a cell to copy · Shift for multi-column sort · Drag header to reorder · Drag edge to resize":
+      "✦ 双击单元格复制 · Shift 多列排序 · 拖拽表头调序 · 拖拽边缘调宽",
     "Project Workbench": "项目工作台",
     "Search, sort, layout, export, and edit — all in one workflow.":
       "搜索、排序、布局、导出与编辑，保持在同一工作流中。",
     "Local Data": "本地数据",
-    "Server-side": "服务端",
+    "RSQL query": "RSQL 查询",
     "Mock server": "模拟服务",
-    "10,000 rows of data": "万行数据",
-    "Tree & Expansion": "树形与展开",
+    "Massive data": "海量数据",
+    "Tree Table": "树形表格",
+    "Expandable Rows": "可展开行",
     "Remaining Height": "剩余高度",
     'Hold Shift and click column headers to sort by multiple columns. Double-click a project name to copy it, and save your own layout in "Settings".':
       "按住 Shift 点击列标题可多列排序。双击项目名称复制内容，在「设置」中保存专属布局。",
@@ -325,8 +335,22 @@ const messages: Record<string, Record<string, string>> = {
     Example: "标签示例",
     "Layout and nesting": "布局与嵌套",
     Basic: "基本功能",
+    "Overflow scrolling": "标签溢出滚动",
+    "First tab": "第一个标签",
+    "Last tab": "最后一个标签",
+    "Go to home tab": "回到主页标签",
+    "Drag to reorder": "拖拽调整列顺序",
+    "When tabs exceed the row width, edge scroll buttons appear and the active tab scrolls into view.":
+      "标签超出行宽时，两侧出现滚动按钮，激活的标签会自动滚入视野。",
+    "When tabs exceed the row width, scroll buttons appear on both edges and the active tab scrolls into view.":
+      "标签超出行宽时，两侧出现滚动按钮，激活的标签会自动滚入视野。",
+    "Overflow scrolling is horizontal-only — switch the mode above.":
+      "溢出滚动仅在水平模式生效——在上方切换模式。",
+    "Panels keep their state while the tab row scrolls.":
+      "标签行滚动时，各面板保持自身状态。",
+    "Project {0}": "项目 {0}",
     "Dynamic tabs": "动态标签",
-    "Access control": "权限控制",
+    "Tab features": "标签特性",
     "Open, switch, and close pages. The pinned tab stays. Notes live on the tab and remain after refresh.":
       "打开、切换和关闭页面。固定标签不能关闭，备注保存在标签上，刷新后仍然保留。",
     Workspace: "工作台",
@@ -437,9 +461,22 @@ const messages: Record<string, Record<string, string>> = {
     "Order Service Refactoring": "订单服务重构",
     "Design System Development": "设计系统建设",
     "Knowledge Base Migration": "知识库迁移",
+    "Realtime Data Pipeline": "实时数据管道",
+    "Edge Gateway Rollout": "边缘网关部署",
+    "Compliance Reporting Engine": "合规报表引擎",
+    "Customer Portal Redesign": "客户门户改版",
+    "Inventory Forecast Model": "库存预测模型",
+    "Multi-region CDN Upgrade": "多区域 CDN 升级",
+    "Payment Reconciliation Job": "支付对账任务",
+    "Zero-downtime Migration": "零停机迁移",
+    "Chen Ruolin": "陈若琳",
     "Lin Yu'an": "林予安",
     "Zhou Zimo": "周子墨",
     "Li Siyuan": "李思远",
+    "Wang Xiaoyu": "王小雨",
+    "Zhao Mingxuan": "赵明轩",
+    "Sun Qihang": "孙启航",
+    "Xu Lanqing": "徐岚清",
     "Pending Start": "待启动",
     Hangzhou: "杭州",
     Shenzhen: "深圳",
@@ -509,10 +546,12 @@ const messages: Record<string, Record<string, string>> = {
     "View on GitHub": "在 GitHub 查看",
     "Add, edit, delete and select rows entirely in local state — no server required.":
       "新增、编辑、删除与选择行全部在本地状态中完成，无需服务端。",
-    "10,000 rows stay smooth through row virtualization; scroll and sort without jank.":
-      "行虚拟化让 10,000 行数据保持流畅，滚动与排序不卡顿。",
-    "Tree hierarchy, expandable detail rows and merged cells in one table.":
-      "树形层级、可展开详情行与合并单元格集于一张表格。",
+    "100,000 rows with heavily repeated values stay smooth through row virtualization; scroll, sort, and filter without jank.":
+      "十万行级、数值高度重复的数据在行虚拟化下保持流畅，滚动、排序与过滤不卡顿。",
+    "Rows expand into child rows through a getChildren hierarchy.":
+      "通过 getChildren 层级将行展开为子行。",
+    "Detail panels join virtual height measurement so scrolling stays correct.":
+      "详情面板参与虚拟高度测量，滚动时行位置始终正确。",
     "The table fills the viewport height left over by the page layout.":
       "表格填满页面布局剩余的视口高度。",
     "The query AST is serialized to RSQL and sent to a mock source for server-side filtering.":
@@ -521,8 +560,8 @@ const messages: Record<string, Record<string, string>> = {
       "水平与垂直标签页布局，面板状态得以保留。",
     "Open, close and reorder tabs at runtime, workspace style.":
       "运行时打开、关闭并重排标签页，工作区风格。",
-    "Tabs filtered by roles and permissions through AutoConfigProvider.canAccess.":
-      "通过 AutoConfigProvider.canAccess 按角色与权限过滤标签页。",
+    "Mounting modes, hidden and closable tabs, nested groups, icons and role-gated tabs.":
+      "挂载模式、隐藏与可关闭标签、嵌套分组、图标与角色限制标签。",
     "Streaming replies, stop, retry and anchored history loading.":
       "流式回复、停止、重试与锚定历史加载。",
     "Tens of thousands of variable-height messages stay responsive via virtualization.":
@@ -606,6 +645,8 @@ const messages: Record<string, Record<string, string>> = {
     End: "End",
     Start: "Start",
     "Scroll list": "Scroll list",
+    "Scroll tabs left": "Scroll tabs left",
+    "Scroll tabs right": "Scroll tabs right",
     Search: "Search",
     "Collapse filters": "Collapse filters",
     "More filters": "More filters",
@@ -615,8 +656,14 @@ const messages: Record<string, Record<string, string>> = {
     "Export complete": "Export complete",
     "{0} records": "{0} records",
     "{0} selected": "{0} selected",
+    "Clear selection": "Clear selection",
+    "Selection actions": "Selection actions",
     Add: "Add",
     "Delete selected": "Delete selected",
+    Import: "Import",
+    "Archive selected": "Archive selected",
+    "Import sample data": "Import sample data",
+    "Archived {0} projects": "Archived {0} projects",
     Refresh: "Refresh",
     Settings: "Settings",
     "Exporting…": "Exporting…",
@@ -740,16 +787,17 @@ const messages: Record<string, Record<string, string>> = {
     Completed: "Completed",
     "In Progress": "In Progress",
     "Copy project name": "Copy project name",
-    "✦ Double-click a cell to copy · Shift for multi-column sort · Drag to resize columns":
-      "✦ Double-click a cell to copy · Shift for multi-column sort · Drag to resize columns",
+    "✦ Double-click a cell to copy · Shift for multi-column sort · Drag header to reorder · Drag edge to resize":
+      "✦ Double-click a cell to copy · Shift for multi-column sort · Drag header to reorder · Drag edge to resize",
     "Project Workbench": "Project Workbench",
     "Search, sort, layout, export, and edit — all in one workflow.":
       "Search, sort, layout, export, and edit — all in one workflow.",
     "Local Data": "Local Data",
-    "Server-side": "Server-side",
+    "RSQL query": "RSQL query",
     "Mock server": "Mock server",
-    "10,000 rows of data": "10,000 rows of data",
-    "Tree & Expansion": "Tree & Expansion",
+    "Massive data": "Massive data",
+    "Tree Table": "Tree Table",
+    "Expandable Rows": "Expandable Rows",
     "Remaining Height": "Remaining Height",
     'Hold Shift and click column headers to sort by multiple columns. Double-click a project name to copy it, and save your own layout in "Settings".':
       'Hold Shift and click column headers to sort by multiple columns. Double-click a project name to copy it, and save your own layout in "Settings".',
@@ -876,8 +924,24 @@ const messages: Record<string, Record<string, string>> = {
     Example: "Example",
     "Layout and nesting": "Layout and nesting",
     Basic: "Basic",
+    "Overflow scrolling": "Overflow scrolling",
+    "First tab": "First tab",
+    "Last tab": "Last tab",
+    "Go to home tab": "Go to home tab",
+    "Drag to reorder": "Drag to reorder",
+    "When tabs exceed the row width, edge scroll buttons appear and the active tab scrolls into view.":
+      "When tabs exceed the row width, edge scroll buttons appear and the active tab scrolls into view.",
+    "When tabs exceed the row width, scroll buttons appear on both edges and the active tab scrolls into view.":
+      "When tabs exceed the row width, scroll buttons appear on both edges and the active tab scrolls into view.",
+    "Overflow scrolling is horizontal-only — switch the mode above.":
+      "Overflow scrolling is horizontal-only — switch the mode above.",
+    "Panels keep their state while the tab row scrolls.":
+      "Panels keep their state while the tab row scrolls.",
+    "Project {0}": "Project {0}",
     "Dynamic tabs": "Dynamic tabs",
-    "Access control": "Access control",
+    "Tab features": "Tab features",
+    "Mounting modes, hidden and closable tabs, nested groups, icons and role-gated tabs.":
+      "Mounting modes, hidden and closable tabs, nested groups, icons and role-gated tabs.",
     "Open, switch, and close pages. The pinned tab stays. Notes live on the tab and remain after refresh.":
       "Open, switch, and close pages. The pinned tab stays. Notes live on the tab and remain after refresh.",
     Workspace: "Workspace",
@@ -991,9 +1055,22 @@ const messages: Record<string, Record<string, string>> = {
     "Order Service Refactoring": "Order Service Refactoring",
     "Design System Development": "Design System Development",
     "Knowledge Base Migration": "Knowledge Base Migration",
+    "Realtime Data Pipeline": "Realtime Data Pipeline",
+    "Edge Gateway Rollout": "Edge Gateway Rollout",
+    "Compliance Reporting Engine": "Compliance Reporting Engine",
+    "Customer Portal Redesign": "Customer Portal Redesign",
+    "Inventory Forecast Model": "Inventory Forecast Model",
+    "Multi-region CDN Upgrade": "Multi-region CDN Upgrade",
+    "Payment Reconciliation Job": "Payment Reconciliation Job",
+    "Zero-downtime Migration": "Zero-downtime Migration",
+    "Chen Ruolin": "Chen Ruolin",
     "Lin Yu'an": "Lin Yu'an",
     "Zhou Zimo": "Zhou Zimo",
     "Li Siyuan": "Li Siyuan",
+    "Wang Xiaoyu": "Wang Xiaoyu",
+    "Zhao Mingxuan": "Zhao Mingxuan",
+    "Sun Qihang": "Sun Qihang",
+    "Xu Lanqing": "Xu Lanqing",
     "Pending Start": "Pending Start",
     Hangzhou: "Hangzhou",
     Shenzhen: "Shenzhen",
@@ -2161,8 +2238,10 @@ const messages: Record<string, Record<string, string>> = {
     "Audit is skipped: the guest role lacks audit:read.":
       "Audit はスキップされます。guest ロールには audit:read がありません。",
     "Row actions": "行アクション",
-    "Edit and Delete are enabled for admin.": "admin では編集と削除が有効です。",
-    "Guest is read-only: row actions are disabled.": "guest は読み取り専用で、行アクションは無効です。",
+    "Edit and Delete are enabled for admin.":
+      "admin では編集と削除が有効です。",
+    "Guest is read-only: row actions are disabled.":
+      "guest は読み取り専用で、行アクションは無効です。",
     Task: "タスク",
   },
   ko: {
@@ -2715,8 +2794,10 @@ const messages: Record<string, Record<string, string>> = {
     "Audit is skipped: the guest role lacks audit:read.":
       "Audit는 건너뜁니다. guest 역할에는 audit:read가 없습니다.",
     "Row actions": "행 액션",
-    "Edit and Delete are enabled for admin.": "admin에서는 편집과 삭제를 사용할 수 있습니다.",
-    "Guest is read-only: row actions are disabled.": "guest는 읽기 전용이며 행 액션이 비활성화됩니다.",
+    "Edit and Delete are enabled for admin.":
+      "admin에서는 편집과 삭제를 사용할 수 있습니다.",
+    "Guest is read-only: row actions are disabled.":
+      "guest는 읽기 전용이며 행 액션이 비활성화됩니다.",
     Task: "작업",
   },
   es: {
@@ -3282,8 +3363,10 @@ const messages: Record<string, Record<string, string>> = {
     "Audit is skipped: the guest role lacks audit:read.":
       "Audit se omite: al rol guest le falta audit:read.",
     "Row actions": "Acciones de fila",
-    "Edit and Delete are enabled for admin.": "Editar y Eliminar están activados para admin.",
-    "Guest is read-only: row actions are disabled.": "guest es de solo lectura: las acciones de fila están desactivadas.",
+    "Edit and Delete are enabled for admin.":
+      "Editar y Eliminar están activados para admin.",
+    "Guest is read-only: row actions are disabled.":
+      "guest es de solo lectura: las acciones de fila están desactivadas.",
     Task: "Tarea",
   },
   fr: {
@@ -3847,8 +3930,10 @@ const messages: Record<string, Record<string, string>> = {
     "Audit is skipped: the guest role lacks audit:read.":
       "Audit est ignoré : le rôle guest ne possède pas audit:read.",
     "Row actions": "Actions de ligne",
-    "Edit and Delete are enabled for admin.": "Modifier et Supprimer sont activés pour admin.",
-    "Guest is read-only: row actions are disabled.": "guest est en lecture seule : les actions de ligne sont désactivées.",
+    "Edit and Delete are enabled for admin.":
+      "Modifier et Supprimer sont activés pour admin.",
+    "Guest is read-only: row actions are disabled.":
+      "guest est en lecture seule : les actions de ligne sont désactivées.",
     Task: "Tâche",
   },
   de: {
@@ -4417,8 +4502,10 @@ const messages: Record<string, Record<string, string>> = {
     "Audit is skipped: the guest role lacks audit:read.":
       "Audit wird übersprungen: Der Rolle guest fehlt audit:read.",
     "Row actions": "Zeilenaktionen",
-    "Edit and Delete are enabled for admin.": "Bearbeiten und Löschen sind für admin aktiviert.",
-    "Guest is read-only: row actions are disabled.": "guest ist schreibgeschützt: Zeilenaktionen sind deaktiviert.",
+    "Edit and Delete are enabled for admin.":
+      "Bearbeiten und Löschen sind für admin aktiviert.",
+    "Guest is read-only: row actions are disabled.":
+      "guest ist schreibgeschützt: Zeilenaktionen sind deaktiviert.",
     Task: "Aufgabe",
   },
   "pt-BR": {
@@ -4979,8 +5066,10 @@ const messages: Record<string, Record<string, string>> = {
     "Audit is skipped: the guest role lacks audit:read.":
       "Audit é ignorado: ao papel guest falta audit:read.",
     "Row actions": "Ações de linha",
-    "Edit and Delete are enabled for admin.": "Editar e Excluir estão habilitados para admin.",
-    "Guest is read-only: row actions are disabled.": "guest é somente leitura: as ações de linha estão desabilitadas.",
+    "Edit and Delete are enabled for admin.":
+      "Editar e Excluir estão habilitados para admin.",
+    "Guest is read-only: row actions are disabled.":
+      "guest é somente leitura: as ações de linha estão desabilitadas.",
     Task: "Tarefa",
   },
   ru: {
@@ -5546,8 +5635,10 @@ const messages: Record<string, Record<string, string>> = {
     "Audit is skipped: the guest role lacks audit:read.":
       "Audit пропускается: у роли guest нет audit:read.",
     "Row actions": "Действия строк",
-    "Edit and Delete are enabled for admin.": "Изменить и Удалить доступны для admin.",
-    "Guest is read-only: row actions are disabled.": "guest доступен только для чтения: действия строк отключены.",
+    "Edit and Delete are enabled for admin.":
+      "Изменить и Удалить доступны для admin.",
+    "Guest is read-only: row actions are disabled.":
+      "guest доступен только для чтения: действия строк отключены.",
     Task: "Задача",
   },
 };

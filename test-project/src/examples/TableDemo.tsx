@@ -2,9 +2,10 @@ import { useMemo, useState } from "react";
 import { AutoTable } from "@zeroman.yang/react-auto-components";
 import { exportXlsx } from "@zeroman.yang/react-auto-components/xlsx";
 import { useDemoText } from "../i18n";
-import { useDemoData, makeProjects, createSource, type Project } from "../data";
+import { useDemoData, makeProjects, makeMassiveProjects, createSource, type Project } from "../data";
 import { AutoHeightDemo } from "./AutoHeightDemo";
-import { AdvancedTableDemo } from "./AdvancedTableDemo";
+import { TreeTableDemo } from "./TreeTableDemo";
+import { ExpandedRowsDemo } from "./ExpandedRowsDemo";
 import "./mock/mock.css";
 
 export function TableDemo({ mode }: { mode: string }) {
@@ -12,7 +13,7 @@ export function TableDemo({ mode }: { mode: string }) {
   const { columns, fields, searchFields } = useDemoData();
   const [rows, setRows] = useState(() => makeProjects(48));
   const [sentQuery, setSentQuery] = useState("");
-  const big = useMemo(() => makeProjects(10000), []);
+  const big = useMemo(() => makeMassiveProjects(100000), []);
   const displayRows = useMemo(
     () =>
       rows.map((row) => ({
@@ -42,8 +43,10 @@ export function TableDemo({ mode }: { mode: string }) {
   const content =
     mode === "auto-height" ? (
       <AutoHeightDemo />
-    ) : mode === "advanced" ? (
-      <AdvancedTableDemo />
+    ) : mode === "tree" ? (
+      <TreeTableDemo />
+    ) : mode === "expanded" ? (
+      <ExpandedRowsDemo />
     ) : (
       <AutoTable<Project>
         key={mode}
@@ -105,10 +108,49 @@ export function TableDemo({ mode }: { mode: string }) {
           {
             id: "copy",
             label: tr("Copy project name"),
+            icon: (
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+            ),
             onClick: (row) => navigator.clipboard.writeText(row.name),
           },
+          {
+            id: "delete",
+            label: tr("Delete"),
+            icon: (
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              </svg>
+            ),
+            danger: true,
+            separator: true,
+            onClick: (row) => setRows((r) => r.filter((x) => x.id !== row.id)),
+          },
         ]}
-        toolbar={
+        headerExtra={
           <span
             className="auto-muted"
             style={{
@@ -116,10 +158,25 @@ export function TableDemo({ mode }: { mode: string }) {
             }}
           >
             {tr(
-              "✦ Double-click a cell to copy · Shift for multi-column sort · Drag to resize columns",
+              "✦ Double-click a cell to copy · Shift for multi-column sort · Drag header to reorder · Drag edge to resize",
             )}
           </span>
         }
+        actions={
+          <button type="button" onClick={() => alert(tr("Import sample data"))}>
+            {tr("Import")}
+          </button>
+        }
+        batchActions={(selected) => (
+          <button
+            type="button"
+            onClick={() =>
+              alert(tr("Archived {0} projects", [selected.length]))
+            }
+          >
+            {tr("Archive selected")} ({selected.length})
+          </button>
+        )}
         exportXlsx={exportXlsx}
       />
     );

@@ -46,6 +46,49 @@ export function makeProjects(count: number): Project[] {
     }),
   );
 }
+// Larger pools drive the massive-data demo: unlike makeProjects, values repeat
+// across the row count the way real aggregated datasets do — no unique suffixes,
+// bucketed budgets, and dates spread over the whole year.
+const massiveNames = [
+  ...names,
+  "Realtime Data Pipeline",
+  "Edge Gateway Rollout",
+  "Compliance Reporting Engine",
+  "Customer Portal Redesign",
+  "Inventory Forecast Model",
+  "Multi-region CDN Upgrade",
+  "Payment Reconciliation Job",
+  "Zero-downtime Migration",
+];
+const massivePeople = [
+  ...people,
+  "Wang Xiaoyu",
+  "Zhao Mingxuan",
+  "Sun Qihang",
+  "Xu Lanqing",
+];
+const massiveStatuses = ["In Progress", "Completed", "Pending Start"];
+const massiveRegions = ["Shanghai", "Hangzhou", "Shenzhen"];
+export function makeMassiveProjects(count: number): Project[] {
+  return Array.from(
+    {
+      length: count,
+    },
+    (_, i) => ({
+      id: String(i + 1),
+      // Strided picks keep adjacent rows varied while every value repeats
+      // heavily across a huge row count.
+      name: massiveNames[(i * 7) % massiveNames.length],
+      owner: massivePeople[(i * 3) % massivePeople.length],
+      status: massiveStatuses[i % 3],
+      budget: 12000 + (i % 5) * 15000,
+      progress: (i * 13 + 32) % 101,
+      region: massiveRegions[i % 3],
+      active: i % 4 !== 0,
+      date: `2026-${String((i % 12) + 1).padStart(2, "0")}-${String((i % 28) + 1).padStart(2, "0")}`,
+    }),
+  );
+}
 export function createSource(rows: Project[]): DataSource<Project> {
   return async (q, { signal }) => {
     await new Promise<void>((resolve, reject) => {

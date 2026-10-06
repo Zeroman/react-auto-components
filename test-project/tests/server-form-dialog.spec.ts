@@ -2,11 +2,9 @@ import { expect, test, type Page } from "@playwright/test";
 
 async function openDemo(page: Page, component: string) {
   await page.goto("/");
-  const branch = page
-    .locator("aside li")
-    .filter({
-      has: page.getByRole("button", { name: component, exact: true }),
-    });
+  const branch = page.locator("aside li").filter({
+    has: page.getByRole("button", { name: component, exact: true }),
+  });
   await branch.getByRole("button", { name: component, exact: true }).click();
   await branch
     .getByRole("button", { name: "Server-driven Mock", exact: true })

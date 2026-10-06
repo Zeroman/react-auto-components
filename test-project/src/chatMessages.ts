@@ -372,6 +372,11 @@ const chatMessages: Record<string, Record<string, string>> = {
     "chat.inputHint": "Enter 发送 · Shift+Enter 换行",
     "chat.docSummary":
       "AutoChat 提供轻量的对话布局，支持流式跟随、历史消息加载和消息输入框。传入 React 内容或 renderMessage 即可渲染消息，无需额外的运行时依赖。",
+    Conversation: "对话",
+    "Large history": "海量历史",
+    Rendering: "消息渲染",
+    "Message layout": "消息布局",
+    "Edge states": "边界状态",
   },
   "zh-TW": {
     "chat.title": "聊天",

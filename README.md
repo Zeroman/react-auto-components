@@ -36,7 +36,7 @@ pnpm prepare:test-project
 pnpm --dir test-project dev
 ```
 
-Open http://127.0.0.1:4173. The test project includes pages for all seven components, local/server-side/10,000-row/tree tables, CRUD, failed-submission retries, drafts, nested tabs, and dynamic row heights.
+Open http://127.0.0.1:4173. The test project includes pages for all seven components, local/server-side/100,000-row/tree/expandable-row tables, CRUD, failed-submission retries, drafts, nested tabs, and dynamic row heights.
 
 The demo automatically detects the browser language, with English as the fallback. Choose a language from the header or Global settings; the selection is remembered across reloads. Select Auto to follow the browser again. Ten languages are supported. Pages fill the viewport, with tables and long panels scrolling inside their own areas.
 

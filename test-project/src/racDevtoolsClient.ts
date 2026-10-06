@@ -71,10 +71,7 @@ if (import.meta.hot) {
     },
     fill({ testid, value }) {
       const el = find(String(testid)) as
-        | HTMLInputElement
-        | HTMLTextAreaElement
-        | HTMLSelectElement
-        | null;
+        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
       if (!el) return { filled: false };
       if (el instanceof HTMLSelectElement) {
         el.value = String(value);
@@ -123,56 +120,49 @@ if (import.meta.hot) {
     },
   };
 
-  hot.on(
-    "rac:cmd",
-    async (message: unknown) => {
-      // vite 8 hands the full custom-event envelope to raw-socket sends; the
-      // wrapper path delivers the data directly. Accept both shapes.
-      const envelope = (message ?? {}) as {
+  hot.on("rac:cmd", async (message: unknown) => {
+    // vite 8 hands the full custom-event envelope to raw-socket sends; the
+    // wrapper path delivers the data directly. Accept both shapes.
+    const envelope = (message ?? {}) as {
+      id?: string;
+      cmd?: string;
+      target?: string;
+      payload?: { target?: string; params?: Record<string, string | null> };
+      data?: {
         id?: string;
         cmd?: string;
         target?: string;
         payload?: { target?: string; params?: Record<string, string | null> };
-        data?: {
-          id?: string;
-          cmd?: string;
-          target?: string;
-          payload?: { target?: string; params?: Record<string, string | null> };
-        };
       };
-      const id = envelope.id ?? envelope.data?.id;
-      const cmd = envelope.cmd ?? envelope.data?.cmd;
-      const target = envelope.target ?? envelope.data?.target;
-      const payload =
-        envelope.payload ?? envelope.data?.payload;
-      if (target && target !== clientId) return; // addressed to another page
-      try {
-        const nav = globalThis.__racNav;
-        if (!nav) throw new Error("navigation engine not mounted yet");
-        const options = {
-          params:
-            (payload?.params as Record<string, string> | undefined) ??
-            undefined,
-        };
-        let data: unknown;
-        if (cmd === "state") data = nav.getState();
-        else if (cmd === "goto")
-          data = await nav.goto(payload?.target ?? "", options);
-        else if (cmd === "replace")
-          data = await nav.replace(payload?.target ?? "", options);
-        else if (cmd === "setParams")
-          data = await nav.setParams(
-            (payload?.params ?? {}) as Parameters<typeof nav.setParams>[0],
-          );
-        else if (cmd && cmd in commands)
-          data = await commands[cmd](
-            (payload ?? {}) as Record<string, unknown>,
-          );
-        else throw new Error(`unknown command "${cmd}"`);
-        hot.send("rac:result", { id, ok: true, data });
-      } catch (error) {
-        hot.send("rac:result", { id, ok: false, error: String(error) });
-      }
-    },
-  );
+    };
+    const id = envelope.id ?? envelope.data?.id;
+    const cmd = envelope.cmd ?? envelope.data?.cmd;
+    const target = envelope.target ?? envelope.data?.target;
+    const payload = envelope.payload ?? envelope.data?.payload;
+    if (target && target !== clientId) return; // addressed to another page
+    try {
+      const nav = globalThis.__racNav;
+      if (!nav) throw new Error("navigation engine not mounted yet");
+      const options = {
+        params:
+          (payload?.params as Record<string, string> | undefined) ?? undefined,
+      };
+      let data: unknown;
+      if (cmd === "state") data = nav.getState();
+      else if (cmd === "goto")
+        data = await nav.goto(payload?.target ?? "", options);
+      else if (cmd === "replace")
+        data = await nav.replace(payload?.target ?? "", options);
+      else if (cmd === "setParams")
+        data = await nav.setParams(
+          (payload?.params ?? {}) as Parameters<typeof nav.setParams>[0],
+        );
+      else if (cmd && cmd in commands)
+        data = await commands[cmd]((payload ?? {}) as Record<string, unknown>);
+      else throw new Error(`unknown command "${cmd}"`);
+      hot.send("rac:result", { id, ok: true, data });
+    } catch (error) {
+      hot.send("rac:result", { id, ok: false, error: String(error) });
+    }
+  });
 }

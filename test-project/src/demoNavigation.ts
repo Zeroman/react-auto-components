@@ -30,18 +30,23 @@ export const demoExamples: Record<string, readonly DemoExample[]> = {
     },
     {
       id: "server",
-      label: "Mock server",
+      label: "mock.entry",
       tip: "One mock server. Choose whether it only runs the query, or also sends the columns, search fields, and edit permission.",
     },
     {
       id: "large",
-      label: "10,000 rows of data",
-      tip: "10,000 rows stay smooth through row virtualization; scroll and sort without jank.",
+      label: "Massive data",
+      tip: "100,000 rows with heavily repeated values stay smooth through row virtualization; scroll, sort, and filter without jank.",
     },
     {
-      id: "advanced",
-      label: "Tree & Expansion",
-      tip: "Tree hierarchy, expandable detail rows and merged cells in one table.",
+      id: "tree",
+      label: "Tree Table",
+      tip: "Rows expand into child rows through a getChildren hierarchy.",
+    },
+    {
+      id: "expanded",
+      label: "Expandable Rows",
+      tip: "Detail panels join virtual height measurement so scrolling stays correct.",
     },
     {
       id: "auto-height",
@@ -77,7 +82,7 @@ export const demoExamples: Record<string, readonly DemoExample[]> = {
     },
     {
       id: "remote",
-      label: "Server-side",
+      label: "RSQL query",
       tip: "The query AST is serialized to RSQL and sent to a mock source for server-side filtering.",
     },
     serverSchema,
@@ -99,14 +104,19 @@ export const demoExamples: Record<string, readonly DemoExample[]> = {
       tip: "Horizontal and vertical tab layouts with preserved panel state.",
     },
     {
+      id: "overflow",
+      label: "Overflow scrolling",
+      tip: "When tabs exceed the row width, edge scroll buttons appear and the active tab scrolls into view.",
+    },
+    {
       id: "dynamic",
       label: "Dynamic tabs",
       tip: "Open, close and reorder tabs at runtime, workspace style.",
     },
     {
       id: "access",
-      label: "Access control",
-      tip: "Tabs filtered by roles and permissions through AutoConfigProvider.canAccess.",
+      label: "Tab features",
+      tip: "Mounting modes, hidden and closable tabs, nested groups, icons and role-gated tabs.",
     },
     serverSchema,
     permissions("tabs"),

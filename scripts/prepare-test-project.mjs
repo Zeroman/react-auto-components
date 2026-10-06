@@ -2,8 +2,9 @@ import {
   copyFileSync,
   mkdirSync,
   readFileSync,
-  writeFileSync,
+  rmSync,
   utimesSync,
+  writeFileSync,
 } from "node:fs";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
@@ -28,12 +29,26 @@ const name = `${archiveBase}-${hash}.tgz`;
 copyFileSync(archive, `${root}artifacts/${name}`);
 const manifest = `${root}test-project/package.json`;
 const consumer = JSON.parse(readFileSync(manifest, "utf8"));
-consumer.dependencies[packageName] = `file:../artifacts/${name}`;
+const next = `file:../artifacts/${name}`;
+const changed = consumer.dependencies[packageName] !== next;
+consumer.dependencies[packageName] = next;
 writeFileSync(manifest, `${JSON.stringify(consumer, null, 2)}\n`);
 run(["install", "--no-frozen-lockfile"], `${root}test-project`);
 
-// Re-resolve the installed tarball in already running Vite demo servers.
-const updatedAt = new Date();
-for (const file of ["test-project/vite.config.ts", "vite.demo.config.ts"]) {
-  utimesSync(`${root}${file}`, updatedAt, updatedAt);
+if (changed) {
+  // The tarball swap removed the previous package directory from
+  // node_modules/.pnpm. A running Vite server that restarts now would reconcile
+  // its dep-optimizer cache (node_modules/.vite) against those deleted paths
+  // and hang in "bundling dependencies..." forever — pages stop loading until a
+  // manual restart. Purge the stale cache first so the restart cold-optimizes
+  // exactly like a manual `pnpm dev`, then bump the config mtimes to trigger
+  // that single restart in every running demo server.
+  rmSync(`${root}test-project/node_modules/.vite`, {
+    recursive: true,
+    force: true,
+  });
+  const updatedAt = new Date();
+  for (const file of ["test-project/vite.config.ts", "vite.demo.config.ts"]) {
+    utimesSync(`${root}${file}`, updatedAt, updatedAt);
+  }
 }

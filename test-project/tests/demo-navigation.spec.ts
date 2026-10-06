@@ -4,9 +4,10 @@ import { openComponent } from "./helpers/navigation";
 const examples = {
   AutoTable: [
     "Local Data",
-    "Mock server",
-    "10,000 rows of data",
-    "Tree & Expansion",
+    "Server-driven Mock",
+    "Massive data",
+    "Tree Table",
+    "Expandable Rows",
     "Remaining Height",
     "Permissions",
   ],
@@ -14,14 +15,15 @@ const examples = {
     "Instant Search",
     "Manual Search",
     "Cross-field & Multi-select",
-    "Server-side (Mock)",
+    "RSQL query",
     "Server-driven Mock",
     "Permissions",
   ],
   AutoTabs: [
     "Basic",
+    "Overflow scrolling",
     "Dynamic tabs",
-    "Access control",
+    "Tab features",
     "Server-driven Mock",
     "Permissions",
   ],
@@ -85,8 +87,7 @@ for (const [component, labels] of Object.entries(examples)) {
     await openComponent(page, component);
     const tabs = page.locator(".demo-navigation").getByRole("tab");
     await expect(tabs).toHaveText(labels);
-    const serverLabel =
-      component === "AutoTable" ? "Mock server" : "Server-driven Mock";
+    const serverLabel = "Server-driven Mock";
     await openComponent(page, component, serverLabel);
     await expect(
       page
@@ -166,21 +167,29 @@ test("navigation showcase toolbar drives global goto, relative goto, params, and
   await closeDebug();
   await expect(page.locator("main")).toHaveAttribute("data-page", "table");
   await expect(
-    page.locator(".demo-navigation").getByRole("tab", { name: "10,000 rows of data" }),
+    page
+      .locator(".demo-navigation")
+      .getByRole("tab", { name: "Massive data" }),
   ).toHaveAttribute("aria-selected", "true");
 
   // 2. Global goto: chat:performance
   await debugGoto("nav-goto-chat-perf");
-  await expect(page.getByTestId("nav-path-badge")).toContainText("chat:performance");
+  await expect(page.getByTestId("nav-path-badge")).toContainText(
+    "chat:performance",
+  );
   await closeDebug();
   await expect(page.locator("main")).toHaveAttribute("data-page", "chat");
   await expect(
-    page.locator(".demo-navigation").getByRole("tab", { name: "Large history" }),
+    page
+      .locator(".demo-navigation")
+      .getByRole("tab", { name: "Large history" }),
   ).toHaveAttribute("aria-selected", "true");
 
   // 3. Deep search with params
   await debugGoto("nav-goto-deep-search");
-  await expect(page.getByTestId("nav-path-badge")).toContainText("search:instant");
+  await expect(page.getByTestId("nav-path-badge")).toContainText(
+    "search:instant",
+  );
   await expect(page.getByTestId("nav-params-badge")).toContainText("audit");
   await closeDebug();
   await expect(page.locator("main")).toHaveAttribute("data-page", "search");
@@ -189,7 +198,9 @@ test("navigation showcase toolbar drives global goto, relative goto, params, and
   await debugGoto("nav-relative-server");
   await closeDebug();
   await expect(
-    page.locator(".demo-navigation").getByRole("tab", { name: "Server-driven Mock" }),
+    page
+      .locator(".demo-navigation")
+      .getByRole("tab", { name: "Server-driven Mock" }),
   ).toHaveAttribute("aria-selected", "true");
   await expect(page.getByTestId("server-driven-demo")).toBeVisible();
 
@@ -207,11 +218,12 @@ test("navigation showcase toolbar drives global goto, relative goto, params, and
   await expect(page.getByTestId("param-project-id")).toHaveText("1");
 
   // Admin audit restricted view
-  await demoCard.getByRole("button", { name: "Enter Admin Audit (Restricted)" }).click();
+  await demoCard
+    .getByRole("button", { name: "Enter Admin Audit (Restricted)" })
+    .click();
   await expect(page.getByTestId("admin-audit-content")).toBeVisible();
 
   // Relative ./overview
   await demoCard.getByRole("button", { name: "Relative: ./overview" }).click();
   await expect(page.getByTestId("tree-active-child")).toHaveText("overview");
 });
-

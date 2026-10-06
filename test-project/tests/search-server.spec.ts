@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 test("server-side search sends RSQL over HTTP and echoes it back untouched", async ({
   page,
 }) => {
-  await page.getByRole("tab", { name: "Server-side (Mock)" }).click();
+  await page.getByRole("tab", { name: "RSQL query" }).click();
   await expect(
     page.getByRole("heading", { name: "Real-time matches (24 items)" }),
   ).toBeVisible();

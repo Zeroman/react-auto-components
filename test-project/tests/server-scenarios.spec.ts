@@ -21,7 +21,7 @@ for (const component of components) {
     await openComponent(page, component);
     await page
       .getByRole("tab", {
-        name: component === "AutoTable" ? "Mock server" : "Server-driven Mock",
+        name: "Server-driven Mock",
         exact: true,
       })
       .click();

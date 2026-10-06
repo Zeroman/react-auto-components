@@ -3,42 +3,20 @@ import { AutoTable } from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../i18n";
 import { makeProjects, type Project } from "../data";
 
-export function AdvancedTableDemo() {
+export function ExpandedRowsDemo() {
   const tr = useDemoText();
-  type Tree = Project & {
-    children?: Tree[];
-  };
-  const rows = useMemo<Tree[]>(
-    () =>
-      makeProjects(200).map((p, i) => ({
-        ...p,
-        children:
-          i < 4
-            ? [
-                {
-                  ...p,
-                  id: `${p.id}-child`,
-                  name: p.name,
-                },
-              ]
-            : undefined,
-      })),
-    [],
-  );
+  const rows = useMemo(() => makeProjects(200), []);
   return (
-    <AutoTable<Tree>
-      id="advanced-projects"
-      title={tr("Tree and dynamic expansion")}
+    <AutoTable<Project>
+      id="expanded-projects"
+      title={tr("Expandable Rows")}
       data={rows}
       rowKey="id"
       columns={[
         {
           key: "name",
           label: tr("Name"),
-          format: (value, row) =>
-            row.id.endsWith("-child")
-              ? tr("{0} · Subtasks", [String(value)])
-              : tr(String(value)),
+          format: (value) => tr(String(value)),
           width: 280,
         },
         {
@@ -55,7 +33,6 @@ export function AdvancedTableDemo() {
           format: (value) => `¥ ${Number(value).toLocaleString()}`,
         },
       ]}
-      getChildren={(row) => row.children}
       renderExpanded={(row) => (
         <div
           data-testid="expanded-detail"

@@ -10,7 +10,7 @@ async function openDemo(page: Page, name: string) {
   await parent
     .locator("..")
     .getByRole("button", {
-      name: name === "AutoTable" ? "Mock server" : "Server-driven Mock",
+      name: "Server-driven Mock",
       exact: true,
     })
     .click();

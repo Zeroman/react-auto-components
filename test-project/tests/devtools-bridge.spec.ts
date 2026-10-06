@@ -12,9 +12,7 @@ test("devtools bridge reports health and live state", async ({
   request,
 }) => {
   await page.goto("/");
-  await expect
-    .poll(() => connected(request), { timeout: 30000 })
-    .toBe(true);
+  await expect.poll(() => connected(request), { timeout: 30000 }).toBe(true);
   await expect(async () => {
     const state = (await (await request.get("/__rac/state")).json()) as {
       path: string[];
@@ -27,9 +25,7 @@ test("devtools bridge reports health and live state", async ({
 
 test("devtools goto drives the visible page", async ({ page, request }) => {
   await page.goto("/");
-  await expect
-    .poll(() => connected(request), { timeout: 30000 })
-    .toBe(true);
+  await expect.poll(() => connected(request), { timeout: 30000 }).toBe(true);
   // Relay commands broadcast to every connected tab; a stale or freshly
   // reloading tab may win the race with an error, so retry (goto is
   // idempotent) and surface the relay error text on failure.
@@ -46,9 +42,12 @@ test("devtools goto drives the visible page", async ({ page, request }) => {
     expect(result.status).toBe("success");
     expect(result.path).toEqual(["search", "remote"]);
   };
-  await expect(gotoOnce).toPass({ timeout: 30000 });
-  await expect(page).toHaveURL(/#\/search:remote/);
-  await expect(page.getByTestId("search-example-remote")).toBeVisible();
+  const gotoAndVerify = async () => {
+    await gotoOnce();
+    await expect(page).toHaveURL(/#\/search:remote/);
+    await expect(page.getByTestId("search-example-remote")).toBeVisible();
+  };
+  await expect(gotoAndVerify).toPass({ timeout: 30000 });
 });
 
 test("devtools cmd eval/dom inspect the live page and console relays", async ({
@@ -56,11 +55,11 @@ test("devtools cmd eval/dom inspect the live page and console relays", async ({
   request,
 }) => {
   await page.goto("/");
-  await expect
-    .poll(() => connected(request), { timeout: 30000 })
-    .toBe(true);
+  await expect.poll(() => connected(request), { timeout: 30000 }).toBe(true);
   const command = async (cmd: string, payload: Record<string, unknown>) => {
-    const response = await request.post("/__rac/cmd", { data: { cmd, payload } });
+    const response = await request.post("/__rac/cmd", {
+      data: { cmd, payload },
+    });
     const body = (await response.json()) as Record<string, unknown>;
     expect(response.ok(), String(body.error ?? "relay rejected")).toBeTruthy();
     return body;

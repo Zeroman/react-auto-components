@@ -6,7 +6,7 @@ test("Mock help floats on the tab and switching keeps tab click positions stable
   await page.goto("/");
   const local = page.getByRole("tab", { name: "Local Data", exact: true });
   const remote = page.getByRole("tab", {
-    name: "Mock server",
+    name: "Server-driven Mock",
     exact: true,
   });
   const before = await local.boundingBox();

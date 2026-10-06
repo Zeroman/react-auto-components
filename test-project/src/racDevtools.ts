@@ -78,17 +78,19 @@ export function racDevtoolsPlugin(): Plugin {
       pending.set(id, { resolve, reject, timer });
       // Target the page that loaded most recently (its ready event). Stale
       // tabs ignore commands addressed to another clientId.
-      const target = activeClientId
-        ? clients.get(activeClientId)
-        : undefined;
+      const target = activeClientId ? clients.get(activeClientId) : undefined;
       // eslint-disable-next-line no-console
-      console.log(`[rac-dbg] send cmd=${cmd} activeId=${activeClientId ?? "-"} target=${!!target}`);
+      console.log(
+        `[rac-dbg] send cmd=${cmd} activeId=${activeClientId ?? "-"} target=${!!target}`,
+      );
       const data = { id, cmd, target: activeClientId, payload };
       if (typeof target?.send === "function")
         target.send({ type: "custom", event: "rac:cmd", data });
       else
         reject(
-          new Error(`devtools command "${cmd}" has no live page to target yet.`),
+          new Error(
+            `devtools command "${cmd}" has no live page to target yet.`,
+          ),
         );
     });
   }
@@ -260,9 +262,7 @@ export function racDevtoolsPlugin(): Plugin {
                   data?: unknown;
                   error?: string;
                 };
-                const entry = result?.id
-                  ? pending.get(result.id)
-                  : undefined;
+                const entry = result?.id ? pending.get(result.id) : undefined;
                 if (entry) {
                   clearTimeout(entry.timer);
                   pending.delete(result.id!);
@@ -276,8 +276,7 @@ export function racDevtoolsPlugin(): Plugin {
             }
           });
           socket.on?.("close", () => {
-            for (const [id, c] of clients)
-              if (c === outlet) clients.delete(id);
+            for (const [id, c] of clients) if (c === outlet) clients.delete(id);
           });
         });
       }

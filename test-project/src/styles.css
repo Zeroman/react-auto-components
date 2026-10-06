@@ -1645,8 +1645,9 @@ h3 {
   --auto-border: #d9d9d9;
   --auto-danger: #ff4d4f;
   --auto-radius: 6px;
-  --auto-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  --auto-font:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
 }
 [data-auto-preset="github"] {
   --auto-accent: #0969da;
@@ -1658,8 +1659,9 @@ h3 {
   --auto-border: #d1d9e0;
   --auto-danger: #cf222e;
   --auto-radius: 6px;
-  --auto-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
-    Helvetica, Arial, sans-serif;
+  --auto-font:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica,
+    Arial, sans-serif;
 }
 [data-auto-preset="material"] {
   --auto-accent: #6750a4;
@@ -1683,8 +1685,9 @@ h3 {
   --auto-border: #dee2e6;
   --auto-danger: #dc3545;
   --auto-radius: 4px;
-  --auto-font: system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  --auto-font:
+    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
 }
 
 /* Navigation debug panel lives inside its dialog now. */

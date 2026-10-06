@@ -7,7 +7,8 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { useDemoText, useDemoLanguage, LanguagePicker } from "./i18n";
+import { useDemoText, useDemoLanguage } from "./i18n";
+import { LanguagePicker } from "./DemoLanguage";
 import { GlobalSettings, defaultStudioSettings } from "./GlobalSettings";
 import {
   AutoConfigProvider,
@@ -280,8 +281,6 @@ function AppContent() {
     onToggleRole: toggleRole,
   };
 
-  const exampleLabel = (id: string, label: string) =>
-    id === "remote" ? `${tr(label)} (Mock)` : tr(label);
   const fillHeight = true;
 
   // Light/dark are the built-in default theme; presets layer a popular
@@ -358,7 +357,7 @@ function AppContent() {
                     description: tr(label),
                     children: examplesFor(id).map((child) => ({
                       id: `${id}/${child.id}`,
-                      label: exampleLabel(child.id, child.label),
+                      label: tr(child.label),
                       target: `${id}:${child.id}`,
                     })),
                   };
@@ -424,7 +423,7 @@ function AppContent() {
                     keepMounted={false}
                     items={examples.map((child) => ({
                       id: child.id,
-                      label: exampleLabel(child.id, child.label),
+                      label: tr(child.label),
                       tip: child.tip ? tr(child.tip) : undefined,
                     }))}
                   />

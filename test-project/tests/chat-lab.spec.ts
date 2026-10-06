@@ -14,8 +14,7 @@ async function contained(page: Page, options: { horizontal?: boolean } = {}) {
   expect(
     await page.evaluate(
       ({ horizontal }) =>
-        (!horizontal ||
-          document.documentElement.scrollWidth <= innerWidth) &&
+        (!horizontal || document.documentElement.scrollWidth <= innerWidth) &&
         document.documentElement.scrollHeight <= innerHeight,
       { horizontal },
     ),

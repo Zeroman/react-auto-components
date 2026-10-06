@@ -25,35 +25,55 @@ test("permission updates change the owning component without changing the admin 
 }) => {
   await page.goto("/");
   const table = await openAccess(page);
-  await expect(table.getByRole("button", { name: "Reports", exact: true })).toHaveCount(0);
-  await expect(table.getByRole("tab", { name: "Audit", exact: true })).toHaveCount(0);
+  await expect(
+    table.getByRole("button", { name: "Reports", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    table.getByRole("tab", { name: "Audit", exact: true }),
+  ).toHaveCount(0);
   await expect(auditColumn(table)).toBeVisible();
 
   const tabs = await openAccess(page, "AutoTabs");
-  await expect(tabs.getByRole("tab", { name: "Audit", exact: true })).toBeVisible();
+  await expect(
+    tabs.getByRole("tab", { name: "Audit", exact: true }),
+  ).toBeVisible();
   await tabs
     .getByRole("button", { name: "Revoke audit:read", exact: true })
     .click();
   await expect(tabs.getByTestId("permissions-role")).toContainText("admin");
-  await expect(tabs.getByRole("tab", { name: "Audit", exact: true })).toHaveCount(0);
+  await expect(
+    tabs.getByRole("tab", { name: "Audit", exact: true }),
+  ).toHaveCount(0);
   await showAccess(tabs);
   await expect(tabs.getByTestId("access-check-perm")).toContainText("false");
 
   const menu = await openAccess(page, "AutoMenu");
-  await expect(menu.getByRole("button", { name: "Reports", exact: true })).toBeVisible();
-  await expect(menu.getByRole("tab", { name: "Audit", exact: true })).toHaveCount(0);
+  await expect(
+    menu.getByRole("button", { name: "Reports", exact: true }),
+  ).toBeVisible();
+  await expect(
+    menu.getByRole("tab", { name: "Audit", exact: true }),
+  ).toHaveCount(0);
   await menu
     .getByRole("button", { name: "Grant audit:read", exact: true })
     .click();
 
   const tabsAgain = await openAccess(page, "AutoTabs");
-  await expect(tabsAgain.getByRole("tab", { name: "Audit", exact: true })).toBeVisible();
+  await expect(
+    tabsAgain.getByRole("tab", { name: "Audit", exact: true }),
+  ).toBeVisible();
   await tabsAgain.getByTestId("permissions-role").click();
-  await expect(tabsAgain.getByRole("tab", { name: "Audit", exact: true })).toBeVisible();
-  await expect(tabsAgain.getByRole("tab", { name: "Reports", exact: true })).toHaveCount(0);
+  await expect(
+    tabsAgain.getByRole("tab", { name: "Audit", exact: true }),
+  ).toBeVisible();
+  await expect(
+    tabsAgain.getByRole("tab", { name: "Reports", exact: true }),
+  ).toHaveCount(0);
 
   const menuGuest = await openAccess(page, "AutoMenu");
-  await expect(menuGuest.getByRole("button", { name: "Reports", exact: true })).toHaveCount(0);
+  await expect(
+    menuGuest.getByRole("button", { name: "Reports", exact: true }),
+  ).toHaveCount(0);
   await expect(
     menuGuest
       .getByRole("navigation", { name: "Navigation", exact: true })
@@ -79,9 +99,7 @@ test("user and organization changes update caller-owned checks", async ({
   await expect(demo.getByTestId("access-check-org")).toContainText("false");
   await expect(demo.getByTestId("access-check-role")).toContainText("false");
   await showExample(demo);
-  await expect(
-    auditColumn(demo),
-  ).toHaveCount(0);
+  await expect(auditColumn(demo)).toHaveCount(0);
   await demo
     .getByLabel("Current user", { exact: true })
     .selectOption({ label: "user-1" });
@@ -91,9 +109,7 @@ test("user and organization changes update caller-owned checks", async ({
   await expect(demo.getByTestId("access-check-role")).toContainText("true");
   await expect(demo.getByTestId("access-check-org")).toContainText("true");
   await showExample(demo);
-  await expect(
-    auditColumn(demo),
-  ).toBeVisible();
+  await expect(auditColumn(demo)).toBeVisible();
   await demo
     .getByLabel("Current organization", { exact: true })
     .selectOption({ label: "org-2" });
@@ -121,16 +137,12 @@ test("mock access failure retains the snapshot and retry replaces it", async ({
     "The mock server could not complete this request.",
   );
   await showExample(demo);
-  await expect(
-    auditColumn(demo),
-  ).toHaveCount(0);
+  await expect(auditColumn(demo)).toHaveCount(0);
   await showAccess(demo);
   await demo.getByRole("button", { name: "Retry", exact: true }).click();
   await expect(demo.getByTestId("access-status")).toHaveText("Access loaded.");
   await showExample(demo);
-  await expect(
-    auditColumn(demo),
-  ).toBeVisible();
+  await expect(auditColumn(demo)).toBeVisible();
 });
 
 test("a pending response for user A cannot overwrite user B", async ({
@@ -148,9 +160,7 @@ test("a pending response for user A cannot overwrite user B", async ({
     .selectOption({ label: "user-2" });
   await expect(demo.getByTestId("access-check-role")).toContainText("false");
   await showExample(demo);
-  await expect(
-    auditColumn(demo),
-  ).toHaveCount(0);
+  await expect(auditColumn(demo)).toHaveCount(0);
   await expect(demo.getByTestId("access-status")).toHaveText("Access loaded.");
   await expect(
     demo.getByLabel("Current user", { exact: true }).locator("option:checked"),

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AutoTable,
   matchesQuery,
@@ -54,7 +54,11 @@ export function ServerTableDemo() {
   const [job, setJob] = useState<"query" | "schema">("schema");
   return (
     <div className="table-server-demo" data-testid="table-server-demo">
-      <div className="auto-actions" role="group" aria-label={tr("mock.table.job")}>
+      <div
+        className="auto-actions"
+        role="group"
+        aria-label={tr("mock.table.job")}
+      >
         <button
           type="button"
           aria-pressed={job === "query"}
@@ -110,33 +114,36 @@ function ProjectTable({
     response: { rows: SearchRecord[]; total: number } | null;
   } | null>(null);
   const [saved, setSaved] = useState(false);
-  const source: DataSource<SearchRecord> = async (query, { signal }) => {
-    setExchange({ request: query, response: null });
-    const rows = records.current.filter((row) =>
-      matchesQuery(row, query.filter),
-    );
-    rows.sort((a, b) => {
-      for (const sort of query.sort) {
-        const av = a[sort.id as keyof SearchRecord] ?? "",
-          bv = b[sort.id as keyof SearchRecord] ?? "";
-        const order = av === bv ? 0 : av > bv ? 1 : -1;
-        if (order) return sort.desc ? -order : order;
-      }
-      return 0;
-    });
-    const response = await mockRequest(
-      {
-        rows: rows.slice(
-          query.pageIndex * query.pageSize,
-          (query.pageIndex + 1) * query.pageSize,
-        ),
-        total: rows.length,
-      },
-      { signal },
-    );
-    if (!signal.aborted) setExchange({ request: query, response });
-    return response;
-  };
+  const source: DataSource<SearchRecord> = useCallback(
+    async (query, { signal }) => {
+      setExchange({ request: query, response: null });
+      const rows = records.current.filter((row) =>
+        matchesQuery(row, query.filter),
+      );
+      rows.sort((a, b) => {
+        for (const sort of query.sort) {
+          const av = a[sort.id as keyof SearchRecord] ?? "",
+            bv = b[sort.id as keyof SearchRecord] ?? "";
+          const order = av === bv ? 0 : av > bv ? 1 : -1;
+          if (order) return sort.desc ? -order : order;
+        }
+        return 0;
+      });
+      const response = await mockRequest(
+        {
+          rows: rows.slice(
+            query.pageIndex * query.pageSize,
+            (query.pageIndex + 1) * query.pageSize,
+          ),
+          total: rows.length,
+        },
+        { signal },
+      );
+      if (!signal.aborted) setExchange({ request: query, response });
+      return response;
+    },
+    [],
+  );
   const columns: AutoColumn<SearchRecord>[] = data.columns.map((column) => ({
     ...column,
     label: tr(column.label),

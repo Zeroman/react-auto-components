@@ -128,9 +128,7 @@ function TableExample({ admin }: { admin: boolean }) {
         }
       />
       <p className="muted">
-        {tr(
-          admin ? "permissions.table.editing" : "permissions.table.readonly",
-        )}
+        {tr(admin ? "permissions.table.editing" : "permissions.table.readonly")}
       </p>
     </div>
   );
@@ -164,7 +162,9 @@ function SearchExample() {
       />
       <h3>{tr("permissions.query")}</h3>
       <pre data-testid="permissions-search-query">
-        {query ? JSON.stringify(query, null, 2) : tr("permissions.search.empty")}
+        {query
+          ? JSON.stringify(query, null, 2)
+          : tr("permissions.search.empty")}
       </pre>
       <h3>{tr("permissions.values")}</h3>
       <pre data-testid="permissions-search-values">
@@ -174,13 +174,7 @@ function SearchExample() {
   );
 }
 
-function DialogExample({
-  admin,
-  audit,
-}: {
-  admin: boolean;
-  audit: boolean;
-}) {
+function DialogExample({ admin, audit }: { admin: boolean; audit: boolean }) {
   const tr = useDemoText();
   const dialog = useAutoDialog();
   const included = [
@@ -259,9 +253,7 @@ function MenuExample() {
             id: "reports",
             label: tr("permissions.reports"),
             roles: ["admin"],
-            children: [
-              { id: "quarterly", label: tr("permissions.quarterly") },
-            ],
+            children: [{ id: "quarterly", label: tr("permissions.quarterly") }],
           },
           {
             id: "audit",
@@ -362,7 +354,11 @@ function PermissionsFrame({
           >
             {tr("Role")}: <strong>{role}</strong>
           </button>
-          <button type="button" onClick={toggleAudit} disabled={status === "loading"}>
+          <button
+            type="button"
+            onClick={toggleAudit}
+            disabled={status === "loading"}
+          >
             {tr(audit ? "access.revoke" : "access.grant")}
           </button>
           <p role="status" data-testid="access-status">
@@ -478,10 +474,12 @@ function PermissionsFrame({
                       <code>hasRole("admin")</code>: {String(admin)}
                     </li>
                     <li data-testid="access-check-user">
-                      <code>hasUser("user-1")</code>: {String(access.hasUser("user-1"))}
+                      <code>hasUser("user-1")</code>:{" "}
+                      {String(access.hasUser("user-1"))}
                     </li>
                     <li data-testid="access-check-org">
-                      <code>hasOrg("org-1")</code>: {String(access.hasOrg("org-1"))}
+                      <code>hasOrg("org-1")</code>:{" "}
+                      {String(access.hasOrg("org-1"))}
                     </li>
                   </ul>
                   <details>

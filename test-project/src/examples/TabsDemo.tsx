@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AutoTabs } from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../i18n";
 import { DynamicTabsDemo } from "./DynamicTabsDemo";
+import { TabsOverflowDemo } from "./TabsOverflowDemo";
 import { TabsStateDemo } from "./TabsStateDemo";
 
 export function TabsDemo({ example }: { example: string }) {
@@ -58,6 +59,20 @@ export function TabsDemo({ example }: { example: string }) {
                 mode={mode}
                 size={size}
                 density={density}
+                actions={
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setMode(mode === "horizontal" ? "vertical" : "horizontal")
+                    }
+                  >
+                    {tr(
+                      mode === "horizontal"
+                        ? "Vertical tabs"
+                        : "Horizontal tabs",
+                    )}
+                  </button>
+                }
                 extra={
                   <span className="auto-badge">
                     {tr("Keep mounted / persistent state")}
@@ -133,6 +148,13 @@ export function TabsDemo({ example }: { example: string }) {
             ),
           },
           {
+            id: "overflow",
+            label: tr("Overflow scrolling"),
+            content: (
+              <TabsOverflowDemo mode={mode} size={size} density={density} />
+            ),
+          },
+          {
             id: "dynamic",
             label: tr("Dynamic tabs"),
             content: (
@@ -141,7 +163,7 @@ export function TabsDemo({ example }: { example: string }) {
           },
           {
             id: "access",
-            label: tr("Access control"),
+            label: tr("Tab features"),
             content: (
               <TabsStateDemo mode={mode} size={size} density={density} />
             ),

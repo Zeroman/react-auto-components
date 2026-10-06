@@ -47,7 +47,8 @@ const mockMessages: Record<string, Record<string, string>> = {
     "permissions.dialog.fields": "The dialog form currently includes: {0}.",
     "permissions.query": "Query sent to search",
     "permissions.values": "Values still held by the form",
-    "permissions.search.empty": "Search to see the query that is actually sent.",
+    "permissions.search.empty":
+      "Search to see the query that is actually sent.",
     "permissions.chat.sample":
       "This conversation stays either way. The composer and Export follow access.",
     "permissions.table.editing": "Add, edit, and delete are available.",

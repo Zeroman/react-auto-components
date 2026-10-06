@@ -54,7 +54,7 @@ test("advanced search combines cross-field text and multiple statuses", async ({
 test("mock search applies the latest query and supports empty results and reset", async ({
   page,
 }) => {
-  await page.getByRole("tab", { name: "Server-side (Mock)" }).click();
+  await page.getByRole("tab", { name: "RSQL query" }).click();
   await expect(page.getByText(/Mock server:/)).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Real-time matches (24 items)" }),
