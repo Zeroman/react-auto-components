@@ -496,6 +496,9 @@
   flex: 1 0 100%;
   min-width: 0;
 }
+.auto-toolbar[data-search-inline] > .auto-toolbar-left:empty {
+  display: none;
+}
 .auto-toolbar[data-search-inline] .auto-form-grid {
   display: flex;
   flex-wrap: wrap;

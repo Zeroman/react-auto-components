@@ -167,6 +167,8 @@ export interface TableBaseProps<T extends object> extends TipConfig {
    * keeps the search panel on its own row above the toolbar.
    */
   searchInline?: boolean;
+  /** Default `true`. `false` hides the "{0} records" count in the toolbar. */
+  showRecordCount?: boolean;
   searchLayout?: Pick<
     AutoSearchProps<T>,
     | "mode"

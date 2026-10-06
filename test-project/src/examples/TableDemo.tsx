@@ -152,17 +152,20 @@ export function TableDemo({ mode }: { mode: string }) {
           },
         ]}
         headerExtra={
-          <span
-            className="auto-muted"
-            style={{
-              fontSize: 12,
-            }}
-          >
-            {tr(
-              "✦ Double-click a cell to copy · Shift for multi-column sort · Drag header to reorder · Drag edge to resize",
-            )}
-          </span>
+          mode === "compact" ? undefined : (
+            <span
+              className="auto-muted"
+              style={{
+                fontSize: 12,
+              }}
+            >
+              {tr(
+                "✦ Double-click a cell to copy · Shift for multi-column sort · Drag header to reorder · Drag edge to resize",
+              )}
+            </span>
+          )
         }
+        showRecordCount={mode !== "compact"}
         actions={
           <button type="button" onClick={() => alert(tr("Import sample data"))}>
             {tr("Import")}

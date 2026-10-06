@@ -116,6 +116,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     id,
     rowKey,
     title,
+    showRecordCount,
     sortTagsLayout = "inline",
     toolbarActions,
     height = 440,
@@ -648,9 +649,11 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
         )}
         <div className="auto-toolbar-left auto-actions">
           {title && <strong>{title}</strong>}
-          <span className="auto-muted">
-            {tr("{0} records", [total.toLocaleString()])}
-          </span>
+          {showRecordCount !== false && (
+            <span className="auto-muted">
+              {tr("{0} records", [total.toLocaleString()])}
+            </span>
+          )}
           {props.headerExtra}
           {sortTagsLayout === "inline" && sortTags}
         </div>

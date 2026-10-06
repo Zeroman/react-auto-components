@@ -4,7 +4,7 @@
 
 ## Unreleased
 
-- `AutoTable` 新增 `searchInline`：搜索字段渲染在工具栏同一行——字段在左、操作与工具在右——不再单独占用工具栏上方的搜索面板。
+- `AutoTable` 新增 `searchInline`：搜索字段渲染在工具栏同一行——字段在左、操作与工具在右——不再单独占用工具栏上方的搜索面板。`showRecordCount: false` 为紧凑页面隐藏记录数。
 
 ## 0.3.1 - 2026-10-06
 

@@ -735,8 +735,12 @@ test("empty result on source change only shows empty state when response settles
 });
 test("searchInline mounts the search panel inside the toolbar row", () => {
   const fields = [
-    { name: "name", label: "Name", search: { match: "contains" as const } },
-  ];
+    {
+      name: "name",
+      label: "Name",
+      search: { match: "contains" as const },
+    },
+  ] as const;
   const { container, unmount } = render(
     <AutoTable
       id="search-panel"
@@ -744,7 +748,7 @@ test("searchInline mounts the search panel inside the toolbar row", () => {
       rowKey="id"
       virtual={false}
       columns={[{ key: "name", label: "Name" }]}
-      searchFields={fields}
+      searchFields={[...fields]}
     />,
   );
   const toolbar = container.querySelector(".auto-toolbar");
@@ -760,7 +764,7 @@ test("searchInline mounts the search panel inside the toolbar row", () => {
       rowKey="id"
       virtual={false}
       columns={[{ key: "name", label: "Name" }]}
-      searchFields={fields}
+      searchFields={[...fields]}
       searchInline
     />,
   );
@@ -770,4 +774,32 @@ test("searchInline mounts the search panel inside the toolbar row", () => {
     inlineToolbar?.querySelector(".auto-search"),
   ).not.toBeNull();
   expect(container.querySelector(".auto-root > .auto-search")).toBeNull();
+});
+test("showRecordCount hides the toolbar record count", () => {
+  const first = render(
+    <AutoTable
+      id="record-count"
+      data={data}
+      rowKey="id"
+      virtual={false}
+      columns={[{ key: "name", label: "Name" }]}
+    />,
+  );
+  expect(
+    first.container.querySelector(".auto-toolbar")?.textContent,
+  ).toContain("3 records");
+  first.unmount();
+  const second = render(
+    <AutoTable
+      id="record-count-hidden"
+      data={data}
+      rowKey="id"
+      virtual={false}
+      columns={[{ key: "name", label: "Name" }]}
+      showRecordCount={false}
+    />,
+  );
+  expect(
+    second.container.querySelector(".auto-toolbar")?.textContent,
+  ).not.toContain("records");
 });
