@@ -162,13 +162,13 @@ export interface TableBaseProps<T extends object> extends TipConfig {
   density?: TableDensity;
   searchFields?: readonly Field<T>[];
   /**
-   * Renders `searchFields` on the toolbar line: fields sit left, actions and
-   * tools stay right (the search panel loses its card chrome). Default `false`
-   * keeps the search panel on its own row above the toolbar.
+   * Renders `searchFields` on the toolbar line — fields left, actions and
+   * tools right — as a single-line toolbar: the title is omitted (the record
+   * count lives in the pagination footer) and the search panel loses its card
+   * chrome. Default `false` keeps the search panel on its own row above the
+   * toolbar, next to the title.
    */
   searchInline?: boolean;
-  /** Default `true`. `false` hides the "{0} records" count in the toolbar. */
-  showRecordCount?: boolean;
   searchLayout?: Pick<
     AutoSearchProps<T>,
     | "mode"

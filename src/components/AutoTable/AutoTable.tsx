@@ -116,7 +116,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     id,
     rowKey,
     title,
-    showRecordCount,
+    searchInline,
     sortTagsLayout = "inline",
     toolbarActions,
     height = 440,
@@ -648,8 +648,8 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
           />
         )}
         <div className="auto-toolbar-left auto-actions">
-          {title && <strong>{title}</strong>}
-          {showRecordCount !== false && (
+          {title && !searchInline && <strong>{title}</strong>}
+          {!pagination && (
             <span className="auto-muted">
               {tr("{0} records", [total.toLocaleString()])}
             </span>
@@ -1048,6 +1048,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
           pageIndex={query.pageIndex}
           pageSize={query.pageSize}
           pages={pages}
+          total={total}
           pageSizeOptions={[
             ...new Set([props.pageSize ?? 10, 10, 20, 50, 100]),
           ].sort((a, b) => a - b)}

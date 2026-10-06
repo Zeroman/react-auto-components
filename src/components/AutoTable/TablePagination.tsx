@@ -1,9 +1,12 @@
 import { useAutoText } from "../../core/i18n";
 
+/** Pagination footer props. */
 export interface TablePaginationProps {
   pageIndex: number;
   pageSize: number;
   pages: number;
+  /** Filtered row total, shown beside the page indicator. */
+  total: number;
   pageSizeOptions?: readonly number[];
   onChange: (patch: { pageIndex: number; pageSize?: number }) => void;
 }
@@ -12,6 +15,7 @@ export function TablePagination({
   pageIndex,
   pageSize,
   pages,
+  total,
   pageSizeOptions,
   onChange,
 }: TablePaginationProps) {
@@ -20,7 +24,10 @@ export function TablePagination({
 
   return (
     <footer className="auto-pagination">
-      <span>{tr("Page {0} / {1}", [pageIndex + 1, pages])}</span>
+      <span>{tr("{0} records", [total.toLocaleString()])}</span>
+      <span>
+        {tr("Page {0} / {1}", [pageIndex + 1, pages])}
+      </span>
       <div className="auto-actions">
         <select
           aria-label={tr("Rows per page")}
