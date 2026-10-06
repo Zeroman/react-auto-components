@@ -8,14 +8,55 @@ on:
 permissions:
   contents: read
   id-token: write
+  checks: read
 
 concurrency:
   group: publish-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  publish:
+  # The release script pushes main and the tag together, so the tagged commit
+  # has almost always already passed the full CI matrix. Gate on that verdict
+  # instead of re-running every check behind the tag.
+  gate:
     if: github.repository == 'Zeroman/react-auto-components'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      verified: ${{ steps.verdict.outputs.verified }}
+    steps:
+      - name: Wait for the tagged commit's CI verdict
+        id: verdict
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+        run: |
+          deadline=$((SECONDS + 1200))
+          while [ $SECONDS -lt $deadline ]; do
+            runs=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${SHA}/check-runs" \
+              --jq '[.check_runs[] | select(.name == "verify")]')
+            if [ "$(echo "$runs" | jq length)" -gt 0 ]; then
+              status=$(echo "$runs" | jq -r '.[0].status')
+              conclusion=$(echo "$runs" | jq -r '.[0].conclusion')
+              echo "ci verify job: status=$status conclusion=$conclusion"
+              if [ "$status" = "completed" ]; then
+                if [ "$conclusion" = "success" ]; then
+                  echo "verified=true" >> "$GITHUB_OUTPUT"
+                  exit 0
+                fi
+                echo "CI on the tagged commit ended with $conclusion; running the full verification here."
+                echo "verified=false" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+            fi
+            sleep 30
+          done
+          echo "CI on the tagged commit did not finish in 20 minutes; running the full verification here."
+          echo "verified=false" >> "$GITHUB_OUTPUT"
+
+  verify:
+    needs: gate
+    if: needs.gate.outputs.verified != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
@@ -29,14 +70,6 @@ jobs:
       - name: Require npm trusted publishing support
         run: npm install -g npm@^11.5.1
       - run: pnpm install --frozen-lockfile
-      - name: Tag matches package.json
-        run: |
-          version="$(node -p "require('./package.json').version")"
-          tag="${GITHUB_REF_NAME#v}"
-          if [ "$version" != "$tag" ]; then
-            echo "tag v$tag does not match package.json $version"
-            exit 1
-          fi
       - run: pnpm check:public
       - run: pnpm typecheck
       - run: pnpm lint
@@ -53,5 +86,32 @@ jobs:
           name: playwright-results
           path: test-project/test-results/
           retention-days: 7
-      - name: Publish to npm
-        run: npm publish --access public
+
+  publish:
+    needs: [gate, verify]
+    if: >-
+      !cancelled() &&
+      needs.gate.result == 'success' &&
+      (needs.verify.result == 'success' || needs.verify.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - uses: pnpm/action-setup@v4
+      - name: Require npm trusted publishing support
+        run: npm install -g npm@^11.5.1
+      - name: Tag matches package.json
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          tag="${GITHUB_REF_NAME#v}"
+          if [ "$version" != "$tag" ]; then
+            echo "tag v$tag does not match package.json $version"
+            exit 1
+          fi
+      - run: pnpm install --frozen-lockfile
+      - run: npm publish --access public

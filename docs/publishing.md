@@ -52,4 +52,6 @@ Update version and every CHANGELOG translation before each release. Do not try t
 
 [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) binds `@zeroman.yang/react-auto-components` to GitHub repository `Zeroman/react-auto-components` and workflow file `publish.yml`. The workflow uses a GitHub-hosted runner and OIDC `id-token: write`, without a long-lived npm token. It requires Node >=22.14.0 and npm CLI >=11.5.1. The tag, `package.json` version, and tested commit must match.
 
+The tag-triggered workflow first checks whether the tagged commit already passed CI on main (the release script pushes them together). If that verdict is green, publishing proceeds without re-running the matrix — only the tag/version match and `npm publish` run. If the verdict is missing, still running after 20 minutes, or red, the full verification matrix re-runs on the tag before publishing. A failed gate or verification blocks publishing.
+
 GitHub Actions CI installs from the lockfile, checks types, runs unit tests, builds the real tarball consumer, and runs Chromium tests. Branch protection can require CI before merging; configure it as maintenance needs evolve with external contributions.

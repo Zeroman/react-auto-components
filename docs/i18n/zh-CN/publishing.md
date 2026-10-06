@@ -52,4 +52,6 @@ npm publish --access public --registry=https://registry.npmjs.org/
 
 [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) 将 `@zeroman.yang/react-auto-components` 绑定到 GitHub 仓库 `Zeroman/react-auto-components` 与 workflow 文件 `publish.yml`。该 workflow 使用 GitHub 托管 runner 和 OIDC `id-token: write`，无需长期 npm token。要求 Node >=22.14.0、npm CLI >=11.5.1。tag、`package.json` 版本和被测提交必须一致。
 
+tag 触发的 workflow 会先检查被 tag 的提交是否已在 main 上通过 CI（发布脚本将二者一起推送）。若判定为绿，发布不再重跑矩阵——只执行 tag/版本一致性校验和 `npm publish`。若判定缺失、20 分钟内仍在运行或为红，则在 tag 上重跑完整验证矩阵后再发布。gate 或验证失败都会阻断发布。
+
 GitHub Actions CI 执行锁文件安装、类型检查、单元测试、真实 tarball 消费构建和 Chromium 测试。分支保护可将 CI 设为合并要求；有外部贡献后再按维护需要配置。
