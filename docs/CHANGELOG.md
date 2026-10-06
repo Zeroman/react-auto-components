@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+- `AutoTable` gains `searchInline`: render the search fields on the toolbar line — fields left, actions and tools right — instead of a separate search panel.
+
 ## 0.3.1 - 2026-10-06
 
 - `AutoTable` expanded rows render their detail panels reliably. Row rendering opts out of React Compiler memoization, which cached the mutable TanStack `getIsExpanded()` call and could show an expanded toggle without its detail panel on slower machines.

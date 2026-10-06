@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+- `AutoTable` 新增 `searchInline`：搜索字段渲染在工具栏同一行——字段在左、操作与工具在右——不再单独占用工具栏上方的搜索面板。
+
 ## 0.3.1 - 2026-10-06
 
 - `AutoTable` 展开行稳定渲染详情面板。行渲染退出 React Compiler 的自动 memo 化——此前它缓存了 TanStack 可变的 `getIsExpanded()` 调用，较慢的机器上可能出现"展开图标已切换、详情面板缺失"。

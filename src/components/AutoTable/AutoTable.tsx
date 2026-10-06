@@ -614,7 +614,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
       aria-label={typeof title === "string" ? title : id}
       data-testid={racTestId("table", id)}
     >
-      {props.searchFields && (
+      {!props.searchInline && props.searchFields && (
         <AutoSearch
           size={size}
           {...props.searchLayout}
@@ -628,7 +628,24 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
           }
         />
       )}
-      <div className="auto-toolbar">
+      <div
+        className="auto-toolbar"
+        data-search-inline={props.searchInline ? "" : undefined}
+      >
+        {props.searchInline && props.searchFields && (
+          <AutoSearch
+            size={size}
+            {...props.searchLayout}
+            tipComponent={props.searchLayout?.tipComponent ?? tipComponent}
+            fields={props.searchFields}
+            onSearch={(filter) =>
+              changeQuery({
+                filter,
+                pageIndex: 0,
+              })
+            }
+          />
+        )}
         <div className="auto-toolbar-left auto-actions">
           {title && <strong>{title}</strong>}
           <span className="auto-muted">

@@ -473,6 +473,51 @@
   background: var(--auto-border);
   margin: 0 4px;
 }
+/* Inline search: the search panel shares the toolbar line — fields left,
+   actions and tools right. */
+.auto-toolbar[data-search-inline] {
+  row-gap: 10px;
+}
+/* Line 1: search fields + actions + tools. Line 2 (wrapped): title/meta. */
+.auto-toolbar[data-search-inline] > .auto-search {
+  order: 1;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0;
+  border-bottom: 0;
+}
+.auto-toolbar[data-search-inline] > .auto-toolbar-right {
+  order: 2;
+  margin-left: auto;
+  min-width: 0;
+}
+.auto-toolbar[data-search-inline] > .auto-toolbar-left {
+  order: 3;
+  flex: 1 0 100%;
+  min-width: 0;
+}
+.auto-toolbar[data-search-inline] .auto-form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+.auto-toolbar[data-search-inline] .auto-field {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+.auto-toolbar[data-search-inline] .auto-field > label {
+  white-space: nowrap;
+}
+.auto-toolbar[data-search-inline]
+  .auto-field
+  input:not([type="checkbox"]):not([type="radio"]),
+.auto-toolbar[data-search-inline] .auto-field select {
+  width: 150px;
+}
+.auto-toolbar[data-search-inline] .auto-form-actions {
+  margin: 0;
+}
 .auto-toolbar button:not(.auto-tool-btn) {
   display: inline-flex;
   align-items: center;

@@ -135,6 +135,7 @@ AI/浏览器验证下的隔离渲染，见[确定性测试配方](../../llms.txt
 | `virtual` | 可选。用 TanStack Virtual 测量行高。 |
 | `query`、`onQueryChange` | 受控查询。省略则页码、排序和筛选留在表格内（排序和筛选也跟随已保存的方案）。 |
 | `searchFields` | 渲染 `AutoSearch`。它的 `onSearch` 更新表格筛选。 |
+| `searchInline` | 默认 `false`。为 `true` 时搜索字段渲染在工具栏同一行——字段在左、操作与工具在右——而不是工具栏上方独立的搜索面板。 |
 | `formFields` | 新增/编辑弹窗的 schema。省略时，从 `columns` 自动推导表单字段。列设置 `formField: false` 可排除该列；设置 `formField: { ... }` 可覆盖字段属性（如 `type`、`options`、`rules`）。带 `options` 的列映射为 `select`，`date` / `datetime` / `percentage` / `progress` 映射为对应表单控件，`number` 映射为 `integer`。 |
 | `onAdd`、`onEdit`、`onDelete` | 校验通过后由弹窗调用。**reject 或 throw：弹窗保持打开并显示 `error.message`。除非你的处理函数已经改了数据，否则行不会变。** |
 | `rowActions` | 行右键菜单操作集合。`onClick` 拒绝会被捕获，并在状态行显示约 2.5 秒；行不会被移除。 行菜单动作缺少 `onClick`，且 `action` 不是已注册的 `config.rowActions` 键时，选择该动作会在状态行显示 `RAC-ROW-ACTION`。提供 `onClick` 或注册对应的 `action`；两者都有时 `onClick` 优先。动作项支持 `icon` 图标、`danger` 危险警示色、`separator` 分隔线、`disabled` 及 `hidden`。 |

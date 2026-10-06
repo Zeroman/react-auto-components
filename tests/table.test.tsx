@@ -733,3 +733,41 @@ test("empty result on source change only shows empty state when response settles
   expect(await screen.findByText("No data")).toBeVisible();
   expect(screen.queryByText("Alpha 1")).toBeNull();
 });
+test("searchInline mounts the search panel inside the toolbar row", () => {
+  const fields = [
+    { name: "name", label: "Name", search: { match: "contains" as const } },
+  ];
+  const { container, unmount } = render(
+    <AutoTable
+      id="search-panel"
+      data={data}
+      rowKey="id"
+      virtual={false}
+      columns={[{ key: "name", label: "Name" }]}
+      searchFields={fields}
+    />,
+  );
+  const toolbar = container.querySelector(".auto-toolbar");
+  expect(toolbar?.getAttribute("data-search-inline")).toBeNull();
+  expect(toolbar?.querySelector(".auto-search")).toBeNull();
+  expect(container.querySelector(".auto-root > .auto-search")).not.toBeNull();
+  unmount();
+
+  render(
+    <AutoTable
+      id="search-inline"
+      data={data}
+      rowKey="id"
+      virtual={false}
+      columns={[{ key: "name", label: "Name" }]}
+      searchFields={fields}
+      searchInline
+    />,
+  );
+  const inlineToolbar = container.querySelector(".auto-toolbar");
+  expect(inlineToolbar?.getAttribute("data-search-inline")).not.toBeNull();
+  expect(
+    inlineToolbar?.querySelector(".auto-search"),
+  ).not.toBeNull();
+  expect(container.querySelector(".auto-root > .auto-search")).toBeNull();
+});

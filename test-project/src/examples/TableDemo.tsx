@@ -75,6 +75,7 @@ export function TableDemo({ mode }: { mode: string }) {
             : c,
         )}
         searchFields={searchFields}
+        searchInline
         formFields={fields}
         pageSize={10}
         pagination={mode !== "large"}
