@@ -227,4 +227,3 @@ test("virtual-select and virtual choice field render and update form value", asy
     expect(submit).toHaveBeenCalledWith({ role: "admin", tag: "backend" }),
   );
 });
-

@@ -259,9 +259,17 @@ test("virtual select closes on outside click", async () => {
 });
 
 test("cascader terminates gracefully on cyclic options", () => {
-  type CyclicOption = { value: string; label: string; children?: CyclicOption[] };
+  type CyclicOption = {
+    value: string;
+    label: string;
+    children?: CyclicOption[];
+  };
   const nodeA: CyclicOption = { value: "a", label: "Node A" };
-  const nodeB: CyclicOption = { value: "b", label: "Node B", children: [nodeA] };
+  const nodeB: CyclicOption = {
+    value: "b",
+    label: "Node B",
+    children: [nodeA],
+  };
   nodeA.children = [nodeB];
 
   render(
@@ -279,4 +287,3 @@ test("cascader terminates gracefully on cyclic options", () => {
   );
   expect(screen.getAllByRole("combobox").length).toBeGreaterThan(0);
 });
-

@@ -50,4 +50,3 @@ test("equal distinguishes arrays from objects with identical numeric keys", () =
   expect(equal(new Date(1000), new Date(1000))).toBe(true);
   expect(equal(new Date(1000), new Date(2000))).toBe(false);
 });
-

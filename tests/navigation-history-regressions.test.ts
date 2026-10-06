@@ -296,7 +296,9 @@ for (const kind of ["browser", "hash"] as const) {
 
 // A router adapter whose push returns void; `route` decides what URL the
 // router ends up publishing (undefined = navigation blocked, nothing happens).
-function voidRouter(route: (location: AutoLocation) => AutoLocation | undefined) {
+function voidRouter(
+  route: (location: AutoLocation) => AutoLocation | undefined,
+) {
   let current: AutoLocation = { path: ["home"] };
   const listeners = new Set<(location: AutoLocation) => void>();
   const pushes: string[] = [];
