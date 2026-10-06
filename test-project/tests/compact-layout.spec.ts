@@ -97,10 +97,11 @@ test("global layout switches table search, forms and dialog fields without clear
   const field = page.locator('.auto-search [data-field="name"]');
   await field.getByRole("textbox").fill("Unsubmitted filter");
   await setGlobalLayout(page, "stacked");
-  const label = await field.locator(":scope > label").boundingBox();
-  expect(label!.y + label!.height).toBeLessThanOrEqual(
-    (await field.getByRole("textbox").boundingBox())!.y,
-  );
+  // The table demo keeps its search inline (compact single-line toolbar):
+  // labels always sit beside controls there, so "stacked" must not stack them.
+  // The stacked search contract is asserted on the standalone AutoSearch page
+  // at the end of this test.
+  await labelBesideControl(field);
   await expect(field.getByRole("textbox")).toHaveValue("Unsubmitted filter");
   await setGlobalLayout(page, "inline");
   await labelBesideControl(field);
