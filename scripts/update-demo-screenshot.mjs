@@ -40,7 +40,14 @@ try {
   await page.goto(url, { waitUntil: "networkidle" });
   await page.waitForSelector(".studio");
   await page.waitForSelector("tbody tr");
-  await page.waitForTimeout(300);
+  // Showcase the single-line toolbar: compact inline layout, status pills on,
+  // and the More-filters popover open.
+  await page.getByRole("button", { name: "Compact Inline" }).click();
+  await page
+    .getByRole("checkbox", { name: "Status pills" })
+    .check();
+  await page.getByTestId("rac-more-filters").click();
+  await page.waitForTimeout(400);
 
   await page.screenshot({
     path: outputPath,
