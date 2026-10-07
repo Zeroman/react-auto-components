@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 0.4.0 - 2026-10-07
+
 - This locale is paused. See docs/CHANGELOG.md (English) for the unreleased notes.
 
 ## 0.3.1 - 2026-10-06
