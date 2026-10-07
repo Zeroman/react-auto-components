@@ -4,10 +4,11 @@
 
 ## Unreleased
 
+- `AutoSearch` gains `moreLayout` (`"inline"` default, `"popover"`): fields marked `search: { more: true }` can collapse into a floating More-filters panel with an active-filter count badge and in-panel Search/Reset. `AutoTable` search defaults to `"popover"`.
+
 ## 0.4.0 - 2026-10-07
 
 - `AutoTable` gains `searchInline`: a single-line toolbar where the search fields lead and actions and tools sit right — the title is omitted and the record count lives in the pagination footer. The record count moved out of the toolbar into the pagination bar for every table.
-- `AutoSearch` gains `moreLayout` (`"inline"` default, `"popover"`): fields marked `search: { more: true }` can collapse into a floating More-filters panel with an active-filter count badge and in-panel Search/Reset. `AutoTable` search defaults to `"popover"`.
 - Breaking: the `AutoTip` component is no longer exported. Tooltips render through internal integration; customize them through `tipComponent` or use the exported `DefaultTip`.
 
 ## 0.3.1 - 2026-10-06

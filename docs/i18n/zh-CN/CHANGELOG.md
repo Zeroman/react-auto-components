@@ -4,10 +4,11 @@
 
 ## Unreleased
 
+- `AutoSearch` 新增 `moreLayout`（默认 `"inline"`，可选 `"popover"`）：标记 `search: { more: true }` 的字段可收进"更多筛选"浮层，附激活筛选计数徽章与面板内 Search/Reset。`AutoTable` 搜索默认 `"popover"`。
+
 ## 0.4.0 - 2026-10-07
 
 - `AutoTable` 新增 `searchInline`：单行工具栏——搜索字段在前、操作与工具在右，标题省略，记录数移至分页栏。所有表格的记录数都从工具栏移入分页栏。
-- `AutoSearch` 新增 `moreLayout`（默认 `"inline"`，可选 `"popover"`）：标记 `search: { more: true }` 的字段可收进"更多筛选"浮层，附激活筛选计数徽章与面板内 Search/Reset。`AutoTable` 搜索默认 `"popover"`。
 - 破坏性变更：`AutoTip` 组件不再公开导出。提示改由内部机制渲染；通过 `tipComponent` 自定义，或使用仍导出的 `DefaultTip`。
 
 ## 0.3.1 - 2026-10-06
