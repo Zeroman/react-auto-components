@@ -637,6 +637,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
           <AutoSearch
             size={size}
             {...props.searchLayout}
+            moreLayout={props.searchLayout?.moreLayout ?? "popover"}
             tipComponent={props.searchLayout?.tipComponent ?? tipComponent}
             fields={props.searchFields}
             onSearch={(filter) =>

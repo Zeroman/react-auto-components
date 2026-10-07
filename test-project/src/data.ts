@@ -294,6 +294,7 @@ function createDemoData(
       name: "owner",
       label: tr("Owner"),
       type: "select",
+      search: { more: true },
       options: people.map((value) => ({
         label: tr(value),
         value,
@@ -303,6 +304,7 @@ function createDemoData(
       name: "status",
       label: tr("Status"),
       type: "select",
+      search: { more: true },
       options: ["In Progress", "Completed", "Pending Start"].map((value) => ({
         value,
         label: tr(value),

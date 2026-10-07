@@ -40,6 +40,7 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `mode`                    | 默认 `"instant"`：修改条件时先校验，通过后搜索；提交也校验，重置直接搜索默认值。设置 `"manual"` 可仅在提交或重置时搜索。                                                                                        |
 | `value`、`defaultValue`   | 受控和重置规则与 AutoForm 相同。                                                                                                                                                                                |
 | `columns`                 | 默认 `3`。                                                                                                                                                                                                      |
+| `moreLayout`              | 默认 `"inline"`：标记 `search: { more: true }` 的字段在搜索网格内展开。`"popover"` 将这些字段收进挂在"更多筛选"按钮上的浮动面板，附激活筛选计数徽章与面板内 Search/Reset。 |
 | `sortTags`                | 你自己的按钮。`onRemove` 不捕获。                                                                                                                                                                               |
 | `classNames`、`styles`    | 插槽样式覆盖：`classNames?: AutoSearchClassNames`（`root`、`form`、`actions`、`search`、`reset`、`moreToggle`）与 `styles?: AutoSearchStyles`。                                                                 |
 | 标签属性                  | 与 AutoForm 相同。传入的布局优先于 provider。                                                                                                                                                                   |

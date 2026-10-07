@@ -1,5 +1,5 @@
 import { test, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AutoConfigProvider } from "../src/core/AutoConfigProvider";
 import { AutoSearch } from "../src/components/AutoSearch";
@@ -183,4 +183,49 @@ test("search rechecks permission after values were entered and access was revoke
     operator: "and",
     children: [],
   });
+});
+test("moreLayout popover keeps more fields out of the grid and filters inside the panel", async () => {
+  const onSearch = vi.fn();
+  const u = userEvent.setup();
+  render(
+    <AutoSearch
+      fields={[
+        { name: "name", label: "Name", search: { match: "contains" } },
+        {
+          name: "region",
+          label: "Region",
+          type: "select",
+          search: { more: true },
+          options: [
+            { label: "South", value: "south" },
+            { label: "North", value: "north" },
+          ],
+        },
+      ]}
+      moreLayout="popover"
+      onSearch={onSearch}
+    />,
+  );
+  // Secondary fields are absent from the main grid until the popover opens.
+  expect(screen.queryByRole("combobox", { name: "Region" })).toBeNull();
+  await u.click(screen.getByTestId("rac-more-filters"));
+  const panel = document.querySelector(
+    ".auto-search-popover-panel",
+  ) as HTMLElement;
+  expect(panel).not.toBeNull();
+  const region = await within(panel).findByRole("combobox", {
+    name: "Region",
+  });
+  expect(region).toBeVisible();
+  fireEvent.change(region, { target: { value: "south" } });
+  // Searching inside the popover emits the combined filter.
+  await u.click(within(panel).getByRole("button", { name: "Search" }));
+  // onSearch receives (queryAst, values) — the values carry the fields.
+  expect(onSearch.mock.calls[0]?.[1]).toEqual({ name: undefined, region: "south" });
+  // Reset inside the popover clears only the secondary fields (suppressed
+  // from instant search, same as the main panel's Reset).
+  await u.click(within(panel).getByRole("button", { name: "Reset" }));
+  await expect
+    .poll(() => (region as HTMLSelectElement).value)
+    .not.toBe("south");
 });

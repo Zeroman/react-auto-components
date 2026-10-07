@@ -179,6 +179,7 @@ export interface TableBaseProps<T extends object> extends TipConfig {
     | "density"
     | "size"
     | "tipComponent"
+    | "moreLayout"
   >;
   formFields?: readonly Field<T>[];
   onAdd?: (values: T) => void | Promise<void>;

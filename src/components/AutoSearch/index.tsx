@@ -1,5 +1,6 @@
 import type { TipConfig } from "../../core/tip";
 import { useAutoText } from "../../core/i18n";
+import { Popover } from "../../internal/Popover";
 import {
   useEffect,
   useState,
@@ -77,6 +78,12 @@ export interface AutoSearchProps<T extends object>
   }[];
   classNames?: AutoSearchClassNames;
   styles?: AutoSearchStyles;
+  /**
+   * How to display secondary fields marked with `search: { more: true }`.
+   * `"inline"` (default): expands within the search grid.
+   * `"popover"`: displays secondary fields in a floating popover attached to the More filters button.
+   */
+  moreLayout?: "inline" | "popover";
 }
 export function AutoSearch<T extends object>({
   fields,
@@ -99,6 +106,7 @@ export function AutoSearch<T extends object>({
   sortTags,
   classNames,
   styles,
+  moreLayout = "inline",
 }: AutoSearchProps<T>) {
   const tr = useAutoText();
   const services = useAutoConfig();
@@ -109,7 +117,8 @@ export function AutoSearch<T extends object>({
   const effectiveLabelWidth = labelWidth ?? services.form.labelWidth ?? "auto";
   const isAutoLabelWidth = effectiveLabelWidth === "auto";
   const [local, setLocal] = useState(() => defaults<T>(fields, defaultValue)),
-    [more, setMore] = useState(false);
+    [more, setMore] = useState(false),
+    [popoverOpen, setPopoverOpen] = useState(false);
   const current = value ?? local;
   const ref = useRef<AutoFormHandle<T>>(null);
   const [searchError, setSearchError] = useState("");
@@ -161,6 +170,20 @@ export function AutoSearch<T extends object>({
   };
   const isFieldMore = (f: Field<T>): boolean =>
     "search" in f && !!f.search?.more;
+  const moreFields = fields.filter(isFieldMore);
+  const hasMoreFields = moreFields.length > 0;
+  const isPopoverMore = moreLayout === "popover" && hasMoreFields;
+
+  const activeMoreCount = moreFields.filter((f) => {
+    if (!f.name) return false;
+    const v = (current as Record<string, unknown>)[f.name];
+    return (
+      v !== undefined &&
+      v !== null &&
+      v !== "" &&
+      !(Array.isArray(v) && !v.length)
+    );
+  }).length;
 
   return (
     <section
@@ -185,11 +208,15 @@ export function AutoSearch<T extends object>({
         classNames={classNames}
         styles={styles}
         fields={
-          fields.map((f) => ({
-            ...f,
-            hidden: (v: Readonly<T>): boolean =>
-              Boolean(resolve(f.hidden, v, false) || (isFieldMore(f) && !more)),
-          })) as Field<T>[]
+          (isPopoverMore
+            ? fields.filter((f) => !isFieldMore(f))
+            : fields.map((f) => ({
+                ...f,
+                hidden: (v: Readonly<T>): boolean =>
+                  Boolean(
+                    resolve(f.hidden, v, false) || (isFieldMore(f) && !more),
+                  ),
+              }))) as Field<T>[]
         }
         value={current}
         onChange={change}
@@ -246,18 +273,118 @@ export function AutoSearch<T extends object>({
             {resetLabel ?? tr("Reset")}
           </button>
           {extraActions}
-          {fields.some(isFieldMore) && (
-            <button
-              type="button"
-              className={classNames?.moreButton}
-              style={styles?.moreButton}
-              data-testid="rac-more-filters"
-              aria-expanded={more}
-              onClick={() => setMore(!more)}
-            >
-              {more ? tr("Hide filters") : tr("More filters")}
-            </button>
-          )}
+          {hasMoreFields &&
+            (isPopoverMore ? (
+              <Popover
+                placement="bottom-start"
+                open={popoverOpen}
+                onOpenChange={setPopoverOpen}
+                content={
+                  <div className="auto-search-popover-panel">
+                    <div className="auto-search-popover-header">
+                      <div className="auto-search-popover-title-row">
+                        <span>{tr("More filters")}</span>
+                        {activeMoreCount > 0 && (
+                          <span className="auto-more-count">
+                            {activeMoreCount}
+                          </span>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        className="auto-search-popover-close"
+                        onClick={() => setPopoverOpen(false)}
+                        aria-label={tr("Close")}
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className="auto-search-popover-form">
+                      <AutoForm
+                        fields={moreFields}
+                        value={current}
+                        onChange={change}
+                        columns={1}
+                        labelPosition="left"
+                        density="compact"
+                        size={size}
+                        actions={false}
+                        tipComponent={tipComponent}
+                      />
+                    </div>
+                    <div className="auto-actions auto-search-popover-actions">
+                      <button
+                        type="button"
+                        disabled={disabled}
+                        onClick={() => {
+                          const defs = defaults<T>(fields, defaultValue);
+                          const resetDraft = { ...current };
+                          for (const f of moreFields) {
+                            if (f.name) {
+                              if (f.name in (defs as Record<string, unknown>)) {
+                                (resetDraft as Record<string, unknown>)[
+                                  f.name
+                                ] = (defs as Record<string, unknown>)[f.name];
+                              } else {
+                                delete (resetDraft as Record<string, unknown>)[
+                                  f.name
+                                ];
+                              }
+                            }
+                          }
+                          change(resetDraft);
+                        }}
+                      >
+                        {resetLabel ?? tr("Reset")}
+                      </button>
+                      <button
+                        type="button"
+                        className="auto-primary"
+                        disabled={disabled}
+                        onClick={() => {
+                          setPopoverOpen(false);
+                          void send(current);
+                        }}
+                      >
+                        {searchLabel ?? tr("Search")}
+                      </button>
+                    </div>
+                  </div>
+                }
+              >
+                <button
+                  type="button"
+                  className={[
+                    classNames?.moreButton,
+                    "auto-search-more-popover-btn",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  style={styles?.moreButton}
+                  data-testid="rac-more-filters"
+                  aria-expanded={popoverOpen}
+                >
+                  <span>{tr("More filters")}</span>
+                  {activeMoreCount > 0 && (
+                    <span className="auto-more-count">{activeMoreCount}</span>
+                  )}
+                  <span className="auto-caret" aria-hidden="true">
+                    ▾
+                  </span>
+                </button>
+              </Popover>
+            ) : (
+              <button
+                type="button"
+                className={classNames?.moreButton}
+                style={styles?.moreButton}
+                data-testid="rac-more-filters"
+                aria-expanded={more}
+                onClick={() => setMore(!more)}
+              >
+                {more ? tr("Hide filters") : tr("More filters")}
+              </button>
+            ))}
           {sortTags?.map((t) => (
             <button key={t.id} type="button" onClick={t.onRemove}>
               {t.label} ×
