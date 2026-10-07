@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 0.4.1 - 2026-10-07
+
 - `AutoSearch` 新增 `moreLayout`（默认 `"inline"`，可选 `"popover"`）：标记 `search: { more: true }` 的字段可收进"更多筛选"浮层，附激活筛选计数徽章与面板内 Search/Reset。`AutoTable` 搜索默认 `"popover"`。
 
 ## 0.4.0 - 2026-10-07

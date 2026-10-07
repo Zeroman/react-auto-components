@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 0.4.1 - 2026-10-07
+
 - `AutoSearch` gains `moreLayout` (`"inline"` default, `"popover"`): fields marked `search: { more: true }` can collapse into a floating More-filters panel with an active-filter count badge and in-panel Search/Reset. `AutoTable` search defaults to `"popover"`.
 
 ## 0.4.0 - 2026-10-07
