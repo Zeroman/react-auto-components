@@ -10,11 +10,12 @@ import "./mock/mock.css";
 
 export function TableDemo({ mode }: { mode: string }) {
   const tr = useDemoText();
-  const { columns, fields, searchFields } = useDemoData();
+  const { columns, fields, searchFields, complexSearchFields } = useDemoData();
   const [rows, setRows] = useState(() => makeProjects(48));
   const [sentQuery, setSentQuery] = useState("");
   const [layoutMode, setLayoutMode] = useState<"compact" | "classic" | "card">("classic");
   const [showStatusPills, setShowStatusPills] = useState(true);
+  const [isHighDensitySearch, setIsHighDensitySearch] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const big = useMemo(() => makeMassiveProjects(100000), []);
 
@@ -129,6 +130,16 @@ export function TableDemo({ mode }: { mode: string }) {
             </button>
           </div>
         </div>
+        <div className="table-showcase-group">
+          <label className="table-showcase-toggle">
+            <input
+              type="checkbox"
+              checked={isHighDensitySearch}
+              onChange={(e) => setIsHighDensitySearch(e.target.checked)}
+            />
+            <span>{tr("High-density search")}</span>
+          </label>
+        </div>
         {layoutMode === "compact" && (
           <div className="table-showcase-group">
             <label className="table-showcase-toggle">
@@ -175,7 +186,7 @@ export function TableDemo({ mode }: { mode: string }) {
 
   const tableNode = (
     <AutoTable<Project>
-      key={`${mode}-${layoutMode}`}
+      key={`${mode}-${layoutMode}-${isHighDensitySearch}`}
       id={`projects-${mode}`}
       title={tableTitle}
       {...(mode === "remote"
@@ -200,7 +211,7 @@ export function TableDemo({ mode }: { mode: string }) {
             }
           : c,
       )}
-      searchFields={searchFields}
+      searchFields={isHighDensitySearch ? complexSearchFields : searchFields}
       searchInline={isInline}
       searchLayout={{ labelPosition: "left" }}
       formFields={fields}

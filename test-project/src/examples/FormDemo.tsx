@@ -153,6 +153,7 @@ export function FormDemo() {
                               region: "Shanghai",
                               date: "2026-10-25",
                               active: true,
+                              department: "Engineering",
                             })
                           }
                         >

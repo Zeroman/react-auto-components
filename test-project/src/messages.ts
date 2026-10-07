@@ -626,6 +626,15 @@ const messages: Record<string, Record<string, string>> = {
     "Status pills": "状态胶囊",
     "Outer card header owns title and actions; table stays pure with inline query and view tools.":
       "卡片头部接管业务标题与操作；表格专注行内检索与视图工具。",
+    "High-density search": "高密度复杂搜索",
+    Department: "所属部门",
+    Engineering: "工程部",
+    Product: "产品部",
+    Operations: "运营部",
+    Design: "设计部",
+    "Active Status": "启用状态",
+    Active: "已启用",
+    Inactive: "已停用",
   },
   en: {
     "Manual Search": "Manual Search",
@@ -1175,6 +1184,15 @@ const messages: Record<string, Record<string, string>> = {
     "Status pills": "Status pills",
     "Outer card header owns title and actions; table stays pure with inline query and view tools.":
       "Outer card header owns title and actions; table stays pure with inline query and view tools.",
+    "High-density search": "High-density search",
+    Department: "Department",
+    Engineering: "Engineering",
+    Product: "Product",
+    Operations: "Operations",
+    Design: "Design",
+    "Active Status": "Active Status",
+    Active: "Active",
+    Inactive: "Inactive",
   },
   "zh-TW": {
     "Manual Search": "手動搜尋",

@@ -227,4 +227,24 @@
   cursor: pointer;
 }
 
+/* Inline search form flow for high-density multi-field search */
+.table-demo .auto-toolbar[data-search-inline] > .auto-search > .auto-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+.table-demo .auto-toolbar[data-search-inline] > .auto-search > .auto-form > .auto-form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+.table-demo .auto-toolbar[data-search-inline] > .auto-search > .auto-form > .auto-form-actions {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 

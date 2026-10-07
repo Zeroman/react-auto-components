@@ -16,6 +16,7 @@ export interface Project {
   region: string;
   active: boolean;
   date: string;
+  department: string;
 }
 const names = [
   "Customer Data Platform",
@@ -28,6 +29,7 @@ const names = [
   "Knowledge Base Migration",
 ];
 const people = ["Chen Ruolin", "Lin Yu'an", "Zhou Zimo", "Li Siyuan"];
+export const departments = ["Engineering", "Product", "Operations", "Design"];
 export function makeProjects(count: number): Project[] {
   return Array.from(
     {
@@ -43,6 +45,7 @@ export function makeProjects(count: number): Project[] {
       region: ["Shanghai", "Hangzhou", "Shenzhen"][i % 3],
       active: i % 4 !== 0,
       date: `2026-09-${String((i % 28) + 1).padStart(2, "0")}`,
+      department: departments[i % 4],
     }),
   );
 }
@@ -86,6 +89,7 @@ export function makeMassiveProjects(count: number): Project[] {
       region: massiveRegions[i % 3],
       active: i % 4 !== 0,
       date: `2026-${String((i % 12) + 1).padStart(2, "0")}-${String((i % 28) + 1).padStart(2, "0")}`,
+      department: departments[i % 4],
     }),
   );
 }
@@ -279,6 +283,68 @@ function createDemoData(
       })),
     },
   ];
+  const complexSearchFields: Field<Project>[] = [
+    {
+      name: "name",
+      label: tr("Project Name"),
+      search: { match: "contains" },
+      placeholder: tr("Search projects…"),
+    },
+    {
+      name: "owner",
+      label: tr("Owner"),
+      type: "select",
+      options: people.map((value) => ({
+        label: tr(value),
+        value,
+      })),
+    },
+    {
+      name: "status",
+      label: tr("Status"),
+      type: "select",
+      options: ["In Progress", "Completed", "Pending Start"].map((value) => ({
+        value,
+        label: tr(value),
+      })),
+    },
+    {
+      name: "region",
+      label: tr("Region"),
+      type: "select",
+      search: { more: true },
+      options: ["Shanghai", "Hangzhou", "Shenzhen"].map((value) => ({
+        value,
+        label: tr(value),
+      })),
+    },
+    {
+      name: "department",
+      label: tr("Department"),
+      type: "select",
+      search: { more: true },
+      options: departments.map((value) => ({
+        value,
+        label: tr(value),
+      })),
+    },
+    {
+      name: "date",
+      label: tr("Delivery Date"),
+      type: "date",
+      search: { more: true, match: "contains" },
+    },
+    {
+      name: "active",
+      label: tr("Active Status"),
+      type: "select",
+      search: { more: true },
+      options: [
+        { label: tr("Active"), value: true },
+        { label: tr("Inactive"), value: false },
+      ],
+    },
+  ];
   const galleryFields: Field<GalleryRecord>[] = [
     {
       name: "title",
@@ -449,6 +515,7 @@ function createDemoData(
     columns,
     fields,
     searchFields,
+    complexSearchFields,
     galleryFields,
   };
 }
