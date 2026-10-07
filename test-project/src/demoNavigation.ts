@@ -29,11 +29,6 @@ export const demoExamples: Record<string, readonly DemoExample[]> = {
       tip: "Add, edit, delete and select rows entirely in local state — no server required.",
     },
     {
-      id: "compact",
-      label: "Compact",
-      tip: "Compact page: no title, search fields share the toolbar line.",
-    },
-    {
       id: "server",
       label: "mock.entry",
       tip: "One mock server. Choose whether it only runs the query, or also sends the columns, search fields, and edit permission.",

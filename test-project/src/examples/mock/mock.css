@@ -54,3 +54,177 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Table layout showcase, filter pills and decoupled card styles */
+.table-showcase-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  background: var(--auto-muted-bg, rgba(0, 0, 0, 0.02));
+  border: 1px solid var(--auto-border);
+  border-radius: var(--auto-radius, 8px);
+  font-size: 13px;
+}
+.table-showcase-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.table-showcase-label {
+  font-weight: 500;
+  color: var(--auto-secondary);
+  font-size: 12px;
+}
+.table-mode-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--auto-bg);
+  padding: 2px;
+  border: 1px solid var(--auto-border);
+  border-radius: 6px;
+}
+.table-mode-switch button {
+  padding: 3px 8px;
+  font-size: 12px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--auto-text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.table-mode-switch button:hover {
+  background: var(--auto-accent-soft, rgba(37, 99, 235, 0.08));
+}
+.table-mode-switch button[data-active="true"] {
+  background: var(--auto-accent, #2563eb);
+  color: #fff;
+  font-weight: 500;
+}
+.filter-pills {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--auto-border);
+  background: var(--auto-bg);
+  color: var(--auto-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1.4;
+}
+.filter-pill:hover {
+  border-color: var(--auto-accent);
+  color: var(--auto-text);
+}
+.filter-pill[data-active="true"] {
+  border-color: var(--auto-accent);
+  background: var(--auto-accent-soft, rgba(37, 99, 235, 0.08));
+  color: var(--auto-accent, #2563eb);
+  font-weight: 500;
+}
+.filter-pill .pill-count {
+  font-size: 11px;
+  opacity: 0.8;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--auto-muted-bg, rgba(0, 0, 0, 0.06));
+}
+.filter-pill[data-active="true"] .pill-count {
+  background: rgba(37, 99, 235, 0.15);
+}
+.decoupled-card-container {
+  border: 1px solid var(--auto-border);
+  border-radius: 10px;
+  background: var(--auto-bg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+.decoupled-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--auto-border);
+  background: var(--auto-panel-bg, var(--auto-bg));
+}
+.decoupled-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.decoupled-card-left h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--auto-text);
+  letter-spacing: -0.01em;
+}
+.decoupled-card-badge {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--auto-accent-soft, rgba(37, 99, 235, 0.08));
+  color: var(--auto-accent, #2563eb);
+}
+.decoupled-card-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: var(--auto-muted-bg, rgba(0, 0, 0, 0.03));
+  border-bottom: 1px solid var(--auto-border);
+  font-size: 12px;
+  color: var(--auto-secondary);
+}
+.decoupled-card-banner .banner-icon {
+  font-size: 14px;
+}
+.decoupled-card-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.decoupled-card-container > .auto-table {
+  border: 0;
+  border-radius: 0;
+}
+
+/* Keep headerExtra leading on the left in compact inline TableDemo */
+.table-demo .auto-toolbar[data-search-inline] > .auto-toolbar-left {
+  order: 0;
+  flex: 0 0 auto;
+  margin-right: 8px;
+}
+.table-showcase-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 12px;
+  color: var(--auto-text);
+}
+.table-showcase-toggle input[type="checkbox"] {
+  cursor: pointer;
+}
+
+

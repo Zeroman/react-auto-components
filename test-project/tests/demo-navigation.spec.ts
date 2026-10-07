@@ -4,7 +4,6 @@ import { openComponent } from "./helpers/navigation";
 const examples = {
   AutoTable: [
     "Local Data",
-    "Compact",
     "Server-driven Mock",
     "Massive data",
     "Tree Table",
