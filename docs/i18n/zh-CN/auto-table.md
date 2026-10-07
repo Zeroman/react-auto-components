@@ -9,7 +9,7 @@
 
 列可设置 `tip: ReactNode`，通过列头旁的提示按钮显示。表格将 `tipComponent` 传给列提示、搜索字段和新增／编辑弹窗；`searchLayout.tipComponent` 可覆盖搜索提示。表格内部统一按表格参数 → `config.table.tipComponent` → 全局 `config.tipComponent` → `DefaultTip` 回退；内部搜索／编辑表单不再回退到 `config.form.tipComponent`。独立的 AutoSearch／AutoDialog 仍使用 form 默认配置。
 
-优先级为：单项／字段／列参数 → 所属组件参数 → Provider 的组件默认配置（`config.tabs`、`config.form`、`config.table` 或 `config.menu`）→ 全局 `AutoConfigProvider.config.tipComponent` → 内置 `DefaultTip`。自定义组件接收 `{ content, children, placement }`（`AutoTipProps`），需保留触发元素的事件、ref 和无障碍属性。`AutoTip` 与 `DefaultTip` 均已导出；默认实现通过 portal 显示，支持 Escape 关闭，触发元素位置不变。
+优先级为：单项／字段／列参数 → 所属组件参数 → Provider 的组件默认配置（`config.tabs`、`config.form`、`config.table` 或 `config.menu`）→ 全局 `AutoConfigProvider.config.tipComponent` → 内置 `DefaultTip`。自定义组件接收 `{ content, children, placement }`（`AutoTipProps`），需保留触发元素的事件、ref 和无障碍属性。提示通过内部机制渲染；`DefaultTip` 已导出作为内置浮动兜底实现（通过 portal 显示，支持 Escape 关闭，触发元素位置不变）。
 
 ## 用法
 

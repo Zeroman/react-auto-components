@@ -1,4 +1,5 @@
-import { AutoTip, type TipConfig } from "../AutoTip";
+import { AutoTip } from "../../internal/AutoTip";
+import type { TipConfig } from "../../core/tip";
 import { useAutoText } from "../../core/i18n";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Popover } from "../../internal/Popover";

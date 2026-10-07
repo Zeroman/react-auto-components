@@ -10,7 +10,7 @@
 
 具名字段的 `tip` 在字段悬停或内部控件聚焦时显示浮层；输入框通过 `aria-describedby` 同时关联持久的帮助文本与校验错误。自定义 `render`／注册字段应将 `context.describedBy` 传给每个控件的 `aria-describedby`。字段的 `tipComponent` 优先于表单参数。展示字段 `type: "tip"` 和 `"append"` 仍直接显示内容。
 
-优先级为：单项／字段／列参数 → 所属组件参数 → Provider 的组件默认配置（`config.tabs`、`config.form`、`config.table` 或 `config.menu`）→ 全局 `AutoConfigProvider.config.tipComponent` → 内置 `DefaultTip`。自定义组件接收 `{ content, children, placement }`（`AutoTipProps`），需保留触发元素的事件、ref 和无障碍属性。`AutoTip` 与 `DefaultTip` 均已导出；默认实现通过 portal 显示，支持 Escape 关闭，触发元素位置不变。
+优先级为：单项／字段／列参数 → 所属组件参数 → Provider 的组件默认配置（`config.tabs`、`config.form`、`config.table` 或 `config.menu`）→ 全局 `AutoConfigProvider.config.tipComponent` → 内置 `DefaultTip`。自定义组件接收 `{ content, children, placement }`（`AutoTipProps`），需保留触发元素的事件、ref 和无障碍属性。提示通过内部机制渲染；`DefaultTip` 已导出作为内置浮动兜底实现（通过 portal 显示，支持 Escape 关闭，触发元素位置不变）。
 
 ### 样式插槽（Slots）
 

@@ -91,3 +91,7 @@ const dataSource: DataSource<User> = async (query, { signal }) => {
 - `AutoSearchPanel` / `AutoSearchPanelProps` —— 使用 `AutoSearch` / `AutoSearchProps`。
 - `AutoNavigationProvider` 的 `hashSync` —— 传 `history={createHashHistory()}`。
 - `tip`/`append` 展示项上的 `tip` —— 使用 `content`。
+
+## 0.4.0 移除项
+
+- `AutoTip` 组件不再公开导出——提示改由内部机制渲染。通过 `tipComponent` 自定义（自定义组件接收 `{ content, children, placement }`（`AutoTipProps`），需保留触发元素的事件、ref 和无障碍属性），或使用仍导出的内置兜底 `DefaultTip`。

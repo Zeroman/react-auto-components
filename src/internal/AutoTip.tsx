@@ -14,10 +14,10 @@ import {
   safePolygon,
 } from "@floating-ui/react";
 import { cloneElement, useEffect, useState } from "react";
-import { useAutoConfig } from "../../core/AutoConfigProvider";
-import { useLibraryStyles } from "../../core/dev";
-import type { AutoTipProps, TipConfig } from "../../core/tip";
-export type { AutoTipProps, TipComponent, TipConfig } from "../../core/tip";
+import { useAutoConfig } from "../core/AutoConfigProvider";
+import { useLibraryStyles } from "../core/dev";
+import type { AutoTipProps, TipConfig } from "../core/tip";
+export type { AutoTipProps, TipComponent, TipConfig } from "../core/tip";
 
 const dismissals = new WeakMap<Window, ((event: KeyboardEvent) => void)[]>();
 
@@ -111,7 +111,7 @@ export function DefaultTip({
   );
 }
 
-/** Priority: explicit component, global component, built-in default. Empty content renders only the trigger. */
+/** Internal tip dispatcher. Priority: explicit component, global component, built-in default. Empty content renders only the trigger. */
 export function AutoTip({
   content,
   children,

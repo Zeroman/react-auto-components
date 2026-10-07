@@ -1,4 +1,5 @@
-import { AutoTip, type TipConfig } from "../AutoTip";
+import { AutoTip } from "../../internal/AutoTip";
+import type { TipConfig } from "../../core/tip";
 import { ActionContextMenu } from "../../internal/ActionContextMenu";
 import { useAutoText } from "../../core/i18n";
 import * as Tabs from "@radix-ui/react-tabs";

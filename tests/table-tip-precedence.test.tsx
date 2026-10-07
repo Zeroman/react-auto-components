@@ -3,7 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AutoConfigProvider } from "../src/core/AutoConfigProvider";
 import { AutoTable } from "../src/components/AutoTable";
-import type { AutoTipProps } from "../src/components/AutoTip";
+import type { AutoTipProps } from "../src";
 
 function GlobalTip({ content, children }: AutoTipProps) {
   return (

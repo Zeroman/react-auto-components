@@ -9,7 +9,7 @@ Pass exactly one of `data`, `dataSource`, or `source`. Combining them is a type 
 
 Columns accept `tip: ReactNode`, shown through a help button beside the header. The table passes `tipComponent` to column tips, search fields and its add/edit dialog; `searchLayout.tipComponent` can override search help. Within the table, the fallback is table prop → `config.table.tipComponent` → global `config.tipComponent` → `DefaultTip`; nested search/edit forms do not fall back to `config.form.tipComponent`. Standalone AutoSearch/AutoDialog continue to use form defaults.
 
-Resolution order is the item/field/column parameter, the owning component parameter, provider component defaults (`config.tabs`, `config.form`, `config.table`, or `config.menu`), shared `AutoConfigProvider.config.tipComponent`, then built-in `DefaultTip`. Custom components receive `{ content, children, placement }` (`AutoTipProps`) and must preserve the trigger events, ref and accessibility props. `AutoTip` and `DefaultTip` are public exports; the default uses a portal, supports Escape, and keeps the trigger in place.
+Resolution order is the item/field/column parameter, the owning component parameter, provider component defaults (`config.tabs`, `config.form`, `config.table`, or `config.menu`), shared `AutoConfigProvider.config.tipComponent`, then built-in `DefaultTip`. Custom components receive `{ content, children, placement }` (`AutoTipProps`) and must preserve the trigger events, ref and accessibility props. Tooltips are rendered through internal integration; `DefaultTip` is exported as the built-in floating fallback (uses a portal, supports Escape, and keeps the trigger in place).
 
 ## Usage
 

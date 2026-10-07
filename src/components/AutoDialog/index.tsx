@@ -1,4 +1,4 @@
-import type { TipConfig } from "../AutoTip";
+import type { TipConfig } from "../../core/tip";
 import { useAutoText } from "../../core/i18n";
 import * as Dialog from "@radix-ui/react-dialog";
 import {

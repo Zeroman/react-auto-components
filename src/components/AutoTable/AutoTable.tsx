@@ -26,7 +26,7 @@ import {
   warnTableId,
 } from "../../core/dev";
 import { AutoSearch } from "../AutoSearch";
-import { DefaultTip } from "../AutoTip";
+import { DefaultTip } from "../../internal/AutoTip";
 import { TableHeader } from "./TableHeader";
 import { features } from "./features";
 import { useTableData } from "./useTableData";

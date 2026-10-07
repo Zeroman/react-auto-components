@@ -7,6 +7,7 @@
 ## 0.4.0 - 2026-10-07
 
 - `AutoTable` gains `searchInline`: a single-line toolbar where the search fields lead and actions and tools sit right — the title is omitted and the record count lives in the pagination footer. The record count moved out of the toolbar into the pagination bar for every table.
+- Breaking: the `AutoTip` component is no longer exported. Tooltips render through internal integration; customize them through `tipComponent` or use the exported `DefaultTip`.
 
 ## 0.3.1 - 2026-10-06
 

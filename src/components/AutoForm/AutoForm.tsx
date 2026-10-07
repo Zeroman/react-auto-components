@@ -1,4 +1,4 @@
-import { AutoTip } from "../AutoTip";
+import { AutoTip } from "../../internal/AutoTip";
 import { useAutoText } from "../../core/i18n";
 import { useForm, useStore } from "@tanstack/react-form";
 import {

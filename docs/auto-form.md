@@ -12,7 +12,7 @@ Schema form. Field widgets, validation, and submit live here. `AutoSearch` and `
 
 Named fields show `tip` when the field is hovered or a control inside it is focused. Controls reference persistent help text through `aria-describedby`, together with any validation error. Custom `render`/registered fields should apply `context.describedBy` to each control's `aria-describedby`. Field `tipComponent` overrides the form component. Display fields `type: "tip"` and `"append"` retain their inline content.
 
-Resolution order is the item/field/column parameter, the owning component parameter, provider component defaults (`config.tabs`, `config.form`, `config.table`, or `config.menu`), shared `AutoConfigProvider.config.tipComponent`, then built-in `DefaultTip`. Custom components receive `{ content, children, placement }` (`AutoTipProps`) and must preserve the trigger events, ref and accessibility props. `AutoTip` and `DefaultTip` are public exports; the default uses a portal, supports Escape, and keeps the trigger in place.
+Resolution order is the item/field/column parameter, the owning component parameter, provider component defaults (`config.tabs`, `config.form`, `config.table`, or `config.menu`), shared `AutoConfigProvider.config.tipComponent`, then built-in `DefaultTip`. Custom components receive `{ content, children, placement }` (`AutoTipProps`) and must preserve the trigger events, ref and accessibility props. Tooltips are rendered through internal integration; `DefaultTip` is exported as the built-in floating fallback (uses a portal, supports Escape, and keeps the trigger in place).
 
 ### Styling Slots
 

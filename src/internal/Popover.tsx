@@ -1,4 +1,5 @@
-import { AutoTip, type TipConfig } from "../components/AutoTip";
+import { AutoTip } from "./AutoTip";
+import type { TipConfig } from "../core/tip";
 import {
   autoUpdate,
   flip,

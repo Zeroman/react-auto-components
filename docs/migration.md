@@ -91,3 +91,7 @@ Local changes apply immediately; remote saves run serially, with a retry option 
 - `AutoSearchPanel` / `AutoSearchPanelProps` — use `AutoSearch` / `AutoSearchProps`.
 - `hashSync` on `AutoNavigationProvider` — pass `history={createHashHistory()}`.
 - `tip` on `tip` and `append` display items — use `content`.
+
+## Removed in 0.4.0
+
+- The `AutoTip` component export — tooltips render through internal integration now. Customize them through `tipComponent` (custom renderers receive `{ content, children, placement }` via `AutoTipProps` and must preserve the trigger events, ref, and accessibility props), or use the exported `DefaultTip` as the built-in floating fallback.

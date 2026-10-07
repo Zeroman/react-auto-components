@@ -1,4 +1,4 @@
-import type { TipConfig } from "../AutoTip";
+import type { TipConfig } from "../../core/tip";
 import type { CSSProperties, ReactNode, Ref } from "react";
 import type { Field, FieldName, AutoFormLayout } from "../../core/types";
 

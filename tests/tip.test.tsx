@@ -9,7 +9,7 @@ import { AutoSearch } from "../src/components/AutoSearch";
 import { AutoTable } from "../src/components/AutoTable";
 import { AutoMenu } from "../src/components/AutoMenu";
 import { AutoDialog } from "../src/components/AutoDialog";
-import { AutoTip } from "../src/components/AutoTip";
+import { AutoTip } from "../src/internal/AutoTip";
 import { createRef, useState } from "react";
 
 type TipProps = { content: ReactNode; children: ReactElement };
