@@ -24,6 +24,7 @@ const examples = {
     "Overflow scrolling",
     "Dynamic tabs",
     "Tab features",
+    "Focus & Autofocus",
     "Server-driven Mock",
     "Permissions",
   ],

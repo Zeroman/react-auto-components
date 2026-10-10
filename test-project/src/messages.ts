@@ -2,6 +2,50 @@
 // Keep {0} placeholder indexes unchanged.
 const messages: Record<string, Record<string, string>> = {
   "zh-CN": {
+    "Focus & Autofocus": "焦点管理与自动定位",
+    "Focus restoration on return, [data-autofocus], focusTarget selectors, and active sensing.":
+      "切回标签页焦点归位恢复、[data-autofocus]、focusTarget 目标定位与激活状态感知。",
+    "Focus memory & return": "焦点记忆与归位",
+    "Focus restoration on return": "切回标签页焦点恢复",
+    "Type in the middle input, switch to another tab, and switch back. The cursor returns precisely to where you were typing.":
+      "在中间输入框输入内容，切换到其他标签页再切回，光标将精确停留在刚才输入的位置。",
+    "Email (try focusing here before switching)":
+      "电子邮箱（切换前可尝试在此聚焦）",
+    "Notes": "备注说明",
+    "Add notes here…": "在此添加备注…",
+    "e.g. alice": "例如 alice",
+    "e.g. alice@example.com": "例如 alice@example.com",
+    "Declarative autofocus target": "声明式自动聚焦目标",
+    "Any element marked with data-autofocus receives focus automatically when entering this tab, even without component configuration.":
+      "任何标记了 data-autofocus 的元素在切入此标签页时都会自动获取焦点，无需任何组件级配置。",
+    "Initial read-only note": "只读说明字段",
+    "Skipped during autofocus": "自动聚焦时跳过",
+    "Quick search (marked with data-autofocus)":
+      "快捷搜索框（标记了 data-autofocus）",
+    "Autofocused search": "自动聚焦搜索框",
+    "I gain focus immediately upon switching here!":
+      "切换到此标签时立即自动获得焦点！",
+    "Custom focusTarget": "自定义 focusTarget",
+    "Targeted by focusTarget selector": "通过 focusTarget 选择器精准聚焦",
+    "Configured with focusTarget: '#custom-editor-target'. Focus skips the preceding toolbar button and jumps straight into the editor.":
+      "配置了 focusTarget: '#custom-editor-target'。焦点会跳过前面的工具栏按钮，直接落到编辑器内。",
+    "Toolbar button (skipped)": "工具栏按钮（被跳过）",
+    "Custom editor": "自定义编辑器",
+    "Editor field targeted by CSS selector…":
+      "通过 CSS 选择器定位的编辑区域…",
+    "Subcomponent active sensing": "子组件激活状态感知",
+    "useAutoTabActive() informs child components whenever this tab becomes visible or hidden.":
+      "useAutoTabActive() 会在此标签页变为可见或隐藏时通知内部子组件。",
+    "Currently Active": "当前处于激活状态",
+    "Currently Hidden": "当前处于隐藏状态",
+    "Visit count: {0}": "访问次数：{0}",
+    "Enable focus restoration (restoreFocus)":
+      "开启焦点记忆归位 (restoreFocus)",
+    "Auto focus mode": "自动聚焦模式",
+    "pointer-only (arrow keys keep trigger focus)":
+      "pointer-only（方向键保留标签焦点）",
+    "always (all switches transfer focus)": "always（所有切换均转移焦点）",
+    "none (never autofocus)": "none（从不自动聚焦）",
     "Component Tree Navigation Demo": "组件树导航演示",
     "Component Tree Navigation": "组件树导航",
     "Navigation Tree:": "导航树：",

@@ -37,11 +37,25 @@ button {
   cursor: pointer;
 }
 
-button:focus-visible,
-select:focus-visible,
-input:focus-visible {
+button:focus-visible {
   outline: 2px solid #23745c;
   outline-offset: 2px;
+}
+
+select:not([aria-invalid="true"]):focus-visible,
+input:not([aria-invalid="true"]):focus-visible,
+textarea:not([aria-invalid="true"]):focus-visible {
+  outline: 2px solid #23745c;
+  outline-offset: 0;
+  border-color: #23745c;
+}
+
+select[aria-invalid="true"]:focus-visible,
+input[aria-invalid="true"]:focus-visible,
+textarea[aria-invalid="true"]:focus-visible {
+  outline: 2px solid var(--auto-danger, #bd3545);
+  outline-offset: 0;
+  border-color: var(--auto-danger, #bd3545);
 }
 
 /* ==========================================================================
@@ -262,7 +276,7 @@ input:focus-visible {
 
 .language-picker select:focus-visible {
   outline: 2px solid #23745c;
-  outline-offset: 1px;
+  outline-offset: 0;
 }
 
 .version-pill {
@@ -986,15 +1000,24 @@ h3 {
 }
 
 .tab-demo-content {
-  padding: 16px 0;
+  padding: 16px 6px;
 }
 
-.tab-demo-content input {
+.tab-demo-content input,
+.tab-demo-content textarea {
   padding: 6px 10px;
   border: 1px solid #dce5dd;
   border-radius: 6px;
   width: 100%;
-  max-width: 320px;
+  max-width: 360px;
+  box-sizing: border-box;
+}
+
+.tab-demo-content input:focus-visible,
+.tab-demo-content textarea:focus-visible {
+  outline: 2px solid #23745c;
+  outline-offset: 0;
+  border-color: #23745c;
 }
 
 .global-settings {
@@ -1086,7 +1109,8 @@ h3 {
 }
 
 .studio-dark input,
-.studio-dark select {
+.studio-dark select,
+.studio-dark textarea {
   color: #dce5de;
   background: #20362b;
   border-color: #3c5143;

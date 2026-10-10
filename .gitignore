@@ -26,3 +26,4 @@ data/agent-runs/
 /docs/verification.md
 .rac-shots/
 .mimocode/
+.gstack/

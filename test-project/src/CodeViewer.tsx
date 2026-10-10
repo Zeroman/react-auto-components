@@ -22,6 +22,7 @@ const rawSources = import.meta.glob<string>(
     "./examples/TabsDemo.tsx",
     "./examples/DynamicTabsDemo.tsx",
     "./examples/TabsStateDemo.tsx",
+    "./examples/TabsFocusDemo.tsx",
     "./examples/MenuDemo.tsx",
     "./examples/PermissionsDemo.tsx",
     "./examples/mock/access.ts",
@@ -61,7 +62,12 @@ const exampleFiles: Record<string, readonly string[]> = {
   form: ["FormDemo.tsx"],
   search: ["SearchDemo.tsx"],
   dialog: ["DialogDemo.tsx"],
-  tabs: ["TabsDemo.tsx", "DynamicTabsDemo.tsx", "TabsStateDemo.tsx"],
+  tabs: [
+    "TabsDemo.tsx",
+    "DynamicTabsDemo.tsx",
+    "TabsStateDemo.tsx",
+    "TabsFocusDemo.tsx",
+  ],
   menu: ["MenuDemo.tsx"],
   "tree-demo": ["NavigationDemo.tsx"],
 };

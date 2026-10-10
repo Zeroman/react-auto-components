@@ -118,6 +118,11 @@ export const demoExamples: Record<string, readonly DemoExample[]> = {
       label: "Tab features",
       tip: "Mounting modes, hidden and closable tabs, nested groups, icons and role-gated tabs.",
     },
+    {
+      id: "focus",
+      label: "Focus & Autofocus",
+      tip: "Focus restoration on return, [data-autofocus], focusTarget selectors, and active sensing.",
+    },
     serverSchema,
     permissions("tabs"),
   ],

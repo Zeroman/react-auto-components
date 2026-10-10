@@ -4,6 +4,7 @@ import { useDemoText } from "../i18n";
 import { DynamicTabsDemo } from "./DynamicTabsDemo";
 import { TabsOverflowDemo } from "./TabsOverflowDemo";
 import { TabsStateDemo } from "./TabsStateDemo";
+import { TabsFocusDemo } from "./TabsFocusDemo";
 
 export function TabsDemo({ example }: { example: string }) {
   const tr = useDemoText();
@@ -182,6 +183,13 @@ export function TabsDemo({ example }: { example: string }) {
             label: tr("Tab features"),
             content: (
               <TabsStateDemo mode={mode} size={size} density={density} />
+            ),
+          },
+          {
+            id: "focus",
+            label: tr("Focus & Autofocus"),
+            content: (
+              <TabsFocusDemo mode={mode} size={size} density={density} />
             ),
           },
         ].find((item) => item.id === example)?.content
