@@ -95,3 +95,13 @@ Local changes apply immediately; remote saves run serially, with a retry option 
 ## Removed in 0.4.0
 
 - The `AutoTip` component export — tooltips render through internal integration now. Customize them through `tipComponent` (custom renderers receive `{ content, children, placement }` via `AutoTipProps` and must preserve the trigger events, ref, and accessibility props), or use the exported `DefaultTip` as the built-in floating fallback.
+
+## Automatic focus
+
+`AutoTabs` and `useAutoTabsWorkspace` no longer manage editor focus. Remove `restoreFocus`, `focusTarget`, and `autoFocusMode` from tab items, tab props, workspace options and page declarations. `TabFocusTarget` is removed. `data-autofocus` alone no longer has special behavior.
+
+Wrap the desired entry in `<AutoFocus>`, or wrap panel content in `<AutoFocus target="textarea">`. To retain an existing marker, use `<AutoFocus target="[data-autofocus]">`. A DOM ref can be passed as `target` for editors exposing their focusable element. Move any conditional enablement to `<AutoFocus disabled={...}>`.
+
+There is no historical-focus restoration or pointer-only mode. All selection methods use the same visibility-based behavior. Without AutoFocus, tabs do not move focus into their panels. See [AutoFocus](auto-focus.md) for ordering and visibility rules.
+
+Arrow keys move focus between tab labels without switching panels. Click a label or press Enter/Space to activate it.

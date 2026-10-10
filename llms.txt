@@ -9,6 +9,7 @@ Schema-driven React 19 components. Read this file first. Behavior, thrown callba
 - Tables: docs/auto-table.md
 - Dialogs: docs/auto-dialog.md
 - Tabs, including dynamic tabs: docs/auto-tabs.md
+- Independent automatic focus entries: docs/auto-focus.md
 - Menu: docs/auto-menu.md
 - Chat: docs/auto-chat.md
 - Component navigation: docs/auto-navigation.md

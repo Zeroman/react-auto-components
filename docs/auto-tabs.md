@@ -58,9 +58,6 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `actions` | Primary or custom actions placed on the right side of the tab bar. |
 | `extra` | Custom extra content placed on the right side of the tab bar. |
 | `tabActions` | Right-click actions for each tab. Entries support `icon`, `danger`, `separator`, `disabled`, and `hidden`, mirroring table row actions. Omit to disable the menu. |
-| `restoreFocus` | Default `true`: returning to a previously active tab restores focus to the element last focused inside that panel. `false` keeps focus on the tab trigger. |
-| `focusTarget` | Fallback focus target when a tab has no remembered element: `true` / `"first"` for the first input/interactive element, CSS selector string, function `(panel) => element`, or ref object. Tab items can also specify `focusTarget` or use `[data-autofocus]` on elements. |
-| `autoFocusMode` | Default `"pointer-only"`: restores/moves focus on clicks and programmatic changes, while leaving focus on tab triggers during keyboard arrow navigation. `"always"` focuses on all activations; `"none"` disables automatic focus. |
 
 A nested `children` list replaces `content` for that tab. `defaultActive` is the nested uncontrolled id.
 
@@ -129,3 +126,22 @@ A pinned tab has no close button. Closing the active tab selects the next enable
 ## Preconditions
 
 Import `style.css` once (`RAC-CSS-MISSING` in development). `AutoConfigProvider` is optional.
+
+Arrow keys move focus between tab labels without switching panels. Click a label or press Enter/Space to activate it.
+
+## Automatic focus
+
+Tabs only control selection, visibility and mounting. Put [AutoFocus](auto-focus.md) in a panel to declare its editing entry. It works with cached, lazy and nested panels, regardless of whether selection changes by mouse, keyboard or code. No historical editor focus is retained.
+
+```tsx
+<AutoTabs items={[
+  { id: "editor", label: "Editor", content: (
+    <AutoFocus><input aria-label="Name" /></AutoFocus>
+  ) },
+  { id: "notes", label: "Notes", content: (
+    <AutoFocus><textarea aria-label="Notes" /></AutoFocus>
+  ) },
+]} />
+```
+
+Import both `AutoTabs` and `AutoFocus` from the package. The former tab/workspace `restoreFocus`, `focusTarget`, and `autoFocusMode` options have been removed; see [migration](migration.md#automatic-focus).

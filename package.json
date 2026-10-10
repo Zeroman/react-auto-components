@@ -15,6 +15,7 @@
     "docs/auto-table.md",
     "docs/auto-dialog.md",
     "docs/auto-tabs.md",
+    "docs/auto-focus.md",
     "docs/auto-menu.md",
     "docs/auto-navigation.md",
     "docs/errors.md",
@@ -25,6 +26,7 @@
     "docs/i18n/*/auto-table.md",
     "docs/i18n/*/auto-dialog.md",
     "docs/i18n/*/auto-tabs.md",
+    "docs/i18n/*/auto-focus.md",
     "docs/i18n/*/auto-menu.md",
     "docs/i18n/*/auto-navigation.md",
     "docs/i18n/*/errors.md"

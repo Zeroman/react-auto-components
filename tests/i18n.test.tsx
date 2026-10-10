@@ -91,3 +91,8 @@ it("isolates translations between providers and uses interpolated table messages
   expect(screen.getByRole("button", { name: "Reload" })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Refresh" })).toBeInTheDocument();
 });
+
+it("AutoFocus demo labels are translated into Simplified Chinese", () => {
+  expect(translateMessage("zh-CN", "Username")).toBe("用户名");
+  expect(translateMessage("zh-CN", "Email")).toBe("电子邮箱");
+});

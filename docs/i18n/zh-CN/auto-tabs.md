@@ -58,9 +58,6 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `actions` | 标签栏右侧的操作按钮区域。 |
 | `extra` | 标签栏右侧的自定义扩展内容。 |
 | `tabActions` | 标签页右键菜单动作集合。菜单项支持 `icon` 图标、`danger` 危险色、`separator` 分隔线、`disabled` 与 `hidden`，与表格行操作一致。省略则不启用右键菜单。 |
-| `restoreFocus` | 默认 `true`：切回之前访问过的标签页时，自动将焦点恢复到该面板中最后一次聚焦的元素。`false` 保持焦点在标签按钮上。 |
-| `focusTarget` | 当标签页没有历史焦点时的兜底目标：`true` / `"first"` 聚焦首个输入框或交互元素，CSS 选择器字符串，函数 `(panel) => element`，或 ref 对象。单个 tab 也可以配置 `focusTarget` 或在元素上标记 `[data-autofocus]`。 |
-| `autoFocusMode` | 默认 `"pointer-only"`：在鼠标点击和代码切换时聚焦或恢复焦点，在键盘方向键浏览标签栏时保持焦点在标签按钮上。`"always"` 在所有切换方式下聚焦；`"none"` 关闭自动聚焦。 |
 
 某一项如果有 `children`，就用嵌套标签代替 `content`。`defaultActive` 是嵌套层的非受控 id。
 
@@ -129,3 +126,22 @@ export function Orders() {
 ## 前置条件
 
 入口引入一次 `style.css`（开发模式 `RAC-CSS-MISSING`）。`AutoConfigProvider` 可选。
+
+方向键仅在标签之间移动焦点，不切换面板。点击标签或按 Enter/空格才会激活对应面板。
+
+## 自动聚焦
+
+标签页只管理选择、可见性和挂载。在面板内放置 [AutoFocus](auto-focus.md) 即可声明编辑入口。缓存、懒加载和嵌套面板均可使用，鼠标、键盘或程序切换行为一致，不记忆上次编辑位置。
+
+```tsx
+<AutoTabs items={[
+  { id: "editor", label: "Editor", content: (
+    <AutoFocus><input aria-label="Name" /></AutoFocus>
+  ) },
+  { id: "notes", label: "Notes", content: (
+    <AutoFocus><textarea aria-label="Notes" /></AutoFocus>
+  ) },
+]} />
+```
+
+从包中导入 `AutoTabs` 和 `AutoFocus`。原有 tab/workspace 的 `restoreFocus`、`focusTarget` 和 `autoFocusMode` 选项已移除，参见[迁移说明](migration.md#自动聚焦)。

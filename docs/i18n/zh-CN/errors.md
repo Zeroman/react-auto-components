@@ -13,6 +13,12 @@ Docs: https://github.com/Zeroman/react-auto-components/blob/main/docs/errors.md#
 
 界面文案仍走 `config.t`。`RacError.userKey` 是英文源句，宿主照旧翻译。控制台和异常本身保持英文，方便模型按报错修改。
 
+## RAC-FOCUS-TARGET
+
+AutoFocus 的 `target` 不是有效的 CSS 选择器。在注册或更新选项时抛出错误，不会等到异步焦点解析时才报错。
+
+修复：为 AutoFocus 的 `target` 传入有效的 CSS 选择器或 DOM ref。
+
 ## RAC-FIELD-OPTIONS
 
 `type` 为 `select`、`select-v2`、`radio`、`checkbox` 或 `cascader`，但没有 `options`，或 `options` 是空数组。

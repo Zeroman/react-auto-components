@@ -18,6 +18,7 @@ const documents = [
   "auto-table.md",
   "auto-dialog.md",
   "auto-tabs.md",
+  "auto-focus.md",
   "auto-menu.md",
   "auto-chat.md",
   "auto-navigation.md",

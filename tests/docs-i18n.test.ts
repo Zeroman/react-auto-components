@@ -14,6 +14,7 @@ const documents = [
   "auto-table.md",
   "auto-dialog.md",
   "auto-tabs.md",
+  "auto-focus.md",
   "auto-menu.md",
   "auto-chat.md",
   "auto-navigation.md",
@@ -56,7 +57,7 @@ test("translated headings and fenced example structure do not cause drift", () =
   );
   const result = check(root);
   expect(result.status, result.stderr).toBe(0);
-  expect(result.stdout).toContain("12 active translations checked");
+  expect(result.stdout).toContain("13 active translations checked");
   expect(result.stderr).toBe("");
 });
 

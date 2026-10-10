@@ -95,3 +95,13 @@ const dataSource: DataSource<User> = async (query, { signal }) => {
 ## 0.4.0 移除项
 
 - `AutoTip` 组件不再公开导出——提示改由内部机制渲染。通过 `tipComponent` 自定义（自定义组件接收 `{ content, children, placement }`（`AutoTipProps`），需保留触发元素的事件、ref 和无障碍属性），或使用仍导出的内置兜底 `DefaultTip`。
+
+## 自动聚焦
+
+`AutoTabs` 和 `useAutoTabsWorkspace` 不再管理编辑器焦点。从标签项、标签页属性、workspace 选项和页面声明中移除 `restoreFocus`、`focusTarget` 与 `autoFocusMode`。`TabFocusTarget` 已移除，单独使用 `data-autofocus` 不再有特殊行为。
+
+用 `<AutoFocus>` 包裹所需入口，或用 `<AutoFocus target="textarea">` 包裹面板内容。保留已有标记时可使用 `<AutoFocus target="[data-autofocus]">`。编辑器暴露可聚焦 DOM 元素时，可以通过 `target` 传入 DOM ref。条件启用逻辑移至 `<AutoFocus disabled={...}>`。
+
+不再恢复历史焦点或提供仅鼠标模式，所有选择方式统一依据可见性处理。未使用 AutoFocus 时，标签页不主动将焦点移入面板。顺序和可见性规则参见 [AutoFocus](auto-focus.md)。
+
+方向键仅在标签之间移动焦点，不切换面板。点击标签或按 Enter/空格才会激活对应面板。

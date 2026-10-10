@@ -14,6 +14,7 @@ export * from "./components/AutoForm";
 export * from "./components/AutoSearch";
 export * from "./components/AutoDialog";
 export * from "./components/AutoTabs";
+export * from "./components/AutoFocus";
 export * from "./components/AutoMenu";
 export * from "./components/AutoTable";
 export * from "./components/AutoChat";

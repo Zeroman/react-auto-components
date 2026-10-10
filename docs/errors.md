@@ -13,6 +13,12 @@ Docs: https://github.com/Zeroman/react-auto-components/blob/main/docs/errors.md#
 
 User-visible sentences stay on `config.t`. A `RacError` may carry `userKey`, the English source string the host translates. The console and the exception stay English.
 
+## RAC-FOCUS-TARGET
+
+AutoFocus `target` is an invalid CSS selector. The error is raised during registration or an options update, before scheduling focus resolution.
+
+Fix: pass a valid CSS selector or a DOM ref to AutoFocus `target`.
+
 ## RAC-FIELD-OPTIONS
 
 `type` is `select`, `select-v2`, `radio`, `checkbox`, or `cascader`, and `options` is missing or an empty array.

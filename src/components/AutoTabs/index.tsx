@@ -26,13 +26,6 @@ import {
 } from "../../core/navigation";
 export * from "./useAutoTabsWorkspace";
 
-export type TabFocusTarget =
-  | boolean
-  | "first"
-  | string
-  | ((panel: HTMLElement) => HTMLElement | null | void)
-  | { readonly current: HTMLElement | null };
-
 export const AutoTabActiveContext = createContext<boolean>(true);
 
 /**
@@ -60,19 +53,6 @@ export interface AutoTab extends Access, TipConfig {
   defaultActive?: string;
   /** Shows a close button when the group also supplies `onClose`. */
   closable?: boolean;
-  /**
-   * Restores focus to the last focused element within this tab when returning to it.
-   * Default `true` (inherits from `AutoTabsProps.restoreFocus`). Set `false` to disable.
-   */
-  restoreFocus?: boolean;
-  /**
-   * Focus target to focus when this tab is selected and has no previously focused element:
-   * - `true` or `"first"`: focuses the first interactive element or `[data-autofocus]`
-   * - `string`: CSS selector to match within this tab's panel
-   * - function: custom focus locator or imperative callback
-   * - RefObject: DOM ref to focus
-   */
-  focusTarget?: TabFocusTarget;
 }
 /** Right-click action shown in a tab's context menu. Mirrors table `RowAction` items. */
 export interface TabAction {
@@ -130,23 +110,6 @@ export interface AutoTabsProps extends TipConfig {
   extra?: ReactNode;
   size?: ComponentSize;
   density?: ComponentDensity;
-  /**
-   * When returning to a previously visited tab, restores focus to the last element
-   * focused inside that tab panel. Default `true`. Set to `false` to disable.
-   */
-  restoreFocus?: boolean;
-  /**
-   * Fallback focus target for tabs that do not specify their own `focusTarget`.
-   */
-  focusTarget?: TabFocusTarget;
-  /**
-   * Determines when automatic focus and focus restoration trigger.
-   * - `"pointer-only"` (default): Triggers on mouse clicks and programmatic switches,
-   *   but preserves focus on tab triggers during keyboard arrow navigation.
-   * - `"always"`: Always triggers, including during keyboard arrow navigation.
-   * - `"none"`: Disables automatic focus and focus restoration.
-   */
-  autoFocusMode?: "pointer-only" | "always" | "none";
 }
 export function AutoTabs({
   items,
@@ -165,9 +128,6 @@ export function AutoTabs({
   tipComponent: ownTipComponent,
   size: ownSize,
   density: ownDensity,
-  restoreFocus = true,
-  focusTarget,
-  autoFocusMode = "pointer-only",
 }: AutoTabsProps) {
   const tr = useAutoText();
   const services = useAutoConfig();
@@ -266,15 +226,6 @@ export function AutoTabs({
   }
   const navRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const nextActivationMethodRef = useRef<"pointer" | "keyboard">("pointer");
-  const activeMethodRef = useRef<"pointer" | "keyboard">("pointer");
-  const prevCurrentRef = useRef(current);
-
-  if (prevCurrentRef.current !== current) {
-    prevCurrentRef.current = current;
-    activeMethodRef.current = nextActivationMethodRef.current;
-    nextActivationMethodRef.current = "pointer";
-  }
   const [overflowed, setOverflowed] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -375,6 +326,7 @@ export function AutoTabs({
       data-size={size}
       data-density={density}
       value={current}
+      activationMode="manual"
       onValueChange={(v) => {
         const item = visible.find((i) => i.id === v);
         if (item) change([v], item);
@@ -412,37 +364,6 @@ export function AutoTabs({
             aria-label={tr("Tabs")}
             className="auto-tab-list"
             onScroll={checkScroll}
-            onKeyDown={(event) => {
-              if (
-                event.key === "ArrowLeft" ||
-                event.key === "ArrowRight" ||
-                event.key === "ArrowUp" ||
-                event.key === "ArrowDown" ||
-                event.key === "Home" ||
-                event.key === "End"
-              ) {
-                nextActivationMethodRef.current = "keyboard";
-              } else if (event.key === "Enter" || event.key === " ") {
-                nextActivationMethodRef.current = "pointer";
-              }
-            }}
-            onKeyUp={(event) => {
-              if (
-                event.key === "ArrowLeft" ||
-                event.key === "ArrowRight" ||
-                event.key === "ArrowUp" ||
-                event.key === "ArrowDown" ||
-                event.key === "Home" ||
-                event.key === "End"
-              ) {
-                setTimeout(() => {
-                  nextActivationMethodRef.current = "pointer";
-                }, 0);
-              }
-            }}
-            onPointerDown={() => {
-              nextActivationMethodRef.current = "pointer";
-            }}
           >
             {visible.map((i) => (
               <ActionContextMenu
@@ -544,9 +465,6 @@ export function AutoTabs({
                 items={i.children}
                 route={route ? { defaultChild: i.defaultActive } : undefined}
                 tipComponent={tipComponent}
-                restoreFocus={restoreFocus}
-                focusTarget={focusTarget}
-                autoFocusMode={autoFocusMode}
                 value={
                   !route && isCurrent && path.length > 1
                     ? path.slice(1)
@@ -581,14 +499,11 @@ export function AutoTabs({
             lazy={lazy}
             keepMounted={keepMounted}
           >
-            <TabPanelContent
-              tab={i}
-              isCurrent={effectiveActive}
-              restoreFocus={i.restoreFocus ?? restoreFocus}
-              focusTarget={i.focusTarget ?? focusTarget}
-              autoFocusMode={autoFocusMode}
-              activationMethodRef={activeMethodRef}
-              keepMounted={keepMounted}
+            <Tabs.Content
+              value={i.id}
+              forceMount={keepMounted ? true : undefined}
+              hidden={!effectiveActive}
+              className="auto-tab-content"
             >
               <AutoTabActiveContext value={effectiveActive}>
                 <RouteActiveContext value={effectiveActive}>
@@ -601,7 +516,7 @@ export function AutoTabs({
                   )}
                 </RouteActiveContext>
               </AutoTabActiveContext>
-            </TabPanelContent>
+            </Tabs.Content>
           </VisitedPanel>
         );
       })}
@@ -668,185 +583,4 @@ function VisitedPanel({
     if (active) setVisited(true);
   }, [active]);
   return active || (keepMounted && (!lazy || visited)) ? children : null;
-}
-
-function resolveFocusElement(
-  panel: HTMLElement,
-  targetSpec?: TabFocusTarget,
-): HTMLElement | null {
-  // Priority 1: [data-autofocus] always takes precedence within the panel
-  const autofocusEl = panel.querySelector<HTMLElement>("[data-autofocus]");
-  if (
-    autofocusEl &&
-    autofocusEl.isConnected &&
-    !autofocusEl.hasAttribute("disabled")
-  ) {
-    return autofocusEl;
-  }
-
-  if (targetSpec === undefined || targetSpec === false) return null;
-
-  if (typeof targetSpec === "function") {
-    const res = targetSpec(panel);
-    return res instanceof HTMLElement ? res : null;
-  }
-  if (
-    typeof targetSpec === "object" &&
-    targetSpec !== null &&
-    "current" in targetSpec
-  ) {
-    const el = targetSpec.current;
-    return el && el.isConnected && !el.hasAttribute("disabled") ? el : null;
-  }
-  if (typeof targetSpec === "string") {
-    const el = panel.querySelector<HTMLElement>(targetSpec);
-    return el && el.isConnected && !el.hasAttribute("disabled") ? el : null;
-  }
-  if (targetSpec === true || targetSpec === "first") {
-    const inputEl = panel.querySelector<HTMLElement>(
-      "input:not([disabled]):not([type='hidden']), textarea:not([disabled]), select:not([disabled]), [contenteditable='true']",
-    );
-    if (inputEl && inputEl.isConnected) return inputEl;
-    const generalEl = panel.querySelector<HTMLElement>(
-      "button:not([disabled]), [tabindex='0']:not([disabled]), a[href]",
-    );
-    return generalEl && generalEl.isConnected ? generalEl : null;
-  }
-
-  return null;
-}
-
-function attemptFocus(el: HTMLElement, panel: HTMLElement): boolean {
-  try {
-    el.focus({ preventScroll: true });
-  } catch {
-    return false;
-  }
-  return (
-    document.activeElement === el ||
-    (document.activeElement !== null && panel.contains(document.activeElement))
-  );
-}
-
-function TabPanelContent({
-  tab,
-  isCurrent,
-  restoreFocus,
-  focusTarget,
-  autoFocusMode,
-  activationMethodRef,
-  keepMounted,
-  children,
-}: {
-  tab: AutoTab;
-  isCurrent: boolean;
-  restoreFocus: boolean;
-  focusTarget?: TabFocusTarget;
-  autoFocusMode: "pointer-only" | "always" | "none";
-  activationMethodRef: { readonly current: "pointer" | "keyboard" };
-  keepMounted: boolean;
-  children: ReactNode;
-}) {
-  const contentRef = useRef<HTMLDivElement>(null);
-  const lastActiveElementRef = useRef<HTMLElement | null>(null);
-  const prevActiveRef = useRef(false);
-
-  const optionsRef = useRef({
-    restoreFocus,
-    focusTarget,
-    autoFocusMode,
-    activationMethodRef,
-  });
-  optionsRef.current = {
-    restoreFocus,
-    focusTarget,
-    autoFocusMode,
-    activationMethodRef,
-  };
-
-  const handleFocusCapture = useCallback((e: React.FocusEvent) => {
-    const target = e.target as HTMLElement;
-    if (target && target !== contentRef.current) {
-      lastActiveElementRef.current = target;
-    }
-  }, []);
-
-  const tryFocus = useCallback(() => {
-    const {
-      restoreFocus: shouldRestore,
-      focusTarget: target,
-      autoFocusMode: mode,
-      activationMethodRef: methodRef,
-    } = optionsRef.current;
-
-    if (mode === "none") return false;
-    if (
-      mode === "pointer-only" &&
-      methodRef.current === "keyboard"
-    ) {
-      return false;
-    }
-
-    const panel = contentRef.current;
-    if (!panel) return false;
-
-    // If an element inside this panel is already focused, keep it
-    if (document.activeElement && panel.contains(document.activeElement)) {
-      return true;
-    }
-
-    // 1. Try restoring the previously focused element inside this panel
-    if (shouldRestore && lastActiveElementRef.current) {
-      const el = lastActiveElementRef.current;
-      if (
-        el.isConnected &&
-        panel.contains(el) &&
-        !el.hasAttribute("disabled")
-      ) {
-        if (attemptFocus(el, panel)) {
-          return true;
-        }
-      }
-    }
-
-    // 2. Fallback to focusTarget or [data-autofocus]
-    const targetEl = resolveFocusElement(panel, target);
-    if (
-      targetEl &&
-      targetEl.isConnected &&
-      !targetEl.hasAttribute("disabled")
-    ) {
-      if (attemptFocus(targetEl, panel)) {
-        return true;
-      }
-    }
-
-    return false;
-  }, []);
-
-  useEffect(() => {
-    const justActivated = isCurrent && !prevActiveRef.current;
-    prevActiveRef.current = isCurrent;
-
-    if (!justActivated) return;
-
-    tryFocus();
-    const timer = setTimeout(() => {
-      tryFocus();
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [isCurrent, tryFocus]);
-
-  return (
-    <Tabs.Content
-      ref={contentRef}
-      value={tab.id}
-      forceMount={keepMounted ? true : undefined}
-      hidden={!isCurrent}
-      className="auto-tab-content"
-      onFocusCapture={handleFocusCapture}
-    >
-      {children}
-    </Tabs.Content>
-  );
 }

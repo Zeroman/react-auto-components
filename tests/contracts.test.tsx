@@ -1,6 +1,7 @@
 import { test, expect, vi, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { createRef } from "react";
+import { AutoFocus } from "../src/components/AutoFocus";
 import { AutoForm } from "../src/components/AutoForm";
 import { AutoTable, type AutoTableHandle } from "../src/components/AutoTable";
 import { useAutoDialog } from "../src/components/AutoDialog";
@@ -122,4 +123,20 @@ test("match between warns when the value is a scalar", () => {
   const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
   buildQuery({ amount: 5 }, [{ name: "amount", search: { match: "between" } }]);
   expect(warn.mock.calls.flat().join("\n")).toContain("RAC-FIELD-BETWEEN");
+});
+
+test("invalid AutoFocus selectors throw a synchronous RacError with the repair contract", () => {
+  const error = vi.spyOn(console, "error").mockImplementation(() => {});
+  try {
+    expect(() => render(<AutoFocus target="[" />)).toThrow(
+      new RacError(
+        "AutoFocus",
+        "RAC-FOCUS-TARGET",
+        'Invalid target selector "[".',
+        "Pass a valid CSS selector or a DOM ref to AutoFocus target.",
+      ),
+    );
+  } finally {
+    error.mockRestore();
+  }
 });
