@@ -109,6 +109,10 @@ export const demoExamples: Record<string, readonly DemoExample[]> = {
       tip: "When tabs exceed the row width, edge scroll buttons appear and the active tab scrolls into view.",
     },
     {
+      id: "equal",
+      label: "Equal width",
+    },
+    {
       id: "dynamic",
       label: "Dynamic tabs",
       tip: "Open, close and reorder tabs at runtime, workspace style.",

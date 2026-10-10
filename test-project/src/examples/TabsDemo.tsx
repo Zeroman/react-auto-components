@@ -5,6 +5,7 @@ import { DynamicTabsDemo } from "./DynamicTabsDemo";
 import { TabsOverflowDemo } from "./TabsOverflowDemo";
 import { TabsStateDemo } from "./TabsStateDemo";
 import { TabsFocusDemo } from "./TabsFocusDemo";
+import { TabsEqualDemo } from "./TabsEqualDemo";
 
 export function TabsDemo({ example }: { example: string }) {
   const tr = useDemoText();
@@ -170,6 +171,11 @@ export function TabsDemo({ example }: { example: string }) {
             content: (
               <TabsOverflowDemo mode={mode} size={size} density={density} />
             ),
+          },
+          {
+            id: "equal",
+            label: tr("Equal width"),
+            content: <TabsEqualDemo size={size} density={density} />,
           },
           {
             id: "dynamic",

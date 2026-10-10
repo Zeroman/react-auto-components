@@ -2,6 +2,10 @@
 // Keep {0} placeholder indexes unchanged.
 const messages: Record<string, Record<string, string>> = {
   "zh-CN": {
+    "Equal width": "等分宽度",
+    Orders: "订单",
+    "Performance reports and insights": "性能报告与洞察",
+    "Switching tabs keeps every panel mounted.": "切换标签页时所有面板保持挂载。",
     "Focus & Autofocus": "自动聚焦入口",
     "Independent AutoFocus entries, visibility, selectors, and nested tabs.":
       "独立的 AutoFocus 入口、可见性、选择器与嵌套标签页。",

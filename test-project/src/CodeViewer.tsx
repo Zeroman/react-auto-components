@@ -67,6 +67,7 @@ const exampleFiles: Record<string, readonly string[]> = {
     "DynamicTabsDemo.tsx",
     "TabsStateDemo.tsx",
     "TabsFocusDemo.tsx",
+    "TabsEqualDemo.tsx",
   ],
   menu: ["MenuDemo.tsx"],
   "tree-demo": ["NavigationDemo.tsx"],

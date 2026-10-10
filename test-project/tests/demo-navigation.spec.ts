@@ -22,6 +22,7 @@ const examples = {
   AutoTabs: [
     "Basic",
     "Overflow scrolling",
+    "Equal width",
     "Dynamic tabs",
     "Tab features",
     "Focus & Autofocus",
