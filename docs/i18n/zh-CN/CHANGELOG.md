@@ -2,7 +2,7 @@
 
 [English](../../CHANGELOG.md) | **简体中文** | [繁體中文](../zh-TW/CHANGELOG.md) | [日本語](../ja/CHANGELOG.md) | [한국어](../ko/CHANGELOG.md) | [Español](../es/CHANGELOG.md) | [Français](../fr/CHANGELOG.md) | [Deutsch](../de/CHANGELOG.md) | [Português (Brasil)](../pt-BR/CHANGELOG.md) | [Русский](../ru/CHANGELOG.md)
 
-## Unreleased
+## 0.5.0 - 2026-10-10
 
 - `AutoTabs` 支持跨切换的焦点管理：切回访问过的标签页时恢复上次聚焦的元素（`restoreFocus`，默认开启）；无记忆元素时由 `focusTarget`（标签项或分组级均可：`true`/`"first"`、CSS 选择器、函数或 ref）与 `[data-autofocus]` 决定聚焦目标；`autoFocusMode`（默认 `"pointer-only"`，可选 `"always"`、`"none"`）决定哪些切换会移动焦点——键盘方向键导航时焦点保留在标签触发器上。
 - 面板内组件可调用 `useAutoTabActive()` 感知所在标签页当前是否可见。外层面板隐藏时，嵌套标签页也能正确上报。

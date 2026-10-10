@@ -12,7 +12,7 @@
 
 ## 项目状态
 
-当前版本为 0.4.1，API 仍可能发生变化。需要 React 19。该包提供 ESM 和 TypeScript 类型声明。内置界面文本默认为英文，可通过 AutoConfigProvider.config.t 进行翻译。
+当前版本为 0.5.0，API 仍可能发生变化。需要 React 19。该包提供 ESM 和 TypeScript 类型声明。内置界面文本默认为英文，可通过 AutoConfigProvider.config.t 进行翻译。
 
 使用 `pnpm add @zeroman.yang/react-auto-components` 安装（npm、yarn 同样可用）。peer dependency 为 React 19 与 react-dom 19。在入口引入一次样式：`import "@zeroman.yang/react-auto-components/style.css"`。
 

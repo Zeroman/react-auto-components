@@ -2,7 +2,7 @@
 
 **English** | [简体中文](i18n/zh-CN/CHANGELOG.md) | [繁體中文](i18n/zh-TW/CHANGELOG.md) | [日本語](i18n/ja/CHANGELOG.md) | [한국어](i18n/ko/CHANGELOG.md) | [Español](i18n/es/CHANGELOG.md) | [Français](i18n/fr/CHANGELOG.md) | [Deutsch](i18n/de/CHANGELOG.md) | [Português (Brasil)](i18n/pt-BR/CHANGELOG.md) | [Русский](i18n/ru/CHANGELOG.md)
 
-## Unreleased
+## 0.5.0 - 2026-10-10
 
 - `AutoTabs` manages focus across tab switches: returning to a previously visited tab restores the last focused element (`restoreFocus`, default on); `focusTarget` (per tab or per group: `true`/`"first"`, a CSS selector, a function, or a ref) and `[data-autofocus]` pick the element to focus when there is nothing to restore; `autoFocusMode` (`"pointer-only"` default, `"always"`, `"none"`) decides which switches move focus — keyboard arrow navigation keeps focus on the tab triggers.
 - Panel components can call `useAutoTabActive()` to sense whether the enclosing tab is currently visible. Nested tabs report correctly when an outer panel hides.
