@@ -73,11 +73,13 @@
   padding: 7px 12px;
 }
 .auto-root button:hover,
-.auto-overlay button:hover {
+.auto-overlay button:hover,
+.auto-popover button:hover {
   background: var(--auto-muted);
 }
 .auto-root button:disabled,
-.auto-overlay button:disabled {
+.auto-overlay button:disabled,
+.auto-popover button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
@@ -102,7 +104,11 @@
 .auto-root select,
 .auto-root textarea,
 .auto-overlay input,
-.auto-overlay select {
+.auto-overlay select,
+.auto-overlay textarea,
+.auto-popover input,
+.auto-popover select,
+.auto-popover textarea {
   font: inherit;
   border: 1px solid var(--auto-border);
   border-radius: 6px;
@@ -115,21 +121,52 @@
 .auto-root select[aria-invalid="true"],
 .auto-root textarea[aria-invalid="true"],
 .auto-overlay input[aria-invalid="true"],
-.auto-overlay select[aria-invalid="true"] {
+.auto-overlay select[aria-invalid="true"],
+.auto-overlay textarea[aria-invalid="true"],
+.auto-popover input[aria-invalid="true"],
+.auto-popover select[aria-invalid="true"],
+.auto-popover textarea[aria-invalid="true"] {
   border-color: var(--auto-danger);
-}
-.auto-root input[aria-invalid="true"]:focus-visible,
-.auto-root select[aria-invalid="true"]:focus-visible,
-.auto-root textarea[aria-invalid="true"]:focus-visible,
-.auto-overlay input[aria-invalid="true"]:focus-visible,
-.auto-overlay select[aria-invalid="true"]:focus-visible {
-  outline-color: var(--auto-danger);
 }
 .auto-root :focus-visible,
 .auto-overlay :focus-visible,
 .auto-popover :focus-visible {
   outline: 2px solid var(--auto-accent);
   outline-offset: 2px;
+}
+.auto-root input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):focus-visible,
+.auto-root textarea:focus-visible,
+.auto-root select:focus-visible,
+.auto-overlay input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):focus-visible,
+.auto-overlay textarea:focus-visible,
+.auto-overlay select:focus-visible,
+.auto-popover input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):focus-visible,
+.auto-popover textarea:focus-visible,
+.auto-popover select:focus-visible {
+  outline-offset: 0;
+}
+.auto-root input:not([aria-invalid="true"]):not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):focus-visible,
+.auto-root textarea:not([aria-invalid="true"]):focus-visible,
+.auto-root select:not([aria-invalid="true"]):focus-visible,
+.auto-overlay input:not([aria-invalid="true"]):not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):focus-visible,
+.auto-overlay textarea:not([aria-invalid="true"]):focus-visible,
+.auto-overlay select:not([aria-invalid="true"]):focus-visible,
+.auto-popover input:not([aria-invalid="true"]):not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):focus-visible,
+.auto-popover textarea:not([aria-invalid="true"]):focus-visible,
+.auto-popover select:not([aria-invalid="true"]):focus-visible {
+  border-color: var(--auto-accent);
+}
+.auto-root input[aria-invalid="true"]:focus-visible,
+.auto-root select[aria-invalid="true"]:focus-visible,
+.auto-root textarea[aria-invalid="true"]:focus-visible,
+.auto-overlay input[aria-invalid="true"]:focus-visible,
+.auto-overlay select[aria-invalid="true"]:focus-visible,
+.auto-overlay textarea[aria-invalid="true"]:focus-visible,
+.auto-popover input[aria-invalid="true"]:focus-visible,
+.auto-popover select[aria-invalid="true"]:focus-visible,
+.auto-popover textarea[aria-invalid="true"]:focus-visible {
+  border-color: var(--auto-danger);
+  outline-color: var(--auto-danger);
 }
 .auto-actions {
   display: flex;
@@ -1320,7 +1357,11 @@ th.auto-drop-after {
 .auto-root[data-size] select,
 .auto-root[data-size] textarea,
 .auto-overlay[data-size] input:not([type="checkbox"]):not([type="radio"]),
-.auto-overlay[data-size] select {
+.auto-overlay[data-size] select,
+.auto-overlay[data-size] textarea,
+.auto-popover[data-size] input:not([type="checkbox"]):not([type="radio"]),
+.auto-popover[data-size] select,
+.auto-popover[data-size] textarea {
   padding: var(--auto-input-padding);
   font-size: var(--auto-control-font);
   min-height: var(--auto-control-height);
