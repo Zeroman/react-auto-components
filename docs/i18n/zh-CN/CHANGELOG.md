@@ -4,7 +4,8 @@
 
 ## 0.5.0 - 2026-10-10
 
-- `AutoTabs` 支持跨切换的焦点管理：切回访问过的标签页时恢复上次聚焦的元素（`restoreFocus`，默认开启）；无记忆元素时由 `focusTarget`（标签项或分组级均可：`true`/`"first"`、CSS 选择器、函数或 ref）与 `[data-autofocus]` 决定聚焦目标；`autoFocusMode`（默认 `"pointer-only"`，可选 `"always"`、`"none"`）决定哪些切换会移动焦点——键盘方向键导航时焦点保留在标签触发器上。
+- 破坏性变更：`AutoTabs` 改为手动激活，方向键仅移动标签焦点，点击或按 Enter/空格才切换面板。
+- 新增独立的 `AutoFocus`：最后注册且可见的目标在优先目标变化时获得焦点。它不依赖标签页或路由，不记忆历史焦点，也不区分键盘和鼠标。破坏性变更：移除 tab/workspace 的 `restoreFocus`、`focusTarget` 和 `autoFocusMode`，改用 `AutoFocus` 声明入口。
 - 面板内组件可调用 `useAutoTabActive()` 感知所在标签页当前是否可见。外层面板隐藏时，嵌套标签页也能正确上报。
 - 基础样式将字段样式扩展到 `.auto-popover` 输入控件，并优化文本字段的 `:focus-visible` 焦点环；标记 `aria-invalid` 的字段聚焦时保持危险色边框。
 

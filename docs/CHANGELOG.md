@@ -4,7 +4,8 @@
 
 ## 0.5.0 - 2026-10-10
 
-- `AutoTabs` manages focus across tab switches: returning to a previously visited tab restores the last focused element (`restoreFocus`, default on); `focusTarget` (per tab or per group: `true`/`"first"`, a CSS selector, a function, or a ref) and `[data-autofocus]` pick the element to focus when there is nothing to restore; `autoFocusMode` (`"pointer-only"` default, `"always"`, `"none"`) decides which switches move focus — keyboard arrow navigation keeps focus on the tab triggers.
+- Breaking: `AutoTabs` now uses manual activation: arrow keys move tab-label focus; clicking or pressing Enter/Space switches panels.
+- Added standalone `AutoFocus`: the last registered visible target receives focus when the winner changes. It works independently of tabs and routing, without focus history or keyboard/pointer distinctions. Breaking: removed tab/workspace `restoreFocus`, `focusTarget`, and `autoFocusMode`; declare entries with `AutoFocus` instead.
 - Panel components can call `useAutoTabActive()` to sense whether the enclosing tab is currently visible. Nested tabs report correctly when an outer panel hides.
 - Base styles extend field styling to `.auto-popover` inputs and refine `:focus-visible` rings on text fields; fields marked `aria-invalid` keep their danger border while focused.
 
