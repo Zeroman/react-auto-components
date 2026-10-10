@@ -86,6 +86,7 @@ export function SettingsPanel<T extends object>({
           onChange={(e) => setName(e.target.value)}
         />
         <button
+          type="button"
           disabled={!name.trim()}
           onClick={() => {
             const id = crypto.randomUUID();
@@ -107,6 +108,7 @@ export function SettingsPanel<T extends object>({
           {tr("Save as new preset")}
         </button>
         <button
+          type="button"
           disabled={!name.trim()}
           onClick={() => {
             changeGroup({
@@ -126,6 +128,7 @@ export function SettingsPanel<T extends object>({
           {tr("Rename")}
         </button>
         <button
+          type="button"
           disabled={group.presets.length === 1}
           onClick={() => {
             const presets = group.presets.filter(
@@ -242,6 +245,7 @@ export function SettingsPanel<T extends object>({
                   <option value="right">{tr("Pin right")}</option>
                 </select>
                 <button
+                  type="button"
                   aria-label={tr("Move {0} up", [c.label ?? key])}
                   disabled={!index}
                   onClick={() => move(index - 1)}
@@ -249,6 +253,7 @@ export function SettingsPanel<T extends object>({
                   ↑
                 </button>
                 <button
+                  type="button"
                   aria-label={tr("Move {0} down", [c.label ?? key])}
                   disabled={index === layout.order.length - 1}
                   onClick={() => move(index + 1)}
@@ -305,12 +310,16 @@ export function SettingsPanel<T extends object>({
                 <option value="false">{tr("Ascending")}</option>
                 <option value="true">{tr("Descending")}</option>
               </select>
-              <button onClick={() => setSort(sort.filter((_, j) => j !== i))}>
+              <button
+                type="button"
+                onClick={() => setSort(sort.filter((_, j) => j !== i))}
+              >
                 {tr("Remove")}
               </button>
             </div>
           ))}
           <button
+            type="button"
             onClick={() => {
               const c = columns.find((c) => !sort.some((s) => s.id === c.key));
               if (c)
@@ -351,6 +360,7 @@ export function SettingsPanel<T extends object>({
             }}
           />
           <button
+            type="button"
             onClick={() => {
               try {
                 const q = JSON.parse(

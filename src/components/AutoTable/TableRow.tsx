@@ -112,6 +112,7 @@ export function TableRow<T extends object>({
             <div className="auto-cell">
               {ci === 0 && row.getCanExpand() && (
                 <button
+                  type="button"
                   className="auto-expand"
                   style={{
                     marginLeft: row.depth * 16,
@@ -143,6 +144,7 @@ export function TableRow<T extends object>({
             <div className="auto-actions auto-row-actions">
               {onEdit && (
                 <button
+                  type="button"
                   data-testid={racTestId("edit", row.id)}
                   aria-label={tr("Edit row {0}", [row.id])}
                   onClick={() => onEdit(row.original)}
@@ -152,6 +154,7 @@ export function TableRow<T extends object>({
               )}
               {onDelete && (
                 <button
+                  type="button"
                   data-testid={racTestId("delete", row.id)}
                   aria-label={tr("Delete row {0}", [row.id])}
                   onClick={() => onDelete(row.original)}

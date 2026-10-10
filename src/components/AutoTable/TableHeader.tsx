@@ -73,6 +73,7 @@ function ColumnFilter<T extends object>({
         onChange={(e) => setSearch(e.target.value)}
       />
       <button
+        type="button"
         onClick={() => onChange(updateColumnFilter(query, column.key, []))}
       >
         {tr("Clear this column filter")}
@@ -314,6 +315,7 @@ export function TableHeader<T extends object>({
                 )}
                 {c.header ?? (
                   <button
+                    type="button"
                     className={activeSort ? "auto-sort-active" : undefined}
                     aria-label={tr("Sort {0}", [c.label ?? c.key])}
                     disabled={c.sortable === false}
@@ -372,6 +374,7 @@ export function TableHeader<T extends object>({
                     }
                   >
                     <button
+                      type="button"
                       className={isFiltered ? "auto-filter-active" : undefined}
                       aria-label={tr("Filter {0}", [c.label ?? c.key])}
                     >

@@ -47,6 +47,7 @@ export function FilterEditor<T extends object>({
           <div className="auto-setting-row" key={index}>
             <span>{tr("Nested group (edit it in advanced mode)")}</span>
             <button
+              type="button"
               onClick={() =>
                 onChange({
                   ...group,
@@ -136,6 +137,7 @@ export function FilterEditor<T extends object>({
               />
             )}
             <button
+              type="button"
               onClick={() =>
                 onChange({
                   ...group,
@@ -149,6 +151,7 @@ export function FilterEditor<T extends object>({
         ),
       )}
       <button
+        type="button"
         onClick={() => {
           if (columns[0])
             onChange({

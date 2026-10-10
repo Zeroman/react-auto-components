@@ -456,7 +456,7 @@ export function AutoTabs({
         const panelContent = (
           <>
             {i.onRefresh && (
-              <button onClick={i.onRefresh}>
+              <button type="button" onClick={i.onRefresh}>
                 {tr("Refresh {0}", [i.label])}
               </button>
             )}

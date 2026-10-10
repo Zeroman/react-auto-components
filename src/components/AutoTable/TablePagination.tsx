@@ -25,9 +25,7 @@ export function TablePagination({
   return (
     <footer className="auto-pagination">
       <span>{tr("{0} records", [total.toLocaleString()])}</span>
-      <span>
-        {tr("Page {0} / {1}", [pageIndex + 1, pages])}
-      </span>
+      <span>{tr("Page {0} / {1}", [pageIndex + 1, pages])}</span>
       <div className="auto-actions">
         <select
           aria-label={tr("Rows per page")}
@@ -46,6 +44,7 @@ export function TablePagination({
           ))}
         </select>
         <button
+          type="button"
           aria-label={tr("Previous page")}
           disabled={pageIndex === 0}
           onClick={() =>
@@ -57,6 +56,7 @@ export function TablePagination({
           ←
         </button>
         <button
+          type="button"
           aria-label={tr("Next page")}
           disabled={pageIndex + 1 >= pages}
           onClick={() =>

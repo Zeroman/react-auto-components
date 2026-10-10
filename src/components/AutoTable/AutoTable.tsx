@@ -550,6 +550,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     <div className="auto-actions auto-sort-tags">
       {query.sort.map((s) => (
         <button
+          type="button"
           key={s.id}
           onClick={() =>
             changeQuery({
@@ -812,13 +813,16 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
         <div role="alert" className="auto-error">
           {tr("Could not save settings: ")}
           {settingsError}
-          <button onClick={retry}>{tr("Retry save")}</button>
+          <button type="button" onClick={retry}>
+            {tr("Retry save")}
+          </button>
         </div>
       )}
       {message && (
         <div role="status" className="auto-notice">
           {message}
           <button
+            type="button"
             aria-label={tr("Dismiss message")}
             onClick={() => setMessage("")}
           >
@@ -829,6 +833,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
       {json && showToolbarAction(toolbarActions, "json") ? (
         <div className="auto-json">
           <button
+            type="button"
             onClick={() =>
               void navigator.clipboard
                 .writeText(JSON.stringify(scopeRows("page"), null, 2))
