@@ -4,6 +4,10 @@
 
 ## Unreleased
 
+- `AutoTabs` manages focus across tab switches: returning to a previously visited tab restores the last focused element (`restoreFocus`, default on); `focusTarget` (per tab or per group: `true`/`"first"`, a CSS selector, a function, or a ref) and `[data-autofocus]` pick the element to focus when there is nothing to restore; `autoFocusMode` (`"pointer-only"` default, `"always"`, `"none"`) decides which switches move focus — keyboard arrow navigation keeps focus on the tab triggers.
+- Panel components can call `useAutoTabActive()` to sense whether the enclosing tab is currently visible. Nested tabs report correctly when an outer panel hides.
+- Base styles extend field styling to `.auto-popover` inputs and refine `:focus-visible` rings on text fields; fields marked `aria-invalid` keep their danger border while focused.
+
 ## 0.4.1 - 2026-10-07
 
 - `AutoSearch` gains `moreLayout` (`"inline"` default, `"popover"`): fields marked `search: { more: true }` can collapse into a floating More-filters panel with an active-filter count badge and in-panel Search/Reset. `AutoTable` search defaults to `"popover"`.

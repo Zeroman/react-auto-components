@@ -36,6 +36,10 @@ export interface AutoWorkspacePage extends Access {
   icon?: ReactNode;
   disabled?: boolean;
   hidden?: boolean | (() => boolean);
+  /** Restores focus to the last active element inside this page on return. Default true. */
+  restoreFocus?: boolean;
+  /** Focus target on first visit when there is no remembered element. */
+  focusTarget?: AutoTab["focusTarget"];
   /** Validate persisted parameters/state against the application's current schema. */
   validate?: (tab: Readonly<AutoWorkspaceTab>) => boolean;
   render: (context: {
@@ -60,6 +64,10 @@ export interface AutoTabsWorkspaceOptions {
   beforeClose?: (tab: Readonly<AutoWorkspaceTab>) => boolean | Promise<boolean>;
   /** Storage failures leave the workspace usable in memory. */
   onPersistenceError?: (error: unknown) => void;
+  /** Restores focus to the last active element inside tab panels on return. Default true. */
+  restoreFocus?: boolean;
+  /** Default focus target for workspace pages that don't specify their own. */
+  focusTarget?: AutoTabsProps["focusTarget"];
 }
 
 export interface AutoTabsWorkspace {
@@ -71,7 +79,14 @@ export interface AutoTabsWorkspace {
   /** Spread onto AutoTabs. Defaults to lazy mounting and retaining visited panels. */
   tabsProps: Pick<
     AutoTabsProps,
-    "items" | "value" | "onChange" | "onClose" | "keepMounted" | "lazy"
+    | "items"
+    | "value"
+    | "onChange"
+    | "onClose"
+    | "keepMounted"
+    | "lazy"
+    | "restoreFocus"
+    | "focusTarget"
   >;
   /** Returns false before restoration or for an unknown, disabled, inaccessible, or invalid page. */
   open: (tab: AutoWorkspaceTab) => boolean;
@@ -377,6 +392,8 @@ export function useAutoTabsWorkspace(
       icon: page.icon,
       disabled: page.disabled,
       closable: !tab.pinned,
+      restoreFocus: page.restoreFocus,
+      focusTarget: page.focusTarget,
       content: (
         <WorkspacePage
           page={page}
@@ -411,6 +428,8 @@ export function useAutoTabsWorkspace(
       },
       lazy: true,
       keepMounted: true,
+      restoreFocus: options.restoreFocus,
+      focusTarget: options.focusTarget,
     },
   };
 }

@@ -4,6 +4,10 @@
 
 ## Unreleased
 
+- `AutoTabs` 支持跨切换的焦点管理：切回访问过的标签页时恢复上次聚焦的元素（`restoreFocus`，默认开启）；无记忆元素时由 `focusTarget`（标签项或分组级均可：`true`/`"first"`、CSS 选择器、函数或 ref）与 `[data-autofocus]` 决定聚焦目标；`autoFocusMode`（默认 `"pointer-only"`，可选 `"always"`、`"none"`）决定哪些切换会移动焦点——键盘方向键导航时焦点保留在标签触发器上。
+- 面板内组件可调用 `useAutoTabActive()` 感知所在标签页当前是否可见。外层面板隐藏时，嵌套标签页也能正确上报。
+- 基础样式将字段样式扩展到 `.auto-popover` 输入控件，并优化文本字段的 `:focus-visible` 焦点环；标记 `aria-invalid` 的字段聚焦时保持危险色边框。
+
 ## 0.4.1 - 2026-10-07
 
 - `AutoSearch` 新增 `moreLayout`（默认 `"inline"`，可选 `"popover"`）：标记 `search: { more: true }` 的字段可收进"更多筛选"浮层，附激活筛选计数徽章与面板内 Search/Reset。`AutoTable` 搜索默认 `"popover"`。

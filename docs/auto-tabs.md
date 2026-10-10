@@ -58,8 +58,13 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `actions` | Primary or custom actions placed on the right side of the tab bar. |
 | `extra` | Custom extra content placed on the right side of the tab bar. |
 | `tabActions` | Right-click actions for each tab. Entries support `icon`, `danger`, `separator`, `disabled`, and `hidden`, mirroring table row actions. Omit to disable the menu. |
+| `restoreFocus` | Default `true`: returning to a previously active tab restores focus to the element last focused inside that panel. `false` keeps focus on the tab trigger. |
+| `focusTarget` | Fallback focus target when a tab has no remembered element: `true` / `"first"` for the first input/interactive element, CSS selector string, function `(panel) => element`, or ref object. Tab items can also specify `focusTarget` or use `[data-autofocus]` on elements. |
+| `autoFocusMode` | Default `"pointer-only"`: restores/moves focus on clicks and programmatic changes, while leaving focus on tab triggers during keyboard arrow navigation. `"always"` focuses on all activations; `"none"` disables automatic focus. |
 
 A nested `children` list replaces `content` for that tab. `defaultActive` is the nested uncontrolled id.
+
+Panel components can call `useAutoTabActive()` to detect whether the enclosing tab is currently active and visible.
 
 When horizontal tabs overflow the container width, smooth scroll buttons appear at both ends. Buttons disable automatically at the boundaries, scrollbars are hidden, and switching the active tab automatically scrolls it into view.
 
