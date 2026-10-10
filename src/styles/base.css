@@ -398,6 +398,17 @@
   border-bottom-color: var(--auto-accent);
   background: var(--auto-accent-soft);
 }
+/* Equal layout: every entry takes an equal share of the row and long
+   labels truncate; the row itself never scrolls. */
+.auto-tabs[data-tab-layout="equal"] .auto-tab-entry {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.auto-tabs[data-tab-layout="equal"] .auto-tab-entry > [role="tab"] {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .auto-tab-badge {
   display: inline-flex;
   align-items: center;

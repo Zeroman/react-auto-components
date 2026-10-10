@@ -5,7 +5,7 @@
 侧栏。条目可以嵌套、收成图标轨，并带图标、说明和徽章。它是导航，不是标签面板。面板用 [AutoTabs](auto-tabs.md)。
 
 
-菜单项可设置 `tip: ReactNode`，悬停或聚焦时显示；嵌套项共用菜单的 tip 组件。折叠菜单在未设置 tip 时以标签作为提示。
+菜单项可设置 `tip: ReactNode`，悬停或聚焦时显示；嵌套项共用菜单的 tip 组件。折叠菜单在未设置 tip 时以标签作为提示。默认不要设置 `tip`：浮层可能遮挡相邻内容并拦截点击，只在确实需要说明的条目上使用。
 
 优先级为：单项／字段／列参数 → 所属组件参数 → Provider 的组件默认配置（`config.tabs`、`config.form`、`config.table` 或 `config.menu`）→ 全局 `AutoConfigProvider.config.tipComponent` → 内置 `DefaultTip`。自定义组件接收 `{ content, children, placement }`（`AutoTipProps`），需保留触发元素的事件、ref 和无障碍属性。提示通过内部机制渲染；`DefaultTip` 已导出作为内置浮动兜底实现（通过 portal 显示，支持 Escape 关闭，触发元素位置不变）。
 

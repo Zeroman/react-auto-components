@@ -10,6 +10,9 @@ import {
 expectTypeOf<AutoTabsProps["mode"]>().toEqualTypeOf<
   "horizontal" | "vertical" | undefined
 >();
+expectTypeOf<AutoTabsProps["tabLayout"]>().toEqualTypeOf<
+  "scroll" | "equal" | undefined
+>();
 test("nested tabs, hidden entries and retained state", async () => {
   const change = vi.fn(),
     u = userEvent.setup();
@@ -439,3 +442,26 @@ test.each([
     expect(screen.getByText("Panel A")).toBeVisible();
   },
 );
+
+test("equal tab layout marks the bar, titles labels and skips vertical", () => {
+  const items = [
+    { id: "a", label: "A short label", content: "Panel A" },
+    { id: "b", label: "A much longer label that would truncate", content: "Panel B" },
+  ];
+  const { container, rerender } = render(<AutoTabs items={items} />);
+  const root = () => container.querySelector<HTMLElement>(".auto-tabs")!;
+  expect(root()).toHaveAttribute("data-tab-layout", "scroll");
+  expect(screen.getByRole("tab", { name: /longer label/ })).not.toHaveAttribute(
+    "title",
+  );
+
+  rerender(<AutoTabs items={items} tabLayout="equal" />);
+  expect(root()).toHaveAttribute("data-tab-layout", "equal");
+  expect(screen.getByRole("tab", { name: /longer label/ })).toHaveAttribute(
+    "title",
+    "A much longer label that would truncate",
+  );
+
+  rerender(<AutoTabs items={items} tabLayout="equal" mode="vertical" />);
+  expect(root()).not.toHaveAttribute("data-tab-layout");
+});

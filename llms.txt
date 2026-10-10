@@ -22,6 +22,7 @@ Each component doc has a "Behavior and props" table. That table is the callback 
 - `Field<T>` is a discriminated union. `select` without `options`, a scalar on `daterange` / `datetimerange`, and `match: "between"` on a scalar are TypeScript errors. `AnyField` and `unsafeField()` skip the checks. Development mode still warns.
 - `QueryNode` is a JSON AST: `{ kind: "group", operator, children }` or `{ kind: "condition", field, operator, value }`.
 - Built-in UI strings are English. The same string is the `config.t` key and the fallback.
+- `tip` on `AutoTabs` and `AutoMenu` items is opt-in and rare. A floating tooltip can cover neighboring entries and intercept clicks; leave `tip` unset by default and set it only where an entry genuinely needs explanation.
 - Developer failures throw `RacError`: component, problem, Fix, `Code RAC-…`, and a docs/errors.md anchor. The console message is English. UI copy stays on `userKey`.
 
 ## JSON registries

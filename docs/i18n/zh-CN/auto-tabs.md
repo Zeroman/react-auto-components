@@ -5,7 +5,7 @@
 标签页。嵌套标签是另一组由 `children` 喂给的 `AutoTabs`，不是菜单。侧栏用 [AutoMenu](auto-menu.md)。
 
 
-每个 tab 可设置 `tip: ReactNode`，悬停或聚焦时显示浮层，不改变布局。`tipComponent` 可通过 AutoTabs 或单个 tab 传入，嵌套分组继承父组件配置。
+每个 tab 可设置 `tip: ReactNode`，悬停或聚焦时显示浮层，不改变布局。`tipComponent` 可通过 AutoTabs 或单个 tab 传入，嵌套分组继承父组件配置。默认不要设置 `tip`：浮层可能遮挡相邻内容并拦截点击，只在确实需要说明的条目上使用。
 
 优先级为：单项／字段／列参数 → 所属组件参数 → Provider 的组件默认配置（`config.tabs`、`config.form`、`config.table` 或 `config.menu`）→ 全局 `AutoConfigProvider.config.tipComponent` → 内置 `DefaultTip`。自定义组件接收 `{ content, children, placement }`（`AutoTipProps`），需保留触发元素的事件、ref 和无障碍属性。提示通过内部机制渲染；`DefaultTip` 已导出作为内置浮动兜底实现（通过 portal 显示，支持 Escape 关闭，触发元素位置不变）。
 
@@ -47,6 +47,7 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `defaultValue` | 非受控的初始路径。 |
 | `onChange(path, item)` | **不捕获。** 抛错时由 React 报告。受控模式下，你还没提交的路径保持上次的值。 |
 | `mode` | 默认 `"horizontal"`。`"vertical"` 把标签竖排。 |
+| `tabLayout` | 默认 `"scroll"`：标签保持内容宽度，超出时整行滚动。`"equal"` 把行宽平分给所有标签——移动端底部导航布局。超长标签以省略号截断，完整文字保留在 `title` 提示中。仅水平模式生效；`mode="vertical"` 时忽略。 |
 | `keepMounted` | 默认 `true`：未选中的面板仍挂载，局部状态还在。`false` 会卸载它们。 |
 | `onRefresh` | 设置后，该标签显示刷新按钮。**不捕获。** |
 | `loading` | 在标签文字后加省略号。不阻止选择。 |
@@ -63,7 +64,7 @@ import "@zeroman.yang/react-auto-components/style.css";
 
 面板组件可通过 `useAutoTabActive()` 感知所属标签页当前是否处于激活和可见状态。
 
-当水平标签栏超出容器宽度时，两端会自动出现平滑滚动按钮。滚动到达两端边界时按钮自动禁用，原生滚动条保持隐藏，切换选中项时会自动平滑滚动确保激活项可见。
+当水平标签栏超出容器宽度时，两端会自动出现平滑滚动按钮。滚动到达两端边界时按钮自动禁用，原生滚动条保持隐藏，切换选中项时会自动平滑滚动确保激活项可见。`tabLayout="equal"` 会取代这一行为：每个标签平分行宽，超长标签截断显示，滚动按钮不再出现。
 
 当提供 `route` 时，由 `AutoNavigation` 全权接管当前选中的标签。使用 `route` 时应省略 `value`；若两者同时传入，`route` 优先并打印开发警告 `RAC-TABS-ROUTE-VALUE`。
 

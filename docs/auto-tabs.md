@@ -5,7 +5,7 @@
 Tab list. Nested tabs are another `AutoTabs` fed by `children`, not a menu. Use [AutoMenu](auto-menu.md) for a sidebar.
 
 
-Each tab accepts `tip: ReactNode` for help on hover or focus, without changing layout. `tipComponent` can be passed to AutoTabs or a tab; nested groups inherit the parent component.
+Each tab accepts `tip: ReactNode` for help on hover or focus, without changing layout. `tipComponent` can be passed to AutoTabs or a tab; nested groups inherit the parent component. Leave `tip` unset by default: a floating tooltip can cover neighboring entries and intercept clicks. Set it only where an entry genuinely needs explanation.
 
 Resolution order is the item/field/column parameter, the owning component parameter, provider component defaults (`config.tabs`, `config.form`, `config.table`, or `config.menu`), shared `AutoConfigProvider.config.tipComponent`, then built-in `DefaultTip`. Custom components receive `{ content, children, placement }` (`AutoTipProps`) and must preserve the trigger events, ref and accessibility props. Tooltips are rendered through internal integration; `DefaultTip` is exported as the built-in floating fallback (uses a portal, supports Escape, and keeps the trigger in place).
 
@@ -47,6 +47,7 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `defaultValue` | Uncontrolled initial path. |
 | `onChange(path, item)` | **Not caught.** If it throws, React reports the error and the last committed path stays when the component is controlled by you. |
 | `mode` | Default `"horizontal"`. `"vertical"` stacks the tab list. |
+| `tabLayout` | Default `"scroll"`: tabs keep their content width and the row scrolls on overflow. `"equal"` splits the row evenly across all tabs — the mobile bottom-bar layout. Long labels truncate with an ellipsis and keep the full text in a `title` tooltip. Horizontal only; ignored with `mode="vertical"`. |
 | `keepMounted` | Default `true`: inactive panels stay mounted and keep local state. `false` unmounts them. |
 | `onRefresh` | When set, a refresh button is rendered for that tab. **Not caught.** |
 | `loading` | Appends an ellipsis to the tab label. It does not block selection. |
@@ -63,7 +64,7 @@ A nested `children` list replaces `content` for that tab. `defaultActive` is the
 
 Panel components can call `useAutoTabActive()` to detect whether the enclosing tab is currently active and visible.
 
-When horizontal tabs overflow the container width, smooth scroll buttons appear at both ends. Buttons disable automatically at the boundaries, scrollbars are hidden, and switching the active tab automatically scrolls it into view.
+When horizontal tabs overflow the container width, smooth scroll buttons appear at both ends. Buttons disable automatically at the boundaries, scrollbars are hidden, and switching the active tab automatically scrolls it into view. `tabLayout="equal"` replaces this behavior: every tab takes an equal share of the row, long labels truncate, and the scroll buttons never appear.
 
 When `route` is provided, `AutoNavigation` drives the selected tab. Omit `value` when using `route`; if both are supplied, `route` takes precedence and `RAC-TABS-ROUTE-VALUE` is warned in development.
 

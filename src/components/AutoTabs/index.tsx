@@ -94,6 +94,13 @@ export interface AutoTabsProps extends TipConfig {
   /** Tab orientation. Use AutoMenu for hierarchical navigation. Default `"horizontal"`. */
   mode?: "horizontal" | "vertical";
   /**
+   * Tab bar width distribution. Default `"scroll"`: tabs keep their content
+   * width and the row scrolls on overflow. `"equal"` splits the row evenly
+   * across tabs and truncates long labels — the mobile bottom-bar layout.
+   * Horizontal only; ignored with `mode="vertical"`.
+   */
+  tabLayout?: "scroll" | "equal";
+  /**
    * Default `true`: inactive panels stay mounted and keep state.
    * `false` unmounts them, so local state inside panel content is destroyed.
    */
@@ -119,6 +126,7 @@ export function AutoTabs({
   defaultValue,
   onChange,
   mode = "horizontal",
+  tabLayout = "scroll",
   keepMounted = true,
   lazy = false,
   onClose,
@@ -229,11 +237,14 @@ export function AutoTabs({
   const [overflowed, setOverflowed] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  // Equal layout never overflows: tabs shrink to split the row, so the
+  // scroll affordances and overflow detection stay off entirely.
+  const scrollable = mode === "horizontal" && tabLayout !== "equal";
 
   const checkScroll = useCallback(() => {
     const nav = navRef.current;
     const list = listRef.current;
-    if (!nav || !list || mode !== "horizontal") {
+    if (!nav || !list || !scrollable) {
       setOverflowed(false);
       setCanScrollLeft(false);
       setCanScrollRight(false);
@@ -250,10 +261,10 @@ export function AutoTabs({
       setCanScrollLeft(false);
       setCanScrollRight(false);
     }
-  }, [mode]);
+  }, [scrollable]);
 
   useEffect(() => {
-    if (mode !== "horizontal") return;
+    if (!scrollable) return;
     const nav = navRef.current;
     const list = listRef.current;
     if (!nav || !list) return;
@@ -271,14 +282,14 @@ export function AutoTabs({
       window.removeEventListener("resize", checkScroll);
       ro?.disconnect();
     };
-  }, [checkScroll, mode, visible.length]);
+  }, [checkScroll, scrollable, visible.length]);
 
   useEffect(() => {
     checkScroll();
   }, [checkScroll, current, visible]);
 
   useEffect(() => {
-    if (!listRef.current || mode !== "horizontal") return;
+    if (!listRef.current || !scrollable) return;
     const activeEl = listRef.current.querySelector<HTMLElement>(
       '[role="tab"][data-state="active"]',
     );
@@ -325,6 +336,7 @@ export function AutoTabs({
       className={`auto-root auto-tabs auto-tabs-${mode}`}
       data-size={size}
       data-density={density}
+      data-tab-layout={mode === "horizontal" ? tabLayout : undefined}
       value={current}
       activationMode="manual"
       onValueChange={(v) => {
@@ -380,6 +392,7 @@ export function AutoTabs({
                     <Tabs.Trigger
                       value={i.id}
                       disabled={i.disabled}
+                      title={tabLayout === "equal" ? i.label : undefined}
                       onKeyDown={(event) => {
                         if (
                           event.key === "Delete" &&
