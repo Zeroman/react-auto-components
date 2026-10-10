@@ -1,51 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
+  AutoFocus,
   AutoTabs,
-  useAutoTabActive,
-  type AutoTab,
   type ComponentDensity,
   type ComponentSize,
 } from "@zeroman.yang/react-auto-components";
 import { useDemoText } from "../i18n";
-
-function ActiveSensor() {
-  const tr = useDemoText();
-  const isActive = useAutoTabActive();
-  const [activations, setActivations] = useState(0);
-
-  useEffect(() => {
-    if (isActive) {
-      setActivations((prev) => prev + 1);
-    }
-  }, [isActive]);
-
-  return (
-    <div className="tab-demo-content">
-      <h3>{tr("Subcomponent active sensing")}</h3>
-      <p className="auto-muted">
-        {tr(
-          "useAutoTabActive() informs child components whenever this tab becomes visible or hidden.",
-        )}
-      </p>
-      <div className="auto-actions" style={{ marginTop: 12 }}>
-        <span
-          className="auto-badge"
-          style={{
-            background: isActive
-              ? "var(--auto-color-primary, #2563eb)"
-              : "var(--auto-border-color, #94a3b8)",
-            color: "#fff",
-          }}
-        >
-          {isActive ? tr("Currently Active") : tr("Currently Hidden")}
-        </span>
-        <span className="auto-badge">
-          {tr("Visit count: {0}", [activations])}
-        </span>
-      </div>
-    </div>
-  );
-}
 
 export function TabsFocusDemo({
   mode,
@@ -57,171 +17,137 @@ export function TabsFocusDemo({
   density?: ComponentDensity;
 }) {
   const tr = useDemoText();
-  const [restoreFocus, setRestoreFocus] = useState(true);
-  const [autoFocusMode, setAutoFocusMode] = useState<
-    "pointer-only" | "always" | "none"
-  >("pointer-only");
-
-  const items: AutoTab[] = [
-    {
-      id: "restore",
-      label: tr("Focus memory & return"),
-      content: (
-        <div className="tab-demo-content">
-          <h3>{tr("Focus restoration on return")}</h3>
-          <p className="auto-muted">
-            {tr(
-              "Type in the middle input, switch to another tab, and switch back. The cursor returns precisely to where you were typing.",
-            )}
-          </p>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
-              maxWidth: 360,
-              marginTop: 12,
-            }}
-          >
-            <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <span>{tr("Username")}</span>
-              <input
-                aria-label={tr("Username")}
-                placeholder={tr("e.g. alice")}
-              />
-            </label>
-            <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <span>{tr("Email (try focusing here before switching)")}</span>
-              <input
-                aria-label={tr("Email")}
-                placeholder={tr("e.g. alice@example.com")}
-              />
-            </label>
-            <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <span>{tr("Notes")}</span>
-              <textarea
-                aria-label={tr("Notes")}
-                rows={2}
-                placeholder={tr("Add notes here…")}
-              />
-            </label>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: "autofocus",
-      label: tr("data-autofocus"),
-      content: (
-        <div className="tab-demo-content">
-          <h3>{tr("Declarative autofocus target")}</h3>
-          <p className="auto-muted">
-            {tr(
-              "Any element marked with data-autofocus receives focus automatically when entering this tab, even without component configuration.",
-            )}
-          </p>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
-              maxWidth: 360,
-              marginTop: 12,
-            }}
-          >
-            <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <span>{tr("Initial read-only note")}</span>
-              <input readOnly value={tr("Skipped during autofocus")} />
-            </label>
-            <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <span>{tr("Quick search (marked with data-autofocus)")}</span>
-              <input
-                data-autofocus
-                aria-label={tr("Autofocused search")}
-                placeholder={tr(
-                  "I gain focus immediately upon switching here!",
-                )}
-              />
-            </label>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: "selector",
-      label: tr("Custom focusTarget"),
-      focusTarget: "#custom-editor-target",
-      content: (
-        <div className="tab-demo-content">
-          <h3>{tr("Targeted by focusTarget selector")}</h3>
-          <p className="auto-muted">
-            {tr(
-              "Configured with focusTarget: '#custom-editor-target'. Focus skips the preceding toolbar button and jumps straight into the editor.",
-            )}
-          </p>
-          <div style={{ marginTop: 12 }}>
-            <div className="auto-actions" style={{ marginBottom: 8 }}>
-              <button type="button">{tr("Toolbar button (skipped)")}</button>
-            </div>
-            <textarea
-              id="custom-editor-target"
-              aria-label={tr("Custom editor")}
-              rows={4}
-              style={{ width: "100%", maxWidth: 420 }}
-              placeholder={tr("Editor field targeted by CSS selector…")}
-            />
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: "sensing",
-      label: tr("useAutoTabActive"),
-      content: <ActiveSensor />,
-    },
-  ];
-
+  const [enabled, setEnabled] = useState(true);
+  const [showLast, setShowLast] = useState(true);
+  const fieldStyle = { display: "grid", gap: 8, maxWidth: 420, marginTop: 12 };
   return (
     <div>
-      <div className="auto-actions" style={{ marginBottom: 12 }}>
-        <label
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            fontSize: 13,
-          }}
-        >
-          <input
-            type="checkbox"
-            checked={restoreFocus}
-            onChange={(e) => setRestoreFocus(e.target.checked)}
-          />
-          <span>{tr("Enable focus restoration (restoreFocus)")}</span>
-        </label>
-        <select
-          aria-label={tr("Auto focus mode")}
-          value={autoFocusMode}
-          onChange={(e) =>
-            setAutoFocusMode(e.target.value as typeof autoFocusMode)
-          }
-        >
-          <option value="pointer-only">
-            {tr("pointer-only (arrow keys keep trigger focus)")}
-          </option>
-          <option value="always">
-            {tr("always (all switches transfer focus)")}
-          </option>
-          <option value="none">{tr("none (never autofocus)")}</option>
-        </select>
-      </div>
+      <p>
+        {tr(
+          "AutoFocus works anywhere. The last registered visible entry wins; tabs only control which content is shown.",
+        )}
+      </p>
+      <label className="auto-actions" style={{ marginBottom: 12 }}>
+        <input
+          type="checkbox"
+          checked={enabled}
+          onChange={(event) => setEnabled(event.target.checked)}
+        />
+        {tr("Enable AutoFocus")}
+      </label>
       <AutoTabs
         mode={mode}
         size={size}
         density={density}
-        restoreFocus={restoreFocus}
-        autoFocusMode={autoFocusMode}
-        items={items}
+        items={[
+          {
+            id: "entry",
+            label: tr("Default entry"),
+            content: (
+              <div className="tab-demo-content">
+                <p>
+                  {tr(
+                    "Edit the second field, switch tabs, then return. Focus enters Username again while your draft is retained.",
+                  )}
+                </p>
+                <AutoFocus disabled={!enabled}>
+                  <div style={fieldStyle}>
+                    <label>
+                      {tr("Username")}
+                      <input aria-label={tr("Username")} />
+                    </label>
+                    <label>
+                      {tr("Email")}
+                      <input aria-label={tr("Email")} />
+                    </label>
+                  </div>
+                </AutoFocus>
+              </div>
+            ),
+          },
+          {
+            id: "selector",
+            label: tr("Selected entry"),
+            content: (
+              <div className="tab-demo-content">
+                <p>
+                  {tr(
+                    "AutoFocus selects the editor and skips the toolbar. Mouse, keyboard and programmatic tab switches behave alike.",
+                  )}
+                </p>
+                <AutoFocus disabled={!enabled} target="textarea">
+                  <div style={fieldStyle}>
+                    <button type="button">
+                      {tr("Toolbar button (skipped)")}
+                    </button>
+                    <textarea aria-label={tr("Custom editor")} rows={4} />
+                  </div>
+                </AutoFocus>
+              </div>
+            ),
+          },
+          {
+            id: "multiple",
+            label: tr("Multiple entries"),
+            content: (
+              <div className="tab-demo-content">
+                <p>
+                  {tr(
+                    "The later entry wins while visible. Hide it to activate the earlier entry; no conflict configuration is needed.",
+                  )}
+                </p>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={showLast}
+                    onChange={(event) => setShowLast(event.target.checked)}
+                  />
+                  {tr("Show later entry")}
+                </label>
+                <div style={fieldStyle}>
+                  <AutoFocus disabled={!enabled}>
+                    <input
+                      aria-label={tr("Earlier entry")}
+                      placeholder={tr("Earlier entry")}
+                    />
+                  </AutoFocus>
+                  <div hidden={!showLast}>
+                    <AutoFocus disabled={!enabled}>
+                      <input
+                        aria-label={tr("Later entry")}
+                        placeholder={tr("Later entry")}
+                      />
+                    </AutoFocus>
+                  </div>
+                </div>
+              </div>
+            ),
+          },
+          {
+            id: "nested",
+            label: tr("Nested entry"),
+            children: [
+              {
+                id: "editor",
+                label: tr("Editor"),
+                content: (
+                  <AutoFocus disabled={!enabled}>
+                    <textarea aria-label={tr("Nested editor")} rows={4} />
+                  </AutoFocus>
+                ),
+              },
+              {
+                id: "other",
+                label: tr("Other entry"),
+                content: (
+                  <AutoFocus disabled={!enabled}>
+                    <input aria-label={tr("Other entry")} />
+                  </AutoFocus>
+                ),
+              },
+            ],
+          },
+        ]}
       />
     </div>
   );

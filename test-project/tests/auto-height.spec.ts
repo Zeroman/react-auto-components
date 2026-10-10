@@ -161,6 +161,8 @@ test("remaining height is an in-page tab and the old link opens the same applica
   await expect(
     page.getByRole("tab", { name: "Remaining Height", exact: true }),
   ).toBeFocused();
+  await expect(page.getByTestId("height-frame")).toHaveCount(0);
+  await page.keyboard.press("Enter");
   await fitted(page);
   await page.goto("/?demo=auto-height");
   await expect(page.getByRole("button", { name: /AutoForm/ })).toBeVisible();

@@ -139,9 +139,15 @@ for (const mode of ["horizontal", "vertical"] as const) {
     await page.getByLabel("Tab draft").fill("Kept text");
     await page.getByRole("tab", { name: "Overview", exact: true }).focus();
     await page.keyboard.press(mode === "vertical" ? "ArrowDown" : "ArrowRight");
-    await expect(
-      page.getByRole("tab", { name: "Configuration", exact: true }),
-    ).toHaveAttribute("aria-selected", "true");
+    const configuration = page.getByRole("tab", {
+      name: "Configuration",
+      exact: true,
+    });
+    await expect(configuration).toBeFocused();
+    await expect(configuration).toHaveAttribute("aria-selected", "false");
+    await expect(page.getByLabel("Tab draft")).toBeVisible();
+    await page.keyboard.press("Enter");
+    await expect(configuration).toHaveAttribute("aria-selected", "true");
     const panel = root.getByRole("tabpanel", {
       name: "Configuration",
       exact: true,
@@ -210,9 +216,7 @@ test("dynamic table expansion, column resizing and export work in the browser", 
   await page.getByRole("button", { name: "Expand row 1", exact: true }).click();
   const child = page.locator('tr[data-row-id="1-child"]');
   await expect(child).toBeVisible({ timeout: 15000 });
-  await page
-    .getByRole("tab", { name: "Expandable Rows", exact: true })
-    .click();
+  await page.getByRole("tab", { name: "Expandable Rows", exact: true }).click();
   await page.getByRole("button", { name: "Expand row 1", exact: true }).click();
   await expect(page.getByTestId("expanded-detail").first()).toBeVisible({
     timeout: 15000,

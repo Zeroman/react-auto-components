@@ -121,7 +121,7 @@ export const demoExamples: Record<string, readonly DemoExample[]> = {
     {
       id: "focus",
       label: "Focus & Autofocus",
-      tip: "Focus restoration on return, [data-autofocus], focusTarget selectors, and active sensing.",
+      tip: "Independent AutoFocus entries, visibility, selectors, and nested tabs.",
     },
     serverSchema,
     permissions("tabs"),
