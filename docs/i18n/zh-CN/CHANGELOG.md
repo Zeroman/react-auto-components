@@ -2,6 +2,12 @@
 
 [English](../../CHANGELOG.md) | **简体中文** | [繁體中文](../zh-TW/CHANGELOG.md) | [日本語](../ja/CHANGELOG.md) | [한국어](../ko/CHANGELOG.md) | [Español](../es/CHANGELOG.md) | [Français](../fr/CHANGELOG.md) | [Deutsch](../de/CHANGELOG.md) | [Português (Brasil)](../pt-BR/CHANGELOG.md) | [Русский](../ru/CHANGELOG.md)
 
+## 0.5.1 - 2026-10-10
+
+- `AutoTabs` 新增 `tabLayout`（默认 `"scroll"`，可选 `"equal"`）：标签平分行宽——移动端底部导航布局。超长标签以省略号截断，完整文字保留在 `title` 提示中；滚动按钮不再出现。仅水平模式生效。
+- 库内所有交互按钮补上 `type="button"`，工具栏、分页、行操作和标签控件不再误触发外层 `<form>` 提交。
+- 文档：明确 `AutoTabs` 与 `AutoMenu` 的 `tip` 为按需使用——浮层可能遮挡相邻内容并拦截点击。
+
 ## 0.5.0 - 2026-10-10
 
 - 破坏性变更：移除了方向键直接切换标签页。方向键现在仅在标签之间移动焦点；点击或按 Enter/空格才切换面板。

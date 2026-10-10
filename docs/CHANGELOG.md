@@ -2,6 +2,12 @@
 
 **English** | [简体中文](i18n/zh-CN/CHANGELOG.md) | [繁體中文](i18n/zh-TW/CHANGELOG.md) | [日本語](i18n/ja/CHANGELOG.md) | [한국어](i18n/ko/CHANGELOG.md) | [Español](i18n/es/CHANGELOG.md) | [Français](i18n/fr/CHANGELOG.md) | [Deutsch](i18n/de/CHANGELOG.md) | [Português (Brasil)](i18n/pt-BR/CHANGELOG.md) | [Русский](i18n/ru/CHANGELOG.md)
 
+## 0.5.1 - 2026-10-10
+
+- `AutoTabs` gains `tabLayout` (`"scroll"` default, `"equal"`): tabs split the row evenly — the mobile bottom-bar layout. Long labels truncate with an ellipsis and keep the full text in a `title` tooltip; the scroll buttons never appear. Horizontal only.
+- All interactive library buttons now carry `type="button"`, so toolbars, pagination, row actions and per-tab controls no longer submit an enclosing `<form>`.
+- Docs: `tip` on `AutoTabs` and `AutoMenu` items is now documented as opt-in and rare — tooltips can cover neighboring entries and intercept clicks.
+
 ## 0.5.0 - 2026-10-10
 
 - Breaking: removed direct arrow-key tab switching. Arrow keys now move focus between tab labels only; switch panels with a click or Enter/Space.
