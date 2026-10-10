@@ -4,7 +4,7 @@
 
 ## 0.5.0 - 2026-10-10
 
-- Breaking: `AutoTabs` now uses manual activation: arrow keys move tab-label focus; clicking or pressing Enter/Space switches panels.
+- Breaking: removed direct arrow-key tab switching. Arrow keys now move focus between tab labels only; switch panels with a click or Enter/Space.
 - Added standalone `AutoFocus`: the last registered visible target receives focus when the winner changes. It works independently of tabs and routing, without focus history or keyboard/pointer distinctions. Breaking: removed tab/workspace `restoreFocus`, `focusTarget`, and `autoFocusMode`; declare entries with `AutoFocus` instead.
 - Panel components can call `useAutoTabActive()` to sense whether the enclosing tab is currently visible. Nested tabs report correctly when an outer panel hides.
 - Base styles extend field styling to `.auto-popover` inputs and refine `:focus-visible` rings on text fields; fields marked `aria-invalid` keep their danger border while focused.
