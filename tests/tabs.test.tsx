@@ -465,3 +465,26 @@ test("equal tab layout marks the bar, titles labels and skips vertical", () => {
   rerender(<AutoTabs items={items} tabLayout="equal" mode="vertical" />);
   expect(root()).not.toHaveAttribute("data-tab-layout");
 });
+
+test("headerExtra renders before the tab list and extra still works", () => {
+  const { container } = render(
+    <AutoTabs
+      headerExtra={<button type="button">Back</button>}
+      actions={<button type="button">Act</button>}
+      extra={<span>Legacy</span>}
+      items={[{ id: "a", label: "A", content: "Panel A" }]}
+    />,
+  );
+  const heading = container.querySelector<HTMLElement>(".auto-tabs-heading")!;
+  const children = [...heading.children];
+  expect(children[0].classList.contains("auto-tabs-leading")).toBe(true);
+  expect(children[0].textContent).toBe("Back");
+  expect(children[1].classList.contains("auto-tabs-nav")).toBe(true);
+  expect(children[2].textContent).toBe("ActLegacy");
+
+  const bare = render(
+    <AutoTabs items={[{ id: "a", label: "A", content: "Panel A" }]} />,
+  ).container;
+  expect(bare.querySelector(".auto-tabs-leading")).toBeNull();
+  expect(bare.querySelector(".auto-tabs-extra")).toBeNull();
+});

@@ -113,7 +113,17 @@ export interface AutoTabsProps extends TipConfig {
   tabActions?: readonly TabAction[];
   /** Primary or custom actions placed on the right side of the tabs bar. */
   actions?: ReactNode;
-  /** Custom extra content placed on the right side of the tabs bar. */
+  /**
+   * Custom content placed on the left side of the tabs bar, before the tab
+   * list (top in vertical mode) — back buttons, titles or logos, the mobile
+   * bottom-bar pattern.
+   */
+  headerExtra?: ReactNode;
+  /**
+   * @deprecated Overlaps with `actions`: both render on the right side, in
+   * order. Use `actions` instead; `extra` will be removed in the next minor
+   * release.
+   */
   extra?: ReactNode;
   size?: ComponentSize;
   density?: ComponentDensity;
@@ -131,6 +141,7 @@ export function AutoTabs({
   lazy = false,
   onClose,
   actions,
+  headerExtra,
   extra,
   tabActions,
   tipComponent: ownTipComponent,
@@ -346,6 +357,11 @@ export function AutoTabs({
       orientation={mode === "horizontal" ? "horizontal" : "vertical"}
     >
       <div className="auto-tabs-heading">
+        {headerExtra != null && (
+          <div className="auto-tabs-extra auto-tabs-leading">
+            {headerExtra}
+          </div>
+        )}
         <div ref={navRef} className="auto-tabs-nav" data-overflow={overflowed}>
           {overflowed && (
             <button

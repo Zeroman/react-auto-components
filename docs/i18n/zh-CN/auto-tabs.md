@@ -57,7 +57,8 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `onClose(path, item)` | 请调用方移除这个标签。**不捕获。** 嵌套组上报完整路径。调用方自己更新 `items`。 |
 | `lazy` | 默认 `false`。`true` 在第一次打开时才挂载面板。 |
 | `actions` | 标签栏右侧的操作按钮区域。 |
-| `extra` | 标签栏右侧的自定义扩展内容。 |
+| `headerExtra` | 标签栏左侧、标签行之前的自定义内容（垂直模式在顶部）——返回按钮、标题或 logo，即移动端底部导航模式。 |
+| `extra` | **已废弃。** 与 `actions` 重叠：两者都渲染在右侧且按序排列。请改用 `actions`；`extra` 将在下个 minor 版本移除。 |
 | `tabActions` | 标签页右键菜单动作集合。菜单项支持 `icon` 图标、`danger` 危险色、`separator` 分隔线、`disabled` 与 `hidden`，与表格行操作一致。省略则不启用右键菜单。 |
 
 某一项如果有 `children`，就用嵌套标签代替 `content`。`defaultActive` 是嵌套层的非受控 id。

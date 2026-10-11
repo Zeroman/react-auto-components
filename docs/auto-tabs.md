@@ -57,7 +57,8 @@ import "@zeroman.yang/react-auto-components/style.css";
 | `onClose(path, item)` | Asks the owner to remove the tab. **Not caught.** Nested groups pass the full path. The owner updates `items`. |
 | `lazy` | Default `false`. `true` mounts a panel on its first visit. |
 | `actions` | Primary or custom actions placed on the right side of the tab bar. |
-| `extra` | Custom extra content placed on the right side of the tab bar. |
+| `headerExtra` | Custom content placed on the left side of the tab bar, before the tab list (top in vertical mode) — back buttons, titles or logos, the mobile bottom-bar pattern. |
+| `extra` | **Deprecated.** Overlaps with `actions`: both render on the right side, in order. Use `actions`; `extra` will be removed in the next minor release. |
 | `tabActions` | Right-click actions for each tab. Entries support `icon`, `danger`, `separator`, `disabled`, and `hidden`, mirroring table row actions. Omit to disable the menu. |
 
 A nested `children` list replaces `content` for that tab. `defaultActive` is the nested uncontrolled id.
