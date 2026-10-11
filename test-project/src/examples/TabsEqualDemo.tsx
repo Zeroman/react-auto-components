@@ -39,6 +39,57 @@ export function TabsEqualDemo({
           tabLayout={equal ? "equal" : "scroll"}
           size={size}
           density={density}
+          headerExtra={
+            <button
+              type="button"
+              className="auto-tool-btn"
+              aria-label={tr("Back")}
+              title={tr("Back")}
+              onClick={() => {}}
+            >
+              <span className="auto-icon" aria-hidden="true">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M19 12H5" />
+                  <path d="m12 19-7-7 7-7" />
+                </svg>
+              </span>
+            </button>
+          }
+          actions={
+            <button
+              type="button"
+              className="auto-tool-btn"
+              aria-label={tr("More")}
+              title={tr("More")}
+              onClick={() => {}}
+            >
+              <span className="auto-icon" aria-hidden="true">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="5" r="1" />
+                  <circle cx="12" cy="12" r="1" />
+                  <circle cx="12" cy="19" r="1" />
+                </svg>
+              </span>
+            </button>
+          }
           items={[
             { id: "home", label: tr("Home"), content: panel },
             { id: "orders", label: tr("Orders"), content: panel },

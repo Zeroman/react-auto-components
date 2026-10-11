@@ -62,23 +62,23 @@ export function TabsDemo({ example }: { example: string }) {
                 size={size}
                 density={density}
                 actions={
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setMode(mode === "horizontal" ? "vertical" : "horizontal")
-                    }
-                  >
-                    {tr(
-                      mode === "horizontal"
-                        ? "Vertical tabs"
-                        : "Horizontal tabs",
-                    )}
-                  </button>
-                }
-                extra={
-                  <span className="auto-badge">
-                    {tr("Keep mounted / persistent state")}
-                  </span>
+                  <>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setMode(mode === "horizontal" ? "vertical" : "horizontal")
+                      }
+                    >
+                      {tr(
+                        mode === "horizontal"
+                          ? "Vertical tabs"
+                          : "Horizontal tabs",
+                      )}
+                    </button>
+                    <span className="auto-badge">
+                      {tr("Keep mounted / persistent state")}
+                    </span>
+                  </>
                 }
                 tabActions={[
                   {

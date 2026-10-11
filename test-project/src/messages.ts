@@ -2,6 +2,8 @@
 // Keep {0} placeholder indexes unchanged.
 const messages: Record<string, Record<string, string>> = {
   "zh-CN": {
+    Back: "返回",
+    More: "更多",
     "Equal width": "等分宽度",
     Orders: "订单",
     "Performance reports and insights": "性能报告与洞察",

@@ -43,6 +43,20 @@ test("equal layout splits the row evenly, truncates and keeps switching", async 
     "aria-selected",
     "true",
   );
+
+  // headerExtra sits left of the tab row, actions right of it.
+  const back = demo.getByRole("button", { name: "Back" });
+  const more = demo.getByRole("button", { name: "More" });
+  const firstTab = demo.locator("[role='tab']").first();
+  const lastTab = demo.locator("[role='tab']").nth(3);
+  expect(
+    (await back.boundingBox())!.x +
+      (await back.boundingBox())!.width,
+  ).toBeLessThanOrEqual((await firstTab.boundingBox())!.x);
+  expect((await more.boundingBox())!.x).toBeGreaterThanOrEqual(
+    (await lastTab.boundingBox())!.x + (await lastTab.boundingBox())!.width,
+  );
+
   await demo.getByLabel("Equal width").click();
   await expect(tabsRoot).toHaveAttribute("data-tab-layout", "scroll");
 });
