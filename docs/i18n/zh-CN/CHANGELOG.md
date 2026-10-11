@@ -2,6 +2,11 @@
 
 [English](../../CHANGELOG.md) | **简体中文** | [繁體中文](../zh-TW/CHANGELOG.md) | [日本語](../ja/CHANGELOG.md) | [한국어](../ko/CHANGELOG.md) | [Español](../es/CHANGELOG.md) | [Français](../fr/CHANGELOG.md) | [Deutsch](../de/CHANGELOG.md) | [Português (Brasil)](../pt-BR/CHANGELOG.md) | [Русский](../ru/CHANGELOG.md)
 
+## 0.5.2 - 2026-10-11
+
+- `AutoTabs` 新增 `headerExtra`：标签栏左侧、标签行之前的自定义内容（垂直模式在顶部）——返回按钮、标题或 logo，即移动端底部导航模式。
+- 废弃 `AutoTabs` 的 `extra` 属性：与 `actions` 重叠（同为右侧容器，仅渲染顺序不同），下个 minor 版本移除。
+
 ## 0.5.1 - 2026-10-10
 
 - `AutoTabs` 新增 `tabLayout`（默认 `"scroll"`，可选 `"equal"`）：标签平分行宽——移动端底部导航布局。超长标签以省略号截断，完整文字保留在 `title` 提示中；滚动按钮不再出现。仅水平模式生效。

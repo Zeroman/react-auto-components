@@ -2,6 +2,11 @@
 
 **English** | [简体中文](i18n/zh-CN/CHANGELOG.md) | [繁體中文](i18n/zh-TW/CHANGELOG.md) | [日本語](i18n/ja/CHANGELOG.md) | [한국어](i18n/ko/CHANGELOG.md) | [Español](i18n/es/CHANGELOG.md) | [Français](i18n/fr/CHANGELOG.md) | [Deutsch](i18n/de/CHANGELOG.md) | [Português (Brasil)](i18n/pt-BR/CHANGELOG.md) | [Русский](i18n/ru/CHANGELOG.md)
 
+## 0.5.2 - 2026-10-11
+
+- `AutoTabs` gains `headerExtra`: custom content on the left of the tab bar, before the tab list (top in vertical mode) — back buttons, titles or logos, the mobile bottom-bar pattern.
+- Deprecated the `AutoTabs` `extra` prop: it overlaps `actions` (same right-side container, render order only). It will be removed in the next minor release.
+
 ## 0.5.1 - 2026-10-10
 
 - `AutoTabs` gains `tabLayout` (`"scroll"` default, `"equal"`): tabs split the row evenly — the mobile bottom-bar layout. Long labels truncate with an ellipsis and keep the full text in a `title` tooltip; the scroll buttons never appear. Horizontal only.
