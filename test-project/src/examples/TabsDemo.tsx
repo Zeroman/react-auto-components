@@ -61,6 +61,31 @@ export function TabsDemo({ example }: { example: string }) {
                 mode={mode}
                 size={size}
                 density={density}
+                headerExtra={
+                  <button
+                    type="button"
+                    className="auto-tool-btn"
+                    aria-label={tr("Home")}
+                    title={tr("Home")}
+                    onClick={() => {}}
+                  >
+                    <span className="auto-icon" aria-hidden="true">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M3 10.5 12 3l9 7.5" />
+                        <path d="M5 9.5V21h14V9.5" />
+                      </svg>
+                    </span>
+                  </button>
+                }
                 actions={
                   <>
                     <button

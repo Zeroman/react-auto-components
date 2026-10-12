@@ -36,6 +36,20 @@ import "@zeroman.yang/react-auto-components/style.css";
 />
 ```
 
+`headerExtra` places content on the left of the tab row and `actions` on the right — with `tabLayout="equal"` this is the mobile bottom-bar pattern:
+
+```tsx
+<AutoTabs
+  tabLayout="equal"
+  headerExtra={<button type="button">Back</button>}
+  actions={<button type="button">More</button>}
+  items={[
+    { id: "home", label: "Home", content: <p>Home</p> },
+    { id: "me", label: "Me", content: <p>Me</p> },
+  ]}
+/>
+```
+
 ## Behavior and props
 
 | Prop | Behavior |

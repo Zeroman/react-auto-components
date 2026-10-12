@@ -36,6 +36,20 @@ import "@zeroman.yang/react-auto-components/style.css";
 />
 ```
 
+`headerExtra` 放在标签行左侧，`actions` 放在右侧——配合 `tabLayout="equal"` 即移动端底部导航模式：
+
+```tsx
+<AutoTabs
+  tabLayout="equal"
+  headerExtra={<button type="button">返回</button>}
+  actions={<button type="button">更多</button>}
+  items={[
+    { id: "home", label: "首页", content: <p>首页</p> },
+    { id: "me", label: "我的", content: <p>我的</p> },
+  ]}
+/>
+```
+
 ## 行为与属性
 
 | 属性 | 行为 |
