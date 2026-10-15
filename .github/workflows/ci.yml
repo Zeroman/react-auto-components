@@ -43,7 +43,8 @@ jobs:
           if [ "$RAC_E2E_PROJECT" = all ]; then
             pnpm exec playwright install --with-deps
           else
-            pnpm exec playwright install --with-deps "$RAC_E2E_PROJECT"
+            # DevTools managed-page screenshots use Chromium in every engine's tests.
+            pnpm exec playwright install --with-deps chromium "$RAC_E2E_PROJECT"
           fi
       # Pushes/PRs use Chromium; manual runs default to all and can verify one engine.
       - run: |
