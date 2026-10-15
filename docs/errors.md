@@ -134,3 +134,93 @@ Fix: omit `value` when using `route`-driven navigation; `AutoNavigation` owns th
 `AutoTabs` `source` is not in `config.tabsSources`. The tabs show this message and a retry button.
 
 Fix: add that key to `config.tabsSources`, or pass local `items` or a function. Pass only one of `items` and `source`.
+
+## RAC-SERVER-NONE
+
+No matching live development server was discovered.
+
+Fix: Enable the Vite plugin with RAC_AGENT=1 and run the CLI in the project root.
+
+## RAC-SERVER-SELECTION
+
+Several development servers are available.
+
+Fix: Pass --server <serverId> from the discovery result.
+
+## RAC-PAGE-NONE
+
+No development page is connected.
+
+Fix: Open the app or run rac open.
+
+## RAC-PAGE-SELECTION
+
+Several pages are connected.
+
+Fix: Run rac inspect and pass --page <pageId> on every command.
+
+## RAC-PAGE-DISCONNECTED
+
+The selected page is disconnected or reloading.
+
+Fix: Inspect pages and explicitly choose a ready page; do not automatically retry mutations.
+
+## RAC-PAGE-REF
+
+The element reference is missing or stale.
+
+Fix: Run rac inspect on the selected page and use a current ref.
+
+## RAC-PAGE-ACTION
+
+The requested element action is unavailable.
+
+Fix: Use a supported action on a visible, enabled and editable target as appropriate.
+
+## RAC-PAGE-NAVIGATION
+
+The page has no unique RAC navigation provider.
+
+Fix: Mount one AutoNavigationProvider or use visible controls.
+
+## RAC-DEVTOOLS-AUTH
+
+The request is not an authenticated local bridge request.
+
+Fix: Use the current project discovery credentials from localhost with a matching origin.
+
+## RAC-DEVTOOLS-INPUT
+
+The request arguments, JSON or route are invalid.
+
+Fix: Run rac help --json and correct the documented parameters.
+
+## RAC-DEVTOOLS-EVAL
+
+JavaScript evaluation is disabled.
+
+Fix: Explicitly set allowEval: true in the development plugin if required.
+
+## RAC-DEVTOOLS-TIMEOUT
+
+The command or visibility wait timed out; a delivered action may have executed.
+
+Fix: Inspect the selected page before retrying and wait for the relevant state.
+
+## RAC-DEVTOOLS-BROWSER
+
+The managed browser or browser connection could not be prepared.
+
+Fix: Install Playwright and Chromium; use headless mode without a display and check the configured endpoint.
+
+## RAC-DEVTOOLS-SCREENSHOT
+
+The selected page has no screenshot connection.
+
+Fix: Use a managed page or configure browserEndpoint for that page; never substitute another page.
+
+## RAC-DEVTOOLS-COMMAND
+
+A page command failed.
+
+Fix: Inspect the page and correct the command before retrying.

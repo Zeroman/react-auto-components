@@ -11,7 +11,7 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   webServer: {
-    command: "pnpm exec vite --host 127.0.0.1 --port 4174 --strictPort --force",
+    command: "RAC_AGENT=1 pnpm exec vite --host 127.0.0.1 --port 4174 --strictPort --force",
     url: "http://127.0.0.1:4174",
     reuseExistingServer: false,
   },

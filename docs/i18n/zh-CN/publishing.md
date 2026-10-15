@@ -46,12 +46,14 @@ npm publish --access public --registry=https://registry.npmjs.org/
 
 发布时在 npm 提示中完成验证。发布后使用最终包名运行 `npm view <包名> version`，并在全新消费项目安装验证。首次发布成功后，移除各语言 README 的“首次发布准备中”提示并添加安装命令。
 
-每次发布前更新 version 和各语言 CHANGELOG；不要尝试覆盖已发布版本。推送与 `package.json` 版本一致的 `v*` tag，例如版本 `0.2.0` 时推送 `v0.2.0`。这会运行 `.github/workflows/publish.yml` 并发布到 npm。
+每次发布前同步两个包的版本、DevTools 的组件 peer 依赖，以及英文和启用语言的 CHANGELOG。暂停语言保持冻结，不应在发布时重新生成其快照；不要尝试覆盖已发布版本。推送与 `package.json` 版本一致的 `v*` tag，例如版本 `0.2.0` 时推送 `v0.2.0`。这会运行 `.github/workflows/publish.yml` 并发布到 npm。
 
 ## 自动发布
 
 [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) 将 `@zeroman.yang/react-auto-components` 绑定到 GitHub 仓库 `Zeroman/react-auto-components` 与 workflow 文件 `publish.yml`。该 workflow 使用 GitHub 托管 runner 和 OIDC `id-token: write`，无需长期 npm token。要求 Node >=22.14.0、npm CLI >=11.5.1。tag、`package.json` 版本和被测提交必须一致。
 
-tag 触发的 workflow 会先检查被 tag 的提交是否已在 main 上通过 CI（发布脚本将二者一起推送）。若判定为绿，发布不再重跑矩阵——只执行 tag/版本一致性校验和 `npm publish`。若判定缺失、20 分钟内仍在运行或为红，则在 tag 上重跑完整验证矩阵后再发布。gate 或验证失败都会阻断发布。
+tag 触发的 workflow 会先检查被 tag 的提交是否已在 main 上通过 CI（发布脚本将二者一起推送）。若判定为绿，发布不再重跑矩阵——执行 tag/版本一致性校验和双包发布脚本。若判定缺失、20 分钟内仍在运行或为红，则在 tag 上重跑完整验证矩阵后再发布。gate 或验证失败都会阻断发布。
+
+`scripts/publish-packages.mjs` 先发布组件包，再发布 DevTools；npm 已存在的版本会跳过，因此部分完成的发布可以续跑。每个包都需要独立的 npm 发布权限或 Trusted Publisher；组件包的配置不会自动授权新的 DevTools 包。`./run.sh release` 同步更新两个版本，并只维护启用的语言。
 
 GitHub Actions CI 执行锁文件安装、类型检查、单元测试、真实 tarball 消费构建和 Chromium 测试。分支保护可将 CI 设为合并要求；有外部贡献后再按维护需要配置。

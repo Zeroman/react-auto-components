@@ -71,6 +71,7 @@ jobs:
         run: npm install -g npm@^11.5.1
       - run: pnpm install --frozen-lockfile
       - run: pnpm check:public
+      - run: pnpm check:docs
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
@@ -114,4 +115,4 @@ jobs:
             exit 1
           fi
       - run: pnpm install --frozen-lockfile
-      - run: npm publish --access public
+      - run: node scripts/publish-packages.mjs

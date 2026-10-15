@@ -12,7 +12,7 @@
 
 ## 项目状态
 
-当前版本为 0.5.0，API 仍可能发生变化。需要 React 19。该包提供 ESM 和 TypeScript 类型声明。内置界面文本默认为英文，可通过 AutoConfigProvider.config.t 进行翻译。
+当前版本为 0.5.3，API 仍可能发生变化。需要 React 19。该包提供 ESM 和 TypeScript 类型声明。内置界面文本默认为英文，可通过 AutoConfigProvider.config.t 进行翻译。
 
 使用 `pnpm add @zeroman.yang/react-auto-components` 安装（npm、yarn 同样可用）。peer dependency 为 React 19 与 react-dom 19。在入口引入一次样式：`import "@zeroman.yang/react-auto-components/style.css"`。
 
@@ -298,3 +298,7 @@ AutoChat 提供轻量的对话布局，支持流式跟随、历史消息加载�
 [AutoNavigation API 与路由接入指南](auto-navigation.md)
 
 回调抛错之后组件会怎样，见行为契约：[AutoForm](auto-form.md)、[AutoSearch](auto-search.md)、[AutoTable](auto-table.md)、[AutoDialog](auto-dialog.md)、[AutoTabs](auto-tabs.md)、[AutoMenu](auto-menu.md)、[AutoNavigation](auto-navigation.md)。开发者错误码：[errors.md](errors.md)。
+
+## Agent 开发工具
+
+通过可选的 [`@zeroman.yang/react-auto-components-devtools`](devtools.md) Vite 插件，让 agent 发现、检查并单独操作开发页面。需使用 `RAC_AGENT=1` 显式开启；生产构建不包含控制桥。

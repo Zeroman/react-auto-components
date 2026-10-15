@@ -79,7 +79,9 @@ test("source dialog stays within a narrow viewport and scrolls code internally",
 }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   const trigger = page.getByRole("button", { name: "View code" });
-  await trigger.click();
+  // Open from the keyboard so the trigger is the active element to restore.
+  await trigger.focus();
+  await trigger.press("Enter");
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
   await expect

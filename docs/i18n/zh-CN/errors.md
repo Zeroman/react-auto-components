@@ -128,3 +128,93 @@ xlsx 适配器加载不到 `exceljs`。它是 `optionalDependency`，普通安�
 `source` 不是 `AutoConfigProvider` 的 `config.tabsSources` 中的标签页数据源键。未知键会显示 `RAC-TABS-SOURCE` 和重试按钮。
 
 修复：注册该键，或改用本地 `items` 或函数；`items` 和 `source` 只能提供一个。
+
+## RAC-SERVER-NONE
+
+未发现匹配的开发服务。
+
+Fix: 通过 RAC_AGENT=1 开启 Vite 插件，并在项目根目录运行 CLI。
+
+## RAC-SERVER-SELECTION
+
+存在多个开发服务。
+
+Fix: 使用发现结果中的 --server <serverId> 显式选择。
+
+## RAC-PAGE-NONE
+
+没有开发页面连接。
+
+Fix: 打开应用或运行 rac open。
+
+## RAC-PAGE-SELECTION
+
+存在多个已连接页面。
+
+Fix: 运行 rac inspect，后续每条命令指定 --page <pageId>。
+
+## RAC-PAGE-DISCONNECTED
+
+目标页面已断开或正在刷新。
+
+Fix: 检查页面并显式选择 ready 页面；不要自动重试修改操作。
+
+## RAC-PAGE-REF
+
+元素引用缺失或过期。
+
+Fix: 对目标页面重新运行 rac inspect，并使用当前 ref。
+
+## RAC-PAGE-ACTION
+
+目标元素不支持此操作。
+
+Fix: 选择可见、启用且适合该操作的目标，填写操作需选择可编辑元素。
+
+## RAC-PAGE-NAVIGATION
+
+页面没有唯一的 RAC 导航 provider。
+
+Fix: 挂载一个 AutoNavigationProvider，或使用可见控件。
+
+## RAC-DEVTOOLS-AUTH
+
+请求不是已认证的本机控制桥请求。
+
+Fix: 使用当前项目发现凭据，从 localhost 及匹配的来源发起请求。
+
+## RAC-DEVTOOLS-INPUT
+
+参数、JSON 或接口路径无效。
+
+Fix: 运行 rac help --json，按文档修正参数。
+
+## RAC-DEVTOOLS-EVAL
+
+JavaScript 求值未开启。
+
+Fix: 确有需要时，在开发插件中显式设置 allowEval: true。
+
+## RAC-DEVTOOLS-TIMEOUT
+
+命令或可见性等待超时；已发送的动作可能已经执行。
+
+Fix: 重试前检查目标页面，并等待相关状态。
+
+## RAC-DEVTOOLS-BROWSER
+
+无法准备托管浏览器或浏览器连接。
+
+Fix: 安装 Playwright 和 Chromium；无显示环境使用 headless，并检查配置的连接地址。
+
+## RAC-DEVTOOLS-SCREENSHOT
+
+目标页面没有截图连接。
+
+Fix: 使用托管页面，或为该页面配置 browserEndpoint；不使用其他页面替代。
+
+## RAC-DEVTOOLS-COMMAND
+
+页面命令失败。
+
+Fix: 检查页面，修正命令后再重试。

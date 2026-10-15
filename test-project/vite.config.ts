@@ -1,10 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { mockApiPlugin } from "./src/mockApi.ts";
-import { racDevtoolsPlugin } from "./src/racDevtools.ts";
+import { reactAutoComponentsDevtools } from "@zeroman.yang/react-auto-components-devtools/vite";
 // VITE_API_TARGET=http://remote-test-backend:8080 forwards /remote-api/* to the real backend.
 export default defineConfig({
-  plugins: [react(), mockApiPlugin(), racDevtoolsPlugin()],
+  plugins: [react(), mockApiPlugin(), reactAutoComponentsDevtools()],
   server: {
     port: 4173,
     strictPort: true,

@@ -27,3 +27,6 @@ data/agent-runs/
 .rac-shots/
 .mimocode/
 .gstack/
+
+# Agent bridge discovery credentials
+.rac/

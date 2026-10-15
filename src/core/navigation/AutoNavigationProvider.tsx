@@ -27,6 +27,19 @@ export function AutoNavigationProvider({
     );
   }, [userNavigation]);
 
+  // Optional DevTools discovery: no global engine and no tooling dependency.
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
+    const discover = (event: Event) => {
+      const detail = (event as CustomEvent<{ adapters?: AutoNavigation[] }>)
+        .detail;
+      if (Array.isArray(detail?.adapters)) detail.adapters.push(navigation);
+    };
+    window.addEventListener("rac:discover-navigation", discover);
+    return () =>
+      window.removeEventListener("rac:discover-navigation", discover);
+  }, [navigation]);
+
   // Synchronize canAccess when config changes
   useEffect(() => {
     if (config.canAccess) {

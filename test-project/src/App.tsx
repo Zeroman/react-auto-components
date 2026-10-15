@@ -237,7 +237,6 @@ function AppContent() {
   const { translate } = useDemoLanguage();
   const narrowMenu = useMediaQuery("(max-width: 700px)");
   const nav = useAutoNavigation();
-  globalThis.__racNav = nav;
   const {
     access,
     status: accessStatus,

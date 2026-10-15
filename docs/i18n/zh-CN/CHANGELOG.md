@@ -2,6 +2,13 @@
 
 [English](../../CHANGELOG.md) | **简体中文** | [繁體中文](../zh-TW/CHANGELOG.md) | [日本語](../ja/CHANGELOG.md) | [한국어](../ko/CHANGELOG.md) | [Español](../es/CHANGELOG.md) | [Français](../fr/CHANGELOG.md) | [Deutsch](../de/CHANGELOG.md) | [Português (Brasil)](../pt-BR/CHANGELOG.md) | [Русский](../ru/CHANGELOG.md)
 
+## 0.5.3 - 2026-10-15
+
+- 新增可选的 `@zeroman.yang/react-auto-components-devtools` 包，供 Vite 项目显式开启 agent 访问，支持页面发现、语义检查、明确的单页面命令，以及通过托管或 CDP 连接浏览器截取原页面。
+- `AutoNavigationProvider` 提供仅开发时启用的导航发现，无需应用全局变量；生产构建和 preview 保持控制桥关闭。
+- 使用本机启动模块、回环/Host/Origin 校验和私有发现文件保护凭据；拒绝过期元素引用、含糊页面目标和畸形请求。
+- 组件库与 DevTools 同步版本发布，并以打包产物验证消费；发布说明只维护英文和简体中文，其他语言保持冻结。
+
 ## 0.5.2 - 2026-10-11
 
 - `AutoTabs` 新增 `headerExtra`：标签栏左侧、标签行之前的自定义内容（垂直模式在顶部）——返回按钮、标题或 logo，即移动端底部导航模式。

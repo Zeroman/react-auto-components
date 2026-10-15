@@ -19,6 +19,7 @@ const documents = [
   "auto-chat.md",
   "auto-navigation.md",
   "migration.md",
+  "devtools.md",
 ];
 const roots: string[] = [];
 const put = (root: string, path: string, text: string) => {
@@ -57,7 +58,7 @@ test("translated headings and fenced example structure do not cause drift", () =
   );
   const result = check(root);
   expect(result.status, result.stderr).toBe(0);
-  expect(result.stdout).toContain("13 active translations checked");
+  expect(result.stdout).toContain("14 active translations checked");
   expect(result.stderr).toBe("");
 });
 

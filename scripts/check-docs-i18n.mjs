@@ -23,6 +23,7 @@ const documents = [
   "auto-chat.md",
   "auto-navigation.md",
   "migration.md",
+  "devtools.md",
 ];
 const root = process.argv[2] ?? repo;
 const errors = [];

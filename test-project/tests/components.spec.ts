@@ -111,7 +111,9 @@ test("form failures retain values and successful submission produces typed outpu
 test("dialog draft and focus restoration", async ({ page }) => {
   await openComponent(page, "AutoDialog");
   const trigger = page.getByRole("button", { name: "Open form dialog" });
-  await trigger.click();
+  // Open from the keyboard so the trigger is the active element to restore.
+  await trigger.focus();
+  await trigger.press("Enter");
   await page
     .getByRole("dialog")
     .getByRole("textbox", { name: "Project Name" })

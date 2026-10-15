@@ -794,9 +794,8 @@ _release_version_taken() {
 
 _release_allowed_path() {
     case "$1" in
-        package.json | README.md | docs/CHANGELOG.md) return 0 ;;
+        package.json | packages/devtools/package.json | pnpm-lock.yaml | test-project/package.json | test-project/pnpm-lock.yaml | README.md | docs/CHANGELOG.md) return 0 ;;
         docs/i18n/*/README.md | docs/i18n/*/CHANGELOG.md) return 0 ;;
-        locales.snapshot.json) return 0 ;;
         *) return 1 ;;
     esac
 }
@@ -835,13 +834,14 @@ if pkg.get("name") != "@zeroman.yang/react-auto-components":
 
 version_heading = re.compile(r"^## (\d+\.\d+\.\d+)(?:\s|$)")
 changelogs = [root / "docs" / "CHANGELOG.md"]
-changelogs += sorted((root / "docs" / "i18n").glob("*/CHANGELOG.md"))
+active = json.loads((root / "locales.config.json").read_text())["active"]
+changelogs += [root / "docs" / "i18n" / locale / "CHANGELOG.md" for locale in active]
 readmes = [root / "README.md"]
-readmes += sorted((root / "docs" / "i18n").glob("*/README.md"))
-if len(changelogs) < 10:
-    errors.append("found %s changelogs, expected at least 10" % len(changelogs))
-if len(readmes) < 10:
-    errors.append("found %s READMEs, expected at least 10" % len(readmes))
+readmes += [root / "docs" / "i18n" / locale / "README.md" for locale in active]
+devtools_path = root / "packages" / "devtools" / "package.json"
+devtools = json.loads(devtools_path.read_text())
+if devtools["version"] != old or devtools["peerDependencies"][pkg["name"]] != old:
+    errors.append("Component, DevTools and component peer versions must match before releasing")
 
 def body_after(lines, start):
     end = next((i for i in range(start + 1, len(lines)) if lines[i].startswith("## ")), len(lines))
@@ -917,6 +917,9 @@ for path, text in changelog_writes:
 if old != version:
     pkg["version"] = version
     pkg_path.write_text(json.dumps(pkg, indent=2, ensure_ascii=False) + "\n")
+    devtools["version"] = version
+    devtools["peerDependencies"][pkg["name"]] = version
+    devtools_path.write_text(json.dumps(devtools, indent=2, ensure_ascii=False) + "\n")
 for path, text in readme_writes:
     path.write_text(text)
 print("updated %s changelogs and %s READMEs" % (len(changelog_writes), len(readme_writes)))
@@ -959,9 +962,9 @@ Usage: ./run.sh release [version]
 Without an argument the patch version of package.json is bumped, e.g. 0.1.2 becomes 0.1.3.
 ./run.sh release 0.2.0 sets the version explicitly.
 
-First write the release notes under the unreleased heading of every CHANGELOG.
-The script turns that heading into the version heading, updates package.json and every
-language README, commits and pushes main, then pushes tag v<version>.
+First write release notes in the English and active-locale CHANGELOGs.
+The script updates both package versions, their peer contract and active READMEs,
+commits and pushes main, then pushes tag v<version>. Paused locales stay frozen.
 npm publish runs only after the GitHub Actions tests pass.
 Never reuse 0.1.0, 0.1.1 or 0.1.2.
 USAGE
@@ -1029,7 +1032,8 @@ USAGE
     today=$(date +%Y-%m-%d)
     _release_apply_version write "$version" "$today" || return 1
 
-    node scripts/snapshot-paused-i18n.mjs || return 1
+    pnpm install --lockfile-only --ignore-scripts || return 1
+    pnpm check:docs || return 1
 
     echo "Running check:public, typecheck, lint, test and the chromium e2e." >&2
     if ! pnpm check:public || ! pnpm typecheck || ! pnpm lint || ! pnpm test; then
@@ -1061,7 +1065,12 @@ USAGE
         return 1
     fi
 
-    git add -- package.json README.md docs/CHANGELOG.md docs/i18n/*/README.md docs/i18n/*/CHANGELOG.md locales.snapshot.json || return 1
+    local -a release_paths
+    mapfile -t release_paths < <(node -e '
+const { active } = require("./locales.config.json");
+console.log(["package.json", "packages/devtools/package.json", "pnpm-lock.yaml", "test-project/package.json", "test-project/pnpm-lock.yaml", "README.md", "docs/CHANGELOG.md", ...active.flatMap(locale => [`docs/i18n/${locale}/README.md`, `docs/i18n/${locale}/CHANGELOG.md`])].join("\n"));
+')
+    git add -- "${release_paths[@]}" || return 1
     if ! git diff --cached --quiet; then
         git commit -m "chore(release): bump to ${version}" || return 1
     fi

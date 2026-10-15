@@ -2,6 +2,13 @@
 
 **English** | [简体中文](i18n/zh-CN/CHANGELOG.md) | [繁體中文](i18n/zh-TW/CHANGELOG.md) | [日本語](i18n/ja/CHANGELOG.md) | [한국어](i18n/ko/CHANGELOG.md) | [Español](i18n/es/CHANGELOG.md) | [Français](i18n/fr/CHANGELOG.md) | [Deutsch](i18n/de/CHANGELOG.md) | [Português (Brasil)](i18n/pt-BR/CHANGELOG.md) | [Русский](i18n/ru/CHANGELOG.md)
 
+## 0.5.3 - 2026-10-15
+
+- Add the optional `@zeroman.yang/react-auto-components-devtools` package for Vite projects: opt-in agent access, page discovery, semantic inspection, explicit single-page commands and exact-page screenshots through managed/CDP-connected browsers.
+- `AutoNavigationProvider` exposes development-only navigation discovery without application globals. Production builds and preview keep the control bridge disabled.
+- Protect bridge credentials with local bootstrap loading, loopback/Host/Origin checks and private discovery files; reject stale page references, ambiguous targets and malformed requests.
+- Publish and test the component library and DevTools as synchronized packages. Maintain release notes in English and Simplified Chinese while other locales remain frozen.
+
 ## 0.5.2 - 2026-10-11
 
 - `AutoTabs` gains `headerExtra`: custom content on the left of the tab bar, before the tab list (top in vertical mode) — back buttons, titles or logos, the mobile bottom-bar pattern.

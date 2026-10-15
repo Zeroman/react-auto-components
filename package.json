@@ -1,6 +1,6 @@
 {
   "name": "@zeroman.yang/react-auto-components",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "type": "module",
   "files": [
     "dist",
@@ -29,7 +29,9 @@
     "docs/i18n/*/auto-focus.md",
     "docs/i18n/*/auto-menu.md",
     "docs/i18n/*/auto-navigation.md",
-    "docs/i18n/*/errors.md"
+    "docs/i18n/*/errors.md",
+    "docs/devtools.md",
+    "docs/i18n/zh-CN/devtools.md"
   ],
   "exports": {
     ".": {
@@ -46,15 +48,15 @@
     "**/*.css"
   ],
   "scripts": {
-    "dev": "vite --config vite.demo.config.ts",
+    "dev": "pnpm build:devtools && vite --config vite.demo.config.ts",
     "build": "vite build && tsc -p tsconfig.build.json && node scripts/finalize-build.mjs",
-    "build:demo": "vite build --config vite.demo.config.ts",
+    "build:demo": "pnpm build:devtools && vite build --config vite.demo.config.ts",
     "demo:build": "pnpm build && pnpm prepare:test-project && pnpm build:demo",
     "demo:screenshot": "node scripts/update-demo-screenshot.mjs",
     "demo:update": "node scripts/update-demo.mjs",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "pnpm build:devtools && tsc --noEmit",
     "lint": "eslint src",
     "check:public": "node scripts/check-public-source.mjs",
     "check:docs": "node scripts/check-docs-i18n.mjs",
@@ -62,7 +64,10 @@
     "prepare:test-project": "node scripts/prepare-test-project.mjs",
     "format": "prettier --write src tests test-project/src test-project/tests *.ts",
     "prepack": "pnpm build",
-    "prepublishOnly": "pnpm typecheck && pnpm lint && pnpm test"
+    "prepublishOnly": "pnpm typecheck && pnpm lint && pnpm test",
+    "build:devtools": "pnpm --dir packages/devtools build",
+    "dev:agent": "pnpm build:devtools && RAC_AGENT=1 vite --config vite.demo.config.ts",
+    "rac": "node packages/devtools/dist/cli.js"
   },
   "peerDependencies": {
     "react": ">=19.0.0 <20",
@@ -104,7 +109,8 @@
     "react-dom": ">=19.0.0 <20",
     "typescript": "^7.0.2",
     "vite": "^8.3.1",
-    "vitest": "^5.0.2"
+    "vitest": "^5.0.2",
+    "@zeroman.yang/react-auto-components-devtools": "workspace:*"
   },
   "optionalDependencies": {
     "exceljs": "^4.4.0"

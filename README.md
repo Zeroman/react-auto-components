@@ -12,7 +12,7 @@ A standalone, schema-driven component library for React 19, covering forms, tabl
 
 ## Project status
 
-The current version is 0.5.0 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Built-in interface text defaults to English and can be translated through AutoConfigProvider.config.t.
+The current version is 0.5.3 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Built-in interface text defaults to English and can be translated through AutoConfigProvider.config.t.
 
 Agents: start at [llms.txt](llms.txt). It indexes the behavior docs, error codes, JSON registries, and Playwright ids.
 
@@ -339,3 +339,7 @@ AutoChat provides a lightweight conversation layout with streaming follow, histo
 `AutoNavigation` provides a declarative, tree-structured component navigation system. It separates location paths, parameters, access checks, and history synchronization, while enabling deep relative navigation (`./child`, `../sibling`), StrictMode-safe `AbortSignal` management, and seamless adapter integration with React Router, TanStack Router, Next.js, and static hash routes.
 
 [AutoNavigation API & Router Integration](docs/auto-navigation.md)
+
+## Agent developer tools
+
+Use the optional [`@zeroman.yang/react-auto-components-devtools`](docs/devtools.md) Vite plugin to let agents discover, inspect and operate one development page at a time. It is explicitly enabled with `RAC_AGENT=1`; production builds do not include the bridge.

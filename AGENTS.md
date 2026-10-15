@@ -38,5 +38,12 @@ are PAUSED and FROZEN.**
   text is a locked contract in `tests/contracts.test.tsx` and `docs/errors.md`.
 - `test-project` consumes the library via a packed tarball; run
   `pnpm prepare:test-project` after changing library `src/`.
-- Dev-time AI bridge endpoints live under `/__rac/*` (see
-  `test-project/src/racDevtools.ts`); CLI: `node test-project/scripts/nav-cli.mjs`.
+- Agent browser tooling: `packages/devtools` publishes as
+  `@zeroman.yang/react-auto-components-devtools`. Start with `pnpm dev:agent`,
+  then run `pnpm rac inspect` and `pnpm rac help --json`. With multiple pages,
+  choose by title/URL and pass `--page <pageId>` on every operation. Re-inspect
+  after reload; never switch pages or retry mutations implicitly.
+- `/__rac/*` endpoints require the server's discovery token. `.rac/` is private
+  and ignored. Ordinary dev, production builds and preview do not enable control.
+- Keep component and DevTools versions synchronized; test-project consumes both
+  packages as tarballs via `pnpm prepare:test-project`.

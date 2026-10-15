@@ -46,12 +46,14 @@ npm publish --access public --registry=https://registry.npmjs.org/
 
 Complete any verification requested by npm. After publishing, run `npm view <package-name> version` using the final name, then install and verify it in a fresh consumer project. Remove the first-release preparation notice from every README translation and add installation instructions after the first release succeeds.
 
-Update version and every CHANGELOG translation before each release. Do not try to overwrite a published version. Push a `v*` tag whose name matches `package.json`, for example `v0.2.0` when the version is `0.2.0`. That runs `.github/workflows/publish.yml` and publishes to npm.
+Update both package versions, the DevTools component peer dependency, and the English + active-locale CHANGELOGs before each release. Paused locales remain frozen; do not regenerate their snapshot as part of a release. Do not try to overwrite a published version. Push a `v*` tag whose name matches `package.json`, for example `v0.2.0` when the version is `0.2.0`. That runs `.github/workflows/publish.yml` and publishes to npm.
 
 ## Automated releases
 
 [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) binds `@zeroman.yang/react-auto-components` to GitHub repository `Zeroman/react-auto-components` and workflow file `publish.yml`. The workflow uses a GitHub-hosted runner and OIDC `id-token: write`, without a long-lived npm token. It requires Node >=22.14.0 and npm CLI >=11.5.1. The tag, `package.json` version, and tested commit must match.
 
-The tag-triggered workflow first checks whether the tagged commit already passed CI on main (the release script pushes them together). If that verdict is green, publishing proceeds without re-running the matrix — only the tag/version match and `npm publish` run. If the verdict is missing, still running after 20 minutes, or red, the full verification matrix re-runs on the tag before publishing. A failed gate or verification blocks publishing.
+The tag-triggered workflow first checks whether the tagged commit already passed CI on main (the release script pushes them together). If that verdict is green, publishing proceeds without re-running the matrix — the tag/version match and the two-package publishing script run. If the verdict is missing, still running after 20 minutes, or red, the full verification matrix re-runs on the tag before publishing. A failed gate or verification blocks publishing.
+
+`scripts/publish-packages.mjs` publishes the component package first and DevTools second, skipping versions already present on npm so a partially completed release can be retried. Each package needs its own npm publishing authorization or Trusted Publisher; the component package’s configuration does not authorize the new DevTools package. `./run.sh release` updates both versions and only the active locales.
 
 GitHub Actions CI installs from the lockfile, checks types, runs unit tests, builds the real tarball consumer, and runs Chromium tests. Branch protection can require CI before merging; configure it as maintenance needs evolve with external contributions.
