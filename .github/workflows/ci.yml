@@ -6,10 +6,11 @@ on:
   pull_request:
   workflow_dispatch:
     inputs:
-      full_browser_matrix:
-        description: Run Chromium, Firefox and WebKit for release verification
-        type: boolean
-        default: true
+      browser_project:
+        description: Browser engine to verify (all runs the release matrix)
+        type: choice
+        default: all
+        options: [all, chromium, firefox, webkit]
 
 permissions:
   contents: read
@@ -22,6 +23,8 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      RAC_E2E_PROJECT: ${{ inputs.browser_project || 'chromium' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -36,15 +39,19 @@ jobs:
       - run: pnpm test
       - run: pnpm prepare:test-project
       - run: pnpm --dir test-project build
-      - if: inputs.full_browser_matrix != true
-        run: pnpm exec playwright install --with-deps chromium
-      - if: inputs.full_browser_matrix == true
-        run: pnpm exec playwright install --with-deps
-      # Normal pushes/PRs use Chromium; manual release verification uses all engines.
-      - if: inputs.full_browser_matrix != true
-        run: pnpm test:e2e --project=chromium
-      - if: inputs.full_browser_matrix == true
-        run: pnpm test:e2e
+      - run: |
+          if [ "$RAC_E2E_PROJECT" = all ]; then
+            pnpm exec playwright install --with-deps
+          else
+            pnpm exec playwright install --with-deps "$RAC_E2E_PROJECT"
+          fi
+      # Pushes/PRs use Chromium; manual runs default to all and can verify one engine.
+      - run: |
+          if [ "$RAC_E2E_PROJECT" = all ]; then
+            pnpm test:e2e
+          else
+            pnpm test:e2e --project="$RAC_E2E_PROJECT"
+          fi
       - name: Upload browser failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4

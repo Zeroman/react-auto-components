@@ -403,6 +403,12 @@ test("commands never fall back after the chosen page closes", async ({
   page,
   request,
 }) => {
+  // The offline marker usually arrives via the client's pagehide beacon, but
+  // browsers may drop it (Firefox does on programmatic close). The registry's
+  // supported fallback is natural lease expiry: the plugin builds its
+  // registry with staleMs 60000 and list() expires the stale entry lazily.
+  // Wait out the full lease; beacons that do deliver end the wait early.
+  test.setTimeout(90000);
   await page.goto("/");
   const chosen = await bridgePageId(page);
   const otherTab = await newConnectedPage(page);
@@ -412,10 +418,15 @@ test("commands never fall back after the chosen page closes", async ({
     await page.close();
 
     await expect
-      .poll(async () => {
-        const record = (await pages(request)).find((p) => p.pageId === chosen);
-        return record?.status;
-      })
+      .poll(
+        async () => {
+          const record = (await pages(request)).find(
+            (p) => p.pageId === chosen,
+          );
+          return record?.status;
+        },
+        { timeout: 70000, intervals: [1000, 5000] },
+      )
       .toBe("offline");
 
     // The closed page is rejected; nothing is rerouted to the survivor.
