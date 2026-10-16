@@ -44,7 +44,7 @@ export function DefaultTip({
   const ref = useMergeRefs([refs.setReference, children.props.ref]);
   useEffect(() => {
     if (!open) return;
-    const view = refs.domReference.current?.ownerDocument.defaultView;
+    const view = context.elements.domReference?.ownerDocument.defaultView;
     if (!view) return;
     const dismiss = (event: KeyboardEvent) => {
       if (
@@ -69,7 +69,7 @@ export function DefaultTip({
       if (index >= 0) stack.splice(index, 1);
       if (!stack.length) dismissals.delete(view);
     };
-  }, [open, refs.domReference]);
+  }, [open, context.elements.domReference]);
   const triggerProps = interactions.getReferenceProps(children.props);
   const describedBy =
     [
@@ -92,7 +92,7 @@ export function DefaultTip({
       {open && (
         <FloatingPortal
           root={
-            refs.domReference.current?.closest<HTMLElement>(
+            context.elements.domReference?.closest<HTMLElement>(
               '[role="dialog"]',
             ) ?? undefined
           }

@@ -8,55 +8,17 @@ on:
 permissions:
   contents: read
   id-token: write
-  checks: read
 
 concurrency:
   group: publish-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  # The release script pushes main and the tag together, so the tagged commit
-  # has almost always already passed the full CI matrix. Gate on that verdict
-  # instead of re-running every check behind the tag.
-  gate:
-    if: github.repository == 'Zeroman/react-auto-components'
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    outputs:
-      verified: ${{ steps.verdict.outputs.verified }}
-    steps:
-      - name: Wait for the tagged commit's CI verdict
-        id: verdict
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SHA: ${{ github.sha }}
-        run: |
-          deadline=$((SECONDS + 1200))
-          while [ $SECONDS -lt $deadline ]; do
-            runs=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${SHA}/check-runs" \
-              --jq '[.check_runs[] | select(.name == "verify")]')
-            if [ "$(echo "$runs" | jq length)" -gt 0 ]; then
-              status=$(echo "$runs" | jq -r '.[0].status')
-              conclusion=$(echo "$runs" | jq -r '.[0].conclusion')
-              echo "ci verify job: status=$status conclusion=$conclusion"
-              if [ "$status" = "completed" ]; then
-                if [ "$conclusion" = "success" ]; then
-                  echo "verified=true" >> "$GITHUB_OUTPUT"
-                  exit 0
-                fi
-                echo "CI on the tagged commit ended with $conclusion; running the full verification here."
-                echo "verified=false" >> "$GITHUB_OUTPUT"
-                exit 0
-              fi
-            fi
-            sleep 30
-          done
-          echo "CI on the tagged commit did not finish in 20 minutes; running the full verification here."
-          echo "verified=false" >> "$GITHUB_OUTPUT"
-
+  # ci.yml's push-to-main job runs a chromium-only matrix, so a successful
+  # "verify" check-run on the tagged commit does not prove the Firefox/WebKit
+  # release matrix. The tag must always run its own full verification.
   verify:
-    needs: gate
-    if: needs.gate.outputs.verified != 'true'
+    if: github.repository == 'Zeroman/react-auto-components'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
@@ -89,11 +51,8 @@ jobs:
           retention-days: 7
 
   publish:
-    needs: [gate, verify]
-    if: >-
-      !cancelled() &&
-      needs.gate.result == 'success' &&
-      (needs.verify.result == 'success' || needs.verify.result == 'skipped')
+    needs: verify
+    if: needs.verify.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

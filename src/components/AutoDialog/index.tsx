@@ -74,6 +74,18 @@ interface DialogService {
   close(id: string): Promise<boolean>;
 }
 const Context = createContext<DialogService | null>(null);
+/** `crypto.randomUUID` is only available on secure contexts (HTTPS/localhost). */
+function nextDialogId(): string {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
+    return crypto.randomUUID();
+  }
+  return `rac-dialog-${Date.now().toString(36)}-${Math.random()
+    .toString(36)
+    .slice(2)}`;
+}
 function createStore() {
   let entries: Entry[] = [];
   const listeners = new Set<() => void>();
@@ -103,7 +115,7 @@ export function AutoDialogProvider({ children }: { children: ReactNode }) {
   const entries = useSyncExternalStore(store.subscribe, store.get, store.get);
   const [service]: [DialogService, unknown] = useState<DialogService>(() => ({
     open<T extends object>(options: DialogOptions<T>) {
-      const id = crypto.randomUUID();
+      const id = nextDialogId();
       store.add({
         id,
         render: (remove, register) => (

@@ -22,11 +22,63 @@ export function resolveHidden<T>(
     ? (hidden as (c?: T) => boolean)(context)
     : !!hidden;
 }
+const isPlainObject = (v: object): boolean => {
+  const proto: unknown = Object.getPrototypeOf(v);
+  return proto === Object.prototype || proto === null;
+};
+/**
+ * Clone mutable data (plain objects, arrays, Dates, Maps and Sets) so form state never
+ * aliases caller-owned values. Cycles are preserved. Files/Blobs, functions,
+ * and class instances keep their identity on purpose: uploads must stay
+ * reference-stable and opaque prototypes are not safely cloneable.
+ */
+export function cloneValue<T>(value: T, seen = new Map<object, unknown>()): T {
+  if (!value || typeof value !== "object") return value;
+  if (seen.has(value)) return seen.get(value) as T;
+  if (value instanceof Date) {
+    const copy = new Date(value.getTime());
+    seen.set(value, copy);
+    return copy as T;
+  }
+  if (value instanceof Map) {
+    const copy = new Map();
+    seen.set(value, copy);
+    for (const [key, entry] of value)
+      copy.set(cloneValue(key, seen), cloneValue(entry, seen));
+    return copy as T;
+  }
+  if (value instanceof Set) {
+    const copy = new Set();
+    seen.set(value, copy);
+    for (const entry of value) copy.add(cloneValue(entry, seen));
+    return copy as T;
+  }
+  if (value instanceof RegExp) {
+    const copy = new RegExp(value.source, value.flags);
+    copy.lastIndex = value.lastIndex;
+    return copy as T;
+  }
+  if (!Array.isArray(value) && !isPlainObject(value)) return value;
+  const copy = Array.isArray(value)
+    ? new Array(value.length)
+    : Object.create(Object.getPrototypeOf(value));
+  seen.set(value, copy);
+  // Define own data properties: assigning __proto__ would change the prototype.
+  // Object.entries also preserves sparse-array indices instead of shifting them.
+  for (const [key, entry] of Object.entries(value))
+    Object.defineProperty(copy, key, {
+      value: cloneValue(entry, seen),
+      enumerable: true,
+      writable: true,
+      configurable: true,
+    });
+  return copy as T;
+}
 export function defaults<T extends object>(
   fields: readonly { name?: string; defaultValue?: unknown }[],
   initial: Partial<T> = {},
 ): T {
-  const out: Record<string, unknown> = {};
+  const entries = new Map<string, unknown>();
   const seen = new Set<string>();
   for (const f of fields) {
     if (!f.name) continue;
@@ -39,9 +91,12 @@ export function defaults<T extends object>(
       );
     seen.add(f.name);
     if (f.defaultValue !== undefined)
-      out[f.name] = structuredClone(f.defaultValue);
+      entries.set(f.name, cloneValue(f.defaultValue));
   }
-  return { ...out, ...initial } as T;
+  // Explicit `undefined` in `initial` must not erase a field default.
+  for (const [k, v] of Object.entries(initial))
+    if (v !== undefined) entries.set(k, cloneValue(v));
+  return Object.fromEntries(entries) as T;
 }
 export function normalizeOptions(
   options: readonly Option[],
@@ -84,22 +139,61 @@ export function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 export function equal(a: unknown, b: unknown): boolean {
-  if (Object.is(a, b)) return true;
-  if (a instanceof Date && b instanceof Date)
-    return a.getTime() === b.getTime();
-  if (!a || !b || typeof a !== "object" || typeof b !== "object") return false;
-  if (Array.isArray(a) !== Array.isArray(b)) return false;
-  const ak = Object.keys(a);
-  const bk = Object.keys(b);
-  return (
-    ak.length === bk.length &&
-    ak.every(
-      (k) =>
-        Object.hasOwn(b, k) &&
-        equal(
-          (a as Record<string, unknown>)[k],
-          (b as Record<string, unknown>)[k],
-        ),
+  const pairs = new WeakMap<object, WeakSet<object>>();
+  function compare(left: unknown, right: unknown): boolean {
+    if (Object.is(left, right)) return true;
+    if (
+      !left ||
+      !right ||
+      typeof left !== "object" ||
+      typeof right !== "object"
     )
-  );
+      return false;
+    if (Object.getPrototypeOf(left) !== Object.getPrototypeOf(right))
+      return false;
+    if (left instanceof Date && right instanceof Date)
+      return Object.is(left.getTime(), right.getTime());
+    if (left instanceof Blob || right instanceof Blob) return false;
+    if (left instanceof RegExp && right instanceof RegExp)
+      return (
+        left.source === right.source &&
+        left.flags === right.flags &&
+        left.lastIndex === right.lastIndex
+      );
+    if (
+      Array.isArray(left) &&
+      Array.isArray(right) &&
+      left.length !== right.length
+    )
+      return false;
+    if (pairs.get(left)?.has(right)) return true;
+    const matches = pairs.get(left) ?? new WeakSet<object>();
+    matches.add(right);
+    pairs.set(left, matches);
+    if (left instanceof Map && right instanceof Map)
+      return (
+        left.size === right.size &&
+        [...left].every(
+          ([key, value]) => right.has(key) && compare(value, right.get(key)),
+        )
+      );
+    if (left instanceof Set && right instanceof Set)
+      return (
+        left.size === right.size && [...left].every((value) => right.has(value))
+      );
+    if (!Array.isArray(left) && !isPlainObject(left)) return false;
+    const keys = Object.keys(left);
+    return (
+      keys.length === Object.keys(right).length &&
+      keys.every(
+        (key) =>
+          Object.hasOwn(right, key) &&
+          compare(
+            (left as Record<string, unknown>)[key],
+            (right as Record<string, unknown>)[key],
+          ),
+      )
+    );
+  }
+  return compare(a, b);
 }

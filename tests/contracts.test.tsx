@@ -1,3 +1,5 @@
+import { limitResult } from "../packages/devtools/src/client";
+
 import { test, expect, vi, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { createRef } from "react";
@@ -123,6 +125,9 @@ test("match between warns when the value is a scalar", () => {
   const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
   buildQuery({ amount: 5 }, [{ name: "amount", search: { match: "between" } }]);
   expect(warn.mock.calls.flat().join("\n")).toContain("RAC-FIELD-BETWEEN");
+  expect(warn.mock.calls.flat().join("\n")).toContain(
+    "Fix: Store [from, to] on this field. Use null for an open bound. Scalar values do not match rows and serializeRsql rejects them.",
+  );
 });
 
 test("invalid AutoFocus selectors throw a synchronous RacError with the repair contract", () => {
@@ -139,4 +144,51 @@ test("invalid AutoFocus selectors throw a synchronous RacError with the repair c
   } finally {
     error.mockRestore();
   }
+});
+
+test("malformed between values name the repair instead of throwing an iterable error", () => {
+  expect(() =>
+    serializeRsql({
+      kind: "condition",
+      field: "amount",
+      operator: "between",
+      value: 5,
+    }),
+  ).toThrow(
+    new RacError(
+      "serializeRsql",
+      "RAC-QUERY-BETWEEN",
+      'field "amount" has match="between" with number; a between condition needs a two-item [from, to] array.',
+      "Store [from, to] (either side may be null for an open range) on this field, or clear the value so the condition is omitted from the query.",
+    ),
+  );
+});
+
+test("oversized DevTools output states that the action already ran", () => {
+  expect(
+    limitResult({ id: "result", ok: true, data: "x".repeat(524288) }),
+  ).toEqual({
+    id: "result",
+    ok: false,
+    data: undefined,
+    error: {
+      code: "RAC-DEVTOOLS-RESULT",
+      problem:
+        "The command result exceeded 524288 UTF-8 bytes and was not delivered; the action itself already ran.",
+      fix: "Narrow the command output (fewer elements, a smaller eval return) and inspect again.",
+    },
+  });
+});
+
+test("unserializable DevTools output reports a safe repair without replaying", () => {
+  expect(limitResult({ id: "result", ok: true, data: 1n })).toEqual({
+    id: "result",
+    ok: false,
+    error: {
+      code: "RAC-DEVTOOLS-RESULT",
+      problem:
+        "The command result could not be serialized as JSON; the action itself already ran.",
+      fix: "Return JSON-compatible data without cycles or BigInt values, and inspect again before retrying a mutation.",
+    },
+  });
 });

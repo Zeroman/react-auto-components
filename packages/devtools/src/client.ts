@@ -1,9 +1,155 @@
 import { createPageDriver } from "./page.js";
 import { failure } from "./errors.js";
-import { PREFIX, type PageCommand } from "./protocol.js";
+import { PREFIX, type PageCommand, type CommandResult } from "./protocol.js";
 
 declare global {
   var __racPageId: string | undefined;
+}
+
+/** Largest result envelope the client will POST, in UTF-8 bytes; the server accepts up to 2 MiB. */
+const RESULT_LIMIT = 512 * 1024;
+const RESULT_PROBLEM_LIMIT = 2000;
+
+/**
+ * One bounded, cycle-safe console value. A SINGLE traversal with shared
+ * state covers root values, Error causes and everything nested: depth ≤4,
+ * a TOTAL budget of 50 nodes/property reads, ≤500 chars per string, ≤4000
+ * chars of output. Cycles are tracked across the whole traversal (including
+ * Error.cause). Property values are read lazily through for-in with the
+ * budget checked per key — Object.entries is never called eagerly — and
+ * hostile getters are caught. Can never throw.
+ */
+export function formatConsoleValue(value: unknown): string {
+  const MAX_CHARS = 4000;
+  const MAX_DEPTH = 4;
+  const MAX_NODES = 50;
+  const MAX_STRING = 500;
+  const seen = new WeakSet<object>();
+  let budget = MAX_NODES;
+  const short = (text: string) =>
+    text.length > MAX_STRING ? `${text.slice(0, MAX_STRING)}…` : text;
+  const read = (object: object, key: PropertyKey): unknown => {
+    try {
+      return (object as Record<PropertyKey, unknown>)[key];
+    } catch {
+      return "[Getter threw]";
+    }
+  };
+  const render = (item: unknown, depth: number): unknown => {
+    if (budget <= 0) return "[Truncated]";
+    budget--;
+    if (typeof item === "string") return short(item);
+    if (typeof item === "bigint") return short(`${item}n`);
+    if (typeof item === "function") return "[Function]";
+    if (item === null || typeof item !== "object") return item;
+    if (seen.has(item)) return "[Circular]";
+    if (depth >= MAX_DEPTH) return "[Truncated]";
+    seen.add(item);
+    if (Array.isArray(item)) {
+      const list: unknown[] = [];
+      for (let index = 0; index < item.length && budget > 0; index++)
+        list.push(render(read(item, index), depth + 1));
+      return list;
+    }
+    const node: Record<string, unknown> = Object.create(null);
+    if (item instanceof Error) {
+      for (const key of ["name", "message", "stack", "cause"]) {
+        if (budget <= 0) break;
+        const entry = read(item, key);
+        node[key] = render(entry, depth + 1);
+      }
+    } else {
+      // Do not eagerly read all values before slicing: getters may be costly.
+      for (const key in item) {
+        if (budget <= 0) break;
+        if (!Object.hasOwn(item, key)) continue;
+        node[short(key)] = render(read(item, key), depth + 1);
+      }
+    }
+    return node;
+  };
+  try {
+    const rendered = render(value, 0);
+    if (value instanceof Error) {
+      const error = rendered as Record<string, unknown>;
+      const base = error.stack ?? `${error.name}: ${error.message}`;
+      const cause =
+        error.cause === undefined
+          ? ""
+          : ` [cause: ${JSON.stringify(error.cause)}]`;
+      return `${base}${cause}`.slice(0, MAX_CHARS);
+    }
+    if (typeof rendered === "string") return rendered;
+    return (JSON.stringify(rendered) ?? safeText(value)).slice(0, MAX_CHARS);
+  } catch {
+    return safeText(value).slice(0, MAX_CHARS);
+  }
+}
+
+/** String() that cannot throw. */
+function safeText(value: unknown): string {
+  try {
+    return String(value);
+  } catch {
+    return "[unprintable value]";
+  }
+}
+
+/**
+ * Guard before delivering a command result: an envelope over the UTF-8 byte
+ * bound — success OR failure — is replaced by a small structured one instead
+ * of tearing the page's connection down. The action already executed exactly
+ * once and is never retried.
+ */
+export function limitResult(result: CommandResult): CommandResult {
+  let bytes = 0;
+  let serialized: string;
+  try {
+    // TextEncoder encodes UTF-8 in every runtime this client ships to.
+    serialized = JSON.stringify(result);
+    bytes = new TextEncoder().encode(serialized).length;
+  } catch {
+    return {
+      id: result.id,
+      ok: false,
+      error: {
+        code: "RAC-DEVTOOLS-RESULT",
+        problem:
+          "The command result could not be serialized as JSON; the action itself already ran.",
+        fix: "Return JSON-compatible data without cycles or BigInt values, and inspect again before retrying a mutation.",
+      },
+    };
+  }
+  // Freeze the wire value so getters/toJSON are not executed again during
+  // delivery or a transport retry. Only the bounded JSON is parsed.
+  if (bytes <= RESULT_LIMIT) return JSON.parse(serialized) as CommandResult;
+  if (result.ok)
+    return {
+      ...result,
+      ok: false,
+      data: undefined,
+      error: {
+        code: "RAC-DEVTOOLS-RESULT",
+        problem: `The command result exceeded ${RESULT_LIMIT} UTF-8 bytes and was not delivered; the action itself already ran.`,
+        fix: "Narrow the command output (fewer elements, a smaller eval return) and inspect again.",
+      },
+    };
+  // Failing results keep their code and truncated raw problem/fix detail.
+  const error = result.error;
+  return {
+    ...result,
+    error: {
+      code: (error?.code ?? "RAC-DEVTOOLS-RESULT").slice(
+        0,
+        RESULT_PROBLEM_LIMIT,
+      ),
+      problem: (error?.problem ?? "").slice(0, RESULT_PROBLEM_LIMIT),
+      fix: (error?.fix ?? "Run rac inspect and use a supported action.").slice(
+        0,
+        RESULT_PROBLEM_LIMIT,
+      ),
+    },
+  };
 }
 export async function start(config: { token: string; allowEval: boolean }) {
   const key = "rac:page-id";
@@ -82,13 +228,8 @@ export async function start(config: { token: string; allowEval: boolean }) {
     logs.push({
       level,
       text: values
-        .map((value) => {
-          try {
-            return typeof value === "string" ? value : JSON.stringify(value);
-          } catch {
-            return String(value);
-          }
-        })
+        .slice(0, 10)
+        .map(formatConsoleValue)
         .join(" ")
         .slice(0, 4000),
       time: new Date().toISOString(),
@@ -157,18 +298,31 @@ export async function start(config: { token: string; allowEval: boolean }) {
         url: location.href,
       });
       if (!command) continue;
-      let result: Record<string, unknown>;
+      let result: CommandResult;
       try {
         const data =
           command.cmd === "console"
             ? logs.slice(-Math.min(Number(command.payload.limit ?? 30), 200))
             : await driver.execute(command.cmd, command.payload);
         result = { id: command.id, ok: true, data };
-        // Verify serializability before delivery; do not repeat the action on failure.
-        JSON.stringify(result);
       } catch (error) {
-        result = { id: command.id, ok: false, error: failure(error) };
+        // The wire carries the raw problem detail; the server formats the
+        // RacError message exactly once.
+        const report = failure(error);
+        result = {
+          id: command.id,
+          ok: false,
+          error: {
+            code: report.code,
+            problem: report.problem,
+            fix: report.fix,
+          },
+        };
       }
+      // Verify serializability and bound the envelope — success or failure —
+      // before delivery; the action itself is never repeated.
+      result = limitResult(result);
+      JSON.stringify(result);
       await request("result", { ...identity, result });
     }
   } catch (error) {

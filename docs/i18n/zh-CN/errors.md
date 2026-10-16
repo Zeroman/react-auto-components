@@ -105,6 +105,12 @@ xlsx 适配器加载不到 `exceljs`。它是 `optionalDependency`，普通安�
 
 修复：分组是 `{ kind: "group", operator: "and" | "or", children }`。条件是 `{ kind: "condition", field, operator, value }`，`field` 必须是列键。`between` 的值是 `[from, to]`。`in` 的值是数组。
 
+## RAC-QUERY-BETWEEN
+
+`serializeRsql` 收到的 `between` 条件值不是两项数组。
+
+修复：使用 `[from, to]`，任一端可为 null 表示单边范围；清空值可省略该条件。
+
 ## RAC-QUERY-FIELD
 
 `serializeRsql` 拒绝了不符合 `/^[\w.]+$/` 的字段名。
@@ -212,6 +218,14 @@ Fix: 安装 Playwright 和 Chromium；无显示环境使用 headless，并检查
 目标页面没有截图连接。
 
 Fix: 使用托管页面，或为该页面配置 browserEndpoint；不使用其他页面替代。
+
+## RAC-DEVTOOLS-RESULT
+
+命令结果超过 524288 个 UTF-8 字节（512 KiB）。动作已经执行，但结果未交付；页面仍保持连接。
+
+修复：缩小命令输出（减少元素或缩小 eval 返回值），重新检查页面；不要直接重复修改操作。
+
+结果无法序列化为 JSON（例如循环引用或 BigInt）时也使用此错误码，页面保持连接。应返回 JSON 兼容的数据；只执行一次序列化，传输重试不会重复执行 getter 或 `toJSON`。
 
 ## RAC-DEVTOOLS-COMMAND
 

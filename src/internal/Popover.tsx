@@ -95,7 +95,13 @@ export function Popover({
         })}
       </AutoTip>
       {open && (
-        <FloatingPortal>
+        <FloatingPortal
+          root={
+            context.elements.domReference?.closest<HTMLElement>(
+              '[role="dialog"]',
+            ) ?? undefined
+          }
+        >
           <FloatingFocusManager context={context} modal={false} returnFocus>
             <div
               ref={refs.setFloating}

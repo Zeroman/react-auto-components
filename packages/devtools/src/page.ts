@@ -52,8 +52,18 @@ export function createPageDriver(allowEval = false) {
       TEXTAREA: "textbox",
       A: "link",
       FORM: "form",
-      INPUT:
-        (el as HTMLInputElement).type === "checkbox" ? "checkbox" : "textbox",
+      INPUT: (() => {
+        const type = (el as HTMLInputElement).type;
+        if (type === "checkbox") return "checkbox";
+        if (type === "radio") return "radio";
+        if (type === "number") return "spinbutton";
+        if (type === "range") return "slider";
+        if (type === "search") return "searchbox";
+        // Button-like inputs act as buttons, not textboxes.
+        if (["button", "submit", "reset", "image"].includes(type))
+          return "button";
+        return "textbox";
+      })(),
     }[el.tagName] ??
     el.tagName.toLowerCase();
   function lookup(ref: unknown) {
@@ -134,7 +144,7 @@ export function createPageDriver(allowEval = false) {
   }
   function inspect() {
     refs = new Map();
-    const components = Object.entries(componentSelectors).flatMap(
+    const matched = Object.entries(componentSelectors).flatMap(
       ([type, selector]) =>
         Array.from(document.querySelectorAll<HTMLElement>(selector))
           .filter(visible)
@@ -153,41 +163,71 @@ export function createPageDriver(allowEval = false) {
             };
           }),
     );
-    const elements = Array.from(
+    // AutoSearch renders its own inline `<form class="auto-form">`; that
+    // internal form is not an AutoForm instance. Genuine nested components
+    // (e.g. an AutoForm inside AutoTabs) keep their own group, and elements
+    // attribute to the innermost containing component.
+    const ghostInternal = ".auto-search > .auto-form";
+    const components = matched.filter(
+      (c) => !(c.type === "AutoForm" && c.el.matches(ghostInternal)),
+    );
+    const owner = (el: HTMLElement) => {
+      let best: (typeof components)[number] | undefined;
+      for (const candidate of components) {
+        if (!candidate.el.contains(el)) continue;
+        if (!best || best.el.contains(candidate.el)) best = candidate;
+      }
+      return best;
+    };
+    const interactiveAll = Array.from(
       document.querySelectorAll<HTMLElement>(interactive),
-    )
-      .filter(visible)
-      .slice(0, 300)
-      .map((el) => {
-        const ref = `${documentId}_e${++serial}`;
-        refs.set(ref, el);
-        const actions =
-          el instanceof HTMLFormElement
-            ? ["submit", "validate", "dom"]
-            : ["click", "dom", "wait"];
-        if (
-          el instanceof HTMLInputElement ||
-          el instanceof HTMLSelectElement ||
-          el instanceof HTMLTextAreaElement ||
-          el.isContentEditable
-        )
-          actions.push("fill");
-        const component = components.find((c) => c.el.contains(el));
-        return {
-          ...fieldState(el),
-          ref,
-          role: role(el),
-          name: label(el),
-          tag: el.tagName.toLowerCase(),
-          field: el.getAttribute("name") ?? undefined,
-          testid: el.getAttribute("data-testid") ?? undefined,
-          disabled: el.matches(':disabled,[aria-disabled="true"]'),
-          required: el.hasAttribute("required"),
-          actions,
-          component: component?.name,
-        };
-      });
+    );
+    const visibleInteractive = interactiveAll.filter(visible);
+    const elements = visibleInteractive.slice(0, 300).map((el) => {
+      const ref = `${documentId}_e${++serial}`;
+      refs.set(ref, el);
+      const actions =
+        el instanceof HTMLFormElement
+          ? ["submit", "validate", "dom"]
+          : ["click", "dom", "wait"];
+      // Advertise fill exactly where the fill implementation would act:
+      // editable values plus checkbox/radio state, not readonly, disabled or
+      // button-like inputs.
+      const fillable =
+        !el.matches(':disabled,[aria-disabled="true"]') &&
+        (el instanceof HTMLSelectElement ||
+          el.isContentEditable ||
+          (el instanceof HTMLTextAreaElement && !el.readOnly) ||
+          (el instanceof HTMLInputElement &&
+            !el.readOnly &&
+            !["file", "button", "submit", "reset", "image", "hidden"].includes(
+              el.type,
+            )));
+      if (fillable) actions.push("fill");
+      return {
+        ...fieldState(el),
+        ref,
+        role: role(el),
+        name: label(el),
+        tag: el.tagName.toLowerCase(),
+        field: el.getAttribute("name") ?? undefined,
+        testid: el.getAttribute("data-testid") ?? undefined,
+        disabled: el.matches(':disabled,[aria-disabled="true"]'),
+        required: el.hasAttribute("required"),
+        actions,
+        component: owner(el)?.name,
+      };
+    });
     const nav = adapters();
+    // Fields follow the same nearest-owner rule as `component` above: a
+    // nested component keeps its own fields instead of every ancestor
+    // listing all of its descendants.
+    const ownerRef = new Map<string, string>();
+    for (const element of elements) {
+      const el = refs.get(element.ref);
+      const ownerComponent = el && owner(el);
+      if (ownerComponent) ownerRef.set(element.ref, ownerComponent.ref);
+    }
     return {
       title: document.title,
       url: location.href,
@@ -199,15 +239,17 @@ export function createPageDriver(allowEval = false) {
       elements,
       components: components.map(({ el, ...component }) => ({
         ...component,
-        fields: elements
-          .filter((e) => refs.get(e.ref) && el.contains(refs.get(e.ref)!))
-          .map((e) => e.ref),
+        fields: [...ownerRef]
+          .filter(([, ref]) => ref === component.ref)
+          .map(([elementRef]) => elementRef),
       })),
       navigation:
         nav.length === 1
           ? { available: true, state: nav[0].getState() }
           : { available: false, providers: nav.length },
-      truncated: document.querySelectorAll(interactive).length > 300,
+      // Truncation counts what inspection could actually list: visible
+      // interactive elements, not hidden Tab/Dialog content.
+      truncated: visibleInteractive.length > 300,
     };
   }
   async function execute(

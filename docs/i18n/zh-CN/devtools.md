@@ -75,3 +75,5 @@ pnpm exec rac shot --page <pageId> --out .rac-shots/page.png
 组件库与 DevTools 在同一仓库维护，初期版本同步。同时更新两个包的版本及 DevTools 的组件 peer 依赖。`pnpm prepare:test-project` 打包两份产物并安装到测试项目，测试项目不使用工作区链接消费它们。
 
 发布工作流校验标签、验证打包消费，然后先发布组件库、再发布 DevTools。发布脚本查询已存在版本并跳过，使部分成功的发布能够续跑。预发布版本使用 npm 的 `next` 标签，稳定版本使用 `latest`。每个 npm 包需单独配置发布权限或 Trusted Publisher。本地实现和验证不会发布任何包。
+
+结果传输有大小限制：成功结果超过 512 KiB（UTF-8）时，客户端返回 `RAC-DEVTOOLS-RESULT`，不会断开页面连接。动作已经执行，绝不自动重放。错误详情和控制台记录会限长截断。结果接口最大接受 2 MiB；命令输入仍限制为 64 KiB。

@@ -124,8 +124,11 @@ export function TableHeader<T extends object>({
   onSelectAll,
   onReorder,
   reorderable = true,
+  pin,
 }: TipConfig & {
   columns: readonly AutoColumn<T>[];
+  /** Effective pins (settings layout). Falls back to the static column pin. */
+  pin?: Record<string, "left" | "right" | null | undefined>;
   rows: readonly T[];
   sort: TableSort[];
   filter: QueryNode;
@@ -146,6 +149,10 @@ export function TableHeader<T extends object>({
 }) {
   const tr = useAutoText();
   const checkRef = useRef<HTMLInputElement>(null);
+  // Settings layout stores explicit `null` for "not pinned"; absent keys fall
+  // back to the static column pin.
+  const pinOf = (column: AutoColumn<T>) =>
+    pin && column.key in pin ? (pin[column.key] ?? null) : (column.pin ?? null);
   const [draggingKey, setDraggingKey] = useState<string | null>(null);
   const [dragOverKey, setDragOverKey] = useState<string | null>(null);
   const [dropPosition, setDropPosition] = useState<"before" | "after">(
@@ -226,10 +233,7 @@ export function TableHeader<T extends object>({
                       const draggingCol = columns.find(
                         (col) => col.key === draggingKey,
                       );
-                      if (
-                        draggingCol &&
-                        (draggingCol.pin ?? null) !== (c.pin ?? null)
-                      ) {
+                      if (draggingCol && pinOf(draggingCol) !== pinOf(c)) {
                         return;
                       }
                       e.preventDefault();
@@ -267,10 +271,7 @@ export function TableHeader<T extends object>({
                         const draggingCol = columns.find(
                           (col) => col.key === fromKey,
                         );
-                        if (
-                          !draggingCol ||
-                          (draggingCol.pin ?? null) === (c.pin ?? null)
-                        ) {
+                        if (!draggingCol || pinOf(draggingCol) === pinOf(c)) {
                           const rect = e.currentTarget.getBoundingClientRect();
                           const pos =
                             e.clientX < rect.left + rect.width / 2

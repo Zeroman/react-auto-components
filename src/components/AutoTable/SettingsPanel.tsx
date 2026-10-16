@@ -2,6 +2,7 @@ import { useAutoText } from "../../core/i18n";
 import { devWarn } from "../../core/errors";
 import { useState } from "react";
 import { FilterEditor } from "./FilterEditor";
+import { localId } from "./localId";
 import {
   active,
   replaceActive,
@@ -89,7 +90,7 @@ export function SettingsPanel<T extends object>({
           type="button"
           disabled={!name.trim()}
           onClick={() => {
-            const id = crypto.randomUUID();
+            const id = localId();
             changeGroup({
               ...group,
               activeId: id,

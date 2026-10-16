@@ -165,6 +165,24 @@ export class PageRegistry {
     });
   }
   poll(pageId: string, connectionId: string): Promise<PageCommand | null> {
+    return this.beginPoll(pageId, connectionId).promise;
+  }
+  /**
+   * Park a long poll for this connection. The returned `cancel` is bound to
+   * THIS waiter alone: when the HTTP response is torn down, only the identical
+   * waiter is freed — an older response closing after a newer poll parked (or
+   * after the waiter already resolved) must not disturb the current waiter.
+   * Cancellation never touches the page lease: commands stay queued for the
+   * client's retry poll, so a transient abort neither drops nor replays work
+   * and never marks the page offline.
+   */
+  beginPoll(
+    pageId: string,
+    connectionId: string,
+  ): {
+    promise: Promise<PageCommand | null>;
+    cancel: () => void;
+  } {
     const page = this.current(pageId, connectionId);
     if (page.poll) {
       clearTimeout(page.poll.timer);
@@ -172,17 +190,31 @@ export class PageRegistry {
       page.poll = undefined;
     }
     const queued = page.queue.shift();
-    if (queued) return Promise.resolve(queued);
-    return new Promise((resolve) => {
-      const timer = setTimeout(
-        () => {
-          page.poll = undefined;
-          resolve(null);
-        },
-        Math.min(20000, this.staleMs / 2),
-      );
-      page.poll = { resolve, timer };
+    if (queued) return { promise: Promise.resolve(queued), cancel: () => {} };
+    const waiter: NonNullable<Entry["poll"]> = {} as never;
+    waiter.resolve = () => {};
+    waiter.timer = setTimeout(
+      () => {
+        if (page.poll === waiter) page.poll = undefined;
+        waiter.resolve(null);
+      },
+      Math.min(20000, this.staleMs / 2),
+    );
+    const promise = new Promise<PageCommand | null>((resolve) => {
+      waiter.resolve = (value) => {
+        clearTimeout(waiter.timer);
+        resolve(value);
+      };
+      page.poll = waiter;
     });
+    return {
+      promise,
+      cancel: () => {
+        if (page.poll !== waiter || page.connectionId !== connectionId) return;
+        page.poll = undefined;
+        waiter.resolve(null);
+      },
+    };
   }
   result(pageId: string, connectionId: string, result: CommandResult) {
     const entry = this.pending.get(result.id);
@@ -200,7 +232,11 @@ export class PageRegistry {
       entry.reject(
         new RacError(
           result.error?.code ?? "RAC-DEVTOOLS-COMMAND",
-          result.error?.message ?? "The page rejected the command.",
+          // The page reports the raw problem detail; constructing the RacError
+          // here adds the header/Fix/Code/Docs framing exactly once.
+          result.error?.problem ??
+            result.error?.message ??
+            "The page rejected the command.",
           result.error?.fix ?? "Run rac inspect and use a supported action.",
         ),
       );

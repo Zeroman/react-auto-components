@@ -3,6 +3,7 @@ import {
   useId,
   useMemo,
   useRef,
+  useState,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
@@ -83,7 +84,9 @@ export function useAutoRoute(config?: AutoRouteConfig): AutoRouteContextValue {
   const contextParentPath = useEnclosingRoutePath();
   const isContextActive = useEnclosingRouteActive();
   const regId = useId();
-  const ticketId = useRef(++ticketSerial).current;
+  // Stable per component instance; useState avoids both the non-lazy global
+  // increment of useRef(++serial) and reading a ref during render.
+  const ticketId = useState(() => ++ticketSerial)[0];
 
   const configRef = useRef(config);
   configRef.current = config;
@@ -217,7 +220,10 @@ export function useAutoRoute(config?: AutoRouteConfig): AutoRouteContextValue {
       roles: current?.roles,
       permissions: current?.permissions,
     });
-  }, [nav, hasConfig, regId, signature, services.canAccess]);
+    // Re-run when the enclosing panel activates/deactivates (keepMounted
+    // hidden tabs): the engine learns the node became (in)active only through
+    // this notification, which resumes or reconciles pending transitions.
+  }, [nav, hasConfig, regId, signature, services.canAccess, isContextActive]);
 
   const goto = (
     target: string | readonly string[],

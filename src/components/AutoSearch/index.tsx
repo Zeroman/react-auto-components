@@ -8,9 +8,11 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { AutoForm, type AutoFormHandle } from "../AutoForm";
+import { AutoForm } from "../AutoForm";
+import type { InternalAutoFormHandle } from "../AutoForm/internal";
 import { defaults, equal, errorMessage, resolve } from "../../core/config";
 import { buildQuery, type QueryNode } from "../../core/query";
+import { validateFields } from "../../core/validation";
 import { useAutoConfig } from "../../core/AutoConfigProvider";
 import { useLibraryStyles } from "../../core/dev";
 import type {
@@ -120,7 +122,8 @@ export function AutoSearch<T extends object>({
     [more, setMore] = useState(false),
     [popoverOpen, setPopoverOpen] = useState(false);
   const current = value ?? local;
-  const ref = useRef<AutoFormHandle<T>>(null);
+  const ref = useRef<InternalAutoFormHandle<T>>(null);
+  const moreRef = useRef<InternalAutoFormHandle<T>>(null);
   const [searchError, setSearchError] = useState("");
   const request = useRef(0);
   const mounted = useRef(true);
@@ -140,33 +143,85 @@ export function AutoSearch<T extends object>({
       setSearchError("");
     }
   }, [value]);
-  const send = async (v: T, validate = false) => {
+  const participates = (v: T) => (f: Field<T>) =>
+    !resolve(f.hidden, v, false) &&
+    services.canAccess(f) &&
+    (isPopoverMore || !isFieldMore(f) || more);
+  /**
+   * Validate and search. `scope` limits extra validation to fields the caller
+   * has not already validated ("more" after AutoForm validated the main
+   * fields with inline errors). Validation always targets the outgoing values
+   * `v`, covers more fields regardless of the popover's open state, and only
+   * the latest call (highest ticket) may emit a query. Returns true when the
+   * search ran.
+   */
+  const send = async (
+    v: T,
+    validate = false,
+    scope: "all" | "more" = "all",
+  ): Promise<boolean> => {
     const ticket = ++request.current;
     setSearchError("");
     try {
-      if (disabled || (validate && !(await ref.current?.validate()))) return;
-      if (!mounted.current || ticket !== request.current) return;
-      await onSearch(
-        buildQuery(
-          v,
-          fields.filter(
-            (f) => !resolve(f.hidden, v, false) && services.canAccess(f),
+      if (disabled) return false;
+      if (validate) {
+        if (
+          ref.current?.hasPendingUploads() ||
+          moreRef.current?.hasPendingUploads()
+        ) {
+          setSearchError(tr("Wait for the upload to finish"));
+          return false;
+        }
+        // The main form has already validated on submit. Otherwise validate
+        // one shared outgoing snapshot, including edits in the other form.
+        const targets = fields.filter(
+          (f) =>
+            participates(v)(f) &&
+            (scope === "all" || (isPopoverMore && isFieldMore(f))),
+        );
+        const failures = await validateFields(targets, v, {
+          tr,
+          canAccess: (f) => services.canAccess(f as Field<T>),
+        });
+        if (!mounted.current || ticket !== request.current) return false;
+        const mainFailures = Object.fromEntries(
+          Object.entries(failures).filter(
+            ([name]) =>
+              !isPopoverMore || !moreFields.some((f) => f.name === name),
           ),
-        ),
-        v,
-      );
+        );
+        const moreFailures = Object.fromEntries(
+          Object.entries(failures).filter(
+            ([name]) =>
+              isPopoverMore && moreFields.some((f) => f.name === name),
+          ),
+        );
+        if (scope === "all") ref.current?.setValidationErrors(mainFailures);
+        moreRef.current?.setValidationErrors(moreFailures);
+        if (Object.keys(failures).length) {
+          // Only unmounted fields need a summary; mounted forms show inline errors.
+          if (!moreRef.current && Object.keys(moreFailures).length)
+            setSearchError(Object.values(moreFailures).join("; "));
+          return false;
+        }
+      }
+      if (!mounted.current || ticket !== request.current) return false;
+      await onSearch(buildQuery(v, fields.filter(participates(v))), v);
+      return true;
     } catch (error) {
       if (mounted.current && ticket === request.current)
         setSearchError(errorMessage(error));
+      return false;
     }
   };
   const change = (v: T) => {
+    if (resetting.current) return;
     latestValues.current = v;
     request.current++;
     setSearchError("");
     setLocal(v);
     onChange?.(v);
-    if (mode === "instant" && !resetting.current) void send(v, true);
+    if (mode === "instant") void send(v, true);
   };
   const isFieldMore = (f: Field<T>): boolean =>
     "search" in f && !!f.search?.more;
@@ -177,12 +232,19 @@ export function AutoSearch<T extends object>({
   const activeMoreCount = moreFields.filter((f) => {
     if (!f.name) return false;
     const v = (current as Record<string, unknown>)[f.name];
-    return (
-      v !== undefined &&
-      v !== null &&
-      v !== "" &&
-      !(Array.isArray(v) && !v.length)
-    );
+    if (v === undefined || v === null || v === "") return false;
+    if (Array.isArray(v)) {
+      const between =
+        "search" in f &&
+        (f.search?.match === "between" ||
+          (!f.search?.match &&
+            "type" in f &&
+            (f.type === "daterange" || f.type === "datetimerange")));
+      return (
+        v.length > 0 && (!between || !v.every((x) => x == null || x === ""))
+      );
+    }
+    return true;
   }).length;
 
   return (
@@ -220,7 +282,9 @@ export function AutoSearch<T extends object>({
         }
         value={current}
         onChange={change}
-        onSubmit={(v) => send(v)}
+        onSubmit={async (v) => {
+          await send(v, true, "more");
+        }}
         columns={columns}
         labelPosition={labelPosition}
         labelAlign={labelAlign}
@@ -261,13 +325,19 @@ export function AutoSearch<T extends object>({
             style={{ ...styles?.reset, ...styles?.resetButton }}
             onClick={() => {
               const v = defaults<T>(fields, defaultValue);
+              // Resets never validate and search exactly once in both modes;
+              // `resetting` suppresses the instant auto-send below.
               resetting.current = true;
               try {
                 ref.current?.reset(v);
+                moreRef.current?.reset(v);
               } finally {
                 resetting.current = false;
               }
-              void send(v);
+              latestValues.current = v;
+              setLocal(v);
+              onChange?.(v);
+              void send(v, false);
             }}
           >
             {resetLabel ?? tr("Reset")}
@@ -301,6 +371,7 @@ export function AutoSearch<T extends object>({
                     </div>
                     <div className="auto-search-popover-form">
                       <AutoForm
+                        ref={moreRef}
                         fields={moreFields}
                         value={current}
                         onChange={change}
@@ -308,6 +379,7 @@ export function AutoSearch<T extends object>({
                         labelPosition="left"
                         density="compact"
                         size={size}
+                        disabled={disabled}
                         actions={false}
                         tipComponent={tipComponent}
                       />
@@ -332,7 +404,19 @@ export function AutoSearch<T extends object>({
                               }
                             }
                           }
-                          change(resetDraft);
+                          // Same semantics as the main reset: once, no
+                          // validation, stale errors cleared, both modes.
+                          resetting.current = true;
+                          try {
+                            moreRef.current?.reset(resetDraft);
+                            ref.current?.setValidationErrors({});
+                          } finally {
+                            resetting.current = false;
+                          }
+                          latestValues.current = resetDraft;
+                          setLocal(resetDraft);
+                          onChange?.(resetDraft);
+                          void send(resetDraft, false);
                         }}
                       >
                         {resetLabel ?? tr("Reset")}
@@ -342,8 +426,12 @@ export function AutoSearch<T extends object>({
                         className="auto-primary"
                         disabled={disabled}
                         onClick={() => {
-                          setPopoverOpen(false);
-                          void send(current);
+                          // Validate main + more fields against the outgoing
+                          // values; close only when validation passed.
+                          void (async () => {
+                            if (await send(current, true))
+                              setPopoverOpen(false);
+                          })();
                         }}
                       >
                         {searchLabel ?? tr("Search")}

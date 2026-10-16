@@ -6,7 +6,6 @@ Table with local or remote rows, sort, filter, selection, optional virtualizatio
 
 Pass exactly one of `data`, `dataSource`, or `source`. Combining them is a type error.
 
-
 Columns accept `tip: ReactNode`, shown through a help button beside the header. The table passes `tipComponent` to column tips, search fields and its add/edit dialog; `searchLayout.tipComponent` can override search help. `searchLayout.moreLayout` picks how More-filters fields appear — the table defaults to `"popover"`. Within the table, the fallback is table prop → `config.table.tipComponent` → global `config.tipComponent` → `DefaultTip`; nested search/edit forms do not fall back to `config.form.tipComponent`. Standalone AutoSearch/AutoDialog continue to use form defaults.
 
 Resolution order is the item/field/column parameter, the owning component parameter, provider component defaults (`config.tabs`, `config.form`, `config.table`, or `config.menu`), shared `AutoConfigProvider.config.tipComponent`, then built-in `DefaultTip`. Custom components receive `{ content, children, placement }` (`AutoTipProps`) and must preserve the trigger events, ref and accessibility props. Tooltips are rendered through internal integration; `DefaultTip` is exported as the built-in floating fallback (uses a portal, supports Escape, and keeps the trigger in place).
@@ -34,7 +33,7 @@ import "@zeroman.yang/react-auto-components/style.css";
   onAdd={(values) => createOrder(values)}
   onDelete={(selected) => deleteOrders(selected)}
   exportXlsx={exportXlsx}
-/>
+/>;
 ```
 
 Sort tags appear only for multi-column sorting (two or more active sort fields) and share the title row by default (`sortTagsLayout="inline"`). Set `sortTagsLayout="separate"` to display them on a separate row below the toolbar. With zero or one sort field, neither layout reserves space for tags; sorted column headers show a highlighted direction indicator.
@@ -59,7 +58,12 @@ Save this description as `orders.table.json`:
     { "key": "paid", "label": "Paid", "component": "paid-label" }
   ],
   "searchFields": [
-    { "name": "customer", "label": "Customer", "type": "input", "match": "contains" }
+    {
+      "name": "customer",
+      "label": "Customer",
+      "type": "input",
+      "search": { "match": "contains" }
+    }
   ],
   "rowActions": [
     { "id": "inspect", "label": "Inspect order", "action": "orders.inspect" }
@@ -92,7 +96,8 @@ const config = {
         body: JSON.stringify(query),
         signal,
       });
-      if (!response.ok) throw new Error(`Load orders failed: ${response.status}`);
+      if (!response.ok)
+        throw new Error(`Load orders failed: ${response.status}`);
       return (await response.json()) as { rows: Order[]; total: number };
     },
   },
@@ -123,36 +128,37 @@ For isolated renders during AI/browser verification, see the [deterministic test
 
 ## Behavior and props
 
-| Prop | Behavior |
-| --- | --- |
-| `id` | Required. Settings key is `${namespace}:table:${id}`. An empty id warns `RAC-TABLE-ID`. |
-| `rowKey` | Field name or `(row) => string`. Must be unique on the loaded rows. Missing or duplicate ids warn `RAC-TABLE-ROWID`. Selection, expansion, and `scrollToRow` use it. |
-| `data` | Local rows. Filtering and paging happen in the browser. |
-| `dataSource(query, { signal })` | Remote page. **Reject: the message is shown with a retry button. Abort is ignored.** Return `{ rows, total }` where `total` is the full filtered count. |
-| `columns` | Omit to use the first row's keys, skipping `_auto_*`. Column `type` formats values; it is not a form widget. Column `formField?: Partial<Field<T>> | false` customizes or skips the derived form field in add/edit dialogs. |
-| `pageSize` | Default `10`. `pagination` default `true`. |
-| `height` | Default `440` pixels. `"auto"` fills a parent that already has a height. |
-| `virtual` | Optional. Measures rows with TanStack Virtual. |
-| `query`, `onQueryChange` | Controlled query. Omit to keep page, sort, and filter inside the table (sort and filter also follow saved presets). |
-| `searchFields` | Renders `AutoSearch`. Its `onSearch` updates the table filter. The record count lives in the pagination footer. |
-| `searchInline` | Default `false`. `true` renders a single-line toolbar: the search fields lead, actions and tools sit right, and the title is omitted (the record count stays in the pagination footer). `false` keeps the search panel on its own row above the toolbar, next to the title. |
-| `formFields` | Schema for the add/edit dialog. If omitted, fields are inferred from `columns`. Column `formField: false` excludes the column; `formField: { ... }` overrides field properties (e.g. `type`, `options`, `rules`). Columns with `options` become `select`, `date`/`datetime`/`percentage`/`progress` map to matching field types, and `number` becomes `integer`. |
-| `onAdd`, `onEdit`, `onDelete` | Called from the dialog after validation. **Reject or throw: the dialog stays open and shows `error.message`. Rows do not change unless your handler already changed them.** |
-| `rowActions` | Context menu actions on row right-click. **`onClick` rejection is caught and shown in the status line for about 2.5s.** The row stays. `action` is a `config.rowActions` key used when `onClick` is omitted. Neither one warns `RAC-ROW-ACTION` and the status shows the message. Items support `icon`, `danger`, `separator`, `disabled`, and `hidden`. |
-| `component` on a column | Key in `config.columns` for `render`, `format`, `sort`, and `exportFormat`. A function on the column wins. An unknown key warns `RAC-COLUMN-COMPONENT` and the cell uses the default format. |
-| `source` | Key in `config.sources`. Pass exactly one of `data`, `dataSource`, or `source`. An unknown key warns `RAC-TABLE-SOURCE` and the table shows that message with retry. |
-| `exportXlsx` | Required only for xlsx. Missing adapter throws `RAC-TABLE-XLSX` and the status shows the translated adapter sentence. CSV and JSON are built in. |
-| `versions` | Bump a layout, sort, filter, or export version to drop that saved preset. |
-| `summaryValues` | Server totals for the filtered result, keyed by column. |
-| `actions` | Primary or custom business actions rendered in the right header toolbar before system tools. |
-| `batchActions` | `(selectedRows: T[]) => ReactNode`. Custom batch action buttons displayed in the dynamic selection bar when rows are selected. `onDelete` renders `Delete selected` here. |
-| `headerExtra` | Extra content adjacent to title and record count in the left header toolbar. |
-| `reorderableColumns` | Default `true`. Enable dragging column headers directly to reorder columns. Column `reorderable: false` disables reordering for a specific column. Reordering persists to saved layout settings. |
-| `toolbarActions` | Refresh, settings, export, and JSON. Default all shown in compact icon mode (`mode: "icon"`). Set `mode: "text"` or `"both"` to customize button appearance. `false` hides the four buttons. An object hides only the buttons set to `false`. `extra` appends custom tools. `handle.refresh()` and `handle.export()` stay available. |
+| Prop                            | Behavior                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                            | Required. Settings key is `${namespace}:table:${id}`. An empty id warns `RAC-TABLE-ID`.                                                                                                                                                                                                                                                                          |
+| `rowKey`                        | Field name or `(row) => string`. Must be unique on the loaded rows. Missing or duplicate ids warn `RAC-TABLE-ROWID`. Selection, expansion, and `scrollToRow` use it.                                                                                                                                                                                             |
+| `data`                          | Local rows. Filtering and paging happen in the browser.                                                                                                                                                                                                                                                                                                          |
+| `dataSource(query, { signal })` | Remote page. **Reject: the message is shown with a retry button. Abort is ignored.** Return `{ rows, total }` where `total` is the full filtered count.                                                                                                                                                                                                          |
+| `columns`                       | Omit to use the first row's keys, skipping `_auto_*`. Column `type` formats values; it is not a form widget. Column `formField?: Partial<Field<T>>                                                                                                                                                                                                               | false` customizes or skips the derived form field in add/edit dialogs. |
+| `pageSize`                      | Default `10`. `pagination` default `true`.                                                                                                                                                                                                                                                                                                                       |
+| `height`                        | Default `440` pixels. `"auto"` fills a parent that already has a height.                                                                                                                                                                                                                                                                                         |
+| `virtual`                       | Optional. Measures rows with TanStack Virtual.                                                                                                                                                                                                                                                                                                                   |
+| `query`, `onQueryChange`        | Controlled query. Omit to keep page, sort, and filter inside the table (sort and filter also follow saved presets).                                                                                                                                                                                                                                              |
+| `searchFields`                  | Renders `AutoSearch`. Its `onSearch` updates the table filter. The record count lives in the pagination footer.                                                                                                                                                                                                                                                  |
+| `searchInline`                  | Default `false`. `true` renders a single-line toolbar: the search fields lead, actions and tools sit right, and the title is omitted (the record count stays in the pagination footer). `false` keeps the search panel on its own row above the toolbar, next to the title.                                                                                      |
+| `formFields`                    | Schema for the add/edit dialog. If omitted, fields are inferred from `columns`. Column `formField: false` excludes the column; `formField: { ... }` overrides field properties (e.g. `type`, `options`, `rules`). Columns with `options` become `select`, `date`/`datetime`/`percentage`/`progress` map to matching field types, and `number` becomes `integer`. |
+| `onAdd`, `onEdit`, `onDelete`   | Called from the dialog after validation. **Reject or throw: the dialog stays open and shows `error.message`. Rows do not change unless your handler already changed them.**                                                                                                                                                                                      |
+| `rowActions`                    | Context menu actions on row right-click. **`onClick` rejection is caught and shown in the status line for about 2.5s.** The row stays. `action` is a `config.rowActions` key used when `onClick` is omitted. Neither one warns `RAC-ROW-ACTION` and the status shows the message. Items support `icon`, `danger`, `separator`, `disabled`, and `hidden`.         |
+| `component` on a column         | Key in `config.columns` for `render`, `format`, `sort`, and `exportFormat`. A function on the column wins. An unknown key warns `RAC-COLUMN-COMPONENT` and the cell uses the default format.                                                                                                                                                                     |
+| `source`                        | Key in `config.sources`. Pass exactly one of `data`, `dataSource`, or `source`. An unknown key warns `RAC-TABLE-SOURCE` and the table shows that message with retry.                                                                                                                                                                                             |
+| `exportXlsx`                    | Required only for xlsx. Missing adapter throws `RAC-TABLE-XLSX` and the status shows the translated adapter sentence. CSV and JSON are built in.                                                                                                                                                                                                                 |
+| `versions`                      | Bump a layout, sort, filter, or export version to drop that saved preset.                                                                                                                                                                                                                                                                                        |
+| `summaryValues`                 | Server totals for the filtered result, keyed by column.                                                                                                                                                                                                                                                                                                          |
+| `actions`                       | Primary or custom business actions rendered in the right header toolbar before system tools.                                                                                                                                                                                                                                                                     |
+| `batchActions`                  | `(selectedRows: T[]) => ReactNode`. Custom batch action buttons displayed in the dynamic selection bar when rows are selected. `onDelete` renders `Delete selected` here.                                                                                                                                                                                        |
+| `headerExtra`                   | Extra content adjacent to title and record count in the left header toolbar.                                                                                                                                                                                                                                                                                     |
+| `reorderableColumns`            | Default `true`. Enable dragging column headers directly to reorder columns. Column `reorderable: false` disables reordering for a specific column. Reordering persists to saved layout settings.                                                                                                                                                                 |
+| `toolbarActions`                | Refresh, settings, export, and JSON. Default all shown in compact icon mode (`mode: "icon"`). Set `mode: "text"` or `"both"` to customize button appearance. `false` hides the four buttons. An object hides only the buttons set to `false`. `extra` appends custom tools. `handle.refresh()` and `handle.export()` stay available.                             |
 
 ### Data source stability and in-place switching
 
 When switching data sources (`source` or `dataSource` changes), `AutoTable` switches sources **in place** rather than unmounting or recreating the component:
+
 - **Row retention (SWR)**: Previous rows stay visible with an indeterminate loading progress bar and `aria-busy="true"` on the table body to prevent jarring layout shifts or white flashes during in-flight requests.
 - **Page reset**: `pageIndex` automatically resets to `0` because pagination belongs to the previous request's dataset size.
 - **Selection clear**: Row selections from the previous dataset are cleared.
@@ -170,7 +176,7 @@ Saved layout, sort, filter, and export use `config.storage` (`localStorage` by d
 
 Invalid filter JSON in the settings dialog shows the translated "Invalid filter", warns `RAC-TABLE-FILTER`, and keeps the previous filter. `between` must be a two-item array. `in` must be an array.
 
-`handle.reset()` clears sort, filter, selection, and puts the layout back on the column defaults. `handle.refresh()` re-runs `dataSource`. `handle.scrollToRow(id)` does nothing when that id is not loaded.
+`handle.reset()` clears sort, filter, selection and the search form, and puts the layout back on the column defaults. `handle.refresh()` re-runs `dataSource`. `handle.scrollToRow(id)` does nothing when that id is not loaded.
 
 The table root is `data-testid="rac-table-{id}"`. Inside it: `rac-add`, `rac-delete-selected`, `rac-refresh`, `rac-settings`, `rac-export`, `rac-edit-{rowId}`, `rac-delete-{rowId}`. The ids do not follow the UI language. See [llms.txt](../llms.txt).
 

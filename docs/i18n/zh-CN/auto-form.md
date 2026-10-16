@@ -5,6 +5,7 @@
 按 schema 渲染的表单。控件、校验和提交都在这里。`AutoSearch` 和 `AutoDialog` 内部也渲染 `AutoForm`，所以下面的回调规则对它们同样有效。
 
 `Field<T>`（别名 `FormItem<T>`）按 `type` 做判别联合，由交互控件 `FormField<T>` 和结构化展示项 `DisplayItem<T>` 组成：
+
 - **表单字段**：绑定值的录入控件（如 `input`、`number`、`integer`、`select`、`virtual-select`、`date`、`daterange`、`switch`、`checkbox`、`radio`、`file`）。`select` 不给 `options`、`daterange` 配标量、标量字段上写 `match: "between"`，都是 TypeScript 错误。`virtual-select`（或 `type: "select", virtual: true`）支持长列表虚拟滚动（替代旧版 `select-v2`）。`AnyField` 和 `unsafeField()` 是逃生舱；开发模式仍会警告。错误码见 [errors.md](errors.md)。
 - **展示项**：纯展示与辅助排版项（`title`、`tip`、`button`、`append`、`divider`）。校验时自动跳过，不收集表单值。`tip` 和 `append` 支持传入 `content?: ReactNode`。
 
@@ -15,9 +16,11 @@
 ### 样式插槽（Slots）
 
 `AutoForm` 与单个字段均支持细粒度的 `classNames` 和 `styles` 插槽：
-- **`AutoForm`**：`classNames?: AutoFormClassNames`（`root`、`field`、`label`、`input`、`tip`、`error`、`actions`、`submit`、`reset`、`cancel`）与 `styles?: AutoFormStyles`。
-- **字段 / 展示项**：`classNames?: FieldClassNames`（`root`、`label`、`input`、`tip`、`error`）与 `styles?: FieldStyles`。
 
+- **`AutoForm`**：`classNames?: AutoFormClassNames`（`form`、`grid`、`root`、`label`、`control`、`input`、`tip`、`error`、`actions`、`submit`、`reset`）与 `styles?: AutoFormStyles`。
+- **字段 / 展示项**：`classNames?: FieldClassNames`（`root`、`label`、`control`、`input`、`tip`、`error`）与 `styles?: FieldStyles`。
+
+`form` 作用于外层 `<form>`，`root` 作用于各字段容器，`tip` 作用于标签旁的内联帮助标记。
 
 ## 用法
 
@@ -36,37 +39,39 @@ const fields: Field<Draft>[] = [
   },
 ];
 
-<AutoForm<Draft> fields={fields} onSubmit={async (value) => save(value)} />
+<AutoForm<Draft> fields={fields} onSubmit={async (value) => save(value)} />;
 ```
 
 ## 行为与属性
 
-| 属性 | 行为 |
-| --- | --- |
-| `fields` | `readonly Field<T>[]`。不写 `type` 就是文本框。`name` 重复会在挂载时抛 `RAC-FIELD-DUPLICATE`。 |
-| `value` | 受控值。与内部状态不同时，表单会抄过来并清空错误。父组件不理 `onChange`，输入会弹回。 |
-| `defaultValue` | 非受控初值，也是重置目标。字段自己的 `defaultValue` 补上没写的键。用 `structuredClone` 复制。 |
-| `onChange` | 每次接受的修改都会调用，包括字段 `onChange` 返回的补丁。 |
-| `onSubmit(value)` | 只在校验通过后调用。resolve 即结束。**reject 或 throw：值保留，操作区下方显示 `error.message`，不会重置。** |
-| `onReset` | 点重置或调用 `handle.reset()` 之后触发。 |
-| `disabled` | 禁止编辑和提交。默认 `false`。 |
-| `readOnly` | 只显示值，不渲染输入框。默认 `false`。 |
-| `columns` | 栅格列数。默认 `2`。`span` 不会超过它。`lineBreak` 独占一行。 |
-| `actions` | 内置提交和重置。默认 `true`。父组件自己画按钮时设为 `false`（搜索和弹窗就是这样）。 |
-| `submitLabel`、`resetLabel` | 替换内置文案。默认文案经 `config.t` 翻译。 |
-| 标签 | `labelPosition` 默认 `"top"`。`labelWidth` 默认 `"auto"`（测量后，最多占字段宽度的 45%）。`size` 和 `density` 回落到 `AutoConfigProvider`。 |
+| 属性                        | 行为                                                                                                                                                                                   |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fields`                    | `readonly Field<T>[]`。不写 `type` 就是文本框。`name` 重复会在挂载时抛 `RAC-FIELD-DUPLICATE`。                                                                                         |
+| `value`                     | 受控值。与内部状态不同时，表单会抄过来并清空错误。父组件不理 `onChange`，输入会弹回。                                                                                                  |
+| `defaultValue`              | 非受控初值，也是重置目标。字段自己的 `defaultValue` 补上省略或值为 `undefined` 的键。普通对象、数组、日期、Map、Set 和正则表达式会复制；`File`、`Blob`、函数及其他类实例保留引用身份。 |
+| `onChange`                  | 每次接受的修改都会调用，包括字段 `onChange` 返回的补丁。                                                                                                                               |
+| `onSubmit(value)`           | 只在校验通过后调用。resolve 即结束。**reject 或 throw：值保留，操作区下方显示 `error.message`，不会重置。**                                                                            |
+| `onReset`                   | 点重置或调用 `handle.reset()` 之后触发。                                                                                                                                               |
+| `disabled`                  | 禁止编辑和提交。默认 `false`。                                                                                                                                                         |
+| `readOnly`                  | 只显示值，不渲染输入框。默认 `false`。                                                                                                                                                 |
+| `columns`                   | 栅格列数。默认 `2`。`span` 不会超过它。`lineBreak` 独占一行。                                                                                                                          |
+| `actions`                   | 内置提交和重置。默认 `true`。父组件自己画按钮时设为 `false`（搜索和弹窗就是这样）。                                                                                                    |
+| `submitLabel`、`resetLabel` | 替换内置文案。默认文案经 `config.t` 翻译。                                                                                                                                             |
+| 标签                        | `labelPosition` 默认 `"top"`。`labelWidth` 默认 `"auto"`（测量后，最多占字段宽度的 45%）。`size` 和 `density` 回落到 `AutoConfigProvider`。                                            |
 
 ## 回调抛错之后
 
-| 回调 | 结果 |
-| --- | --- |
-| `onSubmit` | 被捕获。草稿保留。显示消息。不重置。 |
-| 字段 `rules` | 按字段捕获。抛出的消息变成该字段的错误。后面的规则不再跑。 |
-| 字段 `onChange` | 不捕获。表单仍是上一次的值，这次按键不会写入。 |
-| `upload` | 拒绝后，错误显示在文件框下面，不写入值。`reset()` 会 abort `AbortSignal`，迟到的结果被丢掉。 |
-| 上传未完成就提交 | `validate()` 返回 `false`，并显示「请等待上传」的内置文案。不会调用 `onSubmit`。 |
-| `hidden`、`disabled` 或 `canAccess` 不通过 | 该字段不参与校验，即使 `required`。 |
-| `required` 为空 | `undefined`、`null`、`""` 或空数组会挡住提交。文案是 `"{label} is required"`，再走 `config.t`。 |
+| 回调                                       | 结果                                                                                            |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| `onSubmit`                                 | 被捕获。草稿保留。显示消息。不重置。                                                            |
+| 字段 `rules`                               | 按字段捕获。抛出的消息变成该字段的错误。后面的规则不再跑。                                      |
+| 字段 `onChange`                            | 不捕获。表单仍是上一次的值，这次按键不会写入。                                                  |
+| `upload`                                   | 拒绝后，错误显示在文件框下面，不写入值。`reset()` 会 abort `AbortSignal`，迟到的结果被丢掉。    |
+| 上传未完成就提交                           | `validate()` 返回 `false`，并显示「请等待上传」的内置文案。不会调用 `onSubmit`。                |
+| `hidden`、`disabled` 或 `canAccess` 不通过 | 该字段不参与校验，即使 `required`。                                                             |
+| `required` 为空                            | `undefined`、`null`、`""` 或空数组会挡住提交。文案是 `"{label} is required"`，再走 `config.t`。 |
+
+必填的 `daterange` / `datetimerange` 必须有两个非空端点；非必填区间允许单边范围。受控值中的无关字段更新不会中止上传；替换上传字段值、显式重置或卸载会取消上传，并丢弃迟到结果。
 
 `handle.validate()` resolve `true` 或 `false`，不抛错。`handle.reset()` 清错误和上传状态。
 

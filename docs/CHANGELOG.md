@@ -2,6 +2,15 @@
 
 **English** | [简体中文](i18n/zh-CN/CHANGELOG.md) | [繁體中文](i18n/zh-TW/CHANGELOG.md) | [日本語](i18n/ja/CHANGELOG.md) | [한국어](i18n/ko/CHANGELOG.md) | [Español](i18n/es/CHANGELOG.md) | [Français](i18n/fr/CHANGELOG.md) | [Deutsch](i18n/de/CHANGELOG.md) | [Português (Brasil)](i18n/pt-BR/CHANGELOG.md) | [Русский](i18n/ru/CHANGELOG.md)
 
+## Unreleased
+
+- Fix empty and open date ranges, required range validation, search popover validation/reset/disabled behavior, and controlled uploads.
+- Preserve form defaults and opaque file identity; improve field focus, range labels and styling slots.
+- Synchronize table selection callbacks/cache, reset search drafts, respect effective column pinning, and keep empty numeric filters empty.
+- Notify navigation when enclosing panels activate; keep popovers inside modal dialogs and support local UI IDs outside secure contexts.
+- Keep DevTools connected after large results, cancel only the disconnected poll, preserve error details, and improve inspection ownership/actions.
+- Use Babel 7 for React Compiler compatibility, require the full browser matrix before publishing, and verify both packed package identities and versions.
+
 ## 0.5.3 - 2026-10-15
 
 - Add the optional `@zeroman.yang/react-auto-components-devtools` package for Vite projects: opt-in agent access, page discovery, semantic inspection, explicit single-page commands and exact-page screenshots through managed/CDP-connected browsers.

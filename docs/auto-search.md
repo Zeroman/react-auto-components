@@ -32,35 +32,37 @@ import "@zeroman.yang/react-auto-components/style.css";
 
 ## Behavior and props
 
-| Prop                      | Behavior                                                                                                                                                                                                                                                                |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `fields`                  | Same `Field<T>` contract as AutoForm. Search configuration (`match`, `ignoreCase`, `includeNull`, `searchFields`, `more`) is specified via `search?: SearchConfig`. `more: true` hides the field until "More" is expanded. Hidden fields are left out of the query.     |
-| `onSearch(query, values)` | Required. May return `void` or `Promise<void>`. **Every trigger catches throw/reject: values stay and `error.message` is shown. A failed search never resets the draft.** Errors from older searches are ignored after newer input, reset, or an external value change. |
-| `onChange`                | Fires for edits and for reset, before `onSearch` on an instant search.                                                                                                                                                                                                  |
-| `mode`                    | Default `"instant"`: validates every change and searches only when valid; submit also validates, while reset searches defaults directly. Set `"manual"` to search only on submit or reset.                                                                              |
-| `value`, `defaultValue`   | Same controlled and reset rules as AutoForm.                                                                                                                                                                                                                            |
-| `columns`                 | Default `3`.                                                                                                                                                                                                                                                            |
-| `moreLayout`              | Default `"inline"`: fields marked `search: { more: true }` expand within the search grid. `"popover"` keeps them out of the grid and shows them in a floating panel attached to the More filters button, with an active-filter count badge and in-panel Search/Reset. |
-| `sortTags`                | Buttons you own. `onRemove` is not caught.                                                                                                                                                                                                                              |
-| `classNames`, `styles`    | Slot-based styling: `classNames?: AutoSearchClassNames` (`root`, `form`, `actions`, `search`, `reset`, `moreToggle`) and `styles?: AutoSearchStyles`.                                                                                                                   |
-| Label props               | Same as AutoForm. Passed layout wins over the provider.                                                                                                                                                                                                                 |
+| Prop                        | Behavior                                                                                                                                                                                                                                                                |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fields`                    | Same `Field<T>` contract as AutoForm. Search configuration (`match`, `ignoreCase`, `includeNull`, `searchFields`, `more`) is specified via `search?: SearchConfig`. `more: true` hides the field until "More" is expanded. Hidden fields are left out of the query.     |
+| `onSearch(query, values)`   | Required. May return `void` or `Promise<void>`. **Every trigger catches throw/reject: values stay and `error.message` is shown. A failed search never resets the draft.** Errors from older searches are ignored after newer input, reset, or an external value change. |
+| `onChange`                  | Fires for edits and for reset, before `onSearch` on an instant search.                                                                                                                                                                                                  |
+| `mode`                      | Default `"instant"`: validates every change and searches only when valid; submit also validates, while reset searches defaults directly. Set `"manual"` to search only on submit or reset.                                                                              |
+| `value`, `defaultValue`     | Same controlled and reset rules as AutoForm.                                                                                                                                                                                                                            |
+| `columns`                   | Default `3`.                                                                                                                                                                                                                                                            |
+| `moreLayout`                | Default `"inline"`: fields marked `search: { more: true }` expand within the search grid. `"popover"` keeps them out of the grid and shows them in a floating panel attached to the More filters button, with an active-filter count badge and in-panel Search/Reset.   |
+| `sortTags`                  | Buttons you own. `onRemove` is not caught.                                                                                                                                                                                                                              |
+| `classNames`, `styles`      | Slot-based styling: `classNames?: AutoSearchClassNames` (AutoForm slots plus `panel`, `searchButton`, `resetButton`, `moreButton`) and `styles?: AutoSearchStyles`.                                                                                                     |
+| Label props                 | Same as AutoForm. Passed layout wins over the provider.                                                                                                                                                                                                                 |
 | `searchLabel`, `resetLabel` | Replace the built-in action labels. Defaults are localized via `config.t`.                                                                                                                                                                                              |
 
 ## Query values
 
-| `match`      | Value                                                                       |
-| ------------ | --------------------------------------------------------------------------- |
-| omitted      | `"eq"`, or `"in"` when the value is an array.                               |
-| `"contains"` | Substring. `ignoreCase: true` folds case.                                   |
-| `"between"`  | `[from, to]`. A scalar warns `RAC-FIELD-BETWEEN` and does not match rows.   |
-| `"isNull"`   | Matches null or undefined. The entered value is ignored.                    |
-| empty        | `undefined`, `null`, `""`, and empty arrays are omitted, except `"isNull"`. |
+| `match`      | Value                                                                                                                                                                                  |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| omitted      | `"between"` for `daterange` / `datetimerange`; otherwise `"eq"` (arrays use `"in"`).                                                                                                   |
+| `"contains"` | Substring. `ignoreCase: true` folds case.                                                                                                                                              |
+| `"between"`  | `[from, to]`. A missing bound (`null`, `undefined`, or `""`) leaves that side open; two missing bounds omit the condition. A scalar warns `RAC-FIELD-BETWEEN` and does not match rows. |
+| `"isNull"`   | Matches null or undefined. The entered value is ignored.                                                                                                                               |
+| empty        | `undefined`, `null`, `""`, and empty arrays are omitted, except `"isNull"`.                                                                                                            |
 
 `includeNull: true` OR-s an `isNull` condition. `searchFields` OR-s the same comparison across those row keys instead of `name`. These options live on `field.search = { match, ignoreCase, includeNull, searchFields, more }`; the former top-level spellings were removed in 0.2.0.
 
+With `moreLayout="popover"`, both forms validate the same outgoing values, including advanced fields while the panel is closed; a closed-panel failure appears by the search actions. Pending uploads in either mounted form block search. `disabled` also applies inside the panel. Collapsed `"inline"` advanced fields are excluded from validation and the query.
+
 Instant validation includes `required` and synchronous/asynchronous `rules` on visible, accessible, enabled fields. Only the latest validated input emits a query. Pending requests are not cancelled automatically; the caller still owns result ordering or cancellation.
 
-Reset clears validation and search errors, restores `defaultValue`, and searches exactly once without validation. This allows clearing filters even when a required field becomes empty. A reset search failure is displayed with the restored values intact. `serializeRsql` throws `RAC-QUERY-FIELD` when a field name is not `/^[\w.]+$/`.
+Reset clears validation and search errors, restores `defaultValue`, and searches exactly once without validation. This allows clearing filters even when a required field becomes empty. The popover reset restores only advanced fields and preserves main fields; either reset emits one `onChange` and one search in both modes. A reset search failure is displayed with the restored values intact. `serializeRsql` supports open bounds and rejects malformed `between` values with `RAC-QUERY-BETWEEN`. Ordinary `in` arrays retain null/empty-string selections. `serializeRsql` throws `RAC-QUERY-FIELD` when a field name is not `/^[\w.]+$/`.
 
 ## Preconditions
 

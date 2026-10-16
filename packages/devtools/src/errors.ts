@@ -2,7 +2,8 @@
 export class RacError extends Error {
   constructor(
     readonly code: string,
-    problem: string,
+    /** Raw problem detail; `message` adds the shared header/Fix/Code/Docs lines. */
+    readonly problem: string,
     readonly fix: string,
   ) {
     super(
@@ -17,6 +18,7 @@ export function failure(error: unknown) {
       status: "error",
       code: error.code,
       message: error.message,
+      problem: error.problem,
       fix: error.fix,
     };
   return failure(

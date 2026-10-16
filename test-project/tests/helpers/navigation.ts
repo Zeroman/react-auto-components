@@ -14,11 +14,18 @@ export async function openComponent(
   await expect(parent).toHaveAttribute("aria-expanded", "true");
   const controls = await parent.getAttribute("aria-controls");
   const submenu = page.locator(`[id="${controls}"]`);
-  // Expanding one section collapses others; let the height transition settle
-  // so the leaf click cannot land on a sibling that moved under the pointer.
-  await page.waitForTimeout(300);
   const leaf = example
     ? submenu.getByRole("button", { name: example, exact: true })
     : submenu.getByRole("button").first();
+  await expect(leaf).toBeVisible();
+  const label = await leaf.getAttribute("aria-label");
+  expect(label).toBeTruthy();
+  // Playwright waits for a stable click target. Verify navigation using the
+  // destination tab, which also survives dismissal of the mobile flyout.
   await leaf.click();
+  await expect(
+    page
+      .locator(".demo-navigation")
+      .getByRole("tab", { name: label!, exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
 }

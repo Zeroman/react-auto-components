@@ -136,7 +136,9 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     [current, setCurrent] = useState(""),
     [json, setJson] = useState(false),
     [contextRow, setContextRow] = useState<T | null>(null),
-    [message, setMessage] = useState("");
+    [message, setMessage] = useState(""),
+    // Bumped by reset() to remount the embedded AutoSearch and clear its inputs.
+    [searchEpoch, setSearchEpoch] = useState(0);
   const sourceIdentity = sourceName ?? dataSource;
   const prevSourceRef = useRef(sourceIdentity);
   const sourceChanged = sourceIdentity !== prevSourceRef.current;
@@ -144,9 +146,6 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     prevSourceRef.current = sourceIdentity;
     if (localQuery.pageIndex !== 0) {
       setLocalQuery((q) => ({ ...q, pageIndex: 0 }));
-    }
-    if (Object.keys(selected).length > 0) {
-      setSelected({});
     }
   }
   const lastResetIdentityRef = useRef(sourceIdentity);
@@ -339,6 +338,22 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     setSelected(next);
     props.onSelectionChange?.(values);
   }
+  const lastSelectionSourceRef = useRef(sourceIdentity);
+  useEffect(() => {
+    // Clearing on a source switch goes through changeSelection so the parent
+    // hears onSelectionChange([]) and the remote selectionCache is rebuilt.
+    if (lastSelectionSourceRef.current === sourceIdentity) return;
+    lastSelectionSourceRef.current = sourceIdentity;
+    if (Object.keys(selected).length > 0) changeSelection({});
+    else selectionCache.current = new Map();
+    // `selected` is intentionally read from the commit that switched sources.
+  }, [sourceIdentity]);
+  /** Removes only the given rows (e.g. after deleting them) from the selection. */
+  function removeSelection(rows: readonly T[]) {
+    const next = { ...selected };
+    for (const row of rows) delete next[getId(row)];
+    changeSelection(next);
+  }
   const table = useTable({
     features,
     data: filtered,
@@ -438,6 +453,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     reset() {
       saveSettings(initialSettings(keys));
       changeSelection({});
+      setSearchEpoch((epoch) => epoch + 1);
       const next = {
         ...query,
         pageIndex: 0,
@@ -618,6 +634,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     >
       {!props.searchInline && props.searchFields && (
         <AutoSearch
+          key={searchEpoch}
           size={size}
           {...props.searchLayout}
           tipComponent={props.searchLayout?.tipComponent ?? tipComponent}
@@ -636,6 +653,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
       >
         {props.searchInline && props.searchFields && (
           <AutoSearch
+            key={searchEpoch}
             size={size}
             {...props.searchLayout}
             moreLayout={props.searchLayout?.moreLayout ?? "popover"}
@@ -762,7 +780,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
       {selectedRows.length > 0 &&
         props.renderSelectionBar !== false &&
         (props.renderSelectionBar ? (
-          props.renderSelectionBar(selectedRows, () => setSelected({}))
+          props.renderSelectionBar(selectedRows, () => changeSelection({}))
         ) : (
           <div
             className="auto-selection-bar"
@@ -776,7 +794,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
               <button
                 type="button"
                 className="auto-selection-clear"
-                onClick={() => setSelected({})}
+                onClick={() => changeSelection({})}
               >
                 {tr("Clear selection")}
               </button>
@@ -888,6 +906,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
                 <TableHeader
                   tipComponent={tipComponent}
                   columns={ordered}
+                  pin={layout.pin}
                   rows={source.rows}
                   sort={query.sort}
                   filter={query.filter}
@@ -1081,7 +1100,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
         deleting={deleting}
         setDeleting={setDeleting}
         onDelete={props.onDelete}
-        setSelected={setSelected}
+        removeSelection={removeSelection}
       />
     </section>
   );

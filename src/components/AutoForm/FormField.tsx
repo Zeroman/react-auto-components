@@ -36,13 +36,22 @@ export function FormField<T extends object>({
     [uploadError, setUploadError] = useState("");
   const controller = useRef<AbortController | null>(null);
   const uploadInput = useRef<HTMLInputElement>(null);
+  const prevValue = useRef<unknown>(undefined);
+  const prevEpoch = useRef(resetEpoch);
   useEffect(() => {
+    const wasReset = prevEpoch.current !== resetEpoch;
+    const prev = prevValue.current;
+    prevValue.current = value;
+    prevEpoch.current = resetEpoch;
+    // A nullish↔nullish flip is an unrelated controlled sync of the whole
+    // value object; it must not cancel a running upload.
+    if (!wasReset && prev == null && value == null) return;
     controller.current?.abort();
     setUploading(false);
     setUploadError("");
     if (uploadInput.current) uploadInput.current.value = "";
-    return () => controller.current?.abort();
   }, [resetEpoch, value]);
+  useEffect(() => () => controller.current?.abort(), []);
   useEffect(() => {
     onUploadPending?.(id, uploading);
     return () => onUploadPending?.(id, false);
@@ -336,6 +345,10 @@ export function FormField<T extends object>({
   if (date) {
     const withTime = type.includes("time");
     const range = type.endsWith("range");
+    const rangeLabel =
+      ("lang" in field && field.lang
+        ? services.t(field.lang, field.label)
+        : field.label) ?? ("name" in field ? field.name : undefined);
     const format = (v: unknown) => {
       if (v == null || v === "") return "";
       if (field.dateValue !== "timestamp") return String(v);
@@ -358,9 +371,7 @@ export function FormField<T extends object>({
             id={i ? `${id}-end` : id}
             key={i}
             aria-label={
-              range
-                ? `${field.label} ${i ? tr("end") : tr("start")}`
-                : undefined
+              range ? `${rangeLabel} ${i ? tr("end") : tr("start")}` : undefined
             }
             type={withTime ? "datetime-local" : "date"}
             value={format(

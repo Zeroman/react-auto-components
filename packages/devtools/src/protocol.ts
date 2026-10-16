@@ -17,7 +17,14 @@ export interface CommandResult {
   id: string;
   ok: boolean;
   data?: unknown;
-  error?: { code?: string; message?: string; fix?: string };
+  error?: {
+    code?: string;
+    /** Raw problem detail; the server formats the RacError message exactly once. */
+    problem?: string;
+    /** Deprecated unformatted detail, accepted as a fallback. */
+    message?: string;
+    fix?: string;
+  };
 }
 export interface Discovery {
   protocolVersion: number;

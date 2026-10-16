@@ -15,6 +15,7 @@ import { useAutoConfig } from "../../core/AutoConfigProvider";
 import { racTestId } from "../../core/testid";
 import { useFieldWarnings, useLibraryStyles } from "../../core/dev";
 import { isDisplayItem, type Values } from "../../core/types";
+import { validateFields } from "../../core/validation";
 import type { AutoFormProps } from "./types";
 import { FormField } from "./FormField";
 const useIsomorphicLayoutEffect =
@@ -64,12 +65,9 @@ export function AutoForm<T extends object>({
   const size = ownSize ?? services.form.size ?? services.size ?? "medium";
   const tipComponent = ownTipComponent ?? services.form.tipComponent;
   const id = useId();
-  const initial = useRef<T | null>(null);
-  if (initial.current === null) {
-    initial.current = defaults<T>(fields, value ?? defaultValue);
-  }
+  const [initial] = useState(() => defaults<T>(fields, value ?? defaultValue));
   const form = useForm({
-    defaultValues: initial.current as Values,
+    defaultValues: initial as Values,
   });
   const values = useStore(form.store, (s) => s.values) as T;
   const [resetEpoch, setResetEpoch] = useState(0);
@@ -158,7 +156,8 @@ export function AutoForm<T extends object>({
   useEffect(() => {
     if (value !== undefined && !equal(value, form.state.values)) {
       revision.current++;
-      setResetEpoch((epoch) => epoch + 1);
+      // No resetEpoch bump: syncing an unrelated controlled field must not
+      // abort a running upload. FormField reacts to its own value directly.
       form.reset(value as Values, {
         keepDefaultValues: true,
       });
@@ -200,41 +199,10 @@ export function AutoForm<T extends object>({
     const snapshot = {
       ...form.state.values,
     } as T;
-    const next: Record<string, string> = {};
-    await Promise.all(
-      fields.map(async (f) => {
-        if (
-          isDisplayItem(f) ||
-          !f.name ||
-          resolve(f.hidden, snapshot, false) ||
-          !services.canAccess(f) ||
-          resolve(f.disabled, snapshot, false)
-        )
-          return;
-        const v = snapshot[f.name];
-        if (
-          f.required &&
-          (v === undefined ||
-            v === null ||
-            v === "" ||
-            (Array.isArray(v) && !v.length))
-        )
-          next[f.name] = tr("{0} is required", [f.label ?? f.name]);
-        else
-          for (const rule of f.rules ?? []) {
-            try {
-              const message = await rule(v, snapshot);
-              if (message) {
-                next[f.name] = message;
-                break;
-              }
-            } catch (e) {
-              next[f.name] = errorMessage(e);
-              break;
-            }
-          }
-      }),
-    );
+    const next = await validateFields(fields, snapshot, {
+      tr,
+      canAccess: (f) => services.canAccess(f as never),
+    });
     if (
       !mounted.current ||
       ticket !== validation.current ||
@@ -260,15 +228,22 @@ export function AutoForm<T extends object>({
   useImperativeHandle(ref, () => ({
     validate,
     reset,
+    hasPendingUploads: () => pendingUploads.size > 0,
+    setValidationErrors: (next: Record<string, string>) => {
+      validation.current++;
+      setErrors(next);
+      setSubmitError("");
+    },
     getValues: () =>
       ({
         ...form.state.values,
       }) as T,
     setValue: update,
     focus(name) {
+      const scope = `[data-field="${CSS.escape(name)}"]`;
       node.current
         ?.querySelector<HTMLElement>(
-          `[data-field="${CSS.escape(name)}"] input, [data-field="${CSS.escape(name)}"] select`,
+          `${scope} input, ${scope} select, ${scope} textarea, ${scope} button`,
         )
         ?.focus();
     },
@@ -302,12 +277,7 @@ export function AutoForm<T extends object>({
   return (
     <form
       ref={node}
-      className={[
-        "auto-root auto-form",
-        className,
-        effectiveClassNames.form,
-        effectiveClassNames.root,
-      ]
+      className={["auto-root auto-form", className, effectiveClassNames.form]
         .filter(Boolean)
         .join(" ")}
       data-label-position={labelPosition}
@@ -331,7 +301,6 @@ export function AutoForm<T extends object>({
               ? `${labelWidth}px`
               : labelWidth,
           ...effectiveStyles.form,
-          ...effectiveStyles.root,
           ...style,
         } as React.CSSProperties
       }
@@ -423,6 +392,18 @@ export function AutoForm<T extends object>({
             ...fieldStyles?.error,
           };
 
+          const tipClass = [
+            "auto-tip-marker",
+            effectiveClassNames.tip,
+            fieldClassNames?.tip,
+          ]
+            .filter(Boolean)
+            .join(" ");
+          const tipMarkerStyle = {
+            ...effectiveStyles.tip,
+            ...fieldStyles?.tip,
+          };
+
           return (
             <AutoTip
               key={name ?? i}
@@ -444,7 +425,11 @@ export function AutoForm<T extends object>({
                     {label}
                     {f.required && <span aria-hidden="true"> *</span>}
                     {hasHelp && (
-                      <span className="auto-tip-marker" aria-hidden="true">
+                      <span
+                        className={tipClass}
+                        style={tipMarkerStyle}
+                        aria-hidden="true"
+                      >
                         {" "}
                         ⓘ
                       </span>

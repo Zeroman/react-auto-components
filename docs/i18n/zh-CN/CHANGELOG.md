@@ -2,6 +2,15 @@
 
 [English](../../CHANGELOG.md) | **简体中文** | [繁體中文](../zh-TW/CHANGELOG.md) | [日本語](../ja/CHANGELOG.md) | [한국어](../ko/CHANGELOG.md) | [Español](../es/CHANGELOG.md) | [Français](../fr/CHANGELOG.md) | [Deutsch](../de/CHANGELOG.md) | [Português (Brasil)](../pt-BR/CHANGELOG.md) | [Русский](../ru/CHANGELOG.md)
 
+## 未发布
+
+- 修复空／单边日期区间、必填区间校验、搜索弹层的校验／重置／禁用行为，以及受控上传。
+- 保留表单默认值和文件引用身份，完善字段聚焦、区间标签及样式插槽。
+- 同步表格选择回调与缓存，重置搜索输入，按当前固定列状态处理拖拽，数字筛选空值不再变成零。
+- 父面板激活时通知导航引擎；弹窗内的浮层保留在弹窗中，非安全上下文也能生成本地 UI 标识。
+- DevTools 大结果不再导致断连，仅取消对应的中断轮询，保留错误详情，改善检查器的组件归属与动作描述。
+- 使用兼容 React Compiler 的 Babel 7；发布前必须通过完整浏览器矩阵，并检查两个打包依赖的名称和版本。
+
 ## 0.5.3 - 2026-10-15
 
 - 新增可选的 `@zeroman.yang/react-auto-components-devtools` 包，供 Vite 项目显式开启 agent 访问，支持页面发现、语义检查、明确的单页面命令，以及通过托管或 CDP 连接浏览器截取原页面。

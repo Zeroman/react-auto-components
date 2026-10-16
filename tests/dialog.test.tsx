@@ -55,3 +55,40 @@ test("failed submit preserves input, cancel saves draft, successful submit clear
   await u.click(screen.getByText("Open"));
   expect(screen.getByRole("textbox", { name: "Name" })).toHaveValue("");
 });
+
+// Audit 1.6: crypto.randomUUID() throws on non-secure contexts (plain HTTP
+// LAN IPs), where the API is unavailable. Opening a dialog must still work.
+test("opens a dialog when crypto.randomUUID is unavailable", async () => {
+  const proto = Object.getPrototypeOf(crypto) as {
+    randomUUID?: () => string;
+  };
+  const original = proto.randomUUID;
+  const hadOwn = Object.prototype.hasOwnProperty.call(proto, "randomUUID");
+  const own = Object.getOwnPropertyDescriptor(crypto, "randomUUID");
+  const unset = { value: undefined, configurable: true };
+  if (hadOwn) {
+    Object.defineProperty(proto, "randomUUID", unset);
+  }
+  Object.defineProperty(crypto, "randomUUID", unset);
+  try {
+    const u = userEvent.setup();
+    render(
+      <AutoDialogProvider>
+        <Launcher submit={vi.fn().mockResolvedValue(undefined)} />
+      </AutoDialogProvider>,
+    );
+    await u.click(screen.getByText("Open"));
+    expect(screen.getByTestId("rac-dialog")).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Name" })).toBeInTheDocument();
+  } finally {
+    delete (crypto as { randomUUID?: unknown }).randomUUID;
+    if (own) Object.defineProperty(crypto, "randomUUID", own);
+    if (hadOwn && original) {
+      Object.defineProperty(proto, "randomUUID", {
+        value: original,
+        configurable: true,
+        writable: true,
+      });
+    }
+  }
+});

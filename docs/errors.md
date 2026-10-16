@@ -111,6 +111,12 @@ The settings filter JSON is not a query. The translated "Invalid filter" stays o
 
 Fix: a group is `{ kind: "group", operator: "and" | "or", children }`. A condition is `{ kind: "condition", field, operator, value }` where `field` is a column key. `between` value is `[from, to]`. `in` value is an array.
 
+## RAC-QUERY-BETWEEN
+
+`serializeRsql` received a `between` condition whose value is not a two-item array.
+
+Fix: store `[from, to]`; either side may be null for an open range. Clear the value to omit the condition.
+
 ## RAC-QUERY-FIELD
 
 `serializeRsql` refused a field name that is not `/^[\w.]+$/`.
@@ -218,6 +224,14 @@ Fix: Install Playwright and Chromium; use headless mode without a display and ch
 The selected page has no screenshot connection.
 
 Fix: Use a managed page or configure browserEndpoint for that page; never substitute another page.
+
+## RAC-DEVTOOLS-RESULT
+
+The command result exceeded 524288 UTF-8 bytes (512 KiB). The action already ran, but its output was not delivered. The page remains connected.
+
+Fix: narrow the command output (fewer elements or a smaller eval return) and inspect again. Do not blindly repeat a mutation.
+
+A result that cannot be serialized as JSON (for example a cycle or BigInt) uses the same code and also keeps the page connected. Return JSON-compatible data; serialization runs once so transport retries do not repeat getters or `toJSON`.
 
 ## RAC-DEVTOOLS-COMMAND
 

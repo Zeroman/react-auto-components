@@ -1,7 +1,12 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { test, expect, type APIRequestContext, type Page } from "@playwright/test";
+import {
+  test,
+  expect,
+  type APIRequestContext,
+  type Page,
+} from "@playwright/test";
 
 /**
  * Agent bridge E2E against the current protocol:
@@ -36,11 +41,17 @@ let cached: Discovery | undefined;
  */
 async function discovery(): Promise<Discovery> {
   if (cached) return cached;
-  const dir = join(fileURLToPath(import.meta.url), "..", "..", ".rac", "servers");
+  const dir = join(
+    fileURLToPath(import.meta.url),
+    "..",
+    "..",
+    ".rac",
+    "servers",
+  );
   const candidates = readdirSync(dir)
     .filter((name) => name.endsWith(".json"))
-    .map((name) =>
-      JSON.parse(readFileSync(join(dir, name), "utf8")) as Discovery,
+    .map(
+      (name) => JSON.parse(readFileSync(join(dir, name), "utf8")) as Discovery,
     )
     .filter((entry) => entry.url.includes(":4174"));
   expect(
@@ -163,13 +174,9 @@ test("bridge health, auth and origin enforcement", async ({ request }) => {
   });
   expect(foreign.status()).toBe(403);
 
-  const crossOrigin = await call(
-    request,
-    "GET",
-    "/__rac/health",
-    undefined,
-    { Origin: "http://evil.example" },
-  );
+  const crossOrigin = await call(request, "GET", "/__rac/health", undefined, {
+    Origin: "http://evil.example",
+  });
   expect(crossOrigin.status).toBe(403);
   expect(crossOrigin.json.code).toBe("RAC-DEVTOOLS-AUTH");
 });
@@ -252,7 +259,10 @@ test("fill through a current ref drives a controlled React input", async ({
   expect(inspect.status).toBe(200);
   const elements = inspect.json.elements as Json[];
   const field = elements.find(
-    (e) => e.role === "textbox" && !e.disabled && (e.actions as string[]).includes("fill"),
+    (e) =>
+      e.role === "textbox" &&
+      !e.disabled &&
+      (e.actions as string[]).includes("fill"),
   );
   expect(field, "an editable textbox on the form example").toBeTruthy();
   const ref = field!.ref as string;
@@ -286,9 +296,8 @@ test("refs expire at the next inspect and stale refs are rejected", async ({
   await expect(page.locator("form.auto-form")).toBeVisible();
 
   const first = (await command(request, pageId, "inspect")).json;
-  const ref = (first.elements as Json[]).find(
-    (e) => e.role === "textbox",
-  )!.ref as string;
+  const ref = (first.elements as Json[]).find((e) => e.role === "textbox")!
+    .ref as string;
   // A second inspection resets the ref map; the old ref is now stale.
   await command(request, pageId, "inspect");
   const stale = await command(request, pageId, "dom", { ref });
@@ -324,9 +333,7 @@ test("one aborted poll is retried without replaying actions", async ({
   });
   await page.goto("/");
   const pageId = await bridgePageId(page);
-  await expect
-    .poll(() => aborted, { timeout: 20000 })
-    .toBe(true);
+  await expect.poll(() => aborted, { timeout: 20000 }).toBe(true);
 
   // Replay probe: a visible button counting its own clicks in the DOM. After
   // the poll abort and retry, one click command must click it exactly once.
@@ -445,20 +452,90 @@ test("commands never fall back after the chosen page closes", async ({
 
 test("screenshots of unmanaged pages fail without opening a substitute", async ({
   page,
-  request,
 }) => {
-  await page.goto("/");
-  const pageId = await bridgePageId(page);
-  const count = (await pages(request)).length;
+  // The shared 4174 dev server's registry is global: concurrent spec files
+  // register and close pages while this test runs, so comparing page counts
+  // there would flake. Run a private dev server with its own temp root,
+  // cache and discovery directory — then "no substitute page appeared" is
+  // provable exactly, and nothing outside this test's temp space is touched.
+  const { mkdtempSync, rmSync, writeFileSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const vite = await import("vite");
+  const { reactAutoComponentsDevtools } =
+    (await import("@zeroman.yang/react-auto-components-devtools/vite")) as {
+      reactAutoComponentsDevtools: (options?: {
+        enabled?: boolean;
+        discoveryDir?: string;
+      }) => unknown;
+    };
+  const tempRoot = mkdtempSync(join(tmpdir(), "rac-shot-"));
+  let server: Awaited<ReturnType<typeof vite.createServer>> | undefined;
+  try {
+    // Minimal page: the screenshot path only needs a connected page client,
+    // not the full demo app.
+    writeFileSync(
+      join(tempRoot, "index.html"),
+      '<!doctype html><html><head><title>rac-shot-isolated</title></head><body><button aria-label="one">x</button></body></html>',
+    );
+    server = await vite.createServer({
+      configFile: false,
+      root: tempRoot,
+      cacheDir: join(tempRoot, ".vite-cache"),
+      plugins: [
+        reactAutoComponentsDevtools({
+          enabled: true,
+          discoveryDir: join(tempRoot, "discovery"),
+        }),
+      ] as never,
+      server: { host: "127.0.0.1", port: 0, strictPort: false },
+    });
+    await server.listen();
+    const address = server.httpServer?.address();
+    if (!address || typeof address === "string")
+      throw new Error("isolated dev server did not listen on a port");
+    const isolated = `http://127.0.0.1:${address.port}`;
 
-  const shot = await request.fetch(
-    `/__rac/shot?pageId=${encodeURIComponent(pageId)}`,
-    { headers: await auth() },
-  );
-  expect(shot.status()).toBe(409);
-  expect(((await shot.json()) as Json).code).toBe("RAC-DEVTOOLS-SCREENSHOT");
-  // No substitute page was created behind the caller's back.
-  expect((await pages(request)).length).toBe(count);
+    // Read ONLY this server's own discovery file from its temp directory.
+    const isolatedAuth = async () => {
+      const files = readdirSync(join(tempRoot, "discovery")).filter((name) =>
+        name.endsWith(".json"),
+      );
+      expect(files, "discovery file for the isolated server").toHaveLength(1);
+      const entry = JSON.parse(
+        readFileSync(join(tempRoot, "discovery", files[0]), "utf8"),
+      ) as Discovery;
+      expect(entry.url).toBe(isolated);
+      return { Authorization: `Bearer ${entry.token}` };
+    };
+    const isolatedPages = async () =>
+      (await (
+        await fetch(`${isolated}/__rac/pages`, {
+          headers: await isolatedAuth(),
+        })
+      ).json()) as { pages: PageRecord[] };
+
+    await page.goto(isolated);
+    const pageId = await bridgePageId(page);
+    const before = await isolatedPages();
+    expect(before.pages.map((p) => p.pageId)).toEqual([pageId]);
+
+    const shot = await fetch(
+      `${isolated}/__rac/shot?pageId=${encodeURIComponent(pageId)}`,
+      { headers: await isolatedAuth() },
+    );
+    expect(shot.status).toBe(409);
+    expect(((await shot.json()) as Json).code).toBe("RAC-DEVTOOLS-SCREENSHOT");
+
+    // No substitute page was created behind the caller's back: the private
+    // registry still holds exactly this page, on the same connection.
+    const after = await isolatedPages();
+    expect(after.pages.map((p) => p.pageId)).toEqual([pageId]);
+    expect(after.pages[0].connectionId).toBe(before.pages[0].connectionId);
+    expect(after.pages[0].status).toBe("ready");
+  } finally {
+    await server?.close();
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
 });
 
 test("managed pages open headless and shot the exact page with its state", async ({
@@ -479,7 +556,10 @@ test("managed pages open headless and shot the exact page with its state", async
   await command(request, managedId, "goto", { target: "form:component" });
   const inspect = await command(request, managedId, "inspect");
   const field = (inspect.json.elements as Json[]).find(
-    (e) => e.role === "textbox" && !e.disabled && (e.actions as string[]).includes("fill"),
+    (e) =>
+      e.role === "textbox" &&
+      !e.disabled &&
+      (e.actions as string[]).includes("fill"),
   );
   expect(field, "an editable textbox on the managed page").toBeTruthy();
   const ref = field!.ref as string;

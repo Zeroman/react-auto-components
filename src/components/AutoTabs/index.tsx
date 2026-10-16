@@ -358,9 +358,7 @@ export function AutoTabs({
     >
       <div className="auto-tabs-heading">
         {headerExtra != null && (
-          <div className="auto-tabs-extra auto-tabs-leading">
-            {headerExtra}
-          </div>
+          <div className="auto-tabs-extra auto-tabs-leading">{headerExtra}</div>
         )}
         <div ref={navRef} className="auto-tabs-nav" data-overflow={overflowed}>
           {overflowed && (
@@ -566,8 +564,6 @@ function useTabsItems(
   const [loading, setLoading] = useState(!!source && items === undefined);
   const [error, setError] = useState("");
   const [version, setVersion] = useState(0);
-  const sourceRef = useRef(source);
-  sourceRef.current = source;
   const enabled = !!source && items === undefined;
   useEffect(() => {
     if (!enabled) return;
@@ -575,7 +571,7 @@ function useTabsItems(
     setLoading(true);
     setError("");
     Promise.resolve()
-      .then(() => sourceRef.current!({ signal: controller.signal }))
+      .then(() => source!({ signal: controller.signal }))
       .then((list) => {
         if (!controller.signal.aborted)
           setLoaded(Array.isArray(list) ? (list as readonly AutoTab[]) : []);

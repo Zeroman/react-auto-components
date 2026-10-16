@@ -43,13 +43,24 @@ function object(value: unknown): Record<string, unknown> {
     input("Expected a JSON object.");
   return value as Record<string, unknown>;
 }
-async function body(req: IncomingMessage) {
+const INPUT_LIMIT = 65536;
+// Command results flow from the page client, not from the CLI: a large eval
+// or big select listing must be acknowledged without tearing the page down.
+// The client caps its own result bodies below this bound and answers with a
+// small structured error instead, so the limit stays a safety net.
+const RESULT_LIMIT = 2 * 1024 * 1024;
+async function body(req: IncomingMessage, limit = INPUT_LIMIT) {
   const chunks: Buffer[] = [];
   let size = 0;
   for await (const chunk of req) {
     const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
     size += buffer.length;
-    if (size > 65536) input("Request body exceeds 64 KiB.");
+    if (size > limit)
+      input(
+        limit === INPUT_LIMIT
+          ? "Request body exceeds 64 KiB."
+          : "Result body exceeds the 2 MiB delivery bound.",
+      );
     chunks.push(buffer);
   }
   const raw = Buffer.concat(chunks).toString("utf8");
@@ -269,7 +280,10 @@ export function reactAutoComponentsDevtools(
             );
             return;
           }
-          const data = req.method === "POST" ? await body(req) : {};
+          const data =
+            req.method === "POST"
+              ? await body(req, route === "result" ? RESULT_LIMIT : INPUT_LIMIT)
+              : {};
           const credential =
             req.headers.authorization?.replace(/^Bearer /, "") ?? data.token;
           if (
@@ -329,13 +343,24 @@ export function reactAutoComponentsDevtools(
                 title: typeof data.title === "string" ? data.title : undefined,
                 url: typeof data.url === "string" ? data.url : undefined,
               });
-              json(
-                res,
-                200,
-                route === "poll"
-                  ? await registry.poll(pageId, connectionId)
-                  : { ok: true },
-              );
+              if (route === "poll") {
+                // A connection torn down mid-poll (tab close, network reset)
+                // frees exactly THIS waiter: an older response closing after
+                // a newer poll parked must not cancel the current waiter.
+                // Commands stay queued for the client's retry and the page
+                // lease is untouched — a transient abort never marks the
+                // page offline.
+                const waiter = registry.beginPoll(pageId, connectionId);
+                const onClose = () => waiter.cancel();
+                res.once("close", onClose);
+                try {
+                  json(res, 200, await waiter.promise);
+                } finally {
+                  res.off?.("close", onClose);
+                }
+              } else {
+                json(res, 200, { ok: true });
+              }
             } else {
               if (route === "disconnect")
                 registry.disconnect(pageId, connectionId);

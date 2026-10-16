@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { DataSource, TableQuery } from "./types";
 import { errorMessage } from "../../core/config";
 export function useTableData<T extends object>(
@@ -15,8 +15,6 @@ export function useTableData<T extends object>(
   const [loading, setLoading] = useState(false),
     [error, setError] = useState(""),
     [version, setVersion] = useState(0);
-  const sourceRef = useRef(source);
-  sourceRef.current = source;
   const queryKey = JSON.stringify(query);
   const enabled = !!source;
   useEffect(() => {
@@ -24,10 +22,10 @@ export function useTableData<T extends object>(
     const c = new AbortController();
     setLoading(true);
     setError("");
+    // The effect re-runs whenever `source` changes, so the closure always
+    // holds the source this fetch belongs to (paired with `c` in the cleanup).
     Promise.resolve()
-      .then(() =>
-        sourceRef.current!(JSON.parse(queryKey), { signal: c.signal }),
-      )
+      .then(() => source!(JSON.parse(queryKey), { signal: c.signal }))
       .then((result) => {
         if (!c.signal.aborted) {
           setRemote(result);

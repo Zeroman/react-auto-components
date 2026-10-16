@@ -5,6 +5,7 @@
 Schema form. Field widgets, validation, and submit live here. `AutoSearch` and `AutoDialog` render an `AutoForm` internally, so the callback rules below apply to them too.
 
 `Field<T>` (aliased as `FormItem<T>`) is a discriminated union on `type`, composed of interactive `FormField<T>` and structural `DisplayItem<T>`:
+
 - **Form fields**: Value-bound controls (e.g. `input`, `number`, `integer`, `select`, `virtual-select`, `date`, `daterange`, `switch`, `checkbox`, `radio`, `file`). `select` without `options`, a scalar on `daterange`, and `match: "between"` on a scalar model field are TypeScript errors. `virtual-select` (or `type: "select", virtual: true`) enables virtualized scrolling for large option lists (modernized replacement for `select-v2`).
 - **Display items**: Non-input presentational items (`title`, `tip`, `button`, `append`, `divider`). They are skipped during validation and do not contribute to form values. `tip` and `append` accept `content?: ReactNode`.
 
@@ -17,9 +18,11 @@ Resolution order is the item/field/column parameter, the owning component parame
 ### Styling Slots
 
 Both `AutoForm` and individual fields support slot-level `classNames` and `styles`:
-- **`AutoForm`**: `classNames?: AutoFormClassNames` (`root`, `field`, `label`, `input`, `tip`, `error`, `actions`, `submit`, `reset`, `cancel`) and `styles?: AutoFormStyles`.
-- **Field / Item**: `classNames?: FieldClassNames` (`root`, `label`, `input`, `tip`, `error`) and `styles?: FieldStyles`.
 
+- **`AutoForm`**: `classNames?: AutoFormClassNames` (`form`, `grid`, `root`, `label`, `control`, `input`, `tip`, `error`, `actions`, `submit`, `reset`) and `styles?: AutoFormStyles`.
+- **Field / Item**: `classNames?: FieldClassNames` (`root`, `label`, `control`, `input`, `tip`, `error`) and `styles?: FieldStyles`.
+
+`form` styles the outer `<form>`; `root` styles each field wrapper. `tip` styles the inline help marker next to the label.
 
 ## Usage
 
@@ -38,37 +41,39 @@ const fields: Field<Draft>[] = [
   },
 ];
 
-<AutoForm<Draft> fields={fields} onSubmit={async (value) => save(value)} />
+<AutoForm<Draft> fields={fields} onSubmit={async (value) => save(value)} />;
 ```
 
 ## Behavior and props
 
-| Prop | Behavior |
-| --- | --- |
-| `fields` | `readonly Field<T>[]`. Omitted `type` is a text input. Duplicate `name` throws `RAC-FIELD-DUPLICATE` while mounting. |
-| `value` | Controlled value. When it differs from internal state the form copies it and clears errors. If the parent ignores `onChange`, the input snaps back. |
-| `defaultValue` | Uncontrolled seed and the reset target. Field `defaultValue` fills keys you omit. Cloned with `structuredClone`. |
-| `onChange` | Called after every accepted edit, including patches from a field `onChange`. |
-| `onSubmit(value)` | Called only after validation passes. Resolve to finish. **Reject or throw: values stay, `error.message` is shown under the actions, the form does not reset.** |
-| `onReset` | Called after the reset button or `handle.reset()`. |
-| `disabled` | Blocks edits and submit. Default `false`. |
-| `readOnly` | Renders values without inputs. Default `false`. |
-| `columns` | Grid columns. Default `2`. `span` is clamped to this. `lineBreak` starts a full-width row. |
-| `actions` | Built-in submit and reset. Default `true`. Set `false` when the parent draws the buttons (search and dialog do this). |
-| `submitLabel`, `resetLabel` | Replace the built-in labels. The defaults are translated through `config.t`. |
-| Label props | `labelPosition` default `"top"`. `labelWidth` default `"auto"` (measured, capped at 45% of the field). `size` and `density` fall back to `AutoConfigProvider`. |
+| Prop                        | Behavior                                                                                                                                                                                                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `fields`                    | `readonly Field<T>[]`. Omitted `type` is a text input. Duplicate `name` throws `RAC-FIELD-DUPLICATE` while mounting.                                                                                                                                         |
+| `value`                     | Controlled value. When it differs from internal state the form copies it and clears errors. If the parent ignores `onChange`, the input snaps back.                                                                                                          |
+| `defaultValue`              | Uncontrolled seed and the reset target. Field `defaultValue` fills omitted or `undefined` keys. Mutable data (plain objects, arrays, dates, maps, sets, regular expressions) is copied; `File`, `Blob`, functions and other class instances retain identity. |
+| `onChange`                  | Called after every accepted edit, including patches from a field `onChange`.                                                                                                                                                                                 |
+| `onSubmit(value)`           | Called only after validation passes. Resolve to finish. **Reject or throw: values stay, `error.message` is shown under the actions, the form does not reset.**                                                                                               |
+| `onReset`                   | Called after the reset button or `handle.reset()`.                                                                                                                                                                                                           |
+| `disabled`                  | Blocks edits and submit. Default `false`.                                                                                                                                                                                                                    |
+| `readOnly`                  | Renders values without inputs. Default `false`.                                                                                                                                                                                                              |
+| `columns`                   | Grid columns. Default `2`. `span` is clamped to this. `lineBreak` starts a full-width row.                                                                                                                                                                   |
+| `actions`                   | Built-in submit and reset. Default `true`. Set `false` when the parent draws the buttons (search and dialog do this).                                                                                                                                        |
+| `submitLabel`, `resetLabel` | Replace the built-in labels. The defaults are translated through `config.t`.                                                                                                                                                                                 |
+| Label props                 | `labelPosition` default `"top"`. `labelWidth` default `"auto"` (measured, capped at 45% of the field). `size` and `density` fall back to `AutoConfigProvider`.                                                                                               |
 
 ## When a callback throws
 
-| Callback | Result |
-| --- | --- |
-| `onSubmit` | Caught. Draft kept. Message shown. No reset. |
-| Field `rules` | Caught per field. The thrown message becomes that field's error. Later rules are skipped. |
-| Field `onChange` | Not caught. The previous form value stays; the keystroke is not committed. |
-| `upload` | Rejection is shown under the file input and nothing is stored. `reset()` aborts the `AbortSignal` and drops a late result. |
-| Submit while an upload is in flight | `validate()` returns `false` and shows the built-in "wait for the upload" text. `onSubmit` is not called. |
-| `hidden`, `disabled`, or failed `canAccess` | That field is not validated, even if `required`. |
-| `required` empty | `undefined`, `null`, `""`, or an empty array blocks submit. The message is `"{label} is required"`, passed through `config.t`. |
+| Callback                                    | Result                                                                                                                         |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `onSubmit`                                  | Caught. Draft kept. Message shown. No reset.                                                                                   |
+| Field `rules`                               | Caught per field. The thrown message becomes that field's error. Later rules are skipped.                                      |
+| Field `onChange`                            | Not caught. The previous form value stays; the keystroke is not committed.                                                     |
+| `upload`                                    | Rejection is shown under the file input and nothing is stored. `reset()` aborts the `AbortSignal` and drops a late result.     |
+| Submit while an upload is in flight         | `validate()` returns `false` and shows the built-in "wait for the upload" text. `onSubmit` is not called.                      |
+| `hidden`, `disabled`, or failed `canAccess` | That field is not validated, even if `required`.                                                                               |
+| `required` empty                            | `undefined`, `null`, `""`, or an empty array blocks submit. The message is `"{label} is required"`, passed through `config.t`. |
+
+Required `daterange` / `datetimerange` fields need two nonempty endpoints; an open-ended range is valid only when the field is optional. Updating an unrelated controlled value preserves an ongoing upload. Replacing the upload value, explicit reset, and unmount cancel that upload and discard late results.
 
 `handle.validate()` resolves `true` or `false`. It does not throw. `handle.reset()` clears errors and upload state.
 

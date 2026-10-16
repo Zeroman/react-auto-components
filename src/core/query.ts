@@ -26,8 +26,13 @@ export const emptyQuery: QueryNode = {
  */
 export interface SearchField {
   name?: string;
+  /** Field widget. `daterange`/`datetimerange` default to `match: "between"`. */
+  type?: string;
   search?: SearchConfig;
 }
+const isEmptyRange = (v: unknown[]): boolean =>
+  v.length > 0 && v.every((x) => x == null || x === "");
+const openBound = (v: unknown) => (v == null || v === "" ? null : v);
 export function buildQuery(
   values: object,
   fields: readonly SearchField[],
@@ -41,21 +46,32 @@ export function buildQuery(
     const ignoreCase = s?.ignoreCase;
     const includeNull = s?.includeNull;
     const searchFields = s?.searchFields;
+    // Effective operator decides emptiness: a fully open range is a no-op for
+    // "between", but ordinary in-lists keep null / "" selections.
+    const operator =
+      match ??
+      (f.type === "daterange" || f.type === "datetimerange"
+        ? "between"
+        : Array.isArray(v)
+          ? "in"
+          : "eq");
     if (
       match !== "isNull" &&
       (v === undefined ||
         v === null ||
         v === "" ||
-        (Array.isArray(v) && !v.length))
+        (Array.isArray(v) &&
+          (!v.length || (operator === "between" && isEmptyRange(v)))))
     )
       continue;
-    const operator = match ?? (Array.isArray(v) ? "in" : "eq");
+    const value =
+      operator === "between" && Array.isArray(v) ? v.map(openBound) : v;
     if (operator === "between" && !(Array.isArray(v) && v.length === 2)) {
       devWarn(
         "AutoSearch",
         "RAC-FIELD-BETWEEN",
         `field "${f.name}" match="between" received ${valueKind(v)}, not a two-item array.`,
-        "Store [from, to] on this field. A scalar is ignored by matchesQuery and still serializes badly.",
+        "Store [from, to] on this field. Use null for an open bound. Scalar values do not match rows and serializeRsql rejects them.",
       );
     }
     const conditions: QueryNode[] = (searchFields ?? [f.name]).map((field) => {
@@ -63,7 +79,7 @@ export function buildQuery(
         kind: "condition",
         field,
         operator,
-        value: v,
+        value,
         ignoreCase,
       };
       return includeNull
@@ -107,13 +123,16 @@ export function matchesQuery(row: object, q: QueryNode): boolean {
         Array.isArray(q.value) &&
         q.value.some((v) => Object.is(a, normalize(v)))
       );
-    case "between":
+    case "between": {
+      if (!Array.isArray(q.value)) return false;
+      const lo = openBound(q.value[0]);
+      const hi = openBound(q.value[1]);
+      // A fully open range constrains nothing.
+      if (lo == null && hi == null) return true;
       return (
-        Array.isArray(q.value) &&
-        raw != null &&
-        (q.value[0] == null || raw >= q.value[0]) &&
-        (q.value[1] == null || raw <= q.value[1])
+        raw != null && (lo == null || raw >= lo) && (hi == null || raw <= hi)
       );
+    }
   }
 }
 export function serializeRsql(q: QueryNode): string {
@@ -138,7 +157,19 @@ export function serializeRsql(q: QueryNode): string {
   if (q.operator === "in")
     return `${q.field}=in=(${(Array.isArray(q.value) ? q.value : []).map(quote).join(",")})`;
   if (q.operator === "between") {
-    const [a, b] = q.value as unknown[];
+    if (!Array.isArray(q.value) || q.value.length !== 2)
+      throw new RacError(
+        "serializeRsql",
+        "RAC-QUERY-BETWEEN",
+        `field "${q.field}" has match="between" with ${valueKind(q.value)}; a between condition needs a two-item [from, to] array.`,
+        "Store [from, to] (either side may be null for an open range) on this field, or clear the value so the condition is omitted from the query.",
+      );
+    const a = openBound(q.value[0]);
+    const b = openBound(q.value[1]);
+    // A fully open range serializes to nothing.
+    if (a == null && b == null) return "";
+    if (a == null) return `${q.field}=le=${quote(b)}`;
+    if (b == null) return `${q.field}=ge=${quote(a)}`;
     return `(${q.field}=ge=${quote(a)};${q.field}=le=${quote(b)})`;
   }
   return `${q.field}${q.operator === "contains" ? (q.ignoreCase ? "=ilike=" : "=like=") : "=="}${quote(q.value)}`;

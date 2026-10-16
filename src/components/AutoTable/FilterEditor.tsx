@@ -124,7 +124,9 @@ export function FilterEditor<T extends object>({
                 onChange={(e) => {
                   const parse = (s: string) =>
                     columns.find((c) => c.key === node.field)?.type === "number"
-                      ? Number(s)
+                      ? s === ""
+                        ? s
+                        : Number(s)
                       : s;
                   change(index, {
                     ...node,

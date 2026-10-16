@@ -30,7 +30,8 @@ export interface TableDialogsProps<T extends object> {
   deleting: T[] | null;
   setDeleting: (deleting: T[] | null) => void;
   onDelete?: (rows: T[]) => void | Promise<void>;
-  setSelected: (selected: Record<string, true>) => void;
+  /** Removes the deleted rows from the selection through the table so `onSelectionChange` fires with the remaining rows. */
+  removeSelection: (rows: readonly T[]) => void;
 }
 
 export function TableDialogs<T extends object>({
@@ -53,7 +54,7 @@ export function TableDialogs<T extends object>({
   deleting,
   setDeleting,
   onDelete,
-  setSelected,
+  removeSelection,
 }: TableDialogsProps<T>) {
   const tr = useAutoText();
   const fields = formFields ?? deriveFormFields(columns);
@@ -118,8 +119,10 @@ export function TableDialogs<T extends object>({
         }
         confirmLabel={tr("Delete")}
         onSubmit={async () => {
-          if (deleting) await onDelete?.(deleting);
-          setSelected({});
+          if (deleting) {
+            await onDelete?.(deleting);
+            removeSelection(deleting);
+          }
           sourceRefresh();
         }}
       />
