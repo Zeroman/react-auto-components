@@ -14,7 +14,10 @@ const outputPath = resolve(outputDir, "demo.png");
 // Ensure demo is built
 if (!existsSync(resolve(demoDist, "index.html"))) {
   console.log("Building demo first...");
-  const res = spawnSync("pnpm", ["build:demo"], { cwd: root, stdio: "inherit" });
+  const res = spawnSync("pnpm", ["build:demo"], {
+    cwd: root,
+    stdio: "inherit",
+  });
   if (res.status !== 0) process.exit(res.status ?? 1);
 }
 
@@ -40,13 +43,10 @@ try {
   await page.goto(url, { waitUntil: "networkidle" });
   await page.waitForSelector(".studio");
   await page.waitForSelector("tbody tr");
-  // Showcase the single-line toolbar: compact inline layout, status pills on,
-  // and the More-filters popover open.
+  // Showcase the single-line toolbar: compact inline layout and status pills
+  // on. Keep the More-filters popover closed so the table stays unobscured.
   await page.getByRole("button", { name: "Compact Inline" }).click();
-  await page
-    .getByRole("checkbox", { name: "Status pills" })
-    .check();
-  await page.getByTestId("rac-more-filters").click();
+  await page.getByRole("checkbox", { name: "Status pills" }).check();
   await page.waitForTimeout(400);
 
   await page.screenshot({

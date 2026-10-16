@@ -4,11 +4,15 @@
 
 一个独立的、以 schema 驱动的 React 19 组件库，覆盖表单、表格与对话。基于 TypeScript、TanStack Table 9 / Form / Virtual、Radix 和 Floating UI 构建，不依赖 Ant Design、Element Plus 或 MUI。库构建使用 React Compiler。
 
+**Agent 调试：** 通过 [React Auto Components DevTools](#agent-开发工具)，让编程 Agent 使用 `rac` 命令检查并操作指定的开发页面。
+
 [![Auto Studio 演示截图](../../assets/demo.png)](https://zeroman.github.io/react-auto-components/)
 
 <p align="center">
-  <a href="https://zeroman.github.io/react-auto-components/"><strong>🚀 在线演示 (GitHub Pages)</strong></a> · <a href="#演示与独立测试项目">本地运行</a> · <a href="#组件">组件列表</a>
+  <a href="https://zeroman.github.io/react-auto-components/"><strong>🚀 在线演示 (GitHub Pages)</strong></a> · <a href="#演示与独立测试项目">本地运行</a> · <a href="#组件">组件列表</a> · <a href="#agent-开发工具">Agent 调试</a>
 </p>
+
+使用 Agent 调试运行中的页面，见 [Agent 开发工具](#agent-开发工具)；组件契约索引见 [llms.txt](../../../llms.txt)。
 
 ## 项目状态
 
@@ -25,6 +29,62 @@ XLSX 导出缺少 `exportXlsx` 适配器时为 `RAC-TABLE-XLSX`；无法加载�
 - [变更记录](https://github.com/Zeroman/react-auto-components/blob/main/docs/i18n/zh-CN/CHANGELOG.md)
 - [注册账号与发布指南](https://github.com/Zeroman/react-auto-components/blob/main/docs/i18n/zh-CN/publishing.md)
 - [MIT 许可证](../../../LICENSE)
+
+## Agent 开发工具
+
+**让 Agent 通过 React Auto Components DevTools 调试正在运行的应用。** 可选包 `@zeroman.yang/react-auto-components-devtools` 提供 Vite 插件和 `rac` 命令。插件把从已开启功能的本地 Vite 服务加载的页面接入控制桥，CLI 发现页面，并以 JSON 返回可见控件、元素 ref、支持的操作及 RAC 导航能力。Agent 可以检查表单、填写字段、点击控件、读取警告与错误，并在同一个页面中验证结果。
+
+![Agent 使用 React Auto Components DevTools 调试页面](../../assets/devtools.gif)
+
+### 在本仓库体验
+
+执行 `pnpm install --frozen-lockfile` 后，开启控制桥并启动演示：
+
+```sh
+pnpm dev:agent
+```
+
+在 Chrome 中打开 Vite 输出的本地地址，再在仓库根目录打开第二个终端：
+
+```sh
+pnpm rac inspect                     # 发现页面及其标题、URL
+pnpm rac inspect --page PAGE_ID      # 检查选定页面，获取控件 ref
+pnpm rac fill REF "Ada" --page PAGE_ID
+pnpm rac inspect --page PAGE_ID      # 检查结果，获取新的 ref
+pnpm rac click REF --page PAGE_ID
+pnpm rac console --page PAGE_ID      # 读取该页面的警告和错误
+pnpm rac help --json                 # 查看可用命令及其契约
+```
+
+将 `PAGE_ID` 替换为选定页面的 ID，将 `REF` 替换为最近一次检查返回的控件引用。Chrome 开了多个页面时，按标题和 URL 选择目标；**每次操作都通过 `--page` 明确指定一个页面**。命令不会广播，也不会悄悄切换到其他页面。导航或刷新后重新 inspect，动作后检查结果；点击或提交超时后不要自动重试。
+
+### 在你自己的 Vite 项目中接入
+
+安装与组件库版本一致的 DevTools：
+
+```sh
+pnpm add -D @zeroman.yang/react-auto-components-devtools
+```
+
+在现有 Vite 配置中加入插件：
+
+```ts
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { reactAutoComponentsDevtools } from "@zeroman.yang/react-auto-components-devtools/vite";
+
+export default defineConfig({
+  plugins: [react(), reactAutoComponentsDevtools()],
+});
+```
+
+使用 `RAC_AGENT=1 pnpm dev` 启动，打开本地页面，再运行 `pnpm exec rac inspect`。上述命令中的 `pnpm rac` 是本仓库的快捷脚本，在自己的项目中换成 `pnpm exec rac`。将 `.rac/` 加入 `.gitignore`，其中保存私有发现凭据。普通开发启动、生产构建和 preview 均不开启控制。RAC 导航命令需要 `AutoNavigationProvider`，DOM 检查和操作不依赖该 provider。
+
+可以直接把这段话交给 Agent，或放进项目的 `AGENTS.md`：
+
+> 先运行 `pnpm exec rac help --json` 了解命令契约，再用 `pnpm exec rac inspect` 发现页面。根据标题和 URL 选定页面，后续每次操作都传它的 `--page` ID。使用最近一次检查返回的 ref，刷新后重新检查，每次操作后验证结果。不要隐式切换页面或重试修改操作。
+
+需要截图时，安装可选的 Playwright，通过 `rac open` 创建托管页面，或通过 CDP 显式连接已有的 Chromium 浏览器。截图接入、完整命令、多服务选择和配置见 [DevTools 使用指南](devtools.md)。
 
 ## 演示与独立测试项目
 
@@ -48,12 +108,13 @@ pnpm --dir test-project dev
 
 ### 自动化更新与可复用命令
 
-修改组件或示例后，可一键完成自动化编译与截图刷新：
+修改组件或示例后，可一键完成自动化编译与截图刷新。首次录制前运行 `pnpm exec playwright install chromium` 安装浏览器；GIF 录制还需要 ffmpeg：
 
 ```sh
 pnpm demo:update       # 一键更新：编译库、更新测试工程、打包 demo 静态文件并自动截取最新界面
 pnpm demo:build        # 仅编译 demo 静态产物至 demo-dist（适配 GitHub Pages）
 pnpm demo:screenshot   # 仅通过无头 Chromium 重新截取 docs/assets/demo.png
+node scripts/update-devtools-demo.mjs # 录制 Agent DevTools GIF；需在 PATH 中提供 ffmpeg
 ```
 
 代码推送到 `main` 分支时，GitHub Actions 会自动触发构建并部署静态文件到 GitHub Pages。
@@ -298,7 +359,3 @@ AutoChat 提供轻量的对话布局，支持流式跟随、历史消息加载�
 [AutoNavigation API 与路由接入指南](auto-navigation.md)
 
 回调抛错之后组件会怎样，见行为契约：[AutoForm](auto-form.md)、[AutoSearch](auto-search.md)、[AutoTable](auto-table.md)、[AutoDialog](auto-dialog.md)、[AutoTabs](auto-tabs.md)、[AutoMenu](auto-menu.md)、[AutoNavigation](auto-navigation.md)。开发者错误码：[errors.md](errors.md)。
-
-## Agent 开发工具
-
-通过可选的 [`@zeroman.yang/react-auto-components-devtools`](devtools.md) Vite 插件，让 agent 发现、检查并单独操作开发页面。需使用 `RAC_AGENT=1` 显式开启；生产构建不包含控制桥。

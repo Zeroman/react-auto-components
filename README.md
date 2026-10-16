@@ -4,17 +4,19 @@
 
 A standalone, schema-driven component library for React 19, covering forms, tables, and chat. Built with TypeScript, TanStack Table 9 / Form / Virtual, Radix, and Floating UI, without Ant Design, Element Plus, or MUI. Library builds use React Compiler.
 
+**Agent debugging:** [React Auto Components DevTools](#agent-developer-tools) lets coding agents inspect and operate a selected development page through the `rac` CLI.
+
 [![Auto Studio Demo Preview](docs/assets/demo.png)](https://zeroman.github.io/react-auto-components/)
 
 <p align="center">
-  <a href="https://zeroman.github.io/react-auto-components/"><strong>🚀 Live Demo (GitHub Pages)</strong></a> · <a href="#demo-and-test-project">Run Locally</a> · <a href="#components">Components</a>
+  <a href="https://zeroman.github.io/react-auto-components/"><strong>🚀 Live Demo (GitHub Pages)</strong></a> · <a href="#demo-and-test-project">Run Locally</a> · <a href="#components">Components</a> · <a href="#agent-developer-tools">Agent DevTools</a>
 </p>
 
 ## Project status
 
 The current version is 0.5.3 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Built-in interface text defaults to English and can be translated through AutoConfigProvider.config.t.
 
-Agents: start at [llms.txt](llms.txt). It indexes the behavior docs, error codes, JSON registries, and Playwright ids.
+For live page debugging, start with [Agent DevTools](#agent-developer-tools). For component contracts, agents can start at [llms.txt](llms.txt). It indexes the behavior docs, error codes, JSON registries, and Playwright ids.
 
 Install with `pnpm add @zeroman.yang/react-auto-components` (npm and yarn work the same way). React 19 and react-dom 19 are peer dependencies. Import the stylesheet once: `import "@zeroman.yang/react-auto-components/style.css"`.
 
@@ -23,6 +25,62 @@ Install with `pnpm add @zeroman.yang/react-auto-components` (npm and yarn work t
 - [Changelog](https://github.com/Zeroman/react-auto-components/blob/main/docs/CHANGELOG.md)
 - [Account setup and publishing](https://github.com/Zeroman/react-auto-components/blob/main/docs/publishing.md)
 - [MIT license](LICENSE)
+
+## Agent developer tools
+
+**Let an agent debug your running application through React Auto Components DevTools.** The optional `@zeroman.yang/react-auto-components-devtools` package provides a Vite plugin and the `rac` CLI. The plugin connects pages loaded from the enabled local Vite server to a control bridge; the CLI discovers those pages and returns JSON describing visible controls, element refs, supported actions and RAC navigation. An agent can inspect a form, fill fields, click controls, read warnings/errors, and check the result in the same page.
+
+![Agent debugging a page with React Auto Components DevTools](docs/assets/devtools.gif)
+
+### Try it in this repository
+
+After `pnpm install --frozen-lockfile`, start the demo with the bridge enabled:
+
+```sh
+pnpm dev:agent
+```
+
+Open the local URL printed by Vite in Chrome. In a second terminal at the repository root:
+
+```sh
+pnpm rac inspect                     # Discover pages and their titles/URLs
+pnpm rac inspect --page PAGE_ID      # Inspect the selected page and get refs
+pnpm rac fill REF "Ada" --page PAGE_ID
+pnpm rac inspect --page PAGE_ID      # Check the result and obtain fresh refs
+pnpm rac click REF --page PAGE_ID
+pnpm rac console --page PAGE_ID      # Read this page's warnings and errors
+pnpm rac help --json                 # Discover commands and their contracts
+```
+
+Replace `PAGE_ID` with the chosen page's ID and `REF` with a control ref from its latest inspection. With several Chrome pages open, choose by title and URL; **every action targets exactly one page with `--page`**. Commands never broadcast or silently switch to another page. Inspect again after navigation or reload, and verify the result after an action; do not automatically repeat a click or submit after a timeout.
+
+### Enable it in your own Vite project
+
+Install the DevTools version matching your component library version:
+
+```sh
+pnpm add -D @zeroman.yang/react-auto-components-devtools
+```
+
+Add the plugin to your existing Vite configuration:
+
+```ts
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { reactAutoComponentsDevtools } from "@zeroman.yang/react-auto-components-devtools/vite";
+
+export default defineConfig({
+  plugins: [react(), reactAutoComponentsDevtools()],
+});
+```
+
+Start with `RAC_AGENT=1 pnpm dev`, open a local page, then use `pnpm exec rac inspect` and the commands above with `pnpm exec rac` in place of this repository's `pnpm rac` shortcut. Add `.rac/` to `.gitignore`: it stores private discovery credentials. Ordinary development, production builds and preview do not enable control. RAC navigation commands require `AutoNavigationProvider`; DOM inspection and interaction also work without it.
+
+Give your agent this instruction, or add it to your project's `AGENTS.md`:
+
+> Use `pnpm exec rac help --json` for the command contract. Run `pnpm exec rac inspect`, choose the intended page by title and URL, and pass its `--page` ID on every operation. Use refs from the latest inspection, inspect again after reload, and verify each result. Never switch pages or retry mutations implicitly.
+
+For screenshots, install optional Playwright and use `rac open` to create a managed page, or explicitly connect an existing Chromium browser through CDP. See the [DevTools guide](docs/devtools.md) for screenshot setup, all commands, multiple servers and configuration.
 
 ## Demo and test project
 
@@ -46,12 +104,13 @@ Every example page includes a **View code** button that opens its real source fi
 
 ### Automated demo workflow
 
-The demo build and screenshot capture process is automated and reusable:
+The demo build and screenshot capture process is automated and reusable. Install the capture browser once with `pnpm exec playwright install chromium`; the GIF recorder also requires ffmpeg:
 
 ```sh
 pnpm demo:update       # Full update: rebuilds library, updates test-project, builds demo-dist, and refreshes screenshot
 pnpm demo:build        # Compiles static demo files to demo-dist for GitHub Pages
 pnpm demo:screenshot   # Takes fresh high-resolution screenshot using headless Chromium to docs/assets/demo.png
+node scripts/update-devtools-demo.mjs # Records the Agent DevTools GIF; requires ffmpeg on PATH
 ```
 
 Pushes to `main` branch automatically build and publish static files to GitHub Pages via GitHub Actions.
@@ -339,7 +398,3 @@ AutoChat provides a lightweight conversation layout with streaming follow, histo
 `AutoNavigation` provides a declarative, tree-structured component navigation system. It separates location paths, parameters, access checks, and history synchronization, while enabling deep relative navigation (`./child`, `../sibling`), StrictMode-safe `AbortSignal` management, and seamless adapter integration with React Router, TanStack Router, Next.js, and static hash routes.
 
 [AutoNavigation API & Router Integration](docs/auto-navigation.md)
-
-## Agent developer tools
-
-Use the optional [`@zeroman.yang/react-auto-components-devtools`](docs/devtools.md) Vite plugin to let agents discover, inspect and operate one development page at a time. It is explicitly enabled with `RAC_AGENT=1`; production builds do not include the bridge.
