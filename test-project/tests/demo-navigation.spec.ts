@@ -18,6 +18,7 @@ const examples = {
     "RSQL query",
     "Server-driven Mock",
     "Permissions",
+    "RAC live demo",
   ],
   AutoTabs: [
     "Basic",
@@ -29,7 +30,12 @@ const examples = {
     "Server-driven Mock",
     "Permissions",
   ],
-  AutoForm: ["Project form", "Server-driven Mock", "Permissions"],
+  AutoForm: [
+    "Project form",
+    "Server-driven Mock",
+    "Permissions",
+    "RAC live demo",
+  ],
   AutoDialog: ["Dialog flows", "Server-driven Mock", "Permissions"],
   AutoMenu: ["Menu structure", "Server-driven Mock", "Permissions"],
   AutoChat: [
@@ -169,9 +175,7 @@ test("navigation showcase toolbar drives global goto, relative goto, params, and
   await closeDebug();
   await expect(page.locator("main")).toHaveAttribute("data-page", "table");
   await expect(
-    page
-      .locator(".demo-navigation")
-      .getByRole("tab", { name: "Massive data" }),
+    page.locator(".demo-navigation").getByRole("tab", { name: "Massive data" }),
   ).toHaveAttribute("aria-selected", "true");
 
   // 2. Global goto: chat:performance

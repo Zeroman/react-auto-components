@@ -86,6 +86,8 @@ export default defineConfig({
 
 需要截图时，安装可选的 Playwright，通过 `rac open` 创建托管页面，或通过 CDP 显式连接已有的 Chromium 浏览器。截图接入、完整命令、多服务选择和配置见 [DevTools 使用指南](devtools.md)。
 
+想直观看到数据变化如何影响界面，可在本地演示的 AutoForm 或 AutoSearch 下打开 **RAC 联动演示**（`form:rac` / `search:rac`）。通过 RAC 填写表单，实时项目预览会同步更新，依赖字段随之显隐；修改搜索条件可观察结果数量和列表变化，切换手动模式还能对比草稿条件与已应用结果。[DevTools 使用指南](devtools.md)提供了操作命令。 点击**开始演示**后，本地服务端自动执行 RAC 步骤，页面暂时锁定交互，每次变化前高亮关注区域并显示提示。可随时点击**停止**或按 Esc 结束。此功能仅在 `pnpm dev:agent` 下启用。
+
 ## 演示与独立测试项目
 
 可以在浏览器中直接访问 **[GitHub Pages 在线演示](https://zeroman.github.io/react-auto-components/)**。

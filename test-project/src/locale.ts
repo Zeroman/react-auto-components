@@ -1,4 +1,5 @@
 import messages from "./messages";
+import racDemoMessages from "./racDemoMessages";
 import chatLabMessages from "./chatLabMessages";
 import chatMessages from "./chatMessages";
 import chatRendererMessages from "./chatRendererMessages";
@@ -50,6 +51,7 @@ export function translateMessage(
   fallback = key,
 ): string {
   for (const catalog of [
+    racDemoMessages,
     mockMessages,
     serverFormMessages,
     serverNavigationMessages,

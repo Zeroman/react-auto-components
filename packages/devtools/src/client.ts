@@ -1,3 +1,4 @@
+import { attachDemoClient } from "./demo-client.js";
 import { createPageDriver } from "./page.js";
 import { failure } from "./errors.js";
 import { PREFIX, type PageCommand, type CommandResult } from "./protocol.js";
@@ -151,10 +152,15 @@ export function limitResult(result: CommandResult): CommandResult {
     },
   };
 }
-export async function start(config: { token: string; allowEval: boolean }) {
+export async function start(config: {
+  token: string;
+  allowEval: boolean;
+  demos?: boolean;
+}) {
   const key = "rac:page-id";
   let stopped = false;
   let identity: { pageId: string; connectionId: string } | undefined;
+  let detachDemo: (() => void) | undefined;
   const driver = createPageDriver(config.allowEval);
   const abort = new AbortController();
   const request = async (path: string, body: Record<string, unknown>) => {
@@ -256,6 +262,7 @@ export async function start(config: { token: string; allowEval: boolean }) {
   function stop() {
     if (stopped) return;
     stopped = true;
+    detachDemo?.();
     if (identity)
       navigator.sendBeacon(
         `${PREFIX}/disconnect`,
@@ -282,6 +289,10 @@ export async function start(config: { token: string; allowEval: boolean }) {
       url: location.href,
     });
     globalThis.__racPageId = identity!.pageId;
+    if (config.demos)
+      detachDemo = attachDemoClient((body) =>
+        request("demo", { ...body, ...identity }),
+      );
     try {
       sessionStorage.setItem(key, identity!.pageId);
     } catch {

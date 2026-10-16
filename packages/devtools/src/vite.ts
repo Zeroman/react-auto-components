@@ -4,6 +4,8 @@ import { resolve, join } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Plugin, ViteDevServer } from "vite";
 import { PageRegistry } from "./registry.js";
+import { DemoRunner } from "./demos.js";
+import type { DemoScenario } from "./protocol.js";
 import { RacError, failure } from "./errors.js";
 import { BrowserController } from "./browser.js";
 import { PREFIX, PROTOCOL_VERSION } from "./protocol.js";
@@ -13,6 +15,7 @@ export interface DevtoolsOptions {
   allowEval?: boolean;
   discoveryDir?: string;
   browserEndpoint?: string;
+  demos?: Record<string, DemoScenario>;
 }
 const commands = new Set([
   "inspect",
@@ -132,6 +135,7 @@ export function reactAutoComponentsDevtools(
       const token = randomUUID();
       const serverId = randomUUID();
       const registry = new PageRegistry({ staleMs: 60000 });
+      const demos = new DemoRunner(registry, options.demos);
       const browser = new BrowserController(options.browserEndpoint);
       let discoveryPath: string | undefined;
       let discoveryWrite: Promise<void> | undefined;
@@ -139,6 +143,7 @@ export function reactAutoComponentsDevtools(
       let disposePromise: Promise<void> | undefined;
       function dispose() {
         return (disposePromise ??= (async () => {
+          demos.dispose();
           registry.dispose();
           await discoveryWrite;
           if (discoveryPath) await unlink(discoveryPath).catch(() => {});
@@ -265,13 +270,19 @@ export function reactAutoComponentsDevtools(
             res.setHeader("Cache-Control", "no-store");
             res.setHeader("X-Content-Type-Options", "nosniff");
             res.end(
-              `import { start } from '${PREFIX}/client.js';\nstart(${JSON.stringify({ token, allowEval: options.allowEval === true })});\n`,
+              `import { start } from '${PREFIX}/client.js';\nstart(${JSON.stringify({ token, allowEval: options.allowEval === true, demos: !!options.demos && Object.keys(options.demos).length > 0 })});\n`,
             );
             return;
           }
           if (
             req.method === "GET" &&
-            ["client.js", "page.js", "errors.js", "protocol.js"].includes(route)
+            [
+              "client.js",
+              "demo-client.js",
+              "page.js",
+              "errors.js",
+              "protocol.js",
+            ].includes(route)
           ) {
             res.setHeader("Content-Type", "text/javascript");
             res.setHeader("Cache-Control", "no-store");
@@ -296,6 +307,39 @@ export function reactAutoComponentsDevtools(
               "The bridge session token is missing or invalid.",
               "Use rac from this project to discover the current server credentials.",
             );
+          if (route === "demo" && req.method === "POST") {
+            if (
+              typeof data.pageId !== "string" ||
+              !data.pageId ||
+              typeof data.connectionId !== "string" ||
+              !data.connectionId
+            )
+              input("Demonstrations require explicit page and connection IDs.");
+            const pageId = data.pageId as string,
+              connectionId = data.connectionId as string;
+            if (data.action === "status")
+              json(res, 200, demos.status(pageId, connectionId));
+            else if (data.action === "stop")
+              json(res, 200, demos.stop(pageId, connectionId));
+            else if (data.action === "start") {
+              if (typeof data.scenario !== "string")
+                input("Select a registered demonstration name.");
+              if (
+                data.expiresAt !== undefined &&
+                (typeof data.expiresAt !== "number" ||
+                  !Number.isFinite(data.expiresAt) ||
+                  data.expiresAt < Date.now() ||
+                  data.expiresAt > Date.now() + 10000)
+              )
+                input("The demonstration start request has expired.");
+              json(
+                res,
+                200,
+                demos.start(pageId, connectionId, data.scenario as string),
+              );
+            } else input("Unknown demonstration action.");
+            return;
+          }
           if (route === "health" && req.method === "GET") {
             json(res, 200, {
               status: "ready",

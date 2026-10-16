@@ -1,5 +1,11 @@
 import { EventEmitter } from "node:events";
-import { mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from "node:fs";
+import {
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, expect, test, vi } from "vitest";
@@ -90,18 +96,23 @@ function harness(
         this.headers[name] = value;
       },
     };
-    const payload = request.body === undefined ? "" : JSON.stringify(request.body);
-    await handler!({
-      method: request.method,
-      url: request.path,
-      headers: request.headers ?? {},
-      socket: { remoteAddress: request.remote ?? "127.0.0.1" },
-      async *[Symbol.asyncIterator]() {
-        if (payload) yield payload;
+    const payload =
+      request.body === undefined ? "" : JSON.stringify(request.body);
+    await handler!(
+      {
+        method: request.method,
+        url: request.path,
+        headers: request.headers ?? {},
+        socket: { remoteAddress: request.remote ?? "127.0.0.1" },
+        async *[Symbol.asyncIterator]() {
+          if (payload) yield payload;
+        },
       },
-    }, res, () => {
-      throw new Error("middleware should always answer /__rac requests");
-    });
+      res,
+      () => {
+        throw new Error("middleware should always answer /__rac requests");
+      },
+    );
     return { status: res.statusCode, headers: res.headers, body: res.body };
   };
   return { plugin, httpServer, call, infos };
@@ -131,7 +142,9 @@ test("explicitly enabled plugin injects a secret-free bootstrap module", () => {
     server: {},
   } as never);
   expect(Array.isArray(tags)).toBe(true);
-  const tag = (tags as { children?: string; attrs: Record<string, string> }[])[0];
+  const tag = (
+    tags as { children?: string; attrs: Record<string, string> }[]
+  )[0];
   expect(tag.attrs.type).toBe("module");
   expect(tag.attrs.src).toBe(`${PREFIX}/bootstrap.js`);
   // No inline script: the served HTML carries no credential at all.
@@ -150,15 +163,22 @@ test("health answers with the protocol contract for a valid bearer token", async
   expect(JSON.parse(denied.body).code).toBe("RAC-DEVTOOLS-AUTH");
 
   // Listening writes discovery; the harness reads its own token from there.
-  httpServer.address = () => ({ address: "127.0.0.1", family: "IPv4", port: 4174 });
+  httpServer.address = () => ({
+    address: "127.0.0.1",
+    family: "IPv4",
+    port: 4174,
+  });
   httpServer.emit("listening");
   await vi.waitFor(() => {
     expect(readdirSync(discoveryDir)).toHaveLength(1);
   });
   const file = join(discoveryDir, readdirSync(discoveryDir)[0]);
-  const discovery = JSON.parse(
-    readFileSync(file, "utf8"),
-  ) as Json & { token: string; url: string; serverId: string; pid: number };
+  const discovery = JSON.parse(readFileSync(file, "utf8")) as Json & {
+    token: string;
+    url: string;
+    serverId: string;
+    pid: number;
+  };
   expect(discovery.protocolVersion).toBe(1);
   expect(discovery.url).toBe("http://127.0.0.1:4174");
   expect(discovery.pid).toBe(process.pid);
@@ -186,7 +206,11 @@ test("health exposes eval only with allowEval", async () => {
     allowEval: true,
     discoveryDir,
   });
-  httpServer.address = () => ({ address: "127.0.0.1", family: "IPv4", port: 4174 });
+  httpServer.address = () => ({
+    address: "127.0.0.1",
+    family: "IPv4",
+    port: 4174,
+  });
   httpServer.emit("listening");
   await vi.waitFor(() => expect(readdirSync(discoveryDir)).toHaveLength(1));
   const discovery = JSON.parse(
@@ -203,7 +227,11 @@ test("health exposes eval only with allowEval", async () => {
 test("bridge rejects bad tokens, foreign origins, foreign hosts and remote peers", async () => {
   const discoveryDir = temp("rac-discovery");
   const { httpServer, call } = harness({ enabled: true, discoveryDir });
-  httpServer.address = () => ({ address: "127.0.0.1", family: "IPv4", port: 4174 });
+  httpServer.address = () => ({
+    address: "127.0.0.1",
+    family: "IPv4",
+    port: 4174,
+  });
   httpServer.emit("listening");
   await vi.waitFor(() => expect(readdirSync(discoveryDir)).toHaveLength(1));
   const discovery = JSON.parse(
@@ -229,7 +257,10 @@ test("bridge rejects bad tokens, foreign origins, foreign hosts and remote peers
   const foreignHost = await call({
     method: "GET",
     path: `${PREFIX}/health`,
-    headers: { authorization: `Bearer ${discovery.token}`, host: "evil.example" },
+    headers: {
+      authorization: `Bearer ${discovery.token}`,
+      host: "evil.example",
+    },
   });
   expect(foreignHost.status).toBe(403);
 
@@ -245,7 +276,11 @@ test("bridge rejects bad tokens, foreign origins, foreign hosts and remote peers
 test("commands and screenshots require an explicit pageId", async () => {
   const discoveryDir = temp("rac-discovery");
   const { httpServer, call } = harness({ enabled: true, discoveryDir });
-  httpServer.address = () => ({ address: "127.0.0.1", family: "IPv4", port: 4174 });
+  httpServer.address = () => ({
+    address: "127.0.0.1",
+    family: "IPv4",
+    port: 4174,
+  });
   httpServer.emit("listening");
   await vi.waitFor(() => expect(readdirSync(discoveryDir)).toHaveLength(1));
   const discovery = JSON.parse(
@@ -283,7 +318,11 @@ test("commands and screenshots require an explicit pageId", async () => {
 test("connect registers a page; eval stays denied without allowEval", async () => {
   const discoveryDir = temp("rac-discovery");
   const { httpServer, call } = harness({ enabled: true, discoveryDir });
-  httpServer.address = () => ({ address: "127.0.0.1", family: "IPv4", port: 4174 });
+  httpServer.address = () => ({
+    address: "127.0.0.1",
+    family: "IPv4",
+    port: 4174,
+  });
   httpServer.emit("listening");
   await vi.waitFor(() => expect(readdirSync(discoveryDir)).toHaveLength(1));
   const discovery = JSON.parse(
@@ -304,7 +343,9 @@ test("connect registers a page; eval stays denied without allowEval", async () =
   const pages = await call({ method: "GET", path: `${PREFIX}/pages`, headers });
   expect(
     (JSON.parse(pages.body) as { pages: { pageId: string }[] }).pages,
-  ).toEqual([expect.objectContaining({ pageId: page.pageId, status: "ready" })]);
+  ).toEqual([
+    expect.objectContaining({ pageId: page.pageId, status: "ready" }),
+  ]);
 
   const evalDenied = await call({
     method: "POST",
@@ -328,7 +369,11 @@ test("connect registers a page; eval stays denied without allowEval", async () =
 test("server close removes the discovery file", async () => {
   const discoveryDir = temp("rac-discovery");
   const { httpServer } = harness({ enabled: true, discoveryDir });
-  httpServer.address = () => ({ address: "127.0.0.1", family: "IPv4", port: 4174 });
+  httpServer.address = () => ({
+    address: "127.0.0.1",
+    family: "IPv4",
+    port: 4174,
+  });
   httpServer.emit("listening");
   await vi.waitFor(() => expect(readdirSync(discoveryDir)).toHaveLength(1));
   httpServer.emit("close");
@@ -338,7 +383,11 @@ test("server close removes the discovery file", async () => {
 test("closing immediately after listening leaves no discovery file behind", async () => {
   const discoveryDir = temp("rac-discovery");
   const { httpServer } = harness({ enabled: true, discoveryDir });
-  httpServer.address = () => ({ address: "127.0.0.1", family: "IPv4", port: 4174 });
+  httpServer.address = () => ({
+    address: "127.0.0.1",
+    family: "IPv4",
+    port: 4174,
+  });
   httpServer.emit("listening");
   // Close races the discovery write; cleanup must await it and still unlink.
   httpServer.emit("close");
@@ -396,4 +445,172 @@ test("a reused plugin instance serves a fresh session after closeBundle", async 
     headers: bearer(firstDiscovery.token),
   });
   expect(stale.status).toBe(403);
+});
+
+// ---------------------------------------------------------------------------
+// Optional guided demos: POST /__rac/demo drives declarative server-side
+// scenarios against one bound page connection. Contract per
+// docs/superpowers/plans/2026-10-16-rac-guided-demo.md: existing auth gates,
+// scenario allowlist, page+connection identity binding, one run per page.
+// ---------------------------------------------------------------------------
+const demoOptions = {
+  demos: {
+    form: {
+      route: "form:rac",
+      steps: [{ message: "demo.step", focus: "rac-form-preview", holdMs: 10 }],
+    },
+  },
+};
+
+/** Harness already listening, with its discovery token read. */
+async function liveHarness(
+  options: Parameters<typeof reactAutoComponentsDevtools>[0] = {},
+) {
+  const discoveryDir = temp("rac-discovery");
+  const h = harness({ enabled: true, discoveryDir, ...options });
+  h.httpServer.address = () => ({
+    address: "127.0.0.1",
+    family: "IPv4",
+    port: 4174,
+  });
+  h.httpServer.emit("listening");
+  await vi.waitFor(() => expect(readdirSync(discoveryDir)).toHaveLength(1));
+  const discovery = JSON.parse(
+    readFileSync(join(discoveryDir, readdirSync(discoveryDir)[0]), "utf8"),
+  ) as { token: string };
+  const headers = bearer(discovery.token);
+  /** Registers a page like the browser client would and returns its identity. */
+  const connectPage = async (url: string) => {
+    const connected = await h.call({
+      method: "POST",
+      path: `${PREFIX}/connect`,
+      headers,
+      body: { title: "Demo", url },
+    });
+    expect(connected.status, connected.body).toBe(200);
+    const pageId = (JSON.parse(connected.body) as { pageId: string }).pageId;
+    const pages = await h.call({
+      method: "GET",
+      path: `${PREFIX}/pages`,
+      headers,
+    });
+    const record = (
+      JSON.parse(pages.body) as {
+        pages: { pageId: string; connectionId: string }[];
+      }
+    ).pages.find((entry) => entry.pageId === pageId);
+    expect(record, "connection id for the new page").toBeTruthy();
+    return { pageId, connectionId: record!.connectionId };
+  };
+  const demo = (body: Json) =>
+    h.call({ method: "POST", path: `${PREFIX}/demo`, headers, body });
+  return { ...h, headers, connectPage, demo };
+}
+
+const FORM_URL = "http://127.0.0.1:4174/#/form:rac";
+
+test("demo endpoint stays behind the session token", async () => {
+  const { httpServer, call } = harness({ enabled: true, ...demoOptions });
+  httpServer.address = () => ({
+    address: "127.0.0.1",
+    family: "IPv4",
+    port: 4174,
+  });
+  httpServer.emit("listening");
+
+  const denied = await call({
+    method: "POST",
+    path: `${PREFIX}/demo`,
+    body: { pageId: "p", connectionId: "c", action: "start", scenario: "form" },
+  });
+  expect(denied.status).toBe(403);
+  expect(JSON.parse(denied.body).code).toBe("RAC-DEVTOOLS-AUTH");
+});
+
+test("demo start/status/stop honor allowlist, connection identity and one run per page", async () => {
+  const { connectPage, demo } = await liveHarness(demoOptions);
+  const { pageId, connectionId } = await connectPage(FORM_URL);
+
+  // Scenario names outside the configured demos are rejected, not guessed.
+  const unknown = await demo({
+    pageId,
+    connectionId,
+    action: "start",
+    scenario: "zap",
+  });
+  expect(unknown.status).toBe(400);
+  expect(JSON.parse(unknown.body).code).toBe("RAC-DEVTOOLS-INPUT");
+
+  // A start binds to the exact connection: a stale id cannot hijack the page.
+  const wrongConnection = await demo({
+    pageId,
+    connectionId: "not-the-connection",
+    action: "start",
+    scenario: "form",
+  });
+  expect(wrongConnection.status).toBe(409);
+
+  const started = await demo({
+    pageId,
+    connectionId,
+    action: "start",
+    scenario: "form",
+  });
+  expect(started.status, started.body).toBe(200);
+  const running = JSON.parse(started.body) as Json;
+  expect(running.phase).toBe("running");
+  expect(running.scenario).toBe("form");
+  expect(running.total).toBe(1);
+
+  // One run per page: a second start while bound is a conflict, not a restart.
+  const duplicate = await demo({
+    pageId,
+    connectionId,
+    action: "start",
+    scenario: "form",
+  });
+  expect(duplicate.status).toBe(409);
+
+  // Status reports the same bound run, then settles as the short hold elapses.
+  const polled = await demo({ pageId, connectionId, action: "status" });
+  expect(polled.status, polled.body).toBe(200);
+  const state = JSON.parse(polled.body) as Json;
+  expect(state.step).toEqual(expect.any(Number));
+  expect(state.total).toBe(1);
+  await vi.waitFor(
+    async () => {
+      const settled = await demo({ pageId, connectionId, action: "status" });
+      expect(settled.status).toBe(200);
+      expect(["complete", "stopped"]).toContain(
+        (JSON.parse(settled.body) as Json).phase,
+      );
+    },
+    { timeout: 6000 },
+  );
+
+  // Stop after completion is idempotent and preserves the completed result.
+  const stopped = await demo({ pageId, connectionId, action: "stop" });
+  expect(stopped.status, stopped.body).toBe(200);
+  expect(JSON.parse(stopped.body).phase).toBe("complete");
+});
+
+test("demo refuses a page whose route does not match the scenario", async () => {
+  const { connectPage, demo } = await liveHarness(demoOptions);
+  const elsewhere = await connectPage("http://127.0.0.1:4174/#/table:local");
+  const mismatch = await demo({
+    pageId: elsewhere.pageId,
+    connectionId: elsewhere.connectionId,
+    action: "start",
+    scenario: "form",
+  });
+  expect(mismatch.status).toBe(409);
+
+  // Status on the same page stays inert rather than inventing a run.
+  const idle = await demo({
+    pageId: elsewhere.pageId,
+    connectionId: elsewhere.connectionId,
+    action: "status",
+  });
+  expect(idle.status).toBe(200);
+  expect((JSON.parse(idle.body) as Json).phase).toBe("idle");
 });

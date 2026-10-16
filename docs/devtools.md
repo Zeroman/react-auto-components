@@ -44,6 +44,39 @@ Inspection returns visible interactive elements, their accessible labels, suppor
 
 `AutoNavigationProvider` supplies navigation automatically in development. No application global is needed. Pages without the provider still support DOM commands; navigation commands report the missing capability. Multiple navigation providers are reported as ambiguous rather than choosing one. A successful interaction means the action executed; it does not promise all resulting data requests finished. Inspect again or wait for the relevant visible state.
 
+## Watch form and search data change the UI
+
+In this repository, start `pnpm dev:agent`, open the printed local URL, and select **RAC live demo** under AutoForm or AutoSearch. These examples also work with manual input. RAC operates their real controls and triggers the normal React change handlers.
+
+Click **Start demonstration** for a guided run. The development server inspects fresh controls and sends real RAC `fill` / `click` commands through the same channel as the CLI. Each step shows a hint and highlights what to watch, waits about three seconds before changing data, then holds the result for at least three seconds. Physical page interaction is temporarily blocked; **Stop** and Esc remain available. Completion, cancellation or a connection error releases the lock. A command already in flight may finish while stopping; no subsequent step runs.
+
+The run is bound to this page and connection. Other open pages are untouched; a reload, route change or disconnect ends the run without automatic retries. Only named scenarios declared in the Vite plugin’s optional `demos` configuration may run; the UI cannot submit executable code or arbitrary command steps. The repository definitions live in `test-project/racDemoScenarios.ts`. All demo requests use the existing local-origin and discovery-token gates. Ordinary development, static builds and preview do not enable this feature.
+
+```sh
+pnpm rac inspect
+# Select the intended page by title and URL; replace every placeholder below.
+pnpm rac goto form:rac --page <pageId>
+pnpm rac inspect --page <pageId>
+pnpm rac fill <project-name-ref> "Nebula" --page <pageId>
+pnpm rac fill <project-budget-ref> "4800" --page <pageId>
+pnpm rac fill <enabled-ref> true --page <pageId>
+# A new field appears. Inspect again and use the NEW refs from now on.
+pnpm rac inspect --page <pageId>
+pnpm rac fill <internal-code-ref> "RAC-001" --page <pageId>
+```
+
+Watch the **Live preview** card and **Current value** update together. Enabling reveals the internal code field; Reset restores Atlas, budget 1200 and the disabled state. A controlled `AutoForm` passes each change to the demo's state setter, and the same state renders the preview. No submit is needed to see the changes.
+
+```sh
+pnpm rac goto search:rac --page <pageId>
+pnpm rac inspect --page <pageId>
+pnpm rac fill <project-name-ref> "Atlas" --page <pageId>
+```
+
+In **Instant** mode the count changes from six to two, showing Atlas and Atlas Mobile. Reset restores all six. For **Manual** mode, inspect again, fill the Search mode select with `manual`, then change the project name. The criteria draft changes while the applied criteria and results stay unchanged. Click the Search button using a current ref to apply the draft. For the status filter, use the `options[].value` returned by inspect for Active or Paused; the DOM option value is an index, not the model's `active` / `paused` string.
+
+Refs above are placeholders, never fixed IDs. Find controls by their accessible names and supported actions within the intended component. Every new inspect expires all previous refs; after navigation or a field appears, inspect again. If multiple servers exist, add `--server <serverId>` too. `fill` changes field values through events; it does not directly replace an arbitrary component data object. Search results update after validation and `onSearch`, so verify the visible result after each action. Use `rac shot` on a managed page to capture the live preview and result list.
+
 ## Screenshots and managed pages
 
 For browser-owned pages and screenshots, install Playwright and its Chromium browser:

@@ -23,6 +23,7 @@ import {
 } from "@zeroman.yang/react-auto-components";
 import { TableDemo } from "./examples/TableDemo";
 import { FormDemo } from "./examples/FormDemo";
+import { RacFormLiveDemo, RacSearchLiveDemo } from "./examples/RacLiveDemo";
 import { examplesFor } from "./demoNavigation";
 import { SearchDemo, type SearchExampleKind } from "./examples/SearchDemo";
 import { DialogDemo } from "./examples/DialogDemo";
@@ -179,12 +180,14 @@ function PageExample({
     return <TableDemo mode={example} />;
   }
   if (page === "form") {
+    if (example === "rac") return <RacFormLiveDemo />;
     if (example === "permissions")
       return <FormPermissionsDemo {...permissions} />;
     if (example === "server") return <ServerFormDemo />;
     return <FormDemo />;
   }
   if (page === "search") {
+    if (example === "rac") return <RacSearchLiveDemo />;
     if (example === "permissions")
       return <SearchPermissionsDemo {...permissions} />;
     if (example === "server") return <ServerSearchDemo />;

@@ -44,6 +44,39 @@ pnpm exec rac console --page <pageId>
 
 `AutoNavigationProvider` 在开发模式下自动提供导航能力，无需应用设置全局变量。未使用该 provider 的页面仍可进行 DOM 操作；导航命令会报告能力缺失。存在多个导航 provider 时返回歧义错误，不自动挑选。交互成功仅表示动作已执行，不保证后续数据请求全部结束，应再次检查或等待相关状态。
 
+## 观察表单和搜索数据如何改变界面
+
+在本仓库运行 `pnpm dev:agent`，打开终端显示的本地地址，在 AutoForm 或 AutoSearch 下选择 **RAC 联动演示**。这些示例也支持手动输入。RAC 操作真实控件，触发正常的 React 变更回调。
+
+点击**开始演示**可观看引导演示。开发服务端逐步检查当前控件，通过与 CLI 相同的通道发送真实 RAC `fill` / `click` 命令。每次先显示提示并高亮需要关注的区域，约三秒后才修改数据，变化后的结果再保留至少三秒。演示期间暂时阻止页面的手动交互，**停止**和 Esc 仍可使用；完成、取消或连接异常后解除锁定。停止时已经发出的命令可能执行完毕，但不会再执行后续步骤。
+
+一次演示绑定当前页面和当前连接，其他已打开的页面不受影响；刷新、切换路由或断开连接都会结束演示，不会自动重试。只允许运行 Vite 插件可选 `demos` 配置中预先声明的命名场景，界面不能提交可执行代码或任意命令步骤。本仓库的步骤定义位于 `test-project/racDemoScenarios.ts`。所有演示请求沿用本地来源和发现令牌验证。普通开发模式、静态构建和预览不会启用此功能。
+
+```sh
+pnpm rac inspect
+# 根据标题和 URL 选择目标页面，替换以下所有占位符。
+pnpm rac goto form:rac --page <pageId>
+pnpm rac inspect --page <pageId>
+pnpm rac fill <project-name-ref> "Nebula" --page <pageId>
+pnpm rac fill <project-budget-ref> "4800" --page <pageId>
+pnpm rac fill <enabled-ref> true --page <pageId>
+# 新字段出现后重新检查，接下来全部使用新的 ref。
+pnpm rac inspect --page <pageId>
+pnpm rac fill <internal-code-ref> "RAC-001" --page <pageId>
+```
+
+观察**实时预览**卡片和**当前值**同步变化。启用后会出现内部代码字段；重置会恢复 Atlas、预算 1200 和未启用状态。受控 `AutoForm` 每次变更都更新演示页面的状态，同一份状态驱动预览，无需提交即可观察效果。
+
+```sh
+pnpm rac goto search:rac --page <pageId>
+pnpm rac inspect --page <pageId>
+pnpm rac fill <project-name-ref> "Atlas" --page <pageId>
+```
+
+**即时**模式下，结果从六条变成两条，只显示 Atlas 和 Atlas Mobile；重置恢复全部六条。要观察**手动**模式，重新检查后把“搜索模式”下拉框填为 `manual`，再修改项目名称。条件草稿会变化，已应用条件和结果保持不变；使用当前 ref 点击“搜索”按钮后才应用草稿。筛选状态时，使用 inspect 返回的“活跃”或“已暂停”对应的 `options[].value`；DOM 选项值是索引，并不是模型中的 `active` / `paused` 字符串。
+
+上面的 ref 都是占位符，不是固定 ID。根据控件的可访问名称和支持的动作，在目标组件内选择控件。每次 inspect 都会使旧 ref 失效；导航或新字段出现后要重新检查。存在多个服务时还需加上 `--server <serverId>`。`fill` 通过事件修改字段值，不会直接替换任意组件数据对象。搜索结果在校验及 `onSearch` 后更新，每次动作后都应核对可见结果；托管页面可使用 `rac shot` 截取实时预览和结果列表。
+
 ## 截图与托管页面
 
 需要托管浏览器页面和截图时，安装 Playwright 及 Chromium：

@@ -1,0 +1,98 @@
+.rac-demo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin: 0 0 12px;
+}
+.rac-demo-start,
+.rac-demo-stop {
+  border: 1px solid var(--auto-accent, #1677ff);
+  border-radius: 8px;
+  background: var(--auto-accent, #1677ff);
+  color: var(--auto-bg, #fff);
+  font: inherit;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+.rac-demo-start:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.rac-demo-start:focus-visible,
+.rac-demo-stop:focus-visible {
+  outline: 2px solid var(--auto-accent, #1677ff);
+  outline-offset: 2px;
+}
+.rac-demo-state {
+  margin: 0;
+  color: var(--auto-text, #202e29);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.rac-demo-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+}
+.rac-demo-dim {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--auto-text, #202e29) 18%, transparent);
+}
+.rac-demo-highlight {
+  position: fixed;
+  box-sizing: border-box;
+  pointer-events: none;
+  border: 3px solid var(--auto-accent, #1677ff);
+  border-radius: 10px;
+  box-shadow: 0 0 0 9999px
+    color-mix(in srgb, var(--auto-text, #202e29) 22%, transparent);
+}
+.rac-demo-panel {
+  box-sizing: border-box;
+  position: fixed;
+  left: 50%;
+  z-index: 10001;
+  width: min(440px, calc(100vw - 24px));
+  transform: translateX(-50%);
+  pointer-events: auto;
+  padding: 14px 16px;
+  border: 1px solid var(--auto-border, #dce4df);
+  border-radius: 12px;
+  background: var(--auto-bg, #fff);
+  color: var(--auto-text, #202e29);
+  box-shadow: 0 10px 28px
+    color-mix(in srgb, var(--auto-text, #202e29) 16%, transparent);
+}
+.rac-demo-panel-top {
+  top: 12px;
+}
+.rac-demo-panel-bottom {
+  bottom: 12px;
+}
+.rac-demo-progress,
+.rac-demo-hint {
+  margin: 0 0 8px;
+}
+.rac-demo-progress {
+  font-weight: 650;
+}
+.rac-demo-hint {
+  font-size: 14px;
+  line-height: 1.45;
+}
+.rac-demo-stop {
+  margin-top: 4px;
+}
+@media (max-width: 700px) {
+  .rac-demo-start,
+  .rac-demo-stop {
+    width: 100%;
+  }
+  .rac-demo-panel {
+    width: calc(100vw - 16px);
+  }
+}

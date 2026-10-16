@@ -63,6 +63,7 @@ export const demoExamples: Record<string, readonly DemoExample[]> = {
     },
     serverSchema,
     permissions("form"),
+    { id: "rac", label: "RAC live demo" },
   ],
   search: [
     {
@@ -87,6 +88,7 @@ export const demoExamples: Record<string, readonly DemoExample[]> = {
     },
     serverSchema,
     permissions("search"),
+    { id: "rac", label: "RAC live demo" },
   ],
   dialog: [
     {

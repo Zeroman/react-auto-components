@@ -1,6 +1,34 @@
 /** Versioned wire contract shared by the plugin, CLI and page client. */
 export const PROTOCOL_VERSION = 1;
 export const PREFIX = "/__rac";
+/** Trusted server configuration; callers may only select a registered scenario. */
+export interface DemoAction {
+  cmd: "fill" | "click";
+  component?: "AutoForm" | "AutoSearch";
+  names?: string[];
+  testid?: string;
+  value?: string;
+}
+export interface DemoStep {
+  message: string;
+  focus: string;
+  action?: DemoAction;
+  holdMs?: number;
+}
+export interface DemoScenario {
+  route: string;
+  steps: DemoStep[];
+}
+export interface DemoState {
+  available: string[];
+  phase: "idle" | "running" | "stopping" | "stopped" | "complete" | "error";
+  scenario?: string;
+  step: number;
+  total: number;
+  message?: string;
+  focus?: string;
+  error?: string;
+}
 export interface PageInfo {
   pageId: string;
   connectionId: string;

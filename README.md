@@ -82,6 +82,8 @@ Give your agent this instruction, or add it to your project's `AGENTS.md`:
 
 For screenshots, install optional Playwright and use `rac open` to create a managed page, or explicitly connect an existing Chromium browser through CDP. See the [DevTools guide](docs/devtools.md) for screenshot setup, all commands, multiple servers and configuration.
 
+To watch data changes affect the UI, open **RAC live demo** under AutoForm or AutoSearch in the local demo (`form:rac` / `search:rac`). Fill the form through RAC to update its live project preview and reveal a dependent field. Change search criteria to watch the result count and list update; switch to manual mode to compare draft criteria with applied results. The [DevTools guide](docs/devtools.md) includes the command walkthrough. Click **Start demonstration** to let the local server run the RAC steps automatically, with interaction locked, a highlighted area and a hint before each change. **Stop** or Esc ends the demonstration. Available only with `pnpm dev:agent`.
+
 ## Demo and test project
 
 Try the **[Online Demo](https://zeroman.github.io/react-auto-components/)** directly in your browser.

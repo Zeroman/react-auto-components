@@ -157,6 +157,383 @@ async function disconnect(
   });
 }
 
+/**
+ * RAC live demo (form:rac / search:rac). These tests drive the demo pages
+ * through the real bridge commands (goto/inspect/fill/click) rather than
+ * Playwright.fill, so they regress exactly what an agent user experiences.
+ * Downstream assertions target the demo's exact testids — the visual preview
+ * card AND the controlled JSON panel, the result count AND list — so a change
+ * that only updates the DOM input without re-rendering React state fails.
+ */
+test.describe("RAC live demo", () => {
+  type Elements = Json[];
+
+  const preview = (page: Page) =>
+    page.locator('[data-testid="rac-form-preview"]');
+  const formJson = (page: Page) =>
+    page.locator('[data-testid="rac-form-json"]');
+  const formStatus = (page: Page) =>
+    page.locator('[data-testid="rac-form-status"]');
+  const searchCount = (page: Page) =>
+    page.locator('[data-testid="rac-search-count"]');
+  const searchResults = (page: Page) =>
+    page.locator('[data-testid="rac-search-results"]');
+  const searchDraft = (page: Page) =>
+    page.locator('[data-testid="rac-search-draft"]');
+  const searchApplied = (page: Page) =>
+    page.locator('[data-testid="rac-search-applied"]');
+
+  const ALL_PROJECTS = [
+    "Atlas",
+    "Atlas Mobile",
+    "Beacon",
+    "Cedar",
+    "Delta",
+    "Ember",
+  ] as const;
+
+  async function inspectElements(
+    request: APIRequestContext,
+    pageId: string,
+  ): Promise<Elements> {
+    const inspect = await command(request, pageId, "inspect");
+    expect(inspect.status, String(JSON.stringify(inspect.json))).toBe(200);
+    return inspect.json.elements as Elements;
+  }
+
+  async function gotoDemo(
+    page: Page,
+    request: APIRequestContext,
+    target: string,
+  ): Promise<string> {
+    await page.goto("/");
+    const pageId = await bridgePageId(page);
+    const nav = await command(request, pageId, "goto", { target });
+    expect(nav.status, String(JSON.stringify(nav.json))).toBe(200);
+    await expect(page).toHaveURL(new RegExp(target));
+    await expect(page.getByText("RAC live demo").first()).toBeVisible();
+    return pageId;
+  }
+
+  function pick(
+    elements: Elements,
+    what: string,
+    matches: (element: Json) => boolean,
+  ): Json {
+    const element = elements.find(matches);
+    expect(element, `${what} exposed by inspect`).toBeTruthy();
+    return element!;
+  }
+
+  /**
+   * Editable field scoped by accessible name and owning component group, so
+   * same-named fields on a page with several AutoForm/AutoSearch instances
+   * stay unambiguous.
+   */
+  const editable =
+    (namePattern: RegExp, componentPattern?: RegExp, rolePattern?: RegExp) =>
+    (element: Json): boolean =>
+      !element.disabled &&
+      String(element.name ?? "").match(namePattern) !== null &&
+      (element.actions as string[]).includes("fill") &&
+      (componentPattern
+        ? componentPattern.test(String(element.component ?? ""))
+        : true) &&
+      (rolePattern ? rolePattern.test(String(element.role)) : true);
+
+  async function bridgeFill(
+    request: APIRequestContext,
+    pageId: string,
+    ref: string,
+    value: string,
+  ): Promise<void> {
+    const fill = await command(request, pageId, "fill", { ref, value });
+    expect(fill.status, String(JSON.stringify(fill.json))).toBe(200);
+  }
+
+  async function bridgeClick(
+    request: APIRequestContext,
+    pageId: string,
+    ref: string,
+  ): Promise<void> {
+    const click = await command(request, pageId, "click", { ref });
+    expect(click.status, String(JSON.stringify(click.json))).toBe(200);
+  }
+
+  test("goto form:rac lands on the RAC live demo route", async ({
+    page,
+    request,
+  }) => {
+    test.setTimeout(90000);
+    await gotoDemo(page, request, "form:rac");
+  });
+
+  test("form:rac fill drives preview and JSON, enabling reveals code, reset restores", async ({
+    page,
+    request,
+  }) => {
+    test.setTimeout(120000);
+    const pageId = await gotoDemo(page, request, "form:rac");
+
+    // Defaults, in both the visual preview card and the controlled JSON.
+    await expect(preview(page)).toContainText("Atlas");
+    await expect(preview(page)).toContainText("1200");
+    await expect(formStatus(page)).toHaveAttribute("data-on", "false");
+    await expect(formJson(page)).toContainText('"name": "Atlas"');
+    await expect(formJson(page)).toContainText('"budget": 1200');
+    await expect(formJson(page)).toContainText('"enabled": false');
+
+    // Bridge fill on the name textbox; the readouts must follow onChange.
+    let elements = await inspectElements(request, pageId);
+    const nameField = pick(
+      elements,
+      "project name textbox (AutoForm group)",
+      editable(/project name/i, /AutoForm/i, /textbox/),
+    );
+    await bridgeFill(request, pageId, nameField.ref as string, "Nebula-9");
+    await expect(preview(page)).toContainText("Nebula-9");
+    await expect(formJson(page)).toContainText('"name": "Nebula-9"');
+
+    // The budget is a native numeric input: inspect must report the real
+    // spinbutton role, and filling it drives the numeric preview/JSON.
+    const budgetField = pick(
+      elements,
+      "budget field (AutoForm group)",
+      editable(/budget/i, /AutoForm/i),
+    );
+    expect(String(budgetField.role)).toBe("spinbutton");
+    await bridgeFill(request, pageId, budgetField.ref as string, "741");
+    await expect(preview(page)).toContainText("741");
+    await expect(formJson(page)).toContainText('"budget": 741');
+
+    // Turning Enabled on reveals the hidden internal code field.
+    elements = await inspectElements(request, pageId);
+    const enableControl = pick(
+      elements,
+      "enabled switch (AutoForm group)",
+      (element) =>
+        !element.disabled &&
+        /enabled/i.test(String(element.name ?? "")) &&
+        /AutoForm/i.test(String(element.component ?? "")) &&
+        (["checkbox", "switch"].includes(String(element.role))
+          ? (element.actions as string[]).includes("fill") ||
+            (element.actions as string[]).includes("click")
+          : false),
+    );
+    expect(["checkbox", "switch"]).toContain(String(enableControl.role));
+    if ((enableControl.actions as string[]).includes("fill")) {
+      await bridgeFill(request, pageId, enableControl.ref as string, "true");
+    } else {
+      await bridgeClick(request, pageId, enableControl.ref as string);
+    }
+    await expect(formStatus(page)).toHaveAttribute("data-on", "true");
+    await expect(preview(page)).toContainText("Enabled");
+
+    // The revealed code field feeds the same controlled state.
+    elements = await inspectElements(request, pageId);
+    const codeField = pick(
+      elements,
+      "internal code textbox after enabling (AutoForm group)",
+      editable(/internal code/i, /AutoForm/i, /textbox/),
+    );
+    await bridgeFill(request, pageId, codeField.ref as string, "RAC-CODE-77");
+    await expect(preview(page)).toContainText("RAC-CODE-77");
+    await expect(formJson(page)).toContainText('"code": "RAC-CODE-77"');
+
+    // Reset restores every default, hiding the code field again.
+    elements = await inspectElements(request, pageId);
+    const resetButton = pick(
+      elements,
+      "reset button (AutoForm group)",
+      (element) =>
+        element.role === "button" &&
+        /^reset$/i.test(String(element.name ?? "")) &&
+        /AutoForm/i.test(String(element.component ?? "")),
+    );
+    await bridgeClick(request, pageId, resetButton.ref as string);
+
+    await expect(preview(page)).toContainText("Atlas");
+    await expect(preview(page)).toContainText("1200");
+    await expect(formStatus(page)).toHaveAttribute("data-on", "false");
+    await expect(formJson(page)).toContainText('"name": "Atlas"');
+    await expect(formJson(page)).toContainText('"budget": 1200');
+    await expect(formJson(page)).toContainText('"enabled": false');
+    await expect(formJson(page)).toContainText('"code": ""');
+    await expect(preview(page)).not.toContainText("Nebula-9");
+    await expect(preview(page)).not.toContainText("RAC-CODE-77");
+
+    elements = await inspectElements(request, pageId);
+    expect(
+      elements.some(editable(/internal code/i, /AutoForm/i)),
+      "internal code hidden again after reset",
+    ).toBe(false);
+    const restoredName = pick(
+      elements,
+      "project name textbox after reset (AutoForm group)",
+      editable(/project name/i, /AutoForm/i),
+    );
+    const dom = await command(request, pageId, "dom", {
+      ref: restoredName.ref,
+    });
+    expect((dom.json.data as { value?: string })?.value).toBe("Atlas");
+  });
+
+  test("search:rac instant mode filters live, no-match empties, reset restores six", async ({
+    page,
+    request,
+  }) => {
+    test.setTimeout(120000);
+    const pageId = await gotoDemo(page, request, "search:rac");
+
+    // All six fixed projects, with the exact count readout.
+    await expect(searchCount(page)).toHaveText("6 projects");
+    for (const name of ALL_PROJECTS) {
+      await expect(
+        searchResults(page).getByText(name, { exact: true }),
+      ).toBeVisible();
+    }
+    await expect(searchDraft(page)).toContainText('"name": ""');
+    await expect(searchApplied(page)).toContainText('"children": []');
+
+    // Instant mode applies every edit, case-insensitively ("ATLAS" still 2).
+    const elements = await inspectElements(request, pageId);
+    const nameField = pick(
+      elements,
+      "name criteria textbox (AutoSearch group)",
+      editable(/project name/i, /^rac-search-panel$/i),
+    );
+    await bridgeFill(request, pageId, nameField.ref as string, "ATLAS");
+    await expect(searchCount(page)).toHaveText("2 projects");
+    await expect(
+      searchResults(page).getByText("Atlas", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      searchResults(page).getByText("Atlas Mobile", { exact: true }),
+    ).toBeVisible();
+    for (const gone of ["Beacon", "Cedar", "Delta", "Ember"]) {
+      await expect(
+        searchResults(page).getByText(gone, { exact: true }),
+      ).toHaveCount(0);
+    }
+    await expect(searchDraft(page)).toContainText('"name": "ATLAS"');
+    await expect(searchApplied(page)).toContainText('"value": "ATLAS"');
+
+    // A no-match query empties the list with a visible empty state.
+    await bridgeFill(request, pageId, nameField.ref as string, "zzq-no-match");
+    await expect(searchCount(page)).toHaveText("0 projects");
+    await expect(
+      searchResults(page).getByText("No projects match the applied criteria."),
+    ).toBeVisible();
+    for (const name of ["Atlas", "Beacon", "Ember"]) {
+      await expect(
+        searchResults(page).getByText(name, { exact: true }),
+      ).toHaveCount(0);
+    }
+
+    // Reset restores all six and clears the applied criteria.
+    const afterEmpty = await inspectElements(request, pageId);
+    const resetButton = pick(
+      afterEmpty,
+      "reset button (AutoSearch group)",
+      (element) =>
+        element.role === "button" &&
+        /^reset$/i.test(String(element.name ?? "")) &&
+        /^rac-search-panel$/i.test(String(element.component ?? "")),
+    );
+    await bridgeClick(request, pageId, resetButton.ref as string);
+    await expect(searchCount(page)).toHaveText("6 projects");
+    for (const name of ALL_PROJECTS) {
+      await expect(
+        searchResults(page).getByText(name, { exact: true }).first(),
+      ).toBeVisible();
+    }
+    await expect(searchDraft(page)).toContainText('"name": ""');
+    await expect(searchApplied(page)).toContainText('"children": []');
+  });
+
+  test("search:rac manual mode holds results until Search, then reset restores six", async ({
+    page,
+    request,
+  }) => {
+    test.setTimeout(120000);
+    const pageId = await gotoDemo(page, request, "search:rac");
+    await expect(searchCount(page)).toHaveText("6 projects");
+
+    // Manual mode is a labelled select, driven through the bridge fill.
+    let elements = await inspectElements(request, pageId);
+    const modeSelect = pick(
+      elements,
+      "search mode select",
+      editable(/search mode/i, undefined, /combobox/),
+    );
+    expect(
+      (modeSelect.options as Json[]).map((option) => option.value),
+    ).toEqual(["instant", "manual"]);
+    await bridgeFill(request, pageId, modeSelect.ref as string, "manual");
+
+    // Editing the draft must not change the applied result list.
+    elements = await inspectElements(request, pageId);
+    const nameField = pick(
+      elements,
+      "name criteria textbox (AutoSearch group)",
+      editable(/project name/i, /^rac-search-panel$/i),
+    );
+    await bridgeFill(request, pageId, nameField.ref as string, "Atlas");
+    await expect(searchCount(page)).toHaveText("6 projects");
+    await expect(
+      searchResults(page).getByText("Beacon", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      searchResults(page).getByText("Delta", { exact: true }),
+    ).toBeVisible();
+    await expect(searchDraft(page)).toContainText('"name": "Atlas"');
+    await expect(searchApplied(page)).toContainText('"children": []');
+
+    // Search applies the draft: only the two Atlas rows survive.
+    elements = await inspectElements(request, pageId);
+    const searchButton = pick(
+      elements,
+      "search button (AutoSearch group)",
+      (element) =>
+        element.role === "button" &&
+        /^search$/i.test(String(element.name ?? "")) &&
+        /^rac-search-panel$/i.test(String(element.component ?? "")),
+    );
+    await bridgeClick(request, pageId, searchButton.ref as string);
+    await expect(searchCount(page)).toHaveText("2 projects");
+    await expect(
+      searchResults(page).getByText("Atlas", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      searchResults(page).getByText("Atlas Mobile", { exact: true }),
+    ).toBeVisible();
+    for (const gone of ["Beacon", "Cedar", "Delta", "Ember"]) {
+      await expect(
+        searchResults(page).getByText(gone, { exact: true }),
+      ).toHaveCount(0);
+    }
+    await expect(searchApplied(page)).toContainText('"value": "Atlas"');
+
+    // Reset restores all six.
+    elements = await inspectElements(request, pageId);
+    const resetButton = pick(
+      elements,
+      "reset button (AutoSearch group)",
+      (element) =>
+        element.role === "button" &&
+        /^reset$/i.test(String(element.name ?? "")) &&
+        /^rac-search-panel$/i.test(String(element.component ?? "")),
+    );
+    await bridgeClick(request, pageId, resetButton.ref as string);
+    await expect(searchCount(page)).toHaveText("6 projects");
+    for (const name of ["Beacon", "Cedar", "Delta", "Ember"]) {
+      await expect(
+        searchResults(page).getByText(name, { exact: true }).first(),
+      ).toBeVisible();
+    }
+  });
+});
+
 test("bridge health, auth and origin enforcement", async ({ request }) => {
   const health = await call(request, "GET", "/__rac/health");
   expect(health.status).toBe(200);

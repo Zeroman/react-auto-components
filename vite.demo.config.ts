@@ -1,6 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { racDemoScenarios } from "./test-project/racDemoScenarios.ts";
 import { reactAutoComponentsDevtools } from "@zeroman.yang/react-auto-components-devtools/vite";
 
 // Dev-only: alias the package to library source so `pnpm dev` hot-reloads
@@ -41,7 +42,10 @@ export default defineConfig(({ command }) => ({
     : {}),
   plugins: [
     react(),
-    reactAutoComponentsDevtools({ discoveryDir: lib(".rac/servers") }),
+    reactAutoComponentsDevtools({
+      discoveryDir: lib(".rac/servers"),
+      demos: racDemoScenarios,
+    }),
   ],
   server: { host: true, port: 5173, strictPort: true },
   build: { outDir: "../demo-dist", emptyOutDir: true },
