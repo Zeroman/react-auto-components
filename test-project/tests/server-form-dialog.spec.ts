@@ -40,28 +40,46 @@ test("server form keeps failed drafts and applies normalized successful response
 test("server dialog keeps failed drafts, saves after response, and cancels pending requests", async ({
   page,
 }) => {
+  // The mock transport is an in-browser 750ms timer, not an HTTP request, so
+  // the pending-save boundary is controlled with the clock API: the
+  // cancel-case save stays in flight until the test releases it (WebKit's
+  // slower actionability checks used to lose the race and the Cancel button
+  // detached mid-click).
+  await page.clock.install({ time: new Date("2026-01-01T00:00:00Z") });
   const demo = await openDemo(page, "AutoDialog");
+  // pauseAt freezes timers; the app above already loaded while time ran.
+  await page.clock.pauseAt(new Date("2026-01-01T01:00:00Z"));
   await demo.getByRole("button", { name: "Open server record" }).click();
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("status")).toContainText("Loading record");
+  await page.clock.runFor(600); // record load resolves
   const name = dialog.getByRole("textbox", { name: "Display name" });
   await name.fill("  Saved Name  ");
   await dialog.getByRole("checkbox", { name: "Fail next save" }).check();
   await dialog.getByTestId("rac-submit").click();
+  await page.clock.runFor(800); // failing save resolves
   await expect(dialog.getByRole("alert")).toContainText("draft is preserved");
   await expect(name).toHaveValue("  Saved Name  ");
   await dialog.getByTestId("rac-submit").click();
   await expect(dialog).toBeVisible();
+  await page.clock.runFor(800); // successful save resolves and closes
   await expect(dialog).toBeHidden();
   await expect(demo.getByTestId("mock-dialog-summary")).toContainText(
     "Saved Name",
   );
   await demo.getByRole("button", { name: "Open server record" }).click();
+  await expect(dialog.getByRole("status")).toContainText("Loading record");
+  await page.clock.runFor(600); // record load resolves
   await name.fill("Cancelled Name");
   await dialog.getByTestId("rac-submit").click();
+  // The save is pending while timers are paused: prove it, then cancel —
+  // the Cancel button cannot detach.
+  await expect(dialog.getByRole("status")).toContainText("Saving to mock server");
   await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
   await expect(dialog).toBeHidden();
-  await page.waitForTimeout(900);
+  // Resume time: Cancel aborted the request, clearing its timer, so nothing
+  // can commit.
+  await page.clock.runFor(1000);
   await expect(demo.getByTestId("mock-dialog-summary")).toContainText(
     "Saved Name",
   );

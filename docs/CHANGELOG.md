@@ -2,8 +2,9 @@
 
 **English** | [简体中文](i18n/zh-CN/CHANGELOG.md) | [繁體中文](i18n/zh-TW/CHANGELOG.md) | [日本語](i18n/ja/CHANGELOG.md) | [한국어](i18n/ko/CHANGELOG.md) | [Español](i18n/es/CHANGELOG.md) | [Français](i18n/fr/CHANGELOG.md) | [Deutsch](i18n/de/CHANGELOG.md) | [Português (Brasil)](i18n/pt-BR/CHANGELOG.md) | [Русский](i18n/ru/CHANGELOG.md)
 
-## 0.5.5 - 2026-10-16
+## 0.5.6 - 2026-10-16
 
+- Make the server-dialog cancellation test control its mock timer so slow browser actionability checks cannot race the save.
 - Add controlled AutoForm and AutoSearch live examples with previews, JSON state and visible search results.
 - Add optional server-driven RAC demonstrations: Start/Stop controls, interaction lock, highlighted guidance, about three seconds to read each hint before an action, and at least three seconds to observe its result.
 - Pin each demonstration to one page connection; stop on cancellation, route changes or disconnection without replaying mutations. Ordinary development, builds and preview keep the bridge disabled.

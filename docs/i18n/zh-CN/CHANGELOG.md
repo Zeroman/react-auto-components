@@ -2,8 +2,9 @@
 
 [English](../../CHANGELOG.md) | **简体中文** | [繁體中文](../zh-TW/CHANGELOG.md) | [日本語](../ja/CHANGELOG.md) | [한국어](../ko/CHANGELOG.md) | [Español](../es/CHANGELOG.md) | [Français](../fr/CHANGELOG.md) | [Deutsch](../de/CHANGELOG.md) | [Português (Brasil)](../pt-BR/CHANGELOG.md) | [Русский](../ru/CHANGELOG.md)
 
-## 0.5.5 - 2026-10-16
+## 0.5.6 - 2026-10-16
 
+- 让服务端对话框取消测试显式控制模拟计时器，避免浏览器操作检查较慢时与保存完成竞争。
 - 新增受控 AutoForm 与 AutoSearch 联动示例，直观展示预览、JSON 状态和搜索结果变化。
 - 新增可选的服务端 RAC 自动演示：开始／停止按钮、交互锁定、关注区域高亮；每步先留约三秒阅读提示，再执行操作，结果保留至少三秒。
 - 每次演示绑定单个页面连接；取消、切换路由或断开连接后停止，不重放修改操作。普通开发、构建和预览保持控制桥关闭。
