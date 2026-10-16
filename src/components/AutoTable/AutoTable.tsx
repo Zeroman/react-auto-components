@@ -233,6 +233,11 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
     (layout.density === "inherit" ? globalDensity : layout.density);
   const baseQuery = props.query ?? localQuery;
   const query = useMemo(() => {
+    // A controlled `query` exclusively owns sort/filter/pagination; persisted
+    // settings never overlay it, and a source change stays a proposal until
+    // the parent accepts. Uncontrolled mode keeps the preset behavior and
+    // resets to page 0 in place when the source identity changes.
+    if (props.query !== undefined) return { ...props.query };
     const raw = {
       ...baseQuery,
       sort: active(settings.sort),
@@ -242,15 +247,20 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
       return { ...raw, pageIndex: 0 };
     }
     return raw;
-  }, [baseQuery, settings.sort, settings.filter, sourceChanged]);
+  }, [props.query, baseQuery, settings.sort, settings.filter, sourceChanged]);
   function changeQuery(patch: Partial<TableQuery>) {
     const next = {
       ...query,
       ...patch,
     };
+    if (props.query !== undefined) {
+      // Controlled: propose only. UI/data follow the accepted parent update.
+      props.onQueryChange?.(next);
+      return;
+    }
     setLocalQuery(next);
     props.onQueryChange?.(next);
-    if (props.query === undefined && (patch.sort || patch.filter))
+    if (patch.sort || patch.filter)
       saveSettings({
         ...settings,
         sort: patch.sort
@@ -739,7 +749,19 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
                   data-testid="rac-settings"
                   aria-label={tr("Settings")}
                   title={tr("Settings")}
-                  onClick={() => setDraft(structuredClone(settings))}
+                  onClick={() => {
+                    // Controlled mode: seed the panel's sort/filter with the
+                    // effective controlled query, not the stored presets.
+                    const seeded =
+                      props.query !== undefined
+                        ? {
+                            ...settings,
+                            sort: replaceActive(settings.sort, query.sort),
+                            filter: replaceActive(settings.filter, query.filter),
+                          }
+                        : settings;
+                    setDraft(structuredClone(seeded));
+                  }}
                 >
                   {renderTool(<SettingsIcon />, tr("Settings"))}
                 </button>
@@ -1090,6 +1112,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
         draft={draft}
         setDraft={setDraft}
         saveSettings={saveSettings}
+        controlled={props.query !== undefined}
         query={query}
         setLocalQuery={setLocalQuery}
         onQueryChange={props.onQueryChange}

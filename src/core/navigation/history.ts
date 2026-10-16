@@ -85,10 +85,32 @@ export function decodeLocation(urlOrHash: string, prefix = ""): AutoLocation {
   if (cleanPrefix) {
     const queryAt = raw.indexOf("?");
     const pathOnly = queryAt < 0 ? raw : raw.slice(0, queryAt);
-    if (pathOnly === cleanPrefix) raw = raw.slice(cleanPrefix.length);
-    else if (pathOnly.startsWith(`${cleanPrefix}/`))
-      raw = raw.slice(cleanPrefix.length + 1);
-    else return { path: [], params: {} };
+    if (!pathOnly) return { path: [], params: {} };
+    // Match the base by SEGMENTS so the `/admin` vs `/administrator`
+    // boundary holds and percent-encoded bases still match. A segment is
+    // never decoded before splitting, so an encoded slash or colon stays
+    // inside its segment; malformed escapes compare literally.
+    const segments = pathOnly.split("/");
+    const baseSegments = cleanPrefix.split("/");
+    const decode = (value: string): string => {
+      try {
+        return decodeURIComponent(value);
+      } catch {
+        return value;
+      }
+    };
+    const matches = (segment: string, base: string) =>
+      segment === base || decode(segment) === decode(base);
+    let consumed = 0;
+    for (let i = 0; i < baseSegments.length; i++) {
+      if (!segments[i] || !matches(segments[i], baseSegments[i]))
+        return { path: [], params: {} };
+      consumed += segments[i].length + (i > 0 ? 1 : 0);
+    }
+    // Consume the separator after the base only when another segment follows;
+    // a query string starts directly after the last base segment.
+    if (pathOnly[consumed] === "/") consumed++;
+    raw = raw.slice(consumed);
   }
   if (!raw) return { path: [], params: {} };
   const queryAt = raw.indexOf("?");
@@ -227,7 +249,11 @@ export function createHashHistory(options?: {
     if (locationsEqual(nextLoc, currentBaseline)) return;
     currentBaseline = nextLoc;
     for (const listener of Array.from(listeners)) {
-      listener(nextLoc);
+      try {
+        listener(nextLoc);
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 
@@ -318,7 +344,11 @@ export function createBrowserHistory(options?: {
     if (locationsEqual(nextLoc, currentBaseline)) return;
     currentBaseline = nextLoc;
     for (const listener of Array.from(listeners)) {
-      listener(nextLoc);
+      try {
+        listener(nextLoc);
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 

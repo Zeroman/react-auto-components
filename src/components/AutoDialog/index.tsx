@@ -175,8 +175,17 @@ export function AutoDialog<T extends object>({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  // Key by record identity: while the dialog stays open, switching to a
+  // different `draftKey` remounts with that record's stored draft or
+  // defaultValue; the same `draftKey` keeps the current edits. A stale
+  // completion for the old record cannot close the new one (guarded in
+  // ManagedDialog).
   return open ? (
-    <ManagedDialog options={options} remove={() => onOpenChange(false)} />
+    <ManagedDialog
+      key={options.draftKey ?? ""}
+      options={options}
+      remove={() => onOpenChange(false)}
+    />
   ) : null;
 }
 function ManagedDialog<T extends object>({
@@ -214,18 +223,31 @@ function ManagedDialog<T extends object>({
       y: 0,
     });
   const lock = useRef(false);
+  // Identity guard: once this record's dialog unmounts (e.g. draftKey changed
+  // while open), a still-in-flight async close/submit must not act on the
+  // successor dialog through the stale `remove` callback.
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
   const opener = useRef(
     typeof document === "undefined"
       ? null
       : (document.activeElement as HTMLElement | null),
   );
   async function close(reason: CloseReason) {
-    if (lock.current) return false;
+    // A stale completion after this record's dialog unmounted must not run
+    // any user callback (beforeClose, onClose) or act through `remove`.
+    if (!mounted.current || lock.current) return false;
     lock.current = true;
     setBusy(true);
     try {
       if (options.beforeClose && !(await options.beforeClose(reason)))
         return false;
+      if (!mounted.current) return false;
       if (key) {
         if (reason === "submit") services.storage.remove(key);
         else services.storage.set(key, current.current);
@@ -247,7 +269,7 @@ function ManagedDialog<T extends object>({
     register?.(() => closeRef.current("close"));
   }, [register]);
   async function submit() {
-    if (lock.current) return;
+    if (!mounted.current || lock.current) return;
     lock.current = true;
     setBusy(true);
     setError("");

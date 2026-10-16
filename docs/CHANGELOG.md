@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+- Controlled `AutoTable` queries now exclusively own page, sort, and filter: saved presets never override them, and header/settings actions only propose through `onQueryChange` until the parent accepts.
+- `AutoTabs` keeps a stable error source per missing `tabsSources` key, so registering the key later recovers without remounting.
+- Hash/browser history adapters isolate subscriber exceptions (matching memory history) and match `basePath` by percent-encoded path segments.
+- Declarative `AutoDialog` treats `draftKey` as record identity while open: switching keys remounts fresh, the same key keeps edits, and a stale in-flight submit cannot close the successor dialog.
+- `pnpm test` and `pnpm test:coverage` build the DevTools package first so dist-based integration tests always run against fresh assets.
+
 ## 0.5.4 - 2026-10-16
 
 - Fix empty and open date ranges, required range validation, search popover validation/reset/disabled behavior, and controlled uploads.

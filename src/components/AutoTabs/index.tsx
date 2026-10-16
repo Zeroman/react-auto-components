@@ -8,6 +8,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -161,23 +162,29 @@ export function AutoTabs({
       "Pass exactly one: local items, a source function, or a config.tabsSources key. items wins.",
     );
   }
-  const tabsSource =
-    typeof source === "function"
-      ? source
-      : source === undefined || items !== undefined
-        ? undefined
-        : (services.tabsSources[source] ??
-          (() =>
-            Promise.reject(
-              new Error(
-                racMessage(
-                  "AutoTabs",
-                  "RAC-TABS-SOURCE",
-                  `source "${source}" is not registered.`,
-                  `Add config.tabsSources["${source}"] on AutoConfigProvider, or pass items or a function.`,
-                ),
-              ),
-            )));
+  // Stable identity across re-renders: the not-registered fallback is created
+  // once per missing key, so the fetch effect cannot loop on a fresh closure
+  // and matches the React Compiler's cached behavior in the shipped build.
+  // Re-registration recovers because `services.tabsSources` gets a new
+  // identity when the config updates.
+  const tabsSource = useMemo(() => {
+    if (typeof source === "function") return source;
+    if (source === undefined || items !== undefined) return undefined;
+    return (
+      services.tabsSources[source] ??
+      (() =>
+        Promise.reject(
+          new Error(
+            racMessage(
+              "AutoTabs",
+              "RAC-TABS-SOURCE",
+              `source "${source}" is not registered.`,
+              `Add config.tabsSources["${source}"] on AutoConfigProvider, or pass items or a function.`,
+            ),
+          ),
+        ))
+    );
+  }, [source, items, services.tabsSources]);
   const tabs = useTabsItems(items, tabsSource);
 
   if (route && value !== undefined) {

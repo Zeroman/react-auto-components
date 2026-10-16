@@ -102,6 +102,8 @@ To synchronize `AutoNavigation` with an external framework router (Tier 2), impl
 
 > **Important**: The custom adapter should read the latest router location via refs to avoid stale closures, and must not rebuild synchronization listeners on every location update so pending lazy navigations are never interrupted.
 
+The built-in hash and browser adapters isolate subscriber exceptions (a throwing listener is logged and skipped, like memory history) and match `basePath` by path segments: percent-encoded bases (spaces, Unicode, or an encoded slash inside a segment) resolve against raw or encoded URLs, while `/admin` never matches `/administrator`.
+
 Effects publish the current URL with `onChange(location, { type: "snapshot" })`, including their initial run and StrictMode replay. An unchanged snapshot does not interrupt a child's pending navigation; a changed snapshot still navigates, including a back to the previously committed route. Use `{ type: "navigation" }` for a known external navigation intent, even when its URL is unchanged. Location-only notifications keep their existing navigation semantics (with write-echo detection), so existing adapters that replay an initial snapshot should add this metadata or suppress that replay themselves.
 
 For a deferred `void` write that is superseded, the bridge remembers its destination and corrects a late acknowledgment back to the latest intended URL. If the adapter abandons that write entirely, a later snapshot of the same destination cannot be distinguished from its acknowledgment. Publish a known external navigation as `{ type: "navigation" }` in that case; it remains authoritative.

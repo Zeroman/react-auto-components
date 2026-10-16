@@ -52,7 +52,7 @@ function EditButton() {
 | `onSubmit(values)` | Called after validation passes. **Reject or throw: the dialog stays open and shows `error.message`. Values stay.** Resolve to close, then `beforeClose` still runs. |
 | `beforeClose(reason)` | `reason` is `"submit"`, `"cancel"`, or `"close"`. **Return `false` to stay open. Throw to stay open and show the message.** |
 | `onClose(reason)` | Called only after the dialog actually closes. |
-| `draftKey` | Persists the draft at `${namespace}:draft:${draftKey}` until a successful submit removes it. Omit it and nothing is stored. |
+| `draftKey` | Persists the draft at `${namespace}:draft:${draftKey}` until a successful submit removes it. Omit it and nothing is stored. While the dialog stays open, `draftKey` is the record identity: switching to a different key remounts with that record's stored draft or `defaultValue`, and the same key preserves current edits. |
 | `showReset` | Shows the form reset control. |
 | `hideFooter` | Hides the default confirm / cancel row. Use `footer` to draw your own. |
 | `confirmLabel`, `cancelLabel` | Replace the built-in action labels. The defaults are translated through `config.t`. |

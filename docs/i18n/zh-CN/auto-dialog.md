@@ -52,7 +52,7 @@ function EditButton() {
 | `onSubmit(values)` | 校验通过后调用。**reject 或 throw：弹窗保持打开，显示 `error.message`，值保留。** resolve 后仍会走 `beforeClose`。 |
 | `beforeClose(reason)` | `reason` 为 `"submit"`、`"cancel"` 或 `"close"`。**返回 `false` 则保持打开。throw 也保持打开并显示消息。** |
 | `onClose(reason)` | 只有真正关掉之后才调用。 |
-| `draftKey` | 草稿存在 `${namespace}:draft:${draftKey}`，成功提交后删除。不传则不存储。 |
+| `draftKey` | 草稿存在 `${namespace}:draft:${draftKey}`，成功提交后删除。不传则不存储。弹窗保持打开时，`draftKey` 即记录身份：切换到不同键会以该键已存草稿或 `defaultValue` 重新挂载，相同键则保留当前编辑。 |
 | `showReset` | 显示表单重置。 |
 | `hideFooter` | 隐藏默认的确认/取消。用 `footer` 自己画。 |
 | `confirmLabel`, `cancelLabel` | 替换内置的操作按钮文本。默认文本通过 `config.t` 翻译。 |

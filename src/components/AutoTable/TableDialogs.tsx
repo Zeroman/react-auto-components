@@ -18,6 +18,8 @@ export interface TableDialogsProps<T extends object> {
   draft: TableSettings | null;
   setDraft: (settings: TableSettings | null) => void;
   saveSettings: (settings: TableSettings) => void;
+  /** True when `query` is controlled: settings apply proposes through `onQueryChange`; the parent owns the effective query. */
+  controlled: boolean;
   query: TableQuery;
   setLocalQuery: (query: TableQuery) => void;
   onQueryChange?: (query: TableQuery) => void;
@@ -44,6 +46,7 @@ export function TableDialogs<T extends object>({
   draft,
   setDraft,
   saveSettings,
+  controlled,
   query,
   setLocalQuery,
   onQueryChange,
@@ -79,6 +82,9 @@ export function TableDialogs<T extends object>({
         }
         onSubmit={() => {
           if (draft) {
+            // Explicit Settings apply saves the full preset catalog in both
+            // modes; in controlled mode the effective table query still only
+            // changes when the parent accepts the proposed `onQueryChange`.
             saveSettings(draft);
             const next = {
               ...query,
@@ -86,7 +92,7 @@ export function TableDialogs<T extends object>({
               sort: active(draft.sort),
               filter: active(draft.filter),
             };
-            setLocalQuery(next);
+            if (!controlled) setLocalQuery(next);
             onQueryChange?.(next);
           }
         }}
