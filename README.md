@@ -14,7 +14,7 @@ A standalone, schema-driven component library for React 19, covering forms, tabl
 
 ## Project status
 
-The current version is 0.5.3 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Built-in interface text defaults to English and can be translated through AutoConfigProvider.config.t.
+The current version is 0.5.4 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Built-in interface text defaults to English and can be translated through AutoConfigProvider.config.t.
 
 For live page debugging, start with [Agent DevTools](#agent-developer-tools). For component contracts, agents can start at [llms.txt](llms.txt). It indexes the behavior docs, error codes, JSON registries, and Playwright ids.
 

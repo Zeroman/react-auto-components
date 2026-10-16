@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 0.5.4 - 2026-10-16
+
 - Fix empty and open date ranges, required range validation, search popover validation/reset/disabled behavior, and controlled uploads.
 - Preserve form defaults and opaque file identity; improve field focus, range labels and styling slots.
 - Synchronize table selection callbacks/cache, reset search drafts, respect effective column pinning, and keep empty numeric filters empty.
