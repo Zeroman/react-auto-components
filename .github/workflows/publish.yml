@@ -53,6 +53,13 @@ jobs:
   publish:
     needs: verify
     if: needs.verify.result == 'success'
+    strategy:
+      fail-fast: false
+      matrix:
+        # One job per package: npm trusted publishing mints a single
+        # OIDC-scoped token per job, so a shared job left DevTools without
+        # publish rights (E404) after the component package succeeded.
+        package: [components, devtools]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -74,4 +81,4 @@ jobs:
             exit 1
           fi
       - run: pnpm install --frozen-lockfile
-      - run: node scripts/publish-packages.mjs
+      - run: node scripts/publish-packages.mjs --only ${{ matrix.package }}

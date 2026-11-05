@@ -19,6 +19,18 @@ if (
   process.env.GITHUB_REF_NAME !== `v${version}`
 )
   throw new Error("Release tag does not match both package versions.");
+// npm trusted publishing mints one OIDC-scoped token per job: publishing
+// both packages from a single job leaves the second package without
+// credentials (E404). The workflow runs this script once per package with
+// --only, so each publish job owns its own mint.
+const only = (() => {
+  const index = process.argv.indexOf("--only");
+  if (index === -1) return undefined;
+  const value = process.argv[index + 1];
+  if (value === "components") return 0;
+  if (value === "devtools") return 1;
+  throw new Error('--only must be "components" or "devtools".');
+})();
 const run = (command, args, cwd) => {
   const result = spawnSync(command, args, { cwd, stdio: "inherit" });
   if (result.status !== 0) process.exit(result.status ?? 1);
@@ -27,6 +39,7 @@ const run = (command, args, cwd) => {
 run("pnpm", ["build"], root);
 run("pnpm", ["build:devtools"], root);
 for (let i = 0; i < directories.length; i++) {
+  if (only !== undefined && i !== only) continue;
   const { name } = manifests[i];
   const existing = spawnSync(
     "npm",
