@@ -2,6 +2,14 @@
 
 **English** | [简体中文](i18n/zh-CN/CHANGELOG.md) | [繁體中文](i18n/zh-TW/CHANGELOG.md) | [日本語](i18n/ja/CHANGELOG.md) | [한국어](i18n/ko/CHANGELOG.md) | [Español](i18n/es/CHANGELOG.md) | [Français](i18n/fr/CHANGELOG.md) | [Deutsch](i18n/de/CHANGELOG.md) | [Português (Brasil)](i18n/pt-BR/CHANGELOG.md) | [Русский](i18n/ru/CHANGELOG.md)
 
+## 0.6.0 - 2026-11-05
+
+- DevTools CLI automatically uses the only live server with a ready page; the response keeps its `serverId` and adds a `note` about the automatic choice. Additive behavior change: `--server` is only required when several servers have connected pages.
+- When no live server has a ready page, a single `RAC-PAGE-NONE` lists every server's ready/offline counts and the common causes: pages opened through a reverse proxy or unified entry are cross-origin and cannot register, a plain `npm run dev` keeps the bridge off, and closed tabs or pages silent for 60 seconds count as offline.
+- `RAC-SERVER-SELECTION` now lists only live servers, ready first, each with `ready`/`offline` counts and a `pages` summary plus a `next` command hint; no tokens or connection IDs are exposed. `rac pages` aggregates every discovered server without `--server`, while `rac health` still requires `--server` when several are live.
+- The CLI deletes discovery files of dead processes (and entries whose port refuses connections) before enumerating servers, so crashed servers no longer pile up as permanent multi-server noise. Bridge authentication, token handling and no-auto-retry mutation semantics are unchanged.
+- Consumers (for example agent repositories) must upgrade `@zeroman.yang/react-auto-components` and `@zeroman.yang/react-auto-components-devtools` to the same exact version (0.6.0); the two packages are released and validated together.
+
 ## 0.5.6 - 2026-10-16
 
 - Make the server-dialog cancellation test control its mock timer so slow browser actionability checks cannot race the save.

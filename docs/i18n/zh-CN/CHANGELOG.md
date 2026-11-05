@@ -2,6 +2,14 @@
 
 [English](../../CHANGELOG.md) | **简体中文** | [繁體中文](../zh-TW/CHANGELOG.md) | [日本語](../ja/CHANGELOG.md) | [한국어](../ko/CHANGELOG.md) | [Español](../es/CHANGELOG.md) | [Français](../fr/CHANGELOG.md) | [Deutsch](../de/CHANGELOG.md) | [Português (Brasil)](../pt-BR/CHANGELOG.md) | [Русский](../ru/CHANGELOG.md)
 
+## 0.6.0 - 2026-11-05
+
+- DevTools CLI 自动使用唯一存在 ready 页面的存活服务；响应保留其 `serverId`，并新增 `note` 说明为自动选择。加性行为变更：只有多个服务都有已连接页面时才需要 `--server`。
+- 所有存活服务都没有 ready 页面时，一次调用即返回 `RAC-PAGE-NONE`，列出每个服务的 ready/offline 计数与常见原因：通过反向代理或统一入口打开的页面因跨源无法注册、普通 `npm run dev` 不开启控制桥、标签页已关闭或超过 60 秒未 poll。
+- `RAC-SERVER-SELECTION` 只列出存活服务并按 ready 优先排序，每项带 `ready`/`offline` 计数、`pages` 摘要及 `next` 命令提示；不泄露令牌或 connectionId。`rac pages` 不带 `--server` 时跨服务聚合输出，`rac health` 在多服务存活时仍需 `--server`。
+- CLI 在枚举服务前删除死进程的发现文件（以及端口已拒绝连接的条目），崩溃的服务不再堆积成多服务噪声。桥鉴权、令牌处理与不自动重试修改操作的语义均不变。
+- 消费方（如 agent 仓库）需将 `@zeroman.yang/react-auto-components` 与 `@zeroman.yang/react-auto-components-devtools` 升级到同一精确版本（0.6.0）；两个包始终同步发布并验证。
+
 ## 0.5.6 - 2026-10-16
 
 - 让服务端对话框取消测试显式控制模拟计时器，避免浏览器操作检查较慢时与保存完成竞争。

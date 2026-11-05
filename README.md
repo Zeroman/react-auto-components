@@ -14,7 +14,7 @@ A standalone, schema-driven component library for React 19, covering forms, tabl
 
 ## Project status
 
-The current version is 0.5.4 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Built-in interface text defaults to English and can be translated through AutoConfigProvider.config.t.
+The current version is 0.6.0 and APIs may still change. React 19 is required. The package provides ESM and TypeScript declarations. Built-in interface text defaults to English and can be translated through AutoConfigProvider.config.t.
 
 For live page debugging, start with [Agent DevTools](#agent-developer-tools). For component contracts, agents can start at [llms.txt](llms.txt). It indexes the behavior docs, error codes, JSON registries, and Playwright ids.
 
@@ -79,6 +79,8 @@ Start with `RAC_AGENT=1 pnpm dev`, open a local page, then use `pnpm exec rac in
 Give your agent this instruction, or add it to your project's `AGENTS.md`:
 
 > Use `pnpm exec rac help --json` for the command contract. Run `pnpm exec rac inspect`, choose the intended page by title and URL, and pass its `--page` ID on every operation. Use refs from the latest inspection, inspect again after reload, and verify each result. Never switch pages or retry mutations implicitly.
+
+When several dev servers are live at once, the CLI automatically uses the only one with a connected page (the response's `note` field says so); `rac pages` lists pages across every discovered server. Only when several servers have connected pages does the CLI ask for `--server <serverId>`, listing each server's ready/offline page counts to make the choice obvious. Dead discovery files are cleaned up automatically. Pages opened through a reverse proxy or unified entry cannot register (cross-origin) — open development pages at the server's own localhost URL.
 
 For screenshots, install optional Playwright and use `rac open` to create a managed page, or explicitly connect an existing Chromium browser through CDP. See the [DevTools guide](docs/devtools.md) for screenshot setup, all commands, multiple servers and configuration.
 

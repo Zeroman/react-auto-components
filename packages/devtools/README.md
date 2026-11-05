@@ -13,6 +13,8 @@ import { reactAutoComponentsDevtools } from "@zeroman.yang/react-auto-components
 
 Start your project with `RAC_AGENT=1 pnpm dev`, then run `pnpm exec rac inspect`.
 With several pages, pass `--page <pageId>` to select one. Commands never broadcast.
+With several live dev servers, the CLI automatically uses the only one with a
+ready page; `--server <serverId>` is only needed when several have ready pages.
 Use `pnpm exec rac help --json` for the machine-readable command contract.
 Add `.rac/` to `.gitignore`; discovery files contain private session tokens.
 

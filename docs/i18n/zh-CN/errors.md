@@ -143,15 +143,19 @@ Fix: 通过 RAC_AGENT=1 开启 Vite 插件，并在项目根目录运行 CLI。
 
 ## RAC-SERVER-SELECTION
 
-存在多个开发服务。
+存在多个存活的开发服务。
 
-Fix: 使用发现结果中的 --server <serverId> 显式选择。
+响应只列出存活服务并按 ready 页面数优先排序，每项包含 `serverId`、`url`、`root`、`ready`、`offline` 与 `pages` 摘要；`next.command` 直接给出下一步命令。当恰好只有一个存活服务存在 ready 页面时，命令会自动选用该服务，不再返回本错误。
+
+Fix: 使用发现结果中的 --server <serverId> 显式选择。运行不带 --server 的 rac pages 可查看每个服务的页面列表。
 
 ## RAC-PAGE-NONE
 
 没有开发页面连接。
 
-Fix: 打开应用或运行 rac open。
+存在多个存活服务时，CLI 会一次性跨服务报告本错误：消息中列出每个服务的 ready/offline 计数与 URL，而不是逐个试错。常见原因：页面通过反向代理或统一入口打开（跨源，无法注册）、服务未以 RAC_AGENT=1 启动、或标签页已关闭或超过 60 秒未 poll。
+
+Fix: 用服务自身的 localhost 地址打开应用，或运行 rac open（多个服务时加 --server <serverId>）。
 
 ## RAC-PAGE-SELECTION
 

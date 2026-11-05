@@ -20,7 +20,19 @@ export default defineConfig({
 
 Start with `RAC_AGENT=1 pnpm dev`. Without that environment variable the bridge is disabled. Alternatively set `enabled: true` in the plugin options for an explicitly dedicated agent configuration. Plugin options are server-side; never put session tokens in public environment variables.
 
-The plugin injects the page client and writes a private discovery file under `.rac/servers/` in the Vite root. Add `.rac/` to `.gitignore`. The CLI searches the current directory and its ancestors; `--discovery-dir <path>` selects another discovery directory. The repository's root demo writes discovery to the repository root. Multiple live servers require `--server <serverId>`; no hard-coded development port is assumed. Only loopback clients and same-origin browser requests are accepted, including when the application itself is served on a LAN address.
+The plugin injects the page client and writes a private discovery file under `.rac/servers/` in the Vite root. Add `.rac/` to `.gitignore`. The CLI searches the current directory and its ancestors; `--discovery-dir <path>` selects another discovery directory. The repository's root demo writes discovery to the repository root. No hard-coded development port is assumed. Only loopback clients and same-origin browser requests are accepted, including when the application itself is served on a LAN address.
+
+## Multiple servers and automatic selection
+
+Several dev servers can be live at once — a resident one plus an isolated acceptance run on the same Vite root, for example. The CLI probes every discovered server and counts ready pages across all of them before running a command:
+
+- Exactly one server has a ready page: every command uses that server automatically. The response keeps its `serverId` and adds a `note` explaining the automatic choice, so no `--server` is needed for the first call. Pass `--server <serverId>` to pin a server explicitly.
+- No server has a ready page: a single `RAC-PAGE-NONE` error lists every live server with its `ready`/`offline` page counts and URL, together with the common causes: the page was opened through a reverse proxy or unified entry (cross-origin, so it cannot register), the server was started without `RAC_AGENT=1` (a plain `npm run dev` keeps the bridge off), or the tab was closed or silent for 60 seconds. There is no per-server trial and error.
+- Several servers have ready pages: `RAC-SERVER-SELECTION` lists only live servers, ready count first. Each entry carries `serverId`, `url`, `root`, `ready`, `offline` and a `pages` summary (`pageId`, `title`, `url`, `status`), and `next.command` names the follow-up. Credentials and connection IDs are never included.
+
+`rac pages` without `--server` aggregates every discovered server, including servers without pages and unreachable ones (marked `unreachable`); with `--server` it keeps the single-server output. `rac health` reports one server's capabilities and still requires `--server` while several are live. An explicit `--server` never drifts to another server, and `--page` is always resolved within the selected server. Pages opened through a reverse proxy or unified entry cannot register with the bridge (cross-origin): open development pages at the server's own localhost URL.
+
+The CLI deletes discovery files whose process is gone — or whose port no longer accepts connections — before enumerating servers, so crashed servers do not pile up as permanent multi-server noise. Cleanup only touches files this tool wrote and never affects a running server.
 
 ## Agent entry point
 
@@ -75,7 +87,7 @@ pnpm rac fill <project-name-ref> "Atlas" --page <pageId>
 
 In **Instant** mode the count changes from six to two, showing Atlas and Atlas Mobile. Reset restores all six. For **Manual** mode, inspect again, fill the Search mode select with `manual`, then change the project name. The criteria draft changes while the applied criteria and results stay unchanged. Click the Search button using a current ref to apply the draft. For the status filter, use the `options[].value` returned by inspect for Active or Paused; the DOM option value is an index, not the model's `active` / `paused` string.
 
-Refs above are placeholders, never fixed IDs. Find controls by their accessible names and supported actions within the intended component. Every new inspect expires all previous refs; after navigation or a field appears, inspect again. If multiple servers exist, add `--server <serverId>` too. `fill` changes field values through events; it does not directly replace an arbitrary component data object. Search results update after validation and `onSearch`, so verify the visible result after each action. Use `rac shot` on a managed page to capture the live preview and result list.
+Refs above are placeholders, never fixed IDs. Find controls by their accessible names and supported actions within the intended component. Every new inspect expires all previous refs; after navigation or a field appears, inspect again. When several servers have ready pages, add `--server <serverId>` too (see [Multiple servers and automatic selection](#multiple-servers-and-automatic-selection)). `fill` changes field values through events; it does not directly replace an arbitrary component data object. Search results update after validation and `onSearch`, so verify the visible result after each action. Use `rac shot` on a managed page to capture the live preview and result list.
 
 ## Screenshots and managed pages
 
@@ -99,7 +111,7 @@ pnpm exec rac shot --page <pageId> --out .rac-shots/page.png
 
 Page titles and URLs are refreshed when they change (with a one-second fallback for history updates). Transient polling or acknowledgment failures receive bounded retries; page actions are never replayed. Restarting the development server creates a fresh session.
 
-The server generates a per-start token, checks it on control requests and writes it only to a permission-restricted discovery file. The served HTML contains no secret: pages load a same-origin `/__rac/bootstrap.js` module, and that module receives the token only after the loopback, Host and Origin checks pass. Even when the application is served on a LAN address, the page markup itself leaks no credential — keep the bridge's loopback restriction intact. Discovery files are removed on graceful shutdown; stale files are ignored by the CLI. Do not share them. Server shutdown also rejects pending commands and closes browsers it owns. An externally connected browser is disconnected without closing its pages.
+The server generates a per-start token, checks it on control requests and writes it only to a permission-restricted discovery file. The served HTML contains no secret: pages load a same-origin `/__rac/bootstrap.js` module, and that module receives the token only after the loopback, Host and Origin checks pass. Even when the application is served on a LAN address, the page markup itself leaks no credential — keep the bridge's loopback restriction intact. Discovery files are removed on graceful shutdown; files left by dead processes are deleted automatically by the CLI, and remaining unreachable entries are reported but never trusted. Do not share them. Server shutdown also rejects pending commands and closes browsers it owns. An externally connected browser is disconnected without closing its pages.
 
 One plugin instance serves one running dev server at a time. Attaching the same `reactAutoComponentsDevtools()` object to a second live server is rejected with `RAC-DEVTOOLS-INPUT`; create a fresh plugin instance per running server. Reusing an instance sequentially after the previous server was disposed stays supported, including Vite's restart flow.
 

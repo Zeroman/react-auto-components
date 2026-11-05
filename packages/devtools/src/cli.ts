@@ -1,15 +1,24 @@
 #!/usr/bin/env node
-import { readFile, readdir, mkdir, writeFile } from "node:fs/promises";
-import { resolve, dirname, join } from "node:path";
+import { mkdir, writeFile } from "node:fs/promises";
+import { resolve, dirname } from "node:path";
 import { parseArgs } from "node:util";
 import { RacError, failure } from "./errors.js";
-import { PROTOCOL_VERSION, PREFIX, type Discovery } from "./protocol.js";
+import { PREFIX, PROTOCOL_VERSION } from "./protocol.js";
+import {
+  chooseServer,
+  discoveryDirs,
+  pageNone,
+  publicSummary,
+  scanServers,
+  selectionPayload,
+  type ServerSummary,
+} from "./discovery.js";
 
 const commandHelp = {
   inspect:
     "inspect [--page ID]: discover pages or inspect one page's current refs and capabilities",
   pages:
-    "pages: list registered pages with titles, URLs and ready/offline status",
+    "pages: list registered pages across servers, or one server's with --server",
   health: "health: report protocol and server capabilities",
   open: "open [--headless]: create a managed page on this project's development server",
   goto: "goto <route> --page ID: navigate using AutoNavigationProvider",
@@ -38,57 +47,6 @@ function invalid(message: string): never {
     message,
     "Run rac help --json and use the documented arguments. Use -- before positional values beginning with a dash.",
   );
-}
-async function discover(directory?: string): Promise<Discovery[]> {
-  const dirs: string[] = [];
-  if (directory) dirs.push(resolve(directory));
-  else {
-    let current = process.cwd();
-    while (true) {
-      dirs.push(join(current, ".rac/servers"));
-      const parent = dirname(current);
-      if (current === parent) break;
-      current = parent;
-    }
-  }
-  const candidates: Discovery[] = [];
-  for (const dir of dirs) {
-    const files = await readdir(dir).catch(() => []);
-    for (const name of files.filter((name) => name.endsWith(".json"))) {
-      try {
-        const entry = JSON.parse(
-          await readFile(join(dir, name), "utf8"),
-        ) as Discovery;
-        const url = new URL(entry.url);
-        if (
-          !["http:", "https:"].includes(url.protocol) ||
-          !["127.0.0.1", "localhost", "[::1]"].includes(url.hostname) ||
-          typeof entry.token !== "string" ||
-          typeof entry.serverId !== "string"
-        )
-          continue;
-        const response = await fetch(`${entry.url}${PREFIX}/health`, {
-          headers: { Authorization: `Bearer ${entry.token}` },
-          signal: AbortSignal.timeout(1500),
-          redirect: "error",
-        });
-        const health = (await response.json()) as {
-          serverId?: string;
-          protocolVersion?: number;
-        };
-        if (
-          response.ok &&
-          health.serverId === entry.serverId &&
-          health.protocolVersion === PROTOCOL_VERSION &&
-          !candidates.some((c) => c.serverId === entry.serverId)
-        )
-          candidates.push(entry);
-      } catch {
-        /* stale or unrelated file */
-      }
-    }
-  }
-  return candidates;
 }
 async function main() {
   let parsed: ReturnType<typeof parseArgs>;
@@ -120,7 +78,8 @@ async function main() {
       commands: commandHelp,
       flags: {
         "--page": "Page ID returned by inspect; include on every action",
-        "--server": "Select a server when several are discovered",
+        "--server":
+          "Select one server explicitly; by default the only server with a ready page is used",
         "--discovery-dir":
           "Explicit directory containing server discovery JSON files",
       },
@@ -163,41 +122,47 @@ async function main() {
     invalid(
       "A page ID is required. Run rac inspect, then pass --page <pageId>.",
     );
-  const candidates = await discover(
-    flags["discovery-dir"] as string | undefined,
+  // Scanning also prunes discovery files whose owning process is gone, so
+  // dead files never turn into permanent multi-server noise.
+  const summaries = await scanServers(
+    discoveryDirs(process.cwd(), flags["discovery-dir"] as string | undefined),
   );
-  const selected = flags.server
-    ? candidates.find((c) => c.serverId === flags.server)
-    : candidates.length === 1
-      ? candidates[0]
-      : undefined;
-  if (!selected) {
-    if (candidates.length > 1 && !flags.server) {
-      output({
-        status: "selection_required",
-        code: "RAC-SERVER-SELECTION",
-        servers: candidates.map(({ serverId, url, root }) => ({
-          serverId,
-          url,
-          root,
-        })),
-        fix: "Pass --server <serverId> from this list.",
-      });
-      process.exitCode = 1;
-      return;
-    }
-    throw new RacError(
+  const live = summaries.filter((server) => !server.unreachable);
+  const serverNone = () =>
+    new RacError(
       "RAC-SERVER-NONE",
       "No matching live agent development server was discovered.",
       "Configure the DevTools Vite plugin and start with RAC_AGENT=1 pnpm dev. Run rac in the Vite project root or pass --discovery-dir <path>.",
     );
+  if (command === "pages" && !flags.server) {
+    // `rac pages` aggregates every discovered server, ready or not.
+    if (!live.length) throw serverNone();
+    output({ status: "success", servers: summaries.map(publicSummary) });
+    return;
   }
+  const choice = chooseServer(
+    live,
+    command === "health" ? "health" : command === "open" ? "open" : "page",
+    flags.server as string | undefined,
+  );
+  if (choice.kind === "server-none") throw serverNone();
+  if (choice.kind === "server-selection") {
+    output(selectionPayload(live));
+    process.exitCode = 1;
+    return;
+  }
+  if (choice.kind === "page-none") throw pageNone(live);
+  const selected: ServerSummary = choice.server;
+  const note =
+    choice.auto && live.length > 1
+      ? `Server ${selected.serverId} was selected automatically: it is the only live server with a ready page. Pass --server <serverId> to pin a specific server.`
+      : undefined;
   const headers = {
     Authorization: `Bearer ${selected.token}`,
     "Content-Type": "application/json",
   };
   async function call(path: string, data?: unknown) {
-    const response = await fetch(`${selected!.url}${PREFIX}/${path}`, {
+    const response = await fetch(`${selected.url}${PREFIX}/${path}`, {
       method: data === undefined ? "GET" : "POST",
       headers,
       ...(data === undefined ? {} : { body: JSON.stringify(data) }),
@@ -227,6 +192,7 @@ async function main() {
       serverId: selected.serverId,
       pageId: response.headers.get("X-Rac-Page-Id"),
       path,
+      ...(note ? { note } : {}),
     });
     return;
   }
@@ -263,7 +229,15 @@ async function main() {
       payload,
     });
   }
-  if (response) output(await response.json());
+  if (response) {
+    const body: unknown = await response.json();
+    // Additive hint on success when a server was picked automatically.
+    output(
+      note && body && typeof body === "object" && !Array.isArray(body)
+        ? { ...(body as Record<string, unknown>), note }
+        : body,
+    );
+  }
 }
 main().catch((error) => {
   output(failure(error));

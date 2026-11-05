@@ -16,7 +16,7 @@
 
 ## 项目状态
 
-当前版本为 0.5.4，API 仍可能发生变化。需要 React 19。该包提供 ESM 和 TypeScript 类型声明。内置界面文本默认为英文，可通过 AutoConfigProvider.config.t 进行翻译。
+当前版本为 0.6.0，API 仍可能发生变化。需要 React 19。该包提供 ESM 和 TypeScript 类型声明。内置界面文本默认为英文，可通过 AutoConfigProvider.config.t 进行翻译。
 
 使用 `pnpm add @zeroman.yang/react-auto-components` 安装（npm、yarn 同样可用）。peer dependency 为 React 19 与 react-dom 19。在入口引入一次样式：`import "@zeroman.yang/react-auto-components/style.css"`。
 
@@ -83,6 +83,8 @@ export default defineConfig({
 可以直接把这段话交给 Agent，或放进项目的 `AGENTS.md`：
 
 > 先运行 `pnpm exec rac help --json` 了解命令契约，再用 `pnpm exec rac inspect` 发现页面。根据标题和 URL 选定页面，后续每次操作都传它的 `--page` ID。使用最近一次检查返回的 ref，刷新后重新检查，每次操作后验证结果。不要隐式切换页面或重试修改操作。
+
+同时运行多个 dev server 时，CLI 会自动使用唯一有已连接页面的那个服务（响应的 `note` 字段会说明）；`rac pages` 可跨服务聚合列出页面。只有当多个服务都有已连接页面时才需要 `--server <serverId>`，此时会列出每个服务的 ready/offline 页面计数，方便直接判断。死进程的发现文件会被自动清理。通过反向代理或统一入口打开的页面无法注册（跨源），请用服务自身的 localhost 地址打开开发页面。
 
 需要截图时，安装可选的 Playwright，通过 `rac open` 创建托管页面，或通过 CDP 显式连接已有的 Chromium 浏览器。截图接入、完整命令、多服务选择和配置见 [DevTools 使用指南](devtools.md)。
 

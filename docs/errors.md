@@ -149,15 +149,19 @@ Fix: Enable the Vite plugin with RAC_AGENT=1 and run the CLI in the project root
 
 ## RAC-SERVER-SELECTION
 
-Several development servers are available.
+Several live development servers are available.
 
-Fix: Pass --server <serverId> from the discovery result.
+The payload lists only live servers, ready-page count first, each with `serverId`, `url`, `root`, `ready`, `offline` and a `pages` summary; `next.command` names the follow-up. When exactly one live server has a ready page, commands select it automatically and this error is not returned.
+
+Fix: Pass --server <serverId> from the discovery result. Run rac pages (without --server) to see every server's page list.
 
 ## RAC-PAGE-NONE
 
 No development page is connected.
 
-Fix: Open the app or run rac open.
+With several live servers the CLI reports this once across all of them: the message lists each server's ready/offline counts and URL instead of trying servers one by one. Common causes: the page was opened through a reverse proxy or unified entry (cross-origin, so it cannot register), the server runs without RAC_AGENT=1, or the tab was closed or silent for 60 seconds.
+
+Fix: Open the app at the server's own localhost URL or run rac open, with --server <serverId> when several are live.
 
 ## RAC-PAGE-SELECTION
 
