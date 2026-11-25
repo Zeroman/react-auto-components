@@ -1380,7 +1380,11 @@ th.auto-drop-after {
 }
 
 /* Small Size */
-[data-size="small"] {
+/* Scoped: `data-size` is a common host attribute name and must not restyle
+   elements outside the library. Portaled surfaces carry their own root class. */
+.auto-root[data-size="small"],
+.auto-overlay[data-size="small"],
+.auto-popover[data-size="small"] {
   font-size: 12px;
 }
 .auto-form[data-size="small"] > .auto-form-grid > .auto-field > label {
@@ -1474,7 +1478,9 @@ th.auto-drop-after {
 }
 
 /* Large Size */
-[data-size="large"] {
+.auto-root[data-size="large"],
+.auto-overlay[data-size="large"],
+.auto-popover[data-size="large"] {
   font-size: 15px;
 }
 .auto-form[data-size="large"] > .auto-form-grid > .auto-field > label {

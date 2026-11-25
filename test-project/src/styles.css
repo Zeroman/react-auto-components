@@ -70,6 +70,14 @@ textarea[aria-invalid="true"]:focus-visible {
   min-height: 0;
   overflow: hidden;
 }
+/* The library scopes its `data-size` typography to its own roots; the studio
+   shell sizes its own non-component text here. */
+.studio[data-size="small"] {
+  font-size: 12px;
+}
+.studio[data-size="large"] {
+  font-size: 15px;
+}
 
 /* Sidebar Aside: Fixed width, nav scrolls internally on short heights */
 .studio aside {

@@ -6,6 +6,7 @@ import { cleanup } from "@testing-library/react";
 import { defaults } from "../src/core/config";
 import { AutoForm, type AutoFormHandle } from "../src/components/AutoForm";
 import { AutoSearch } from "../src/components/AutoSearch";
+import { settlePopoverFocus } from "./popover-focus";
 
 afterEach(cleanup);
 
@@ -27,7 +28,9 @@ test("instant popover edit validates a main cross-field rule against new outgoin
   await userEvent.type(screen.getByLabelText("Name"), "a");
   await waitFor(() => expect(onSearch).toHaveBeenCalledTimes(1));
   await userEvent.click(screen.getByTestId("rac-more-filters"));
-  await userEvent.type(await screen.findByLabelText("Owner"), "a");
+  await screen.findByLabelText("Owner");
+  await settlePopoverFocus();
+  await userEvent.type(screen.getByLabelText("Owner"), "a");
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "Name must differ from owner",
   );
@@ -82,7 +85,9 @@ test("main and popover resets each fire onChange and onSearch exactly once", asy
   expect(onChange).toHaveBeenCalledWith({ name: "n0", owner: "o0" });
   // Popover reset.
   await userEvent.click(screen.getByTestId("rac-more-filters"));
-  await userEvent.type(await screen.findByLabelText("Owner"), "x");
+  await screen.findByLabelText("Owner");
+  await settlePopoverFocus();
+  await userEvent.type(screen.getByLabelText("Owner"), "x");
   const searches = onSearch.mock.calls.length;
   const changes = onChange.mock.calls.length;
   await userEvent.click(screen.getAllByText("Reset").at(-1)!);

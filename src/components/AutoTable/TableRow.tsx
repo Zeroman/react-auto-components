@@ -7,6 +7,7 @@ import { Fragment, type CSSProperties, type ReactNode } from "react";
 import type { Row } from "@tanstack/react-table";
 import { racTestId } from "../../core/testid";
 import { errorMessage } from "../../core/config";
+import { copyText } from "./export";
 import type { features } from "./features";
 import type { AutoColumn } from "./types";
 
@@ -103,9 +104,12 @@ export function TableRow<T extends object>({
             tabIndex={0}
             onDoubleClick={() => {
               if (c.copyable)
-                void navigator.clipboard
-                  .writeText(String(formatted(c, row.original)))
-                  .then(() => setMessage(tr("Copied")))
+                copyText(String(formatted(c, row.original)))
+                  .then((ok) =>
+                    setMessage(
+                      ok ? tr("Copied") : tr("Clipboard is unavailable"),
+                    ),
+                  )
                   .catch((e) => setMessage(tr(errorMessage(e))));
             }}
           >

@@ -1,4 +1,5 @@
 import { useAutoText } from "../../core/i18n";
+import { isProductionBuild } from "../../core/env";
 import {
   useTable,
   type ColumnDef,
@@ -44,7 +45,7 @@ import {
   resolveRowAction,
 } from "./registry";
 import { racTestId } from "../../core/testid";
-import { formatted } from "./export";
+import { formatted, copyText } from "./export";
 import { useTableExport } from "./useTableExport";
 import { TableRow } from "./TableRow";
 import { TablePagination } from "./TablePagination";
@@ -91,9 +92,10 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
   const hasLocalData = "data" in props && !!props.data;
   const dataSource = "dataSource" in props ? props.dataSource : undefined;
   const sourceName = "source" in props ? props.source : undefined;
-  const registeredSource = (
-    sourceName ? services.sources[sourceName] : undefined
-  ) as DataSource<T> | undefined;
+  const registeredSource =
+    sourceName && Object.hasOwn(services.sources, sourceName)
+      ? (services.sources[sourceName] as DataSource<T> | undefined)
+      : undefined;
   const remoteSource = useMemo(
     () =>
       resolveDataSource(
@@ -163,7 +165,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
   const warnedUnstableRef = useRef(false);
   const prevFn = useRef(dataSource);
   useEffect(() => {
-    if (process.env.NODE_ENV === "production") return;
+    if (isProductionBuild) return;
     if (!sourceName && typeof dataSource === "function") {
       if (prevFn.current && prevFn.current !== dataSource) {
         rendersWithNewFn.current += 1;
@@ -315,7 +317,7 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
   const getId = (row: T) =>
     typeof rowKey === "function" ? rowKey(row) : String(row[rowKey]);
   useEffect(() => {
-    if (process.env.NODE_ENV === "production") return;
+    if (isProductionBuild) return;
     warnTableId(id, services.namespace);
     warnRowKeys(source.rows, rowKey);
   }, [id, services.namespace, source.rows, rowKey]);
@@ -875,9 +877,12 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
           <button
             type="button"
             onClick={() =>
-              void navigator.clipboard
-                .writeText(JSON.stringify(scopeRows("page"), null, 2))
-                .then(() => setMessage(tr("Copied")))
+              copyText(JSON.stringify(scopeRows("page"), null, 2))
+                .then((ok) =>
+                  setMessage(
+                    ok ? tr("Copied") : tr("Clipboard is unavailable"),
+                  ),
+                )
                 .catch((e) => setMessage(tr(errorMessage(e))))
             }
           >
@@ -1107,7 +1112,6 @@ export function AutoTable<T extends object>(props: AutoTableProps<T>) {
         columns={columns}
         formFields={props.formFields}
         tipComponent={tipComponent}
-        getId={getId}
         sourceRefresh={source.refresh}
         draft={draft}
         setDraft={setDraft}

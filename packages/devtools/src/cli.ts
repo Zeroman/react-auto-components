@@ -94,7 +94,9 @@ async function main() {
     });
     return;
   }
-  if (!(command in commandHelp)) invalid(`Unknown command "${command}".`);
+  // `commandHelp` is a plain object: "constructor" and "toString" are not commands.
+  if (!Object.hasOwn(commandHelp, command))
+    invalid(`Unknown command "${command}".`);
   const arity: Record<string, number> = {
     goto: 1,
     replace: 1,

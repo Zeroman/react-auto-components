@@ -12,7 +12,6 @@ export interface TableDialogsProps<T extends object> {
   columns: readonly AutoColumn<T>[];
   formFields?: readonly Field<T>[];
   tipComponent?: TipComponent;
-  getId: (row: T) => string;
   sourceRefresh: () => void;
   // Settings dialog
   draft: TableSettings | null;
@@ -41,7 +40,6 @@ export function TableDialogs<T extends object>({
   columns,
   formFields,
   tipComponent,
-  getId,
   sourceRefresh,
   draft,
   setDraft,
@@ -106,7 +104,10 @@ export function TableDialogs<T extends object>({
         title={edit?.kind === "add" ? tr("Add record") : tr("Edit record")}
         fields={fields}
         defaultValue={edit?.row}
-        draftKey={`${id}:${edit?.kind}:${edit?.row ? getId(edit.row) : "new"}`}
+        // Only the add form resumes a draft. An edit draft would outlive the
+        // record: closing with Cancel kept it, and reopening showed the stale
+        // values instead of the current row.
+        draftKey={edit?.kind === "add" ? `${id}:add:new` : undefined}
         showReset
         onSubmit={async (values) => {
           if (edit?.kind === "add") await onAdd?.(values);

@@ -1,3 +1,5 @@
+import { isProductionBuild, logsDevErrors } from "./env";
+
 /** Developer errors. UI strings stay on `userKey` and go through `config.t`. */
 export class RacError extends Error {
   /** Stable id. Anchors live in docs/errors.md. */
@@ -20,11 +22,7 @@ export class RacError extends Error {
     this.userKey = userKey;
     // Vite dev: the overlay and the console both show the repair.
     // Tests assert the message themselves. Production keeps the UI translation.
-    if (
-      process.env.NODE_ENV !== "production" &&
-      process.env.NODE_ENV !== "test"
-    )
-      console.error(this.message);
+    if (logsDevErrors) console.error(this.message);
   }
 }
 
@@ -50,7 +48,7 @@ export function devWarn(
   problem: string,
   fix: string,
 ) {
-  if (process.env.NODE_ENV === "production") return;
+  if (isProductionBuild) return;
   const key = `${code}\0${problem}`;
   if (seen.has(key)) return;
   seen.add(key);

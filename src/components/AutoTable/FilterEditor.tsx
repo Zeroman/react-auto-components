@@ -122,12 +122,18 @@ export function FilterEditor<T extends object>({
                     : String(node.value ?? "")
                 }
                 onChange={(e) => {
-                  const parse = (s: string) =>
-                    columns.find((c) => c.key === node.field)?.type === "number"
-                      ? s === ""
-                        ? s
-                        : Number(s)
-                      : s;
+                  const parse = (s: string) => {
+                    if (
+                      columns.find((c) => c.key === node.field)?.type !==
+                        "number" ||
+                      s === ""
+                    )
+                      return s;
+                    // A half-typed or non-numeric value stays a string so no
+                    // NaN reaches matchesQuery or serializeRsql.
+                    const n = Number(s);
+                    return Number.isFinite(n) ? n : s;
+                  };
                   change(index, {
                     ...node,
                     value:

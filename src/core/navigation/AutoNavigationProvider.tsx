@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useAutoConfig } from "../AutoConfigProvider";
+import { isProductionBuild } from "../env";
 import {
   NavigationContext,
   RouteActiveContext,
@@ -29,7 +30,7 @@ export function AutoNavigationProvider({
 
   // Optional DevTools discovery: no global engine and no tooling dependency.
   useEffect(() => {
-    if (process.env.NODE_ENV === "production") return;
+    if (isProductionBuild) return;
     const discover = (event: Event) => {
       const detail = (event as CustomEvent<{ adapters?: AutoNavigation[] }>)
         .detail;

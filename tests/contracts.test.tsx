@@ -4,12 +4,12 @@ import { test, expect, vi, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { createRef } from "react";
 import { AutoFocus } from "../src/components/AutoFocus";
-import { AutoForm } from "../src/components/AutoForm";
+import { AutoForm, type AutoFormHandle } from "../src/components/AutoForm";
 import { AutoTable, type AutoTableHandle } from "../src/components/AutoTable";
 import { useAutoDialog } from "../src/components/AutoDialog";
 import { defaults, unsafeField } from "../src/core/config";
 import { serializeRsql, buildQuery } from "../src/core/query";
-import { fetchExportRows } from "../src/components/AutoTable/export";
+import { copyText, fetchExportRows } from "../src/components/AutoTable/export";
 import { RacError } from "../src/core/errors";
 import { resetDevChecks } from "../src/core/dev";
 import { emptyQuery } from "../src/core/query";
@@ -45,6 +45,32 @@ test("unsafeField still warns when select has no options", () => {
   );
   expect(warn.mock.calls.flat().join("\n")).toContain("RAC-FIELD-OPTIONS");
   expect(warn.mock.calls.flat().join("\n")).toContain("Fix:");
+});
+
+test("uncontrolled AutoForm warns RAC-FIELD-RANGE from live values, not only defaults", async () => {
+  resetDevChecks();
+  const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  const ref = createRef<AutoFormHandle<{ range: [string, string] }>>();
+  render(
+    <AutoForm
+      ref={ref}
+      fields={[
+        {
+          name: "range",
+          label: "Range",
+          type: "daterange",
+          defaultValue: ["", ""],
+        },
+      ]}
+    />,
+  );
+  // A host patching a scalar into an uncontrolled form used to go unnoticed
+  // because the dev check only received `value`, which is undefined here.
+  ref.current!.setValue("range", "2024-01-01" as never);
+  await waitFor(() =>
+    expect(warn.mock.calls.flat().join("\n")).toContain("RAC-FIELD-RANGE"),
+  );
+  warn.mockRestore();
 });
 
 test("duplicate row keys and a missing stylesheet warn with a fix", async () => {
@@ -191,4 +217,24 @@ test("unserializable DevTools output reports a safe repair without replaying", (
       fix: "Return JSON-compatible data without cycles or BigInt values, and inspect again before retrying a mutation.",
     },
   });
+});
+test("copyText reports a missing Clipboard API instead of throwing", async () => {
+  // Plain-HTTP LAN origins expose no navigator.clipboard; the copy actions
+  // must surface a message rather than fail with a TypeError.
+  const own = Object.getOwnPropertyDescriptor(navigator, "clipboard");
+  Object.defineProperty(navigator, "clipboard", {
+    value: undefined,
+    configurable: true,
+  });
+  try {
+    await expect(copyText("x")).resolves.toBe(false);
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: async () => {} },
+      configurable: true,
+    });
+    await expect(copyText("x")).resolves.toBe(true);
+  } finally {
+    if (own) Object.defineProperty(navigator, "clipboard", own);
+    else delete (navigator as { clipboard?: unknown }).clipboard;
+  }
 });

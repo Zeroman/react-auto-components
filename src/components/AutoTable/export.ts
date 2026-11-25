@@ -79,6 +79,17 @@ export function download(data: BlobPart, fileName: string, type: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+/**
+ * Copies text through the async Clipboard API. Resolves `false` instead of
+ * throwing when the browser offers none: plain-HTTP LAN origins and embedded
+ * webviews expose no `navigator.clipboard`, and those hosts are supported.
+ */
+export async function copyText(text: string): Promise<boolean> {
+  if (typeof navigator === "undefined" || !navigator.clipboard) return false;
+  await navigator.clipboard.writeText(text);
+  return true;
+}
+
 export async function fetchExportRows<T extends object>(
   source: import("./types").DataSource<T>,
   query: import("./types").TableQuery,

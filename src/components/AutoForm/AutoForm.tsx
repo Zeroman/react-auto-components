@@ -50,7 +50,6 @@ export function AutoForm<T extends object>({
   const tr = useAutoText();
   const services = useAutoConfig();
   useLibraryStyles();
-  useFieldWarnings("AutoForm", fields, value);
   const labelPosition =
     ownLabelPosition ?? services.form.labelPosition ?? "top";
   const labelAlign =
@@ -70,6 +69,9 @@ export function AutoForm<T extends object>({
     defaultValues: initial as Values,
   });
   const values = useStore(form.store, (s) => s.values) as T;
+  // Uncontrolled forms keep their values inside TanStack; pass them so the
+  // range/between checks see live data instead of only `defaultValue`.
+  useFieldWarnings("AutoForm", fields, value ?? values);
   const [resetEpoch, setResetEpoch] = useState(0);
   const [pendingUploads, setPendingUploads] = useState<Set<string>>(
     () => new Set(),

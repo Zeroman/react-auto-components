@@ -84,10 +84,12 @@ export function FormField<T extends object>({
   };
 
   if (field.render) return field.render(enrichedContext);
-  if (field.component && services.fields[field.component])
-    return services.fields[field.component](
-      enrichedContext as FieldContext<Values>,
-    );
+  // `config.fields` is a plain object: "constructor" and friends are not widgets.
+  const widget =
+    field.component && Object.hasOwn(services.fields, field.component)
+      ? services.fields[field.component]
+      : undefined;
+  if (widget) return widget(enrichedContext as FieldContext<Values>);
   if (readOnly || type === "text")
     return (
       <output

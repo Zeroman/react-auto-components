@@ -15,7 +15,7 @@ import { TableHeader } from "../src/components/AutoTable/TableHeader";
 import { SettingsPanel } from "../src/components/AutoTable/SettingsPanel";
 import { initialSettings } from "../src/components/AutoTable/settings";
 import { AutoConfigProvider } from "../src/core/AutoConfigProvider";
-import { emptyQuery } from "../src/core/query";
+import { emptyQuery, type QueryNode } from "../src/core/query";
 
 const data = [
   { id: "1", name: "A", age: 20 },
@@ -208,6 +208,51 @@ test("FilterEditor keeps an empty string for a cleared numeric value", async () 
   const condition = node.children[0];
   expect(condition.value).toBe("");
   expect(condition.value).not.toBe(0);
+});
+
+test("FilterEditor keeps non-numeric text as a string instead of NaN on a numeric column", async () => {
+  const u = userEvent.setup();
+  const onChange = vi.fn();
+  // A controlled host feeds every emitted query back, as the settings panel does.
+  function Host() {
+    const [value, setValue] = useState<QueryNode>({
+      kind: "condition",
+      field: "age",
+      operator: "eq",
+      value: "",
+    });
+    return (
+      <FilterEditor
+        columns={[{ key: "age", label: "Age", type: "number" }]}
+        value={value}
+        onChange={(next) => {
+          onChange(next);
+          setValue(next);
+        }}
+      />
+    );
+  }
+  render(
+    <AutoConfigProvider>
+      <Host />
+    </AutoConfigProvider>,
+  );
+  await u.type(screen.getByLabelText("Filter value 1"), "ab12");
+  const emitted = onChange.mock.calls.map(
+    ([call]) => (call as { children: { value: unknown }[] }).children[0].value,
+  );
+  // Every keystroke produced a value; none of them may be NaN, which would
+  // serialize to `age==NaN` and match nothing on the server.
+  expect(emitted.length).toBeGreaterThan(0);
+  for (const value of emitted) expect(Number.isNaN(value)).toBe(false);
+  expect(emitted.at(-1)).toBe("ab12");
+  // Fully numeric input still becomes a number.
+  await u.clear(screen.getByLabelText("Filter value 1"));
+  await u.type(screen.getByLabelText("Filter value 1"), "42");
+  const last = onChange.mock.calls.at(-1)?.[0] as {
+    children: { value: unknown }[];
+  };
+  expect(last.children[0].value).toBe(42);
 });
 
 test("a cleared numeric equals filter does not match zero-valued rows", async () => {

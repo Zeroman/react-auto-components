@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { devWarn, resetDevWarnings, valueKind } from "./errors";
+import { isProductionBuild } from "./env";
 import type { ChoiceFieldType } from "./types";
 
 /** The field props dev mode can check without knowing T. */
@@ -69,11 +70,14 @@ export function warnFields(
         "Pass render(context) or component: a key registered on AutoConfigProvider config.fields.",
       );
     }
+    // The live value wins over `defaultValue`: a host may patch a scalar into
+    // an uncontrolled form after mount, and that is the value in effect.
+    const live = field.name ? record?.[field.name] : undefined;
     const sample =
-      field.defaultValue !== undefined
-        ? field.defaultValue
-        : field.name
-          ? record?.[field.name]
+      live !== undefined
+        ? live
+        : field.defaultValue !== undefined
+          ? field.defaultValue
           : undefined;
     if (
       (field.type === "daterange" || field.type === "datetimerange") &&
@@ -164,7 +168,7 @@ export function warnIfStylesMissing() {
 
 export function useLibraryStyles() {
   useEffect(() => {
-    if (process.env.NODE_ENV === "production") return;
+    if (isProductionBuild) return;
     warnIfStylesMissing();
   }, []);
 }
@@ -175,7 +179,7 @@ export function useFieldWarnings(
   values?: object,
 ) {
   useEffect(() => {
-    if (process.env.NODE_ENV === "production") return;
+    if (isProductionBuild) return;
     warnFields(component, fields, values);
   }, [component, fields, values]);
 }

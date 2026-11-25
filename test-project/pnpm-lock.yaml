@@ -167,8 +167,8 @@ importers:
   .:
     dependencies:
       '@zeroman.yang/react-auto-components':
-        specifier: file:../artifacts/zeroman.yang-react-auto-components-0.6.0-de46d5b9c3b7.tgz
-        version: file:../artifacts/zeroman.yang-react-auto-components-0.6.0-de46d5b9c3b7.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: file:../artifacts/zeroman.yang-react-auto-components-0.6.0-d6bf1a60485d.tgz
+        version: file:../artifacts/zeroman.yang-react-auto-components-0.6.0-d6bf1a60485d.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react:
         specifier: 19.3.0
         version: 19.3.0
@@ -198,8 +198,8 @@ importers:
         specifier: ^6.1.1
         version: 6.1.1(vite@8.3.2(@types/node@26.6.4))
       '@zeroman.yang/react-auto-components-devtools':
-        specifier: file:../artifacts/zeroman.yang-react-auto-components-devtools-0.6.0-996680dbbed0.tgz
-        version: file:../artifacts/zeroman.yang-react-auto-components-devtools-0.6.0-996680dbbed0.tgz(@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.6.0-de46d5b9c3b7.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(playwright@1.63.0)(vite@8.3.2(@types/node@26.6.4))
+        specifier: file:../artifacts/zeroman.yang-react-auto-components-devtools-0.6.0-fe2387837467.tgz
+        version: file:../artifacts/zeroman.yang-react-auto-components-devtools-0.6.0-fe2387837467.tgz(@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.6.0-d6bf1a60485d.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(playwright@1.63.0)(vite@8.3.2(@types/node@26.6.4))
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -861,8 +861,8 @@ packages:
       oxc-transform-react:
         optional: true
 
-  '@zeroman.yang/react-auto-components-devtools@file:../artifacts/zeroman.yang-react-auto-components-devtools-0.6.0-996680dbbed0.tgz':
-    resolution: {integrity: sha512-WdufR5lVprHMHIpAxVRAi/6iR/tOJmZl0q1hV01qZBPIAujTQdfrsaMCLiSKFKZ6832rhAikGQTojsRRViQ2eA==, tarball: file:../artifacts/zeroman.yang-react-auto-components-devtools-0.6.0-996680dbbed0.tgz}
+  '@zeroman.yang/react-auto-components-devtools@file:../artifacts/zeroman.yang-react-auto-components-devtools-0.6.0-fe2387837467.tgz':
+    resolution: {integrity: sha512-j/O301D760NvLpam3gg8rwjWwRMguQ+wrng26z/SezL5ZHtlgz+/XcyTb3452EyjEgrR4FVaO4WnwyY1kbmGXw==, tarball: file:../artifacts/zeroman.yang-react-auto-components-devtools-0.6.0-fe2387837467.tgz}
     version: 0.6.0
     engines: {node: '>=22.12.0'}
     hasBin: true
@@ -874,8 +874,8 @@ packages:
       playwright:
         optional: true
 
-  '@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.6.0-de46d5b9c3b7.tgz':
-    resolution: {integrity: sha512-HWNtoQk9XDIfvng38pIpqxAqjlDHTsNSNNxy7Q/n3mPHOAUd0wozL/aXC0ac/a+cOov4pOYb7zI198ougTei3Q==, tarball: file:../artifacts/zeroman.yang-react-auto-components-0.6.0-de46d5b9c3b7.tgz}
+  '@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.6.0-d6bf1a60485d.tgz':
+    resolution: {integrity: sha512-a63tC9+36noBgjY9r1aeozGTKKqVtLvg5x4vMF6i0t+kxb0L0rtgsd7gKu5Z7RRwHZXqnLgLwWLMRWAK9EM2ag==, tarball: file:../artifacts/zeroman.yang-react-auto-components-0.6.0-d6bf1a60485d.tgz}
     version: 0.6.0
     engines: {node: '>=22.12.0'}
     peerDependencies:
@@ -2247,14 +2247,14 @@ snapshots:
       '@rolldown/pluginutils': 1.0.1
       vite: 8.3.2(@types/node@26.6.4)
 
-  '@zeroman.yang/react-auto-components-devtools@file:../artifacts/zeroman.yang-react-auto-components-devtools-0.6.0-996680dbbed0.tgz(@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.6.0-de46d5b9c3b7.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(playwright@1.63.0)(vite@8.3.2(@types/node@26.6.4))':
+  '@zeroman.yang/react-auto-components-devtools@file:../artifacts/zeroman.yang-react-auto-components-devtools-0.6.0-fe2387837467.tgz(@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.6.0-d6bf1a60485d.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(playwright@1.63.0)(vite@8.3.2(@types/node@26.6.4))':
     dependencies:
-      '@zeroman.yang/react-auto-components': file:../artifacts/zeroman.yang-react-auto-components-0.6.0-de46d5b9c3b7.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@zeroman.yang/react-auto-components': file:../artifacts/zeroman.yang-react-auto-components-0.6.0-d6bf1a60485d.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       vite: 8.3.2(@types/node@26.6.4)
     optionalDependencies:
       playwright: 1.63.0
 
-  '@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.6.0-de46d5b9c3b7.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@zeroman.yang/react-auto-components@file:../artifacts/zeroman.yang-react-auto-components-0.6.0-d6bf1a60485d.tgz(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@floating-ui/react': 0.27.20(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@radix-ui/react-context-menu': 2.3.7(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)

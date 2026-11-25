@@ -4,6 +4,7 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AutoSearch } from "../src/components/AutoSearch";
 import { AutoForm } from "../src/components/AutoForm";
+import { settlePopoverFocus } from "./popover-focus";
 
 afterEach(cleanup);
 
@@ -82,7 +83,9 @@ test("popover instant edits validate the outgoing changed values", async () => {
     />,
   );
   await userEvent.click(screen.getByTestId("rac-more-filters"));
-  await userEvent.type(await screen.findByLabelText("Owner"), "bad");
+  await screen.findByLabelText("Owner");
+  await settlePopoverFocus();
+  await userEvent.type(screen.getByLabelText("Owner"), "bad");
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "Owner is unacceptable",
   );
@@ -114,7 +117,9 @@ for (const mode of ["instant", "manual"] as const) {
     // Produce a stale validation error first: instant via an edit, manual
     // via the popover Search button (typing alone does not search).
     await userEvent.click(screen.getByTestId("rac-more-filters"));
-    await userEvent.type(await screen.findByLabelText("Owner"), "x");
+    await screen.findByLabelText("Owner");
+    await settlePopoverFocus();
+    await userEvent.type(screen.getByLabelText("Owner"), "x");
     if (mode === "manual")
       await userEvent.click(
         document.querySelector<HTMLButtonElement>(

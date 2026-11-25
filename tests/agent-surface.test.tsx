@@ -88,3 +88,52 @@ test("an unknown source shows the repair and does not crash", async () => {
   expect(warn).toHaveBeenCalledTimes(1);
   warn.mockRestore();
 });
+
+test("registry keys inherited from Object.prototype are not registrations", async () => {
+  resetDevChecks();
+  const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+  const error = vi.spyOn(console, "error").mockImplementation(() => undefined);
+  const load = vi.fn();
+  // `config.fields` lookup used to call Object() with the field context and
+  // crash the tree with "Objects are not valid as a React child".
+  render(
+    <AutoConfigProvider
+      config={{
+        fields: { slider: () => <input aria-label="Slider" /> },
+        columns: { flag: { render: (value) => <span>{String(value)}</span> } },
+        sources: { people: load },
+        rowActions: { rename: () => undefined },
+      }}
+    >
+      <AutoForm
+        fields={[
+          { name: "name", label: "Name" },
+          {
+            name: "score",
+            label: "Score",
+            type: "custom",
+            component: "constructor",
+          },
+        ]}
+      />
+      <AutoTable
+        id="proto"
+        source="constructor"
+        rowKey="id"
+        virtual={false}
+        columns={[{ key: "id", label: "Id", component: "toString" }]}
+      />
+    </AutoConfigProvider>,
+  );
+  // The unregistered widget falls back to the built-in text input.
+  expect(screen.getByRole("textbox", { name: "Score" })).toBeInTheDocument();
+  expect(load).not.toHaveBeenCalled();
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "RAC-TABLE-SOURCE",
+  );
+  expect(warn).toHaveBeenCalledWith(
+    expect.stringContaining("RAC-COLUMN-COMPONENT"),
+  );
+  error.mockRestore();
+  warn.mockRestore();
+});

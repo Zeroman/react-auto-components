@@ -204,6 +204,17 @@ test("unknown commands and wrong arity fail with RAC-DEVTOOLS-INPUT before any d
   const arity = await rac(["click"]);
   expect(arity.status).toBe(1);
   expect(json(arity.stdout).code).toBe("RAC-DEVTOOLS-INPUT");
+
+  // `constructor` and friends exist on Object.prototype; they are not commands.
+  for (const inherited of ["constructor", "toString", "__proto__"]) {
+    const result = await rac([inherited]);
+    expect(result.status, inherited).toBe(1);
+    const error = json(result.stdout);
+    expect(error.code, inherited).toBe("RAC-DEVTOOLS-INPUT");
+    expect(String(error.problem), inherited).toBe(
+      `Unknown command "${inherited}".`,
+    );
+  }
 });
 
 test("action commands require --page before touching discovery", async () => {

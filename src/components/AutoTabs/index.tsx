@@ -171,7 +171,9 @@ export function AutoTabs({
     if (typeof source === "function") return source;
     if (source === undefined || items !== undefined) return undefined;
     return (
-      services.tabsSources[source] ??
+      (source && Object.hasOwn(services.tabsSources, source)
+        ? services.tabsSources[source]
+        : undefined) ??
       (() =>
         Promise.reject(
           new Error(

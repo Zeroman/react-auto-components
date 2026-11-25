@@ -8,7 +8,11 @@ export function resolveColumn<T extends object>(
   registry: Record<string, ColumnRegistry>,
 ): AutoColumn<T> {
   if (!column.component) return column;
-  const registered = registry[column.component];
+  // Registries are plain objects: an inherited key such as "constructor"
+  // is not a registration.
+  const registered = Object.hasOwn(registry, column.component)
+    ? registry[column.component]
+    : undefined;
   if (!registered) {
     devWarn(
       "AutoTable",
@@ -54,7 +58,10 @@ export function resolveDataSource<T extends object>(
   if (owner.local) return;
   if (owner.dataSource) return owner.dataSource;
   if (!owner.source) return;
-  const registered = sources[owner.source] as DataSource<T> | undefined;
+  const registered =
+    Object.hasOwn(sources, owner.source) && sources[owner.source]
+      ? (sources[owner.source] as DataSource<T>)
+      : undefined;
   if (registered) return registered;
   return missingSource(owner.source).reject;
 }
@@ -65,8 +72,11 @@ export function resolveRowAction<T>(
   registry: Record<string, (row: object) => void | Promise<void>>,
 ): (row: T) => void | Promise<void> {
   if (action.onClick) return action.onClick;
-  const registered = action.action ? registry[action.action] : undefined;
-  if (registered) return registered as (row: T) => void | Promise<void>;
+  const registered =
+    action.action && Object.hasOwn(registry, action.action)
+      ? (registry[action.action] as (row: T) => void | Promise<void>)
+      : undefined;
+  if (registered) return registered;
   const problem = `rowActions["${action.id}"] has no onClick or registered action.`;
   const fix =
     "Pass onClick, or action: a key on AutoConfigProvider config.rowActions.";
