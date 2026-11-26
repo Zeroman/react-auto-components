@@ -35,6 +35,12 @@ pnpm --dir examples/stress-demo build
 pnpm --dir examples/stress-demo dev     # http://127.0.0.1:4174/
 ```
 
+自动化浏览器测试（Playwright / chromium，端口 4174）：
+
+```bash
+pnpm --dir examples/stress-demo test:e2e
+```
+
 打开浏览器控制台逐页操作，以下任一情况视为问题：
 
 - 未预期报错：未捕获异常、React 警告、非页面说明中预告的 `RAC-` 错误码。

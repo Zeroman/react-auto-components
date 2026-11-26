@@ -8,8 +8,8 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "types": ["vite/client"],
+    "types": ["vite/client", "node"],
     "allowImportingTsExtensions": true
   },
-  "include": ["src"]
+  "include": ["src", "tests", "*.ts"]
 }

@@ -61,6 +61,7 @@
     "check:public": "node scripts/check-public-source.mjs",
     "check:docs": "node scripts/check-docs-i18n.mjs",
     "test:e2e": "pnpm --dir test-project test",
+    "test:e2e:stress": "pnpm --dir examples/stress-demo test:e2e",
     "prepare:test-project": "node scripts/prepare-test-project.mjs",
     "format": "prettier --write src tests test-project/src test-project/tests *.ts",
     "prepack": "pnpm build",
