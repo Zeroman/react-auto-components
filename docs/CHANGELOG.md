@@ -2,6 +2,19 @@
 
 **English** | [简体中文](i18n/zh-CN/CHANGELOG.md) | [繁體中文](i18n/zh-TW/CHANGELOG.md) | [日本語](i18n/ja/CHANGELOG.md) | [한국어](i18n/ko/CHANGELOG.md) | [Español](i18n/es/CHANGELOG.md) | [Français](i18n/fr/CHANGELOG.md) | [Deutsch](i18n/de/CHANGELOG.md) | [Português (Brasil)](i18n/pt-BR/CHANGELOG.md) | [Русский](i18n/ru/CHANGELOG.md)
 
+## Unreleased
+
+## 0.6.1 - 2026-11-26
+
+- AutoTable's built-in edit dialog no longer persists a draft: cancel discards the edits and reopening shows the current row, while add dialogs still resume their draft.
+- Registry lookups (`config.fields`, `columns`, `rowActions`, `sources`, `tabsSources`) and the `rac` CLI now use own-property checks, so keys inherited from `Object.prototype` such as `constructor` no longer crash a form or count as registrations and commands.
+- `process.env.NODE_ENV` is read once behind a `typeof process` guard, so the ESM build no longer throws where no bundler defines it.
+- Copy actions (JSON view, copyable cells) report an unavailable Clipboard API instead of throwing on plain-HTTP origins.
+- FilterEditor keeps non-numeric text on number columns as a string instead of letting `NaN` reach the query and RSQL.
+- Uncontrolled AutoForm passes live values to the dev checks, and `warnFields` prefers the live value over `defaultValue`.
+- `[data-size]` typography is scoped to `.auto-root`, `.auto-overlay` and `.auto-popover`, so host pages' own shells are no longer affected.
+- Add `examples/stress-demo` with Playwright coverage for edge cases the product demo does not exercise: large forms, 100k-row virtual tables, streaming chat, stacked dialogs, deep menus, rapid tab/focus toggles and instant search bursts.
+
 ## 0.6.0 - 2026-11-05
 
 - DevTools CLI automatically uses the only live server with a ready page; the response keeps its `serverId` and adds a `note` about the automatic choice. Additive behavior change: `--server` is only required when several servers have connected pages.

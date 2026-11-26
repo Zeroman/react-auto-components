@@ -2,6 +2,19 @@
 
 [English](../../CHANGELOG.md) | **简体中文** | [繁體中文](../zh-TW/CHANGELOG.md) | [日本語](../ja/CHANGELOG.md) | [한국어](../ko/CHANGELOG.md) | [Español](../es/CHANGELOG.md) | [Français](../fr/CHANGELOG.md) | [Deutsch](../de/CHANGELOG.md) | [Português (Brasil)](../pt-BR/CHANGELOG.md) | [Русский](../ru/CHANGELOG.md)
 
+## 未发布
+
+## 0.6.1 - 2026-11-26
+
+- AutoTable 内置编辑对话框不再持久化草稿：取消会丢弃修改，重新打开显示当前行；新增对话框仍会恢复草稿。
+- 注册表查找（`config.fields`、`columns`、`rowActions`、`sources`、`tabsSources`）与 `rac` CLI 改用自身属性检查，从 `Object.prototype` 继承的键（如 `constructor`）不再使表单崩溃，也不再被计为注册项与命令。
+- `process.env.NODE_ENV` 在 `typeof process` 保护下只读取一次，ESM 产物在打包器未定义该变量时不再抛错。
+- 复制操作（JSON 视图、可复制单元格）在 Clipboard API 不可用时明确提示，不再在纯 HTTP 来源上抛错。
+- FilterEditor 在数字列上把非数字文本保留为字符串，避免 `NaN` 进入查询与 RSQL。
+- 非受控 AutoForm 向开发检查传递实时值，`warnFields` 优先使用实时值而非 `defaultValue`。
+- `[data-size]` 排版仅作用于 `.auto-root`、`.auto-overlay` 和 `.auto-popover`，宿主页面自身的 shell 不再被影响。
+- 新增 `examples/stress-demo`，用 Playwright 覆盖产品演示未触及的边界：超大表单、10 万行虚拟表格、流式聊天、多层对话框、深层菜单、快速标签／焦点切换与即时搜索连打。
+
 ## 0.6.0 - 2026-11-05
 
 - DevTools CLI 自动使用唯一存在 ready 页面的存活服务；响应保留其 `serverId`，并新增 `note` 说明为自动选择。加性行为变更：只有多个服务都有已连接页面时才需要 `--server`。
