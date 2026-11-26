@@ -30,6 +30,7 @@ are PAUSED and FROZEN.**
 - `pnpm typecheck && pnpm test` (root; includes i18n policy and docs drift tests)
 - `pnpm check:docs` (docs i18n drift, active locales only)
 - `pnpm --dir test-project exec tsc --noEmit` when test-project files changed
+- `pnpm --dir examples/stress-demo exec tsc --noEmit` when `examples/` files changed
 - E2E: `pnpm test:e2e --project=chromium` (full browser matrix runs on tags)
 
 ## Other invariants

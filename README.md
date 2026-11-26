@@ -106,6 +106,8 @@ Every example page includes a **View code** button that opens its real source fi
 
 `test-project` has its own package.json and lockfile. It installs the actual output of `pnpm pack`, with no source aliases. Run `pnpm prepare:test-project` again after changing the library; the script uses content-hashed filenames to avoid stale tarball caches.
 
+`examples/stress-demo` is a second workspace project for edge cases the demo does not show: forms with up to 2,000 fields, 100,000-row virtual tables, 50,000-message chats with interrupted streaming, stacked dialogs and rapid open/close toggles. It links the library through `workspace:*` instead of a packed tarball, so run `pnpm build` first, then `pnpm --dir examples/stress-demo dev` and open http://127.0.0.1:4174. Type-check it with `pnpm --dir examples/stress-demo exec tsc --noEmit`; the README inside that folder lists every scenario.
+
 ### Automated demo workflow
 
 The demo build and screenshot capture process is automated and reusable. Install the capture browser once with `pnpm exec playwright install chromium`; the GIF recorder also requires ffmpeg:

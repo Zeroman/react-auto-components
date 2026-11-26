@@ -4,3 +4,4 @@ pnpmfile: pnpmfile.cjs
 packages:
   - .
   - packages/*
+  - examples/*

@@ -3,6 +3,7 @@ node_modules/
 .playwright-mcp/
 dist/
 demo-dist/
+examples/*/dist/
 .superpowers/
 playwright-report/
 test-results/

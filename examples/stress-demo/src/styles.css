@@ -1,0 +1,266 @@
+:root {
+  color-scheme: light;
+  --bg: #f3f5f2;
+  --panel: #ffffff;
+  --ink: #15201a;
+  --muted: #5b6b62;
+  --line: #d5ddd7;
+  --accent: #176b54;
+  --accent-soft: #e4f3ed;
+  --warn: #8a4b12;
+  --danger: #9b1c1c;
+  --mono: "IBM Plex Mono", "SFMono-Regular", ui-monospace, monospace;
+  --sans: "IBM Plex Sans", "Noto Sans SC", "Segoe UI", sans-serif;
+  font-family: var(--sans);
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 500px at 10% -10%, #d9eee5 0%, transparent 55%),
+    radial-gradient(900px 400px at 100% 0%, #e8efe4 0%, transparent 50%),
+    var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  line-height: 1.45;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.app-nav {
+  border-right: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(8px);
+  padding: 1.25rem 1rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+}
+
+.brand {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin: 0 0 0.25rem;
+}
+
+.brand-sub {
+  margin: 0 0 1.25rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.nav-list {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-list a {
+  display: block;
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  color: var(--ink);
+}
+
+.nav-list a[aria-current="page"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.app-main {
+  padding: 1.25rem 1.5rem 2.5rem;
+  min-width: 0;
+}
+
+.page-head {
+  margin-bottom: 1rem;
+}
+
+.page-head h1 {
+  margin: 0 0 0.35rem;
+  font-size: 1.45rem;
+}
+
+.page-head p {
+  margin: 0;
+  color: var(--muted);
+  max-width: 70ch;
+}
+
+.scenario-grid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.scenario-card {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  color: inherit;
+}
+
+.scenario-card strong {
+  font-size: 1rem;
+}
+
+.scenario-card span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.85rem;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.9rem;
+  min-width: 0;
+}
+
+.note,
+.log {
+  margin-top: 0.85rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  background: #eef3ef;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.log {
+  font-family: var(--mono);
+  white-space: pre-wrap;
+  max-height: 180px;
+  overflow: auto;
+  background: #15201a;
+  color: #d7efe4;
+}
+
+.warn {
+  color: var(--warn);
+}
+
+.danger {
+  color: var(--danger);
+}
+
+.tiny-box {
+  width: 48px;
+  height: 48px;
+  overflow: auto;
+  border: 1px dashed var(--line);
+  resize: both;
+}
+
+.zero-box {
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 0.85rem;
+  min-height: 420px;
+}
+
+.chat-frame {
+  height: 560px;
+  display: flex;
+  flex-direction: column;
+}
+
+.table-frame {
+  height: 560px;
+}
+
+.metric {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: baseline;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 860px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .app-nav {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .split {
+    grid-template-columns: 1fr;
+  }
+}

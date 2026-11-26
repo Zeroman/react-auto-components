@@ -110,6 +110,8 @@ pnpm --dir test-project dev
 
 `test-project` 有独立 package.json 和 lockfile，安装 `pnpm pack` 的真实产物，没有源代码别名。修改组件库后重新运行 `pnpm prepare:test-project`；脚本使用内容哈希文件名更新依赖，避免同名 tarball 缓存。
 
+`examples/stress-demo` 是另一个工作区工程，用于演示未覆盖的边界场景：最多 2,000 个字段的表单、十万行虚拟表格、五万条消息并可中断流式的聊天、多层叠开与快速开关的对话框等。它通过 `workspace:*` 链接组件库而非打包的 tarball，因此先运行 `pnpm build`，再运行 `pnpm --dir examples/stress-demo dev` 并打开 http://127.0.0.1:4174 。类型检查命令为 `pnpm --dir examples/stress-demo exec tsc --noEmit` ；该目录内的 README 列出了全部场景。
+
 ### 自动化更新与可复用命令
 
 修改组件或示例后，可一键完成自动化编译与截图刷新。首次录制前运行 `pnpm exec playwright install chromium` 安装浏览器；GIF 录制还需要 ffmpeg：
