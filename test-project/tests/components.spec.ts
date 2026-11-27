@@ -178,6 +178,12 @@ test("server mode and large table have no runtime errors", async ({ page }) => {
   await expect(page.getByText("Page 2 / 5")).toBeVisible();
   await page.getByRole("tab", { name: "Massive data" }).click();
   await expect(page.getByText("100,000 records")).toBeVisible();
+  await expect(
+    page
+      .getByRole("radiogroup", { name: "Filter by project status" })
+      .getByRole("button", { name: /All/ })
+      .locator(".pill-count"),
+  ).toHaveText("100,000");
   expect(await page.getByRole("row").count()).toBeLessThan(40);
   expect(errors).toEqual([]);
 });
@@ -185,6 +191,13 @@ test("search panel preserves manual mode and handles more conditions", async ({
   page,
 }) => {
   await openComponent(page, "AutoSearch");
+  await page.getByRole("tab", { name: "RSQL query", exact: true }).click();
+  await expect(
+    page.getByTestId("search-example-remote").getByRole("alert"),
+  ).toHaveCount(0);
+  await expect(
+    page.getByTestId("search-example-remote"),
+  ).toContainText("Real-time matches (24 items)");
   await page.getByRole("tab", { name: "Manual Search" }).click();
   await page.getByRole("textbox", { name: "Project Name" }).fill("Customer");
   await expect(page.getByTestId("query-result")).not.toContainText("Customer");

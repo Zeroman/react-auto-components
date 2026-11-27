@@ -28,26 +28,6 @@ export function TableDemo({ mode }: { mode: string }) {
     [rows, tr],
   );
 
-  const filteredRows = useMemo(() => {
-    if (statusFilter === "all") return displayRows;
-    return displayRows.filter((r) => r.status === statusFilter);
-  }, [displayRows, statusFilter]);
-
-  const statusCounts = useMemo(() => {
-    const counts: Record<string, number> = {
-      all: displayRows.length,
-      "In Progress": 0,
-      Completed: 0,
-      "Pending Start": 0,
-    };
-    for (const r of displayRows) {
-      if (r.status in counts) {
-        counts[r.status]++;
-      }
-    }
-    return counts;
-  }, [displayRows]);
-
   const displayBig = useMemo(
     () =>
       big.map((row) => ({
@@ -56,6 +36,28 @@ export function TableDemo({ mode }: { mode: string }) {
       })),
     [big, tr],
   );
+
+  const activeRows = mode === "large" ? displayBig : displayRows;
+
+  const filteredRows = useMemo(() => {
+    if (statusFilter === "all") return activeRows;
+    return activeRows.filter((r) => r.status === statusFilter);
+  }, [activeRows, statusFilter]);
+
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      all: activeRows.length,
+      "In Progress": 0,
+      Completed: 0,
+      "Pending Start": 0,
+    };
+    for (const r of activeRows) {
+      if (r.status in counts) {
+        counts[r.status]++;
+      }
+    }
+    return counts;
+  }, [activeRows]);
 
   const source = useMemo(() => {
     const load = createSource(displayRows);
@@ -89,7 +91,7 @@ export function TableDemo({ mode }: { mode: string }) {
               onClick={() => setStatusFilter(key)}
             >
               <span>{label}</span>
-              <span className="pill-count">{count}</span>
+              <span className="pill-count">{count.toLocaleString()}</span>
             </button>
           );
         },
@@ -171,7 +173,7 @@ export function TableDemo({ mode }: { mode: string }) {
       style={{ display: "inline-flex", alignItems: "center", gap: 10 }}
     >
       <span className="decoupled-card-badge">
-        {filteredRows.length}
+        {filteredRows.length.toLocaleString()}
       </span>
       {filterPills}
     </div>
@@ -194,7 +196,7 @@ export function TableDemo({ mode }: { mode: string }) {
             dataSource: source,
           }
         : {
-            data: mode === "large" ? displayBig : filteredRows,
+            data: filteredRows,
           })}
       rowKey="id"
       columns={columns.map((c) =>

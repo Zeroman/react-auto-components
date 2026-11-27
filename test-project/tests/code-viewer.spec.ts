@@ -12,17 +12,28 @@ test.beforeEach(async ({ page, browserName, context }) => {
   await page.goto("/");
 });
 
-test("example source dialog shows source with file tabs", async ({ page }) => {
+test("example source dialog shows grouped sidebar files and switches code", async ({
+  page,
+}) => {
   await page.getByRole("button", { name: "View code" }).click();
   const dialog = page.getByRole("dialog");
   const viewer = dialog.getByTestId("code-viewer");
   await expect(dialog).toBeVisible();
-  await expect(viewer).toContainText("TableDemo.tsx");
+  await expect(viewer).toHaveAttribute("data-layout", "split");
+  const sidebar = viewer.getByRole("navigation", { name: "Source files" });
+  await expect(sidebar).toContainText("Component examples");
+  await expect(sidebar).toContainText("Server mock");
+  await expect(sidebar).toContainText("Permissions");
+  await expect(
+    sidebar.getByRole("button", { name: "TableDemo.tsx", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
   await expect(viewer.locator("pre code")).toContainText(
     "export function TableDemo",
   );
 
-  await viewer.getByRole("button", { name: "AutoHeightDemo.tsx" }).click();
+  await sidebar
+    .getByRole("button", { name: "AutoHeightDemo.tsx", exact: true })
+    .click();
   await expect(viewer.locator("pre code")).toContainText(
     "export function AutoHeightDemo",
   );
@@ -54,6 +65,49 @@ test("example source follows the active demo page", async ({ page }) => {
   ).toHaveCount(0);
 });
 
+test("example source auto-selects the active sub-example and includes missing tabs demos", async ({
+  page,
+}) => {
+  await page.getByRole("tab", { name: "Tree Table", exact: true }).click();
+  await page.getByRole("button", { name: "View code" }).click();
+  let viewer = page.getByRole("dialog").getByTestId("code-viewer");
+  await expect(
+    viewer.getByRole("button", { name: "TreeTableDemo.tsx", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(viewer.locator("pre code")).toContainText(
+    "export function TreeTableDemo",
+  );
+  await page.keyboard.press("Escape");
+
+  await openComponent(page, "AutoTabs", "Equal width");
+  await page.getByRole("button", { name: "View code" }).click();
+  viewer = page.getByRole("dialog").getByTestId("code-viewer");
+  await expect(
+    viewer.getByRole("button", { name: "TabsEqualDemo.tsx", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(viewer.locator("pre code")).toContainText(
+    "export function TabsEqualDemo",
+  );
+  await viewer
+    .getByRole("button", { name: "TabsOverflowDemo.tsx", exact: true })
+    .click();
+  await expect(viewer.locator("pre code")).toContainText(
+    "export function TabsOverflowDemo",
+  );
+  await page.keyboard.press("Escape");
+
+  await page.getByRole("tab", { name: "Permissions", exact: true }).click();
+  await page.mouse.move(0, 0);
+  await page.getByRole("button", { name: "View code" }).click();
+  viewer = page.getByRole("dialog").getByTestId("code-viewer");
+  await expect(
+    viewer.getByRole("button", { name: "PermissionsDemo.tsx", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(viewer.locator("pre code")).toContainText(
+    "export function PermissionsDemo",
+  );
+});
+
 test("server-driven mode opens its integration source and includes shared schema mapping", async ({
   page,
 }) => {
@@ -62,19 +116,37 @@ test("server-driven mode opens its integration source and includes shared schema
     .click();
   await page.mouse.move(0, 0);
   await page.getByRole("button", { name: "View code" }).click();
-  const viewer = page.getByRole("dialog").getByTestId("code-viewer");
+  let viewer = page.getByRole("dialog").getByTestId("code-viewer");
   await expect(viewer.locator("pre code")).toContainText(
     "export function ServerTableDemo",
   );
-  await viewer
-    .getByRole("button", { name: "mock/ServerSearchDemo.tsx", exact: true })
-    .click();
+  await expect(
+    viewer.getByRole("button", { name: "mock/MockDemo.tsx", exact: true }),
+  ).toBeVisible();
+  await expect(
+    viewer.getByRole("button", {
+      name: "mock/ServerSearchDemo.tsx",
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  await page.keyboard.press("Escape");
+
+  await openComponent(page, "AutoSearch", "Server-driven Mock");
+  await page.mouse.move(0, 0);
+  await page.getByRole("button", { name: "View code" }).click();
+  viewer = page.getByRole("dialog").getByTestId("code-viewer");
+  await expect(
+    viewer.getByRole("button", {
+      name: "mock/ServerSearchDemo.tsx",
+      exact: true,
+    }),
+  ).toHaveAttribute("aria-pressed", "true");
   await expect(viewer.locator("pre code")).toContainText(
     "export function mapSearchFields",
   );
 });
 
-test("source dialog stays within a narrow viewport and scrolls code internally", async ({
+test("source dialog uses a compact picker on mobile, stays within viewport, and scrolls internally", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 375, height: 667 });
@@ -83,7 +155,17 @@ test("source dialog stays within a narrow viewport and scrolls code internally",
   await trigger.focus();
   await trigger.press("Enter");
   const dialog = page.getByRole("dialog");
+  const viewer = dialog.getByTestId("code-viewer");
   await expect(dialog).toBeVisible();
+  await expect(viewer).toHaveAttribute("data-layout", "compact");
+
+  const fileSelect = viewer.getByRole("combobox", { name: "Source files" });
+  await expect(fileSelect).toBeVisible();
+  await fileSelect.selectOption("AutoHeightDemo.tsx");
+  await expect(viewer.locator("pre code")).toContainText(
+    "export function AutoHeightDemo",
+  );
+
   await expect
     .poll(() =>
       dialog.evaluate((element) => {

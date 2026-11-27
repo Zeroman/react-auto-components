@@ -18,57 +18,62 @@ interface MockQueryBody {
   rsql?: unknown;
 }
 
+function createMockApiMiddleware() {
+  return (req: IncomingMessage, res: ServerResponse, next: () => void) => {
+    const path = (req.url ?? "").split("?")[0];
+    if (req.method === "OPTIONS" && path.startsWith("/api/")) {
+      setCors(res);
+      res.statusCode = 204;
+      res.end();
+      return;
+    }
+    if (req.method !== "POST" || path !== MOCK_PROJECTS_PATH) {
+      next();
+      return;
+    }
+    setCors(res);
+    let raw = "";
+    req.on("data", (chunk) => {
+      raw += chunk;
+    });
+    req.on("end", () => {
+      let body: MockQueryBody;
+      try {
+        body = JSON.parse(raw || "{}") as MockQueryBody;
+      } catch {
+        respond(res, 400, { error: "Invalid JSON body." });
+        return;
+      }
+      if (!isQueryNode(body.filter)) {
+        respond(res, 400, { error: "filter is not a valid query tree." });
+        return;
+      }
+      const { pageIndex, pageSize } = clampPage(body);
+      const filtered = rows.filter((row) =>
+        matchesQuery(row, body.filter as QueryNode),
+      );
+      applySort(filtered, body.sort);
+      respond(res, 200, {
+        rows: filtered.slice(
+          pageIndex * pageSize,
+          (pageIndex + 1) * pageSize,
+        ),
+        total: filtered.length,
+        echo: { rsql: typeof body.rsql === "string" ? body.rsql : "" },
+      });
+    });
+  };
+}
+
 /** The server never parses `rsql`; it only echoes it back for assertions. */
 export function mockApiPlugin(): Plugin {
   return {
     name: "rac-mock-api",
     configureServer(server) {
-      server.middlewares.use(
-        (req: IncomingMessage, res: ServerResponse, next: () => void) => {
-          const path = (req.url ?? "").split("?")[0];
-          if (req.method === "OPTIONS" && path.startsWith("/api/")) {
-            setCors(res);
-            res.statusCode = 204;
-            res.end();
-            return;
-          }
-          if (req.method !== "POST" || path !== MOCK_PROJECTS_PATH) {
-            next();
-            return;
-          }
-          setCors(res);
-          let raw = "";
-          req.on("data", (chunk) => {
-            raw += chunk;
-          });
-          req.on("end", () => {
-            let body: MockQueryBody;
-            try {
-              body = JSON.parse(raw || "{}") as MockQueryBody;
-            } catch {
-              respond(res, 400, { error: "Invalid JSON body." });
-              return;
-            }
-            if (!isQueryNode(body.filter)) {
-              respond(res, 400, { error: "filter is not a valid query tree." });
-              return;
-            }
-            const { pageIndex, pageSize } = clampPage(body);
-            const filtered = rows.filter((row) =>
-              matchesQuery(row, body.filter as QueryNode),
-            );
-            applySort(filtered, body.sort);
-            respond(res, 200, {
-              rows: filtered.slice(
-                pageIndex * pageSize,
-                (pageIndex + 1) * pageSize,
-              ),
-              total: filtered.length,
-              echo: { rsql: typeof body.rsql === "string" ? body.rsql : "" },
-            });
-          });
-        },
-      );
+      server.middlewares.use(createMockApiMiddleware());
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(createMockApiMiddleware());
     },
   };
 }

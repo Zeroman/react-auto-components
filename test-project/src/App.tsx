@@ -447,7 +447,7 @@ function AppContent() {
           open={settingsOpen}
           onOpenChange={setSettingsOpen}
           title={tr("Global settings")}
-          width={500}
+          width={680}
           hideFooter
           content={<GlobalSettings value={settings} onChange={setSettings} />}
         />
@@ -533,10 +533,9 @@ function AppContent() {
         />
         <CodeViewer
           open={codeOpen}
-          serverDriven={serverExample}
-          permissions={example === "permissions"}
           onOpenChange={setCodeOpen}
           page={page}
+          example={example}
           title={tr(pages.find((p) => p[0] === page)?.[3] ?? "")}
         />
       </AutoDialogProvider>

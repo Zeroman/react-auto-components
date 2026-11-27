@@ -45,6 +45,12 @@
   display: grid;
   grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
   gap: 20px;
+  flex: 1 1 0%;
+  min-height: 0;
+  align-items: start;
+}
+.mock-demo .mock-split .mock-result {
+  margin-top: 0;
 }
 .mock-demo .mock-split > * {
   min-width: 0;

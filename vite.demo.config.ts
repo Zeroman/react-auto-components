@@ -1,7 +1,8 @@
 import { fileURLToPath } from "node:url";
-import { defineConfig } from "vite";
+import { defineConfig, type PluginOption } from "vite";
 import react from "@vitejs/plugin-react";
 import { racDemoScenarios } from "./test-project/racDemoScenarios.ts";
+import { mockApiPlugin } from "./test-project/src/mockApi.ts";
 import { reactAutoComponentsDevtools } from "@zeroman.yang/react-auto-components-devtools/vite";
 
 // Dev-only: alias the package to library source so `pnpm dev` hot-reloads
@@ -42,6 +43,7 @@ export default defineConfig(({ command }) => ({
     : {}),
   plugins: [
     react(),
+    mockApiPlugin() as unknown as PluginOption,
     reactAutoComponentsDevtools({
       discoveryDir: lib(".rac/servers"),
       demos: racDemoScenarios,
