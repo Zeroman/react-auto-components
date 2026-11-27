@@ -60,3 +60,25 @@ test("equal layout splits the row evenly, truncates and keeps switching", async 
   await demo.getByLabel("Equal width").click();
   await expect(tabsRoot).toHaveAttribute("data-tab-layout", "scroll");
 });
+
+test("overflowing tabs scroll the initial active tab completely into view", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await openComponent(page, "AutoTabs", "Overflow scrolling");
+  const tabsRoot = page.locator(".card .auto-tabs").first();
+  const list = tabsRoot.locator(".auto-tab-list");
+  const activeTab = list.getByRole("tab", { name: "Project 11", exact: true });
+  await expect(activeTab).toHaveAttribute("aria-selected", "true");
+  await expect
+    .poll(async () => {
+      const listBox = await list.boundingBox();
+      const activeBox = await activeTab.boundingBox();
+      if (!listBox || !activeBox) return false;
+      return (
+        activeBox.x >= listBox.x - 1 &&
+        activeBox.x + activeBox.width <= listBox.x + listBox.width + 1
+      );
+    })
+    .toBe(true);
+});

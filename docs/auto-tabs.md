@@ -79,7 +79,7 @@ A nested `children` list replaces `content` for that tab. `defaultActive` is the
 
 Panel components can call `useAutoTabActive()` to detect whether the enclosing tab is currently active and visible.
 
-When horizontal tabs overflow the container width, smooth scroll buttons appear at both ends. Buttons disable automatically at the boundaries, scrollbars are hidden, and switching the active tab automatically scrolls it into view. `tabLayout="equal"` replaces this behavior: every tab takes an equal share of the row, long labels truncate, and the scroll buttons never appear.
+When horizontal tabs overflow the container width, smooth scroll buttons appear at both ends. Buttons disable automatically at the boundaries, scrollbars are hidden, and switching the active tab automatically scrolls it into view. Only the list itself scrolls: on mount and whenever the list is resized the active tab is positioned instantly, without animating or scrolling the surrounding page. `tabLayout="equal"` replaces this behavior: every tab takes an equal share of the row, long labels truncate, and the scroll buttons never appear.
 
 When `route` is provided, `AutoNavigation` drives the selected tab. Omit `value` when using `route`; if both are supplied, `route` takes precedence and `RAC-TABS-ROUTE-VALUE` is warned in development.
 

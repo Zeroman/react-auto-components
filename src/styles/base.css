@@ -864,8 +864,7 @@
 }
 .auto-table tfoot td {
   font-weight: 600;
-  position: sticky;
-  bottom: 0;
+  border-top: 1px solid var(--auto-border);
   background: var(--auto-muted) !important;
 }
 .auto-table th.auto-table-cell-selection,
@@ -1783,8 +1782,33 @@ th.auto-drop-after {
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: var(--auto-border) transparent;
+  scrollbar-color: color-mix(in srgb, var(--auto-secondary) 35%, transparent)
+    transparent;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Breathing room after the last entry belongs to the root list only; nested
+   groups and flyouts keep their 4px rhythm. */
+nav.auto-menu > .auto-menu-list {
+  padding-bottom: 12px;
+}
+
+.auto-menu > .auto-menu-list[data-scroll-top="true"] {
+  mask-image: linear-gradient(to bottom, transparent, #000 22px);
+}
+
+.auto-menu > .auto-menu-list[data-scroll-bottom="true"] {
+  mask-image: linear-gradient(to top, transparent, #000 22px);
+}
+
+.auto-menu > .auto-menu-list[data-scroll-top="true"][data-scroll-bottom="true"] {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 22px,
+    #000 calc(100% - 22px),
+    transparent
+  );
 }
 
 .auto-menu-item {

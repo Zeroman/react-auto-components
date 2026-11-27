@@ -296,3 +296,46 @@ test("external selection reveals its ancestors without preventing manual collaps
   await u.click(screen.getByRole("button", { name: "Group" }));
   expect(screen.queryByRole("button", { name: "Two" })).not.toBeInTheDocument();
 });
+
+test("scroll cues track content changes that keep the scroll box size", async () => {
+  const u = userEvent.setup();
+  render(
+    <AutoMenu
+      items={[
+        { id: "a", label: "Alpha" },
+        {
+          id: "group",
+          label: "Group",
+          children: [{ id: "child", label: "Child" }],
+        },
+        { id: "b", label: "Beta" },
+      ]}
+      defaultValue="a"
+    />,
+  );
+  const list = document.querySelector(
+    "nav.auto-menu > .auto-menu-list",
+  ) as HTMLUListElement;
+  // A fixed-height sidebar keeps the <ul> box constant, so the ResizeObserver
+  // never fires; only the content height changes as groups expand.
+  let contentHeight = 150;
+  Object.defineProperty(list, "clientHeight", {
+    configurable: true,
+    value: 200,
+  });
+  Object.defineProperty(list, "scrollHeight", {
+    configurable: true,
+    get: () => contentHeight,
+  });
+  expect(list).not.toHaveAttribute("data-scroll-bottom");
+
+  contentHeight = 300;
+  await u.click(screen.getByRole("button", { name: "Group" }));
+  expect(list).toHaveAttribute("data-scroll-bottom", "true");
+
+  // Collapsing the same group leaves `expanded.size` unchanged; the cue must
+  // still clear once the content fits again.
+  contentHeight = 150;
+  await u.click(screen.getByRole("button", { name: "Group" }));
+  expect(list).not.toHaveAttribute("data-scroll-bottom");
+});

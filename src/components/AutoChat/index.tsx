@@ -279,13 +279,15 @@ function ChatContent<T extends AutoChatMessage>({
           )}
         </div>
         {scroll.showLatest && (
-          <button
-            type="button"
-            className="auto-chat-latest"
-            onClick={scroll.scrollToBottom}
-          >
-            {labels.latest} ↓
-          </button>
+          <div className="auto-chat-latest-bar">
+            <button
+              type="button"
+              className="auto-chat-latest"
+              onClick={scroll.scrollToBottom}
+            >
+              {labels.latest} ↓
+            </button>
+          </div>
         )}
       </div>
       <div className="auto-chat-status" role="status">

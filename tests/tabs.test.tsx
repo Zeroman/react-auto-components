@@ -1,4 +1,4 @@
-import { test, expect, expectTypeOf, vi } from "vitest";
+import { test, expect, expectTypeOf, vi, onTestFinished } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
@@ -6,6 +6,22 @@ import {
   useAutoTabActive,
   type AutoTabsProps,
 } from "../src/components/AutoTabs";
+
+/** jsdom has no element scrolling APIs; stub them for one test only. */
+function stubScrolling() {
+  const proto = window.HTMLElement.prototype as unknown as Partial<
+    Record<"scrollBy" | "scrollTo", unknown>
+  >;
+  const scrollBy = vi.fn();
+  const scrollTo = vi.fn();
+  proto.scrollBy = scrollBy;
+  proto.scrollTo = scrollTo;
+  onTestFinished(() => {
+    delete proto.scrollBy;
+    delete proto.scrollTo;
+  });
+  return { scrollBy, scrollTo };
+}
 
 expectTypeOf<AutoTabsProps["mode"]>().toEqualTypeOf<
   "horizontal" | "vertical" | undefined
@@ -41,12 +57,9 @@ test("nested tabs, hidden entries and retained state", async () => {
   expect(change).toHaveBeenCalled();
 });
 
-test("tab overflow shows scroll buttons and handles boundary scrolling and scrollIntoView", async () => {
+test("tab overflow shows scroll buttons and handles boundary scrolling and keeps the active tab in view", async () => {
   const u = userEvent.setup();
-  const scrollIntoViewMock = vi.fn();
-  window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
-  const scrollByMock = vi.fn();
-  window.HTMLElement.prototype.scrollBy = scrollByMock;
+  const { scrollBy: scrollByMock } = stubScrolling();
 
   const items = Array.from({ length: 10 }, (_, i) => ({
     id: `tab-${i}`,
@@ -130,7 +143,7 @@ test("tab overflow shows scroll buttons and handles boundary scrolling and scrol
   expect(prevBtn).not.toBeDisabled();
   expect(nextBtn).toBeDisabled();
 
-  // Selecting a tab out of view calls scrollIntoView
+  // Selecting a tab out of view scrolls only the list itself (never the page)
   const tab8 = screen.getByRole("tab", { name: "Tab 8" });
   vi.spyOn(list, "getBoundingClientRect").mockReturnValue({
     left: 0,
@@ -154,11 +167,12 @@ test("tab overflow shows scroll buttons and handles boundary scrolling and scrol
     y: 0,
     toJSON: () => {},
   });
+  scrollByMock.mockClear();
   await u.click(tab8);
-  expect(scrollIntoViewMock).toHaveBeenCalledWith({
+  expect(scrollByMock).toHaveBeenCalledTimes(1);
+  expect(scrollByMock).toHaveBeenCalledWith({
+    left: 220, // tab right edge (520) - list right edge (300)
     behavior: "smooth",
-    block: "nearest",
-    inline: "nearest",
   });
 });
 
@@ -487,4 +501,64 @@ test("headerExtra renders before the tab list and extra still works", () => {
   ).container;
   expect(bare.querySelector(".auto-tabs-leading")).toBeNull();
   expect(bare.querySelector(".auto-tabs-extra")).toBeNull();
+});
+
+test("re-scrolls the initial active tab into view once overflow controls mount", async () => {
+  const { scrollBy } = stubScrolling();
+
+  const items = Array.from({ length: 12 }, (_, i) => ({
+    id: `tab-${i}`,
+    label: `Tab ${i}`,
+    content: `Content ${i}`,
+  }));
+
+  const { container } = render(
+    <AutoTabs items={items} defaultValue={["tab-8"]} />,
+  );
+
+  const nav = container.querySelector(".auto-tabs-nav") as HTMLElement;
+  const list = container.querySelector(".auto-tab-list") as HTMLElement;
+  const tab8 = screen.getByRole("tab", { name: "Tab 8" });
+
+  Object.defineProperty(nav, "clientWidth", { configurable: true, value: 300 });
+  Object.defineProperty(list, "clientWidth", { configurable: true, value: 240 });
+  Object.defineProperty(list, "scrollWidth", { configurable: true, value: 900 });
+  vi.spyOn(list, "getBoundingClientRect").mockReturnValue({
+    left: 28,
+    right: 268,
+    top: 0,
+    bottom: 40,
+    width: 240,
+    height: 40,
+    x: 28,
+    y: 0,
+    toJSON: () => {},
+  });
+  vi.spyOn(tab8, "getBoundingClientRect").mockReturnValue({
+    left: 360,
+    right: 430,
+    top: 0,
+    bottom: 40,
+    width: 70,
+    height: 40,
+    x: 360,
+    y: 0,
+    toJSON: () => {},
+  });
+
+  scrollBy.mockClear();
+  fireEvent(window, new Event("resize"));
+
+  await waitFor(() => {
+    expect(
+      container.querySelector(".auto-tabs-scroll-btn"),
+    ).toBeInTheDocument();
+  });
+  expect(scrollBy).toHaveBeenCalledTimes(1);
+  // Mount-time positioning is instant and scoped to the list: a user switching
+  // tabs animates, but layout changes must not animate or scroll the page.
+  expect(scrollBy).toHaveBeenCalledWith({
+    left: 162, // tab right edge (430) - list right edge (268)
+    behavior: "instant",
+  });
 });

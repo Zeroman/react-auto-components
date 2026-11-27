@@ -254,6 +254,8 @@ export function AutoTabs({
   }
   const navRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const lastListWidthRef = useRef<number>(-1);
+  const prevCurrentRef = useRef<string | undefined>(current);
   const [overflowed, setOverflowed] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -283,16 +285,50 @@ export function AutoTabs({
     }
   }, [scrollable]);
 
+  // Scrolls only the tab list itself. `scrollIntoView` would also scroll every
+  // scrollable ancestor, so a list below the fold would yank the page on mount
+  // or resize. "instant" bypasses the list's CSS `scroll-behavior: smooth`,
+  // so only a user-driven tab switch animates.
+  const ensureActiveTabVisible = useCallback(
+    (behavior: ScrollBehavior = "instant") => {
+      const list = listRef.current;
+      if (!list || !scrollable) return;
+      const activeEl = list.querySelector<HTMLElement>(
+        '[role="tab"][data-state="active"]',
+      );
+      if (!activeEl) return;
+      const listRect = list.getBoundingClientRect();
+      const activeRect = activeEl.getBoundingClientRect();
+      let delta = 0;
+      if (activeRect.left < listRect.left - 0.5) {
+        delta = activeRect.left - listRect.left;
+      } else if (activeRect.right > listRect.right + 0.5) {
+        delta = activeRect.right - listRect.right;
+      } else return;
+      list.scrollBy({ left: delta, behavior });
+      if (behavior !== "smooth") checkScroll();
+    },
+    [scrollable, checkScroll],
+  );
+
   useEffect(() => {
-    if (!scrollable) return;
+    if (!scrollable) {
+      lastListWidthRef.current = -1;
+      return;
+    }
     const nav = navRef.current;
     const list = listRef.current;
     if (!nav || !list) return;
     checkScroll();
+    lastListWidthRef.current = list.clientWidth;
     let ro: ResizeObserver | undefined;
     if (typeof ResizeObserver !== "undefined") {
       ro = new ResizeObserver(() => {
         checkScroll();
+        if (list.clientWidth !== lastListWidthRef.current) {
+          lastListWidthRef.current = list.clientWidth;
+          ensureActiveTabVisible();
+        }
       });
       ro.observe(nav);
       ro.observe(list);
@@ -302,29 +338,17 @@ export function AutoTabs({
       window.removeEventListener("resize", checkScroll);
       ro?.disconnect();
     };
-  }, [checkScroll, scrollable, visible.length]);
+  }, [checkScroll, ensureActiveTabVisible, scrollable, visible.length]);
 
   useEffect(() => {
     checkScroll();
   }, [checkScroll, current, visible]);
 
   useEffect(() => {
-    if (!listRef.current || !scrollable) return;
-    const activeEl = listRef.current.querySelector<HTMLElement>(
-      '[role="tab"][data-state="active"]',
-    );
-    if (!activeEl) return;
-    const list = listRef.current;
-    const listRect = list.getBoundingClientRect();
-    const activeRect = activeEl.getBoundingClientRect();
-    if (activeRect.left < listRect.left || activeRect.right > listRect.right) {
-      activeEl.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "nearest",
-      });
-    }
-  }, [current, mode]);
+    const behavior = prevCurrentRef.current !== current ? "smooth" : "instant";
+    prevCurrentRef.current = current;
+    ensureActiveTabVisible(behavior);
+  }, [current, mode, scrollable, overflowed, ensureActiveTabVisible]);
 
   function handleScroll(direction: "left" | "right") {
     const list = listRef.current;

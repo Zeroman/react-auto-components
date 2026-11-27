@@ -57,9 +57,11 @@ test("history prepends preserve the visible message and streams respect paused r
     // Notify the scroll hook before the next React render can reconcile its old anchor.
     el.dispatchEvent(new Event("scroll", { bubbles: true }));
   });
-  await expect(
-    page.getByRole("button", { name: "Back to latest" }),
-  ).toBeVisible();
+  const latestBtn = page.getByRole("button", { name: "Back to latest" });
+  await expect(latestBtn).toBeVisible();
+  const logBox = (await log.boundingBox())!;
+  const latestBox = (await latestBtn.boundingBox())!;
+  expect(latestBox.y).toBeGreaterThanOrEqual(logBox.y + logBox.height - 1);
   const top = await log.evaluate((el) => el.scrollTop);
   await page
     .getByRole("textbox", { name: "Message", exact: true })

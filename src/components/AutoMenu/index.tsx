@@ -2,12 +2,15 @@ import { AutoTip } from "../../internal/AutoTip";
 import type { TipConfig } from "../../core/tip";
 import { useAutoText } from "../../core/i18n";
 import {
+  useCallback,
   useId,
   useEffect,
+  useRef,
   useState,
   type CSSProperties,
   type KeyboardEvent,
   type ReactNode,
+  type RefObject,
 } from "react";
 import type { Access, ComponentDensity, ComponentSize } from "../../core/types";
 import { resolveHidden } from "../../core/config";
@@ -86,6 +89,10 @@ interface MenuListProps extends TipConfig {
   onToggle: (id: string) => void;
   onSelect: (item: AutoMenuItem, path: readonly AutoMenuItem[]) => void;
   path: readonly AutoMenuItem[];
+  listRef?: RefObject<HTMLUListElement | null>;
+  onListScroll?: () => void;
+  scrollTopCue?: boolean;
+  scrollBottomCue?: boolean;
 }
 
 function findPath(
@@ -298,9 +305,23 @@ function MenuItem({
   );
 }
 
-function MenuList({ items, ...props }: MenuListProps) {
+function MenuList({
+  items,
+  listRef,
+  onListScroll,
+  scrollTopCue,
+  scrollBottomCue,
+  ...props
+}: MenuListProps) {
   return (
-    <ul className="auto-menu-list" data-depth={props.depth}>
+    <ul
+      ref={listRef}
+      className="auto-menu-list"
+      data-depth={props.depth}
+      data-scroll-top={scrollTopCue ? "true" : undefined}
+      data-scroll-bottom={scrollBottomCue ? "true" : undefined}
+      onScroll={onListScroll}
+    >
       {items.map((item) => (
         <MenuItem key={item.id} item={item} {...props} />
       ))}
@@ -509,6 +530,32 @@ export function AutoMenu({
     });
   })(items);
 
+  const listRef = useRef<HTMLUListElement>(null);
+  const [scrollCue, setScrollCue] = useState({ top: false, bottom: false });
+  const checkScroll = useCallback(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const top = el.scrollTop > 2;
+    const bottom = el.scrollTop + el.clientHeight < el.scrollHeight - 2;
+    setScrollCue((prev) =>
+      prev.top === top && prev.bottom === bottom ? prev : { top, bottom },
+    );
+  }, []);
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(checkScroll);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [checkScroll]);
+  // Expanding a group or swapping items changes the content height without
+  // resizing the scroll box (a fixed-height sidebar keeps the `<ul>` box), so
+  // neither the observer nor a scroll event fires. Re-measure after every
+  // commit; checkScroll only reads layout and skips no-op state updates.
+  useEffect(() => {
+    checkScroll();
+  });
+
   const selectedItem = selectedPath.at(-1);
 
   const navElement = (
@@ -542,6 +589,10 @@ export function AutoMenu({
         }
         onSelect={select}
         path={[]}
+        listRef={listRef}
+        onListScroll={checkScroll}
+        scrollTopCue={scrollCue.top}
+        scrollBottomCue={scrollCue.bottom}
       />
       {collapsible && (
         <button
