@@ -4,6 +4,8 @@
 
 ## 未发布
 
+## 0.6.2 - 2026-11-27
+
 - 类型声明现在可在 `moduleResolution: "node16"`/`"nodenext"`（TypeScript 7 `tsc --init` 的默认值）下解析：`dist/*.d.ts` 中的相对导入带有明确的 `.js` 与 `/index.js` 扩展名，`AutoForm`、`AutoTable` 等星号重导出重新可用，`DefaultTip` 等具名重导出不再静默退化为 `any`（#1）。
 - `pnpm build` 现在会在末尾以 NodeNext 对产出的声明文件做类型检查（`pnpm check:dist-types`），不兼容的导入路径会直接让构建失败，而不会随包发布。
 

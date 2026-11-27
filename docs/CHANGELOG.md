@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 0.6.2 - 2026-11-27
+
 - Declarations now resolve under `moduleResolution: "node16"`/`"nodenext"` (the TypeScript 7 `tsc --init` default): relative imports in `dist/*.d.ts` carry explicit `.js` and `/index.js` extensions, so star re-exports such as `AutoForm` and `AutoTable` resolve again and named re-exports such as `DefaultTip` no longer silently fall back to `any` (#1).
 - `pnpm build` now type-checks the emitted declarations under NodeNext (`pnpm check:dist-types`), so an incompatible specifier fails the build instead of shipping.
 
