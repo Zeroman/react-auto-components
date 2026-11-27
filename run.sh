@@ -1035,13 +1035,15 @@ USAGE
     pnpm install --lockfile-only --ignore-scripts || return 1
     pnpm check:docs || return 1
 
-    echo "Running check:public, typecheck, lint, test and the chromium e2e." >&2
-    if ! pnpm check:public || ! pnpm typecheck || ! pnpm lint || ! pnpm test; then
+    # check:public verifies that test-project pins tarballs of the released
+    # version, so it must run after prepare:test-project repacks them.
+    echo "Running typecheck, lint, test, check:public and the chromium e2e." >&2
+    if ! pnpm typecheck || ! pnpm lint || ! pnpm test; then
         echo "Checks failed. The version files stay in the working tree: nothing committed, nothing pushed." >&2
         return 1
     fi
-    if ! pnpm prepare:test-project || ! pnpm --dir test-project build; then
-        echo "Packing the consumer failed. The version files stay in the working tree: nothing committed, nothing pushed." >&2
+    if ! pnpm prepare:test-project || ! pnpm --dir test-project build || ! pnpm check:public; then
+        echo "Packing the consumer or the public source checks failed. The version files stay in the working tree: nothing committed, nothing pushed." >&2
         return 1
     fi
     if ! pnpm exec playwright install chromium; then

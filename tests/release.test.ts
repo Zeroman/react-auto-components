@@ -244,3 +244,15 @@ test("an already-dated latest section fails without partial writes", () => {
   expect(result.stderr).toContain("unreleased heading");
   expect(snapshot(root)).toEqual(before);
 });
+
+test("the release repacks the consumer before check:public verifies its tarball pins", () => {
+  // check:public rejects a test-project that pins tarballs of another version
+  // than package.json; right after the bump only prepare:test-project fixes
+  // that, so it has to run first or every release stops at the first attempt.
+  const source = readFileSync(resolve("run.sh"), "utf8");
+  const release = source.slice(source.indexOf("cmd_release()"));
+  const pack = release.indexOf("pnpm prepare:test-project");
+  const check = release.indexOf("pnpm check:public");
+  expect(pack).toBeGreaterThan(-1);
+  expect(check).toBeGreaterThan(pack);
+});
