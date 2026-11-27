@@ -9,7 +9,7 @@
     "test": "playwright test"
   },
   "dependencies": {
-    "@zeroman.yang/react-auto-components": "file:../artifacts/zeroman.yang-react-auto-components-0.6.2-33170bbbbf84.tgz",
+    "@zeroman.yang/react-auto-components": "file:../artifacts/zeroman.yang-react-auto-components-0.7.0-f7968bdb33b4.tgz",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-markdown": "^10.1.0",
@@ -23,7 +23,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "typescript": "^7.0.2",
     "vite": "^8.3.1",
-    "@zeroman.yang/react-auto-components-devtools": "file:../artifacts/zeroman.yang-react-auto-components-devtools-0.6.2-5302c4ca81f7.tgz"
+    "@zeroman.yang/react-auto-components-devtools": "file:../artifacts/zeroman.yang-react-auto-components-devtools-0.7.0-c59646f9c7a0.tgz"
   },
   "packageManager": "pnpm@12.5.1"
 }

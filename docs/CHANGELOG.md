@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 0.7.0 - 2026-11-27
+
 - `AutoTabs` keeps the active tab inside the list on mount and whenever the list is resized, not only after a switch. The list positions itself instantly (a user-driven tab switch still animates), and only the list scrolls, so a tab bar below the fold no longer drags the page or an outer scroll container into view.
 - `AutoMenu` fades the top and bottom edges of the root list while entries remain in that direction. The cue re-measures after groups expand or collapse, not only when the list box resizes or scrolls, so a fixed-height sidebar no longer keeps a stale fade after a group collapses.
 - `AutoChat` shows **Back to latest** in a bar below the history instead of a floating button. Assistant, tool and error bubbles size to their content, capped at `72ch` or 82% of the row (users 82%, system messages 64ch), so long replies wrap at a readable measure on wide layouts.
