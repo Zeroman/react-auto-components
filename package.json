@@ -49,7 +49,7 @@
   ],
   "scripts": {
     "dev": "pnpm build:devtools && vite --config vite.demo.config.ts",
-    "build": "vite build && tsc -p tsconfig.build.json && node scripts/finalize-build.mjs",
+    "build": "vite build && tsc -p tsconfig.build.json && node scripts/finalize-build.mjs && pnpm check:dist-types",
     "build:demo": "pnpm build:devtools && vite build --config vite.demo.config.ts",
     "demo:build": "pnpm build && pnpm prepare:test-project && pnpm build:demo",
     "demo:screenshot": "node scripts/update-demo-screenshot.mjs",
@@ -60,6 +60,7 @@
     "lint": "eslint src",
     "check:public": "node scripts/check-public-source.mjs",
     "check:docs": "node scripts/check-docs-i18n.mjs",
+    "check:dist-types": "tsc -p tsconfig.dist.json",
     "test:e2e": "pnpm --dir test-project test",
     "test:e2e:stress": "pnpm --dir examples/stress-demo test:e2e",
     "prepare:test-project": "node scripts/prepare-test-project.mjs",

@@ -7,6 +7,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 // tsconfig.build.json resolves with "Bundler". Consumers on
 // moduleResolution: node16/nodenext (the tsc --init default) need explicit
 // ".js" extensions and "/index.js" for directory imports, so add them here.
+// The result is re-checked under NodeNext by `pnpm check:dist-types`
+// (tsconfig.dist.json) at the end of `pnpm build`.
 
 function defaultDist() {
   return join(fileURLToPath(new URL("../", import.meta.url)), "dist");

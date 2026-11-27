@@ -4,6 +4,9 @@
 
 ## Unreleased
 
+- Declarations now resolve under `moduleResolution: "node16"`/`"nodenext"` (the TypeScript 7 `tsc --init` default): relative imports in `dist/*.d.ts` carry explicit `.js` and `/index.js` extensions, so star re-exports such as `AutoForm` and `AutoTable` resolve again and named re-exports such as `DefaultTip` no longer silently fall back to `any` (#1).
+- `pnpm build` now type-checks the emitted declarations under NodeNext (`pnpm check:dist-types`), so an incompatible specifier fails the build instead of shipping.
+
 ## 0.6.1 - 2026-11-26
 
 - AutoTable's built-in edit dialog no longer persists a draft: cancel discards the edits and reopening shows the current row, while add dialogs still resume their draft.
